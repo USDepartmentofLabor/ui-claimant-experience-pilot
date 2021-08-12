@@ -3,4 +3,4 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 
 ## ADRs
 
-[Architecural Decision Records for this project](./docs/adr/).
+[Architectural Decision Records for this project](./docs/adr/).

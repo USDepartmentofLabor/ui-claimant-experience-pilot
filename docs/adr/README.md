@@ -1,4 +1,4 @@
-# Architecural Decision Records
+# Architectural Decision Records
 
 See [the GitHub ADR organization](https://adr.github.io/) for background and details.
 
