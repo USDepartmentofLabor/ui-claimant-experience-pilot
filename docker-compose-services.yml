@@ -1,0 +1,57 @@
+# this docker compose mimics running full AWS stack locally
+# it is *not* for running the UI Django app(s). It's for the external services that
+# the Django app(s) rely on.
+version: "3.3"
+services:
+  rds:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: "unemployment"
+      # So you don"t have to use root, but you can if you like
+      MYSQL_USER: "user"
+      # You can use whatever password you like
+      MYSQL_PASSWORD: "secret"
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: "secretpassword"
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - "3306:3306"
+    # Where our data will be persisted
+    volumes:
+      - ui-db:/var/lib/mysql
+
+  # https://github.com/localstack/localstack/ provides local mock AWS services
+  localstack:
+    image: localstack/localstack
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:53:53"
+      - "127.0.0.1:53:53/udp"
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4571:4571"
+    environment:
+      - SERVICES=${SERVICES- }
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR}
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  elasticache:
+    container_name: elasticache-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+# volumes persist when docker not running
+volumes:
+  ui-db:

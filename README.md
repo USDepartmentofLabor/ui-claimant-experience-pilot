@@ -4,3 +4,84 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 ## ADRs
 
 [Architectural Decision Records for this project](./docs/adr/).
+
+## Development
+
+This Django application requires:
+
+* Python 3.x
+
+### Setup
+
+This documentation assumes you are developing on a Unix-like system (Linux, Mac OS).
+
+Add these entries to your `/etc/hosts` file:
+
+```
+# mirror what docker does for the host machine
+127.0.0.1  host.docker.internal
+
+# dol.gov
+127.0.0.1  sandbox.ui.dol.gov
+```
+
+Bootstrap your environment for the first time:
+
+```sh
+% cd path/to/this/repo
+% python3 -m venv .venv
+% . .venv/bin/activate
+(.venv) % cp core/.env-example core/.env
+(.venv) % make dev-deps
+(.venv) % make dev-build
+```
+
+To log into the Docker container interactively and run the Django web server:
+
+```sh
+(.venv) % make dev-login
+root@randomdockerstring:/app# make dev-run
+```
+
+You can now visit http://localhost:8004/ or http://sandbox.ui.dol.gov:8004/ (thanks to your `/etc/hosts` entries).
+
+To run the tests:
+
+```sh
+(.venv) % make dev-login
+root@randomdockerstring:/app# make dev-test-django
+```
+
+### Home page
+
+The default home page is a static file in `home/templates/index.html`. In theory it can be templatized for
+some dynamic rendering via the Django templating system. It is managed separately from the React application(s).
+
+### React frontend
+
+To run the React app independently of Django:
+
+```sh
+(.venv) % cd initclaim
+(.venv) % make dev-run
+```
+
+To view the React app via Django, you need to build it:
+
+```sh
+(.venv) % cd initclaim
+(.venv) % make build
+```
+
+and if your Django app is running, it's available at http://localhost:8004/initclaim
+
+### HTTPS
+
+If you need a https connection for testing anything locally, you can use the [ssl-proxy](https://github.com/suyashkumar/ssl-proxy) tool. You will need to install it somewhere locally in your `PATH`, and create a symlink to it called `ssl-proxy`. Then:
+
+```sh
+(.venv) % make dev-ssl-proxy
+```
+
+which will start a reverse proxy listening at https://localhost:4430/ and proxy to the Django server running at http://localhost:8004/
+

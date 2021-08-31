@@ -1,0 +1,12 @@
+Django==3.2.3
+django-cors-headers==3.8.0
+django-environ==0.4.5
+git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
+gunicorn==20.1.0
+jwcrypto
+git+https://github.com/trussworks/logindotgov-oidc-py.git@main#egg=logindotgov-oidc
+mysqlclient>=1.4.6
+pyjwt>=2.1.0
+pytest>=6.2.4
+redis>=3.5.3
+requests>=2.23.0
