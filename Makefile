@@ -15,7 +15,7 @@ dev-deps:
 	pip install flake8 black
 
 dev-build:
-	docker build -f Dockerfile.dev -t $(DEV_IMG) .
+	docker build -f Dockerfile -t $(DEV_IMG) .
 
 dev-login:
 	docker run --rm -it \
@@ -33,5 +33,5 @@ dev-test-django:
 # https://github.com/suyashkumar/ssl-proxy
 dev-ssl-proxy:
 	ssl-proxy -from 0.0.0.0:4430 -to 127.0.0.1:8004
-	
+
 .PHONY: services-start services-stop services-logs
