@@ -33,13 +33,13 @@ Bootstrap your environment for the first time:
 % . .venv/bin/activate
 (.venv) % cp core/.env-example core/.env
 (.venv) % make dev-deps
-(.venv) % make dev-build
+(.venv) % make container-build
 ```
 
 To log into the Docker container interactively and run the Django web server:
 
 ```sh
-(.venv) % make dev-login
+(.venv) % make login
 root@randomdockerstring:/app# make dev-run
 ```
 
@@ -48,8 +48,8 @@ You can now visit http://localhost:8004/ or http://sandbox.ui.dol.gov:8004/ (tha
 To run the tests:
 
 ```sh
-(.venv) % make dev-login
-root@randomdockerstring:/app# make dev-test-django
+(.venv) % make login
+root@randomdockerstring:/app# make test-django
 ```
 
 ### Home page
@@ -84,4 +84,21 @@ If you need a https connection for testing anything locally, you can use the [ss
 ```
 
 which will start a reverse proxy listening at https://localhost:4430/ and proxy to the Django server running at http://localhost:8004/
+
+## Deployment
+
+To build the Docker container:
+
+```sh
+% make container-build
+```
+
+The build process will install all Django and React dependencies and build the React app(s) to generate and collect all static files.
+
+To run the container:
+
+```sh
+% make container-run
+```
+
 

@@ -1,0 +1,11 @@
+**/node_modules
+**/build
+**/static
+**/*.log
+.dockerignore
+Dockerfile
+.git
+.gitignore
+.venv
+docs
+*.md
