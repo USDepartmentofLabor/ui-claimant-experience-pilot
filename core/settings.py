@@ -36,7 +36,12 @@ SECRET_KEY = 'django-insecure-ncqf$a36l&71aeo(^&i0mddiz6-g9zl23)6uvu7@m$$t8%m=s+
 DEBUG = True
 
 # TODO read from env var
-ALLOWED_HOSTS = ["localhost", "sandbox.ui.dol.gov"]
+ALLOWED_HOSTS = [
+    "localhost",
+    ".dol.gov",
+    ".unemployment.gov",
+    ".ui.gov",
+]
 
 # TODO colorized logging?
 logging.basicConfig(
