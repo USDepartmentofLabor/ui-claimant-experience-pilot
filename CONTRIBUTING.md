@@ -1,3 +1,7 @@
+# Contributing
+
+Contributors to this project should read this file.
+
 ## Public domain
 
 This project is in the public domain within the United States, and

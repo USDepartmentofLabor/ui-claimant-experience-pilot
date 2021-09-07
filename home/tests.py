@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase, Client
+
 
 class HomeTestCase(TestCase):
     def test_index_page(self):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """claimantsapi URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -20,7 +21,7 @@ from django.conf import settings
 from core.views import initclaim
 
 urlpatterns = [
-    path('', include('home.urls')),
-    path('initclaim', initclaim, name='initclaim'),
+    path("", include("home.urls")),
+    path("initclaim", initclaim, name="initclaim"),
     # TODO path("logindotgov/", include("login-dot-gov.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

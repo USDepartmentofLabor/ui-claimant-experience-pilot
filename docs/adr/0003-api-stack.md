@@ -48,7 +48,7 @@ and the best long-term maintenance option, given the fewer number of external de
 
 Both Flask and Express are lightweight, thin dispatcher frameworks that try to be unopinionated about how your web application
 is implemented. You therefore have to pick a DB management library, auth/sessions, API patterns, etc. Unopinionated frameworks thus delegate
-important opinions to the development team who starts a project, which can make it more difficult for subsequent teams to 
+important opinions to the development team who starts a project, which can make it more difficult for subsequent teams to
 inherit the code and dependency maintenance.
 
 Both Rails and Django include all the basic libraries for implementing common patterns (authentication, caching, sessions,

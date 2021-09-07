@@ -21,8 +21,17 @@ ci-stop:
 ci-tests:
 	docker exec web make test
 
+lint-check:
+	pre-commit run --all-files
+
+lint-fix:
+	black .
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make lint-fix ; done
+
+lint: lint-check lint-fix
+
 dev-deps:
-	pip install flake8 black
+	pip install pre-commit black
 
 container-build:
 	docker build -f Dockerfile -t $(DOCKER_IMG) .

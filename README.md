@@ -1,5 +1,6 @@
 # ARPAUI
-The Department of Labor has been asked to lead the executive initiative (ARPA program ) to modernize and reform Unemployment Insurance (UI). As part of this program,  we are intending to use the DOL GitHub repository as a central source code repository. Following USDS playbook guidelines, will help development teams to develop and deploy the code internal to DOL, share the code with respective partners (states), and also eventually make code open-source when appropriate.
+
+The Department of Labor has been asked to lead the executive initiative (ARPA program) to modernize and reform Unemployment Insurance (UI). As part of this program, we are intending to use the DOL GitHub repository as a central source code repository. Following USDS playbook guidelines will help development teams to develop and deploy the code internal to DOL, share the code with respective partners (states), and also eventually make code open-source when appropriate.
 
 ## ADRs
 
@@ -17,7 +18,7 @@ This documentation assumes you are developing on a Unix-like system (Linux, Mac 
 
 Add these entries to your `/etc/hosts` file:
 
-```
+```sh
 # mirror what docker does for the host machine
 127.0.0.1  host.docker.internal
 
@@ -33,6 +34,7 @@ Bootstrap your environment for the first time:
 % . .venv/bin/activate
 (.venv) % cp core/.env-example core/.env
 (.venv) % make dev-deps
+(.venv) % pre-commit install
 (.venv) % make container-build
 ```
 
