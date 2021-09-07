@@ -1,0 +1,8 @@
+# consumes the Dockerfile for use in GitHub Actions CI pipeline
+version: "3"
+services:
+  web:
+    container_name: web
+    build: .
+    ports:
+      - "8000:8000"

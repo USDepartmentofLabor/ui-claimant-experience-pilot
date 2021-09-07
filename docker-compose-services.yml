@@ -4,6 +4,7 @@
 version: "3.3"
 services:
   rds:
+    container_name: mysqlserver
     image: mysql:8.0
     restart: always
     environment:

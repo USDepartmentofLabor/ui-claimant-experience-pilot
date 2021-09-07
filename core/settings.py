@@ -124,6 +124,14 @@ default_db["OPTIONS"] = {
 
 # disabled till we have RDS, models, migrations
 #DATABASES = {"default": default_db}
+# this is the default just to quiet the dummy db warning/error
+# it should never actually get created, since we don't yet have any models.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
+    }
+}
 
 
 # Internationalization

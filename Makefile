@@ -12,6 +12,15 @@ DOCKER_NAME="dolui-claimants"
 # list all react frontend apps here, space delimited
 REACT_APPS = initclaim
 
+ci-start:
+	docker-compose -f docker-compose-services.yml -f docker-compose-ci.yml up -d
+
+ci-stop:
+	docker-compose -f docker-compose-services.yml -f docker-compose-ci.yml down
+
+ci-tests:
+	docker exec web make test
+
 dev-deps:
 	pip install flake8 black
 
@@ -38,7 +47,13 @@ dev-run:
 	python manage.py runserver 0:8000
 
 test-django:
-	python manage.py test
+	coverage run manage.py test --pattern="*tests*py"
+	coverage report -m --skip-covered --fail-under 90
+
+test: test-django
+
+list-outdated:
+	pip list --outdated
 
 # https://github.com/suyashkumar/ssl-proxy
 dev-ssl-proxy:

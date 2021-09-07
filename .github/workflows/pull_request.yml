@@ -1,0 +1,23 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+name: Test and Lint
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Start CI docker compose
+      run: make ci-start
+    - name: Run Tests
+      run: make ci-tests
+    - name: Stop CI docker compose
+      run: make ci-stop

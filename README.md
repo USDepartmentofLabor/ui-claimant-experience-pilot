@@ -49,7 +49,7 @@ To run the tests:
 
 ```sh
 (.venv) % make login
-root@randomdockerstring:/app# make test-django
+root@randomdockerstring:/app# make test
 ```
 
 ### Home page
