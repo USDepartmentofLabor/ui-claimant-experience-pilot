@@ -103,4 +103,6 @@ To run the container:
 % make container-run
 ```
 
+## Help
 
+Run `make` or `make help` to display a full list of available `make` commands.
