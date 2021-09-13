@@ -28,6 +28,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             text = line.rstrip()
             if re.match(r"[\w\-]+:", text) and not re.search("##", text):
                 target_name, remainder = re.split(":", text)
+                # we have legitimate "double" targets where we set an environment variable for a specific target
+                # by "stacking" the targets. See https://www.gnu.org/software/make/manual/html_node/Target_002dspecific.html
+                if re.match(r" export \w+", remainder):
+                    continue
                 if target_name not in args.exclude_targets:
                     results.append(f"{filename}: {target_name}")
 

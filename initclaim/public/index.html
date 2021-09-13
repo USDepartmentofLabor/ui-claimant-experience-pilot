@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="U.S. Department of Labor Unemployment Insurance Claim"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -24,7 +24,10 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Department of Labor | Unemployment Insurance Claim</title>
+    <script type="text/javascript">
+      window.UI_BASE_URL = '{{ base_url|default_if_none:"https://sandbox.ui.dol.gov:4430" }}';
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

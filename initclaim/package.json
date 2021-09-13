@@ -7,8 +7,10 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@trussworks/react-uswds": "^2.0.0",
+    "axios": "0.21.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "5.2.0",
     "react-scripts": "4.0.3",
     "uswds": "2.10.3",
     "web-vitals": "^1.0.1"
@@ -17,6 +19,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.25.1"
   },
+  "proxy": "https://sandbox.ui.dol.gov:4430",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

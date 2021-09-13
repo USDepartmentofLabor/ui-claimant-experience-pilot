@@ -3,6 +3,11 @@ version: "3"
 services:
   web:
     container_name: web
-    build: .
+    image: dolui:ci
+    build:
+      context: .
     ports:
       - "8000:8000"
+    # set env at run time, but also populate the build args values
+    env_file:
+      - ./core/.env-ci

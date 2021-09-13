@@ -14,15 +14,25 @@ DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 # list all react frontend apps here, space delimited
 REACT_APPS = initclaim
+CI_ENV_FILE=core/.env-ci
+CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-services.yml -f docker-compose-ci.yml
+
+ci-build:  ## Build the docker images for CI
+	docker-compose $(CI_DOCKER_COMPOSE_OPTS) build
 
 ci-start: ## Start Django app's supporting services (in CI)
-	docker-compose -f docker-compose-services.yml -f docker-compose-ci.yml up -d
+	docker-compose $(CI_DOCKER_COMPOSE_OPTS) up -d
 
 ci-stop: ## Stop Django app's supporting services (in CI)
-	docker-compose -f docker-compose-services.yml -f docker-compose-ci.yml down
+	docker-compose $(CI_DOCKER_COMPOSE_OPTS) down
 
 ci-tests: ## Run Django app tests in Docker
-	docker exec web make test
+	docker exec --env-file=$(CI_ENV_FILE) web make test
+
+ci-test: ci-tests ## Alias for ci-tests
+
+ci-clean: ## Remove all the CI service images (including those in docker-compose-services)
+	docker-compose $(CI_DOCKER_COMPOSE_OPTS) down --rmi all
 
 lint-check: ## Run lint check
 	pre-commit run --all-files
@@ -42,7 +52,11 @@ container-build: ## Build the Django app container image
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
 
-build-static: ## Build the static assets (intended for during container-build)
+container: container-build ## Alias for container-build
+
+# important! this env var must be set to trigger the correct key/config generation.
+build-static: export LOGIN_DOT_GOV_ENV=test
+build-static: ## Build the static assets (intended for during container-build (inside the container))
 	rm -rf static/
 	mkdir static
 	python manage.py collectstatic
@@ -54,12 +68,20 @@ login: ## Log into the Django app docker container
 	-p 8004:8000 \
 	$(DOCKER_IMG) /bin/bash
 
-dev-run: ## Run the Django app
+dev-run: ## Run the Django app, tracking changes
 	python manage.py runserver 0:8000
 
+run: ## Run the Django app, without tracking changes
+	python manage.py runserver 0:8000 --noreload
+
+# important! this env var must be set to trigger the correct key/config generation.
+test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
 	coverage run manage.py test --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
+
+test-react: ## Run React tests
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make test ; done
 
 test: test-django ## Run tests (must be run within Django app docker container)
 

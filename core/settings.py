@@ -13,6 +13,7 @@ from pathlib import Path
 import os
 import environ
 import logging
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +26,13 @@ env.read_env()
 # TODO AWS secrets manager
 def load_secrets():
     return {}
+
+
+# since this app usually runs behind one or more reverse proxies that may/not
+# have X-Forwarded-For header set correctly, allow for explicit root URI
+# to be set here via env.
+# NOTE this value should *NOT* contain a trailing slash
+BASE_URL = os.environ.get("BASE_URL", None)
 
 
 # Quick-start development settings - unsuitable for production
@@ -58,7 +66,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
-    # TODO 'login-dot-gov',
+    "api",
+    "login-dot-gov",
     "secure_redis",
     "home",
 ]
@@ -111,7 +120,16 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 SESSION_SAVE_EVERY_REQUEST = True  # keep-alive on each request
-SESSION_EXPIRY = 30 * 60  # 30 minute timeout on no requests TODO
+SESSION_EXPIRY = env.int(
+    "SESSION_EXPIRY", 30 * 60
+)  # 30 minute timeout on no requests TODO
+SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
+# allow XHR/CORS to work in local dev with http/https mix
+# CSRF_COOKIE_SAMESITE = 'None'
+# NOTE that this assumes you are running react app on http and django on https behind proxy
+# Chrome requires SameSite=None to be paired with Secure
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -174,5 +192,64 @@ TEMPLATES = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# TODO limit to hosts?
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    "https://sandbox.ui.dol.gov:4430",
+    "http://sandbox.ui.dol.gov:8004",
+    "http://sandbox.ui.dol.gov:3000",
+    "http://localhost:8004",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "Cache-Control",
+    "If-Modified-Since",
+    "Keep-Alive",
+    "X-Requested-With",
+    "X-DOL",
+]
+
+# Identity Providers
+LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get(
+    "LOGIN_DOT_GOV_REDIRECT_URI", "https://sandbox.ui.dol.gov:4430/logindotgov/result"
+)
+LOGIN_DOT_GOV_SCOPES = env.list(
+    "LOGIN_DOT_GOV_SCOPES",
+    default=[
+        "openid",
+        "email",
+        "phone",
+        "address",
+        "profile",
+        "social_security_number",
+    ],
+)
+LOGIN_DOT_GOV_CLIENT_ID = os.environ.get(
+    "LOGIN_DOT_GOV_CLIENT_ID",
+    "urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-sandbox",
+)
+
+if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":
+    # generate a new key pair on the fly
+    from jwcrypto import jwk
+    from jwcrypto.common import json_decode
+
+    # use only 1024 bits since this is temporary key and we favor speed.
+    client_private_key_jwk = jwk.JWK.generate(kty="RSA", size=1024)
+    LOGIN_DOT_GOV_PRIVATE_KEY = client_private_key_jwk.export_to_pem(True, None).decode(
+        "utf-8"
+    )
+    client_public_key_jwk = jwk.JWK()
+    client_public_key_jwk.import_key(
+        **json_decode(client_private_key_jwk.export_public())
+    )
+    LOGIN_DOT_GOV_PUBLIC_KEY = client_public_key_jwk.export_to_pem().decode("utf-8")
+else:  # pragma: no cover
+    # TODO read from secrets
+    logindotgov_private_key = ""
+    private_key_file = (
+        BASE_DIR
+        / "certs"
+        / os.environ.get("LOGIN_DOT_GOV_PRIVATE_KEY_FILE", "logindotgov-private.pem")
+    )
+    with open(private_key_file, "rb") as pf:
+        logindotgov_private_key = pf.read()
+    LOGIN_DOT_GOV_PRIVATE_KEY = logindotgov_private_key

@@ -9,12 +9,30 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        node-version: [14.16]
     steps:
     - uses: actions/checkout@v2
     - name: Start CI docker compose
       run: make ci-start
-    - name: Run Tests
+      env:
+        DOCKER_BUILDKIT: 1
+    - name: Run Django Tests
       run: make ci-tests
+    # we must build the react apps (again) in the native host in order to run the tests
+    # and to run the cypress (browser) tests against the web server in the running docker-compose
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
+        cache-dependency-path: 'initclaim/yarn.lock'
+    - name: Install JS dependencies
+      run: make react-deps
+    - name: Run JS Tests
+      run: make test-react
     - name: Stop CI docker compose
       run: make ci-stop
 

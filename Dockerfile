@@ -35,10 +35,14 @@ COPY manage.py .
 COPY start-server.sh .
 COPY home ./home
 COPY core ./core
+COPY login-dot-gov ./login-dot-gov
+COPY api ./api
+COPY certs ./certs
 
 # copy over just the precompiled react app(s)
 COPY --from=reactapps /app/initclaim/build /app/initclaim/build
 
+# collects all the static assets, including react apps, into the /static dir
 RUN make build-static
 
 EXPOSE 8000
