@@ -89,7 +89,10 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # caching. sessions use the same cache, but have a custom serializer
 REDIS_URL = os.environ.get("REDIS_URL", "redis://host.docker.internal:6379/1")
-REDIS_DB = 0
+if os.environ.get("REDIS_HOST"):
+    # in WCMS env the config is set with separate env vars.
+    REDIS_URL = f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/1"
+REDIS_DB = 1
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
