@@ -89,18 +89,23 @@ ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 
 # caching. sessions use the same cache, but have a custom serializer
+REDIS_DB = 1
 REDIS_URL = os.environ.get("REDIS_URL", "redis://host.docker.internal:6379/1")
+redis_base_options = {
+    "DB": REDIS_DB,
+    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+}
 if os.environ.get("REDIS_HOST"):
     # in WCMS env the config is set with separate env vars.
-    REDIS_URL = f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/1"
-REDIS_DB = 1
+    REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/1"
+    redis_base_options["CONNECTION_POOL_KWARGS"] = {"ssl_cert_reqs": None}
+    redis_base_options["REDIS_CLIENT_KWARGS"] = {"ssl": True, "ssl_cert_reqs": None}
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": REDIS_URL,
-        "OPTIONS": {
-            "DB": REDIS_DB,
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        "OPTIONS": redis_base_options
+        | {
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
             # A URL-safe base64-encoded 32-byte key.
             "REDIS_SECRET_KEY": "kPEDO_pSrPh3qGJVfGAflLZXKAh4AuHU64tTlP-f_PY=",  # TODO load from secrets
@@ -112,9 +117,9 @@ CACHES = {
     "insecure": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": REDIS_URL,
-        "OPTIONS": {
+        "OPTIONS": redis_base_options
+        | {
             # "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
-            "DB": REDIS_DB,
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
         },
         "KEY_PREFIX": "claimantsapi",
@@ -201,6 +206,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://sandbox.ui.dol.gov:8004",
     "http://sandbox.ui.dol.gov:3000",
     "http://localhost:8004",
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.+\.dol\.gov$",
+    r"^https://.+\.unemployment\.gov$",
+    r"^https://.+\.ui\.gov$",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
