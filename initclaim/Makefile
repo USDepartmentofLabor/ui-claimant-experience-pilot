@@ -30,9 +30,12 @@ test-browser: ## Run browser (cypress) tests
 test: test-unit test-browser ## Run all tests
 
 security: ## Run security scans
-	npx retire
+	@echo "yarn audit disabled"
 	# https://overreacted.io/npm-audit-broken-by-design/
 	# yarn audit
+
+list-outdated: ## List outdated dependencies
+	npx retire
 
 default: help
 

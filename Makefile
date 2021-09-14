@@ -85,8 +85,9 @@ test-react: ## Run React tests
 
 test: test-django ## Run tests (must be run within Django app docker container)
 
-list-outdated: ## List outdated python dependencies
+list-outdated: ## List outdated dependencies
 	pip list --outdated
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make list-outdated ; done
 
 # https://github.com/suyashkumar/ssl-proxy
 dev-ssl-proxy: ## Run ssl-proxy

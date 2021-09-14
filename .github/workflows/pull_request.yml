@@ -64,3 +64,5 @@ jobs:
       run: make dev-deps react-deps
     - name: Lint
       run: make lint
+    - name: Check outdated dependencies
+      run: make list-outdated
