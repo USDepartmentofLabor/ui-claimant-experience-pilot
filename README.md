@@ -8,9 +8,12 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 
 ## Development
 
-This Django application requires:
+This application requires:
 
 * Python 3.x
+* Node.js 14.16
+
+Both are specified in `Dockerfile` but you will likely need both locally (natively) installed on your host machine as well.
 
 ### Setup
 
@@ -122,6 +125,22 @@ app via `make login`.
 See https://developers.login.gov/testing/#testing-ial2 for details.
 * On successful IAL2 validation, you should be redirected to https://sandbox.ui.dol.gov:4430/logindotgov/explain where you can see all the attributes
 that login.gov asserts to our application.
+
+## Security
+
+We implement multiple layers of security checks.
+
+For keeping up with CVEs and other outdated dependencies, you can run:
+
+```sh
+% make security
+```
+
+which will run the relevant Python and JavaScript scans. The same tools are run as part of the `make lint` `pre-commit` hooks,
+but are available for running indepedently as well.
+
+In addition, we rely on the GitHub [Dependabot](https://docs.github.com/en/code-security/supply-chain-security/managing-vulnerabilities-in-your-projects-dependencies/configuring-dependabot-security-updates)
+tool to maintain dependencies.
 
 ## Deployment
 

@@ -29,6 +29,11 @@ test-browser: ## Run browser (cypress) tests
 
 test: test-unit test-browser ## Run all tests
 
+security: ## Run security scans
+	npx retire
+	# https://overreacted.io/npm-audit-broken-by-design/
+	# yarn audit
+
 default: help
 
 .PHONY: build dev-run deps clean lint-check lint-fix lint

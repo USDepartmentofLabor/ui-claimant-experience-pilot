@@ -44,7 +44,7 @@ lint-fix: ## Fix lint-checking issues
 lint: lint-check lint-fix ## Lint the code
 
 dev-deps: ## Install local development environment dependencies
-	pip install pre-commit black
+	pip install pre-commit black bandit safety
 
 container-build: ## Build the Django app container image
 	docker build -f Dockerfile -t $(DOCKER_IMG) .
@@ -97,6 +97,11 @@ react-deps: ## Install React app dependencies
 
 react-build: ## Build the React apps
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make build ; done
+
+security: ## Run all security scans
+	bandit -x ./.venv -r . -s B105
+	safety check
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make security; done
 
 default: help
 
