@@ -59,6 +59,7 @@ logging.basicConfig(
     level=logging.DEBUG if DEBUG else logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+logger = logging.getLogger("core")
 
 # Application definition
 
@@ -253,6 +254,12 @@ else:  # pragma: no cover
         / "certs"
         / os.environ.get("LOGIN_DOT_GOV_PRIVATE_KEY_FILE", "logindotgov-private.pem")
     )
-    with open(private_key_file, "rb") as pf:
-        logindotgov_private_key = pf.read()
-    LOGIN_DOT_GOV_PRIVATE_KEY = logindotgov_private_key
+    from os.path import exists as file_exists
+
+    if file_exists(private_key_file):
+        with open(private_key_file, "rb") as pf:
+            logindotgov_private_key = pf.read()
+        LOGIN_DOT_GOV_PRIVATE_KEY = logindotgov_private_key
+    else:
+        logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
+        LOGIN_DOT_GOV_PRIVATE_KEY = False
