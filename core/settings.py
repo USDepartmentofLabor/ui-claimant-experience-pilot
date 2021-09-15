@@ -15,6 +15,8 @@ import environ
 import logging
 from corsheaders.defaults import default_headers
 
+# import pprint
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -89,15 +91,17 @@ ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 
 # caching. sessions use the same cache, but have a custom serializer
-REDIS_DB = 1
-REDIS_URL = os.environ.get("REDIS_URL", "redis://host.docker.internal:6379/1")
+REDIS_DB = 0
+REDIS_URL = os.environ.get("REDIS_URL", f"redis://host.docker.internal:6379/{REDIS_DB}")
 redis_base_options = {
     "DB": REDIS_DB,
     "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
+    "SOCKET_TIMEOUT": 5,  # seconds
 }
 if os.environ.get("REDIS_HOST"):
     # in WCMS env the config is set with separate env vars.
-    REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/1"
+    REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/{REDIS_DB}"
     redis_base_options["CONNECTION_POOL_KWARGS"] = {"ssl_cert_reqs": None}
     redis_base_options["REDIS_CLIENT_KWARGS"] = {"ssl": True, "ssl_cert_reqs": None}
 CACHES = {
@@ -119,7 +123,6 @@ CACHES = {
         "LOCATION": REDIS_URL,
         "OPTIONS": redis_base_options
         | {
-            # "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
         },
         "KEY_PREFIX": "claimantsapi",
