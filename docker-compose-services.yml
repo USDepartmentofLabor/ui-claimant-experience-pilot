@@ -2,8 +2,13 @@
 # it is *not* for running the UI Django app(s). It's for the external services that
 # the Django app(s) rely on.
 version: "3.3"
+networks:
+  app-tier:
+    driver: bridge
 services:
   rds:
+    networks:
+      - app-tier
     container_name: mysqlserver
     image: mysql:8.0
     restart: always
@@ -24,9 +29,10 @@ services:
 
   # https://github.com/localstack/localstack/ provides local mock AWS services
   localstack:
+    networks:
+      - app-tier
     container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
     image: localstack/localstack
-    network_mode: bridge
     ports:
       - "127.0.0.1:53:53"
       - "127.0.0.1:53:53/udp"
@@ -47,11 +53,29 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   elasticache:
+    networks:
+      - app-tier
     container_name: elasticache-redis
-    image: redis:alpine
+    image: docker.io/bitnami/redis:6.2
     ports:
       - "6379:6379"
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+      - REDIS_TLS_ENABLED=yes
+      - REDIS_TLS_AUTH_CLIENTS=no
+      - REDIS_TLS_PORT=6379
+      - REDIS_TLS_CERT_FILE=/opt/bitnami/redis/certs/redis-server.crt
+      - REDIS_TLS_KEY_FILE=/opt/bitnami/redis/certs/redis-server.key
+      - REDIS_TLS_CA_FILE=/opt/bitnami/redis/certs/redisCA.crt
+    volumes:
+      - "redis-data:/bitnami/redis/data"
+      - "./certs:/opt/bitnami/redis/certs"
 
 # volumes persist when docker not running
 volumes:
   ui-db:
+  certs:
+  redis-data:
+    driver: local

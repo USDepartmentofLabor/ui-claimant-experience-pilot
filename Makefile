@@ -10,6 +10,18 @@ services-stop: ## Stop Django app's supporting services
 services-logs: ## Show logs for Django app's supporting services
 	docker-compose -f docker-compose-services.yml logs -f
 
+services-setup: ## Create dependency files for supporting services
+	bash scripts/gen-redis-certs.sh
+
+services-clean: ## Clean up dependencies
+	rm -f certs/redis*
+
+redis-cli: ## Connect to Redis service with redis-cli
+	redis-cli --tls --cacert certs/redisCA.crt --cert certs/redis-client.crt --key certs/redis-client.key
+
+mysql-cli: ## Connect to the MySQL server
+	mysql -h 127.0.0.1 -u user -psecret -D unemployment
+
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 # list all react frontend apps here, space delimited
@@ -20,7 +32,7 @@ CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-services.yml 
 ci-build:  ## Build the docker images for CI
 	docker-compose $(CI_DOCKER_COMPOSE_OPTS) build
 
-ci-start: ## Start Django app's supporting services (in CI)
+ci-start: services-setup ## Start Django app's supporting services (in CI)
 	docker-compose $(CI_DOCKER_COMPOSE_OPTS) up -d
 
 ci-stop: ## Stop Django app's supporting services (in CI)
@@ -73,6 +85,9 @@ dev-run: ## Run the Django app, tracking changes
 
 run: ## Run the Django app, without tracking changes
 	python manage.py runserver 0:8000 --noreload
+
+shell: ## Open interactive Django shell (run inside container)
+	python manage.py shell
 
 # important! this env var must be set to trigger the correct key/config generation.
 test-django: export LOGIN_DOT_GOV_ENV=test

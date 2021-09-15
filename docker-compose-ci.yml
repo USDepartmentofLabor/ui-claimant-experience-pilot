@@ -1,7 +1,12 @@
 # consumes the Dockerfile for use in GitHub Actions CI pipeline
 version: "3"
+networks:
+  app-tier:
+    driver: bridge
 services:
   web:
+    networks:
+      - app-tier
     container_name: web
     image: dolui:ci
     build:

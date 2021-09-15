@@ -92,18 +92,20 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # caching. sessions use the same cache, but have a custom serializer
 REDIS_DB = 0
-REDIS_URL = os.environ.get("REDIS_URL", f"redis://host.docker.internal:6379/{REDIS_DB}")
+REDIS_URL = os.environ.get(
+    "REDIS_URL", f"rediss://host.docker.internal:6379/{REDIS_DB}"
+)
 redis_base_options = {
     "DB": REDIS_DB,
     "CLIENT_CLASS": "django_redis.client.DefaultClient",
     "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds
     "SOCKET_TIMEOUT": 5,  # seconds
+    "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},
+    "REDIS_CLIENT_KWARGS": {"ssl": True, "ssl_cert_reqs": None},
 }
 if os.environ.get("REDIS_HOST"):
     # in WCMS env the config is set with separate env vars.
     REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/{REDIS_DB}"
-    redis_base_options["CONNECTION_POOL_KWARGS"] = {"ssl_cert_reqs": None}
-    redis_base_options["REDIS_CLIENT_KWARGS"] = {"ssl": True, "ssl_cert_reqs": None}
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -129,6 +131,7 @@ CACHES = {
         "TIMEOUT": 60 * 60 * 24,  # 1 day
     },
 }
+# logger.debug("CACHES={}".format(pprint.pformat(CACHES)))
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 SESSION_SAVE_EVERY_REQUEST = True  # keep-alive on each request

@@ -38,8 +38,44 @@ Bootstrap your environment for the first time:
 (.venv) % cp core/.env-example core/.env
 (.venv) % make dev-deps
 (.venv) % pre-commit install
+(.venv) % make services-setup
 (.venv) % make container-build
 ```
+
+During local development, you can run the app dependency services with:
+
+```sh
+(.venv) % make services-start
+```
+
+View the services logs with:
+
+```sh
+(.venv) % make services-logs
+```
+
+Stop the services:
+
+```sh
+(.venv) % make services-stop
+```
+
+If you ever need to connect to the Redis service directly from the terminal with the `redis-cli` tool (assuming you already have it installed),
+use the make target:
+
+```sh
+(.venv) % make redis-cli
+127.0.0.1:6379>
+```
+
+Connect to the MySQL server directly (assuming you have the `mysql` client already installed):
+
+```sh
+(.venv) % make mysql-cli
+MySQL [unemployment]>
+```
+
+You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
 To log into the Docker container interactively and run the Django web server:
 
