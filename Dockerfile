@@ -21,6 +21,8 @@ RUN make react-build
 
 FROM python:3.9
 WORKDIR /app
+ARG ENV_NAME
+ENV ENV_NAME $ENV_NAME
 
 COPY requirements.txt .
 

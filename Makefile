@@ -66,8 +66,11 @@ container-run: ## Run the Django app in Docker
 
 container: container-build ## Alias for container-build
 
-# important! this env var must be set to trigger the correct key/config generation.
-build-static: export LOGIN_DOT_GOV_ENV=test
+secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
+	python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+# important! sets the path to the correct .env file to use (e.g. ENV_NAME=ci)
+build-static: export ENV_PATH=/app/core/.env-$(ENV_NAME)
 build-static: ## Build the static assets (intended for during container-build (inside the container))
 	rm -rf static/
 	mkdir static
@@ -115,7 +118,7 @@ react-build: ## Build the React apps
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make build ; done
 
 security: ## Run all security scans
-	bandit -x ./.venv -r . -s B105
+	bandit -x ./.venv -r .
 	safety check
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make security; done
 

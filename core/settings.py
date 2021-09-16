@@ -13,6 +13,7 @@ from pathlib import Path
 import os
 import environ
 import logging
+import logging.config
 from corsheaders.defaults import default_headers
 
 # import pprint
@@ -22,13 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # populate os.environ with .env settings
 env = environ.Env()
-env.read_env()
-
-
-# TODO AWS secrets manager
-def load_secrets():
-    return {}
-
+env.read_env(env.str("ENV_PATH", ".env"))
 
 # since this app usually runs behind one or more reverse proxies that may/not
 # have X-Forwarded-For header set correctly, allow for explicit root URI
@@ -36,19 +31,23 @@ def load_secrets():
 # NOTE this value should *NOT* contain a trailing slash
 BASE_URL = os.environ.get("BASE_URL", None)
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ncqf$a36l&71aeo(^&i0mddiz6-g9zl23)6uvu7@m$$t8%m=s+"
-# TODO load from secrets
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# TODO read from env var
-DEBUG = True
+# env.bool is tricky to get right so opt for strict string comparison
+DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 
-# TODO read from env var
+# tie together multiple log lines with a common id
+REQUEST_ID_CONFIG = {
+    "REQUEST_ID_HEADER": "HTTP_X_REQUEST_ID",
+    "GENERATE_REQUEST_ID_IF_NOT_FOUND": True,
+    "RESPONSE_HEADER_REQUEST_ID": "HTTP_X_REQUEST_ID",
+}
+
 ALLOWED_HOSTS = [
     "localhost",
     ".dol.gov",
@@ -56,12 +55,51 @@ ALLOWED_HOSTS = [
     ".ui.gov",
 ]
 
-# TODO colorized logging?
 logging.basicConfig(
     level=logging.DEBUG if DEBUG else logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("core")
+if os.environ.get("COLOR_LOGGING", "false").lower() == "true":
+    LOGGING_CONFIG = None  # This empties out Django's logging config
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "filters": {
+            "request_id": {"()": "request_id_django_log.filters.RequestIDFilter"}
+        },
+        "formatters": {
+            "colored": {
+                "()": "colorlog.ColoredFormatter",  # colored output
+                # --> %(log_color)s is very important, that's what colors the line
+                "format": "%(log_color)s[%(levelname)s] %(reset)s %(green)s[%(request_id)s] %(reset)s%(blue)s%(name)s - %(asctime)s :: %(reset)s %(message)s",
+                "log_colors": {
+                    "DEBUG": "blue",
+                    "INFO": "green",
+                    "WARNING": "yellow",
+                    "ERROR": "red",
+                    "CRITICAL": "bold_red",
+                },
+            },
+            # TODO determine config for CloudWatch
+            "aws": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "colorlog.StreamHandler",
+                "formatter": "colored",
+                "filters": ["request_id"],
+            },
+        },
+        "loggers": {
+            "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+        },
+    }
+    logging.config.dictConfig(LOGGING)  # Finally replace our config in python logging
 
 # Application definition
 
@@ -84,6 +122,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "request_id_django_log.middleware.RequestIdDjangoLog",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -114,11 +153,11 @@ CACHES = {
         | {
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
             # A URL-safe base64-encoded 32-byte key.
-            "REDIS_SECRET_KEY": "kPEDO_pSrPh3qGJVfGAflLZXKAh4AuHU64tTlP-f_PY=",  # TODO load from secrets
+            "REDIS_SECRET_KEY": os.environ.get("REDIS_SECRET_KEY"),
             "SERIALIZER": "secure_redis.serializer.SecureSerializer",
         },
         "KEY_PREFIX": "claimantsapi:secure",
-        "TIMEOUT": 60 * 15,  # expire in 15 minutes TODO security requirement
+        "TIMEOUT": 60 * 30,  # expire in 30 minutes TODO security requirement
     },
     "insecure": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -139,17 +178,18 @@ SESSION_EXPIRY = env.int(
     "SESSION_EXPIRY", 30 * 60
 )  # 30 minute timeout on no requests TODO
 SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
-# allow XHR/CORS to work in local dev with http/https mix
-# CSRF_COOKIE_SAMESITE = 'None'
+# allow XHR/CORS to work in local dev with http/https mix,
+# SESSION_COOKIE_SAMESITE is set to None in the .env-example for dev.
 # NOTE that this assumes you are running react app on http and django on https behind proxy
 # Chrome requires SameSite=None to be paired with Secure
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Strict")
+SESSION_COOKIE_SECURE = (
+    os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
+)
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-mysql_default = "mysql://user:secret@host.docker.internal:3306/unemployment"
-default_db = env.db_url("DATABASE_URL", mysql_default)
+default_db = env.db_url("DATABASE_URL")
 # allow for password to be stored separately from connection string
 if not default_db["PASSWORD"]:
     default_db["PASSWORD"] = env("DATABASE_PASSWORD")
@@ -207,17 +247,11 @@ TEMPLATES = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [
-    "https://sandbox.ui.dol.gov:4430",
-    "http://sandbox.ui.dol.gov:8004",
-    "http://sandbox.ui.dol.gov:3000",
-    "http://localhost:8004",
-]
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.+\.dol\.gov$",
-    r"^https://.+\.unemployment\.gov$",
-    r"^https://.+\.ui\.gov$",
-]
+# CORS Cross-Origin Configuration
+# https://github.com/adamchainz/django-cors-headers
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+CORS_ALLOWED_ORIGIN_REGEXES = env.list("CORS_ALLOWED_ORIGIN_REGEXES", default=[])
+# important to allow cookie to pass through
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "Cache-Control",
@@ -228,24 +262,16 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 # Identity Providers
-LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get(
-    "LOGIN_DOT_GOV_REDIRECT_URI", "https://sandbox.ui.dol.gov:4430/logindotgov/result"
-)
-LOGIN_DOT_GOV_SCOPES = env.list(
-    "LOGIN_DOT_GOV_SCOPES",
-    default=[
-        "openid",
-        "email",
-        "phone",
-        "address",
-        "profile",
-        "social_security_number",
-    ],
-)
-LOGIN_DOT_GOV_CLIENT_ID = os.environ.get(
-    "LOGIN_DOT_GOV_CLIENT_ID",
-    "urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-sandbox",
-)
+LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get("LOGIN_DOT_GOV_REDIRECT_URI")
+LOGIN_DOT_GOV_SCOPES = [
+    "openid",
+    "email",
+    "phone",
+    "address",
+    "profile",
+    "social_security_number",
+]
+LOGIN_DOT_GOV_CLIENT_ID = os.environ.get("LOGIN_DOT_GOV_CLIENT_ID")
 
 if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":
     # generate a new key pair on the fly
@@ -263,7 +289,6 @@ if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":
     )
     LOGIN_DOT_GOV_PUBLIC_KEY = client_public_key_jwk.export_to_pem().decode("utf-8")
 else:  # pragma: no cover
-    # TODO read from secrets
     logindotgov_private_key = ""
     private_key_file = (
         BASE_DIR

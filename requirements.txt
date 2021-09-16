@@ -1,4 +1,5 @@
 Django==3.2.5
+colorlog==5.0.1
 coverage==5.5
 django-cors-headers==3.8.0
 django-environ==0.4.5
@@ -10,4 +11,5 @@ mysqlclient==2.0.3
 pyjwt==2.1.0
 pytest==6.2.5
 redis==3.5.3
+request-id-django-log==0.2.0
 requests==2.26.0

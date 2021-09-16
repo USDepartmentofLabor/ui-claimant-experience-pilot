@@ -19,6 +19,7 @@ jobs:
       run: make ci-start
       env:
         DOCKER_BUILDKIT: 1
+        ENV_NAME: ci
     - name: Run Django Tests
       run: make ci-tests
     # we must build the react apps (again) in the native host in order to run the tests
