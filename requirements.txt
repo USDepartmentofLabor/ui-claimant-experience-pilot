@@ -1,4 +1,4 @@
-Django==3.2.5
+Django==3.2.7
 colorlog==5.0.1
 coverage==5.5
 django-cors-headers==3.8.0
