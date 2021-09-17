@@ -2,7 +2,7 @@ Django==3.2.5
 colorlog==5.0.1
 coverage==5.5
 django-cors-headers==3.8.0
-django-environ==0.4.5
+django-environ==0.7.0
 git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
 gunicorn==20.1.0
 jwcrypto==1.0
