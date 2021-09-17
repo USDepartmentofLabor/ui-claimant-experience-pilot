@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # populate os.environ with .env settings
 env = environ.Env()
-env.read_env(env.str("ENV_PATH", ".env"))
+env.read_env(env.str("ENV_PATH", "core/.env"))
 
 # since this app usually runs behind one or more reverse proxies that may/not
 # have X-Forwarded-For header set correctly, allow for explicit root URI

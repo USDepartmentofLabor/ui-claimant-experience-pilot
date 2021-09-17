@@ -70,8 +70,14 @@ secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
 	python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 # important! sets the path to the correct .env file to use (e.g. ENV_NAME=ci)
-build-static: export ENV_PATH=/app/core/.env-$(ENV_NAME)
+ifeq ($(ENV_NAME),)
+  ENV_FILENAME = .env
+else
+  ENV_FILENAME = .env-$(ENV_NAME)
+endif
+build-static: export ENV_PATH=/app/core/$(ENV_FILENAME)
 build-static: ## Build the static assets (intended for during container-build (inside the container))
+	echo $$ENV_PATH
 	rm -rf static/
 	mkdir static
 	python manage.py collectstatic
