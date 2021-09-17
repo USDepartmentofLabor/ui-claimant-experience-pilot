@@ -1,5 +1,5 @@
 Django==3.2.7
-colorlog==5.0.1
+colorlog==6.4.1
 coverage==5.5
 django-cors-headers==3.8.0
 django-environ==0.7.0
