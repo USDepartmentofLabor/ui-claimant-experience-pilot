@@ -1,3 +1,5 @@
+ARG ENV_NAME
+
 FROM node:14.16.0 as reactapps
 WORKDIR /app
 
@@ -18,11 +20,12 @@ COPY initclaim/src/ ./initclaim/src/
 # TODO build initclaim/.env here?
 RUN make react-build
 
+##########################################
+# Django
 
-FROM python:3.9
+FROM python:3.9 as djangobase
 WORKDIR /app
-ARG ENV_NAME
-ENV ENV_NAME $ENV_NAME
+EXPOSE 8000
 
 COPY requirements.txt .
 
@@ -44,9 +47,25 @@ COPY certs ./certs
 # copy over just the precompiled react app(s)
 COPY --from=reactapps /app/initclaim/build /app/initclaim/build
 
+# we define multiple base layers with ENV_NAME as a suffix, then pick one based on ARG.
+FROM djangobase as djangobase-ci
+RUN echo "ENV_NAME=ci"
+
+FROM djangobase as djangobase-wcms
+RUN echo "ENV_NAME=wcms"
+# TODO create an actual .env-wcms if we need special build-time vars
+RUN cp core/.env-example core/.env-wcms
+
+FROM djangobase as djangobase-
+RUN echo "ENV_NAME build-arg is undefined"
+RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi
+
+# pick the layer to run env-specific tasks within.
+FROM djangobase-${ENV_NAME} as django-final
+# invoke inside the FROM scope so that make build-static gets it as an env var.
+ARG ENV_NAME
+
 # collects all the static assets, including react apps, into the /static dir
 RUN make build-static
-
-EXPOSE 8000
 
 CMD ["./start-server.sh"]

@@ -8,11 +8,11 @@ services:
     networks:
       - app-tier
     container_name: web
-    image: dolui:ci
+    image: dolui:${ENV_NAME}
     build:
       context: .
       args:
-        ENV_NAME: ci
+        ENV_NAME: ${ENV_NAME}
     ports:
       - "8000:8000"
     # set env at run time, but also populate the build args values
