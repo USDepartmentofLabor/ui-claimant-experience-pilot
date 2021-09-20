@@ -3,7 +3,7 @@ ARG ENV_NAME
 FROM node:14.16.0 as reactapps
 WORKDIR /app
 
-RUN apt-get update -y && apt-get install -y make
+RUN apt-get update -y && apt-get install --no-install-recommends -y make
 
 COPY Makefile .
 
@@ -32,7 +32,7 @@ COPY requirements.txt .
 RUN apt-get update -y && apt-get install -y \
    --no-install-recommends gcc libmariadb-dev \
    && rm -rf /var/lib/apt/lists/* \
-   && pip install -r requirements.txt \
+   && pip install --no-cache-dir -r requirements.txt \
    && apt-get purge -y --auto-remove gcc
 
 COPY Makefile .
@@ -57,10 +57,12 @@ RUN echo "ENV_NAME=wcms"
 RUN cp core/.env-example core/.env-wcms
 
 FROM djangobase as djangobase-
-RUN echo "ENV_NAME build-arg is undefined"
-RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi
+RUN echo "ENV_NAME build-arg is undefined" && \
+  if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi
 
 # pick the layer to run env-specific tasks within.
+# linter exception here because we include a variable in the name.
+# hadolint ignore=DL3006
 FROM djangobase-${ENV_NAME} as django-final
 # invoke inside the FROM scope so that make build-static gets it as an env var.
 ARG ENV_NAME

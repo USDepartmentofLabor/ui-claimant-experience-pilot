@@ -47,6 +47,11 @@ repos:
           - eslint@7.32.0
           - eslint-plugin-react@7.25.1
 
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.6.0
+    hooks:
+      - id: hadolint-docker
+
   - repo: local
     hooks:
     - id: make-security
