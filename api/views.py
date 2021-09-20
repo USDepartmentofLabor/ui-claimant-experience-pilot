@@ -33,6 +33,7 @@ def index(request):
         {
             "version": "1.0",
             "sha": os.environ.get("UI_API_SHA", "N/A"),
+            "build": os.environ.get("BUILD_TIME", "N/A"),
             "url": settings.BASE_URL
             if settings.BASE_URL
             else f"{request.scheme}://{request.get_host()}",

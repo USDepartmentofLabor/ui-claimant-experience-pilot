@@ -27,13 +27,12 @@ FROM python:3.9 as djangobase
 WORKDIR /app
 EXPOSE 8000
 
-COPY requirements.txt .
+COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
    --no-install-recommends gcc libmariadb-dev \
    && rm -rf /var/lib/apt/lists/* \
-   && pip install --no-cache-dir -r requirements.txt \
-   && apt-get purge -y --auto-remove gcc
+   && pip install --no-cache-dir -r requirements.txt
 
 COPY Makefile .
 COPY manage.py .
@@ -50,15 +49,23 @@ COPY --from=reactapps /app/initclaim/build /app/initclaim/build
 # we define multiple base layers with ENV_NAME as a suffix, then pick one based on ARG.
 FROM djangobase as djangobase-ci
 RUN echo "ENV_NAME=ci"
+# leave .env-ci intact for tests to run
+ARG ENV_CLEANUP=core/.env-example
+RUN pip install --no-cache-dir -r requirements-ci.txt
 
 FROM djangobase as djangobase-wcms
 RUN echo "ENV_NAME=wcms"
+# leave the .env file intact
+ARG ENV_CLEANUP=core/.env-*
 # TODO create an actual .env-wcms if we need special build-time vars
-RUN cp core/.env-example core/.env-wcms
+RUN cp core/.env-example core/.env-wcms && \
+  echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 
 FROM djangobase as djangobase-
+ARG ENV_CLEANUP=core/.env-*
 RUN echo "ENV_NAME build-arg is undefined" && \
-  if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi
+  if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi && \
+  pip install --no-cache-dir -r requirements-ci.txt
 
 # pick the layer to run env-specific tasks within.
 # linter exception here because we include a variable in the name.
@@ -69,5 +76,9 @@ ARG ENV_NAME
 
 # collects all the static assets, including react apps, into the /static dir
 RUN make build-static
+
+ARG ENV_CLEANUP
+RUN rm -f ${ENV_CLEANUP} && \
+  apt-get purge -y --auto-remove gcc
 
 CMD ["./start-server.sh"]
