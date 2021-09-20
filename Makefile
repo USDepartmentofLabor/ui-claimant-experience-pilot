@@ -1,5 +1,5 @@
 help: ## Print the help documentation
-	@grep -E '^[/a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[/a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 services-start: ## Start Django app's supporting services
 	docker-compose -f docker-compose-services.yml up -d --remove-orphans
@@ -68,6 +68,9 @@ container: container-build ## Alias for container-build
 
 secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
 	python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
+	scripts/gen-x509-certs.sh
 
 # important! sets the path to the correct .env file to use (e.g. ENV_NAME=ci)
 ifeq ($(ENV_NAME),)
