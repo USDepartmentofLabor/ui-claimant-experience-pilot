@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types';
 
 import {
   BrowserRouter as Router,
@@ -22,11 +21,13 @@ import {
 
 import { Routes } from './routes';
 import WhoAmIPage from './pages/whoami';
-import withClaimant from './hoc/with-claimant';
+import withClaimant, { WithClaimantProps } from './hoc/with-claimant';
 
 import './App.css';
 
-function App(props) {
+type Props = WithClaimantProps;
+
+function App(props: Props) {
   const { currentClaimant } = props;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { HOME_PAGE, WHOAMI_PAGE, } = Routes
@@ -73,7 +74,7 @@ function App(props) {
         <GridContainer>
           <Switch>
             <Route path={WHOAMI_PAGE}>
-              <WhoAmIPage whoami={currentClaimant} />
+              {currentClaimant && <WhoAmIPage whoami={currentClaimant} />}
             </Route>
             <Route path={HOME_PAGE}>
             </Route>
@@ -86,9 +87,3 @@ function App(props) {
 
 export default withClaimant(App);
 
-App.propTypes = {
-  currentClaimant: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.object,
-  ]),
-};

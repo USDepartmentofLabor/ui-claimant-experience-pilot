@@ -1,7 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-const WhoAmIPage = (props) => {
+type Props = {
+  whoami: {
+    form_id: string;
+    first_name: string;
+    last_name: string;
+    birthdate: string;
+  }
+}
+
+const WhoAmIPage: React.FC<Props> = (props) => {
   const { whoami } = props;
 
   return (
@@ -29,10 +37,3 @@ const WhoAmIPage = (props) => {
 };
 
 export default WhoAmIPage;
-
-WhoAmIPage.propTypes = {
-  whoami: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.object,
-  ]),
-};

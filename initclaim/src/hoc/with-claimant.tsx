@@ -3,9 +3,18 @@ import React, { useState, useEffect } from "react";
 
 import httpclient from "../utils/httpclient";
 
-const withClaimant = (WrappedComponent) => {
-  const ClaimantHOC = (props) => {
-    const [currentClaimant, setCurrentClaimant] = useState(false);
+export type WithClaimantProps = {
+  currentClaimant: WhoAmI | undefined,
+  handleLogin: () => void,
+  initializingClaimant: boolean,
+  setCurrentClaimant: React.Dispatch<React.SetStateAction<WhoAmI | undefined>>
+}
+
+type FullProps<P extends Record<string, unknown>> = P & WithClaimantProps;
+
+const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React.ComponentType<FullProps<P>>): React.ComponentType<P> => {
+  const ClaimantHOC = (props: P) => {
+    const [currentClaimant, setCurrentClaimant] = useState<WhoAmI>();
     const [initializingClaimant, setInitializingClaimant] = useState(true);
 
     const handleLogin = () => {
