@@ -1,12 +1,7 @@
 import React from 'react';
 
 type Props = {
-  whoami: {
-    form_id: string;
-    first_name: string;
-    last_name: string;
-    birthdate: string;
-  }
+  whoami: WhoAmI
 }
 
 const WhoAmIPage: React.FC<Props> = (props) => {
