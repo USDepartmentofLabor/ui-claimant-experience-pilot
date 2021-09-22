@@ -30,7 +30,7 @@ EXPOSE 8000
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev \
+   --no-install-recommends gcc libmariadb-dev wait-for-it \
    && rm -rf /var/lib/apt/lists/* \
    && pip install --no-cache-dir -r requirements.txt
 
