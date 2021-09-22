@@ -5,6 +5,10 @@ networks:
     driver: bridge
 services:
   web:
+    depends_on:
+      - "rds"
+      - "localstack"
+      - "elasticache"
     networks:
       - app-tier
     container_name: web
@@ -18,3 +22,4 @@ services:
     # set env at run time, but also populate the build args values
     env_file:
       - ./core/.env-ci
+    command: ["wait-for-it", "rds:3306", "--", "./start-server.sh"]

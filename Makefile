@@ -27,24 +27,27 @@ DOCKER_NAME="dolui-claimants"
 # list all react frontend apps here, space delimited
 REACT_APPS = initclaim
 CI_ENV_FILE=core/.env-ci
-CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-services.yml -f docker-compose-ci.yml
+CI_SERVICES=-f docker-compose-services.yml
+CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-ci.yml
+CI_OPTS=$(CI_SERVICES) $(CI_DOCKER_COMPOSE_OPTS)
 
 ci-build:  ## Build the docker images for CI
-	docker-compose $(CI_DOCKER_COMPOSE_OPTS) build
+	docker-compose $(CI_OPTS) build
 
 ci-start: services-setup ## Start Django app's supporting services (in CI)
-	docker-compose $(CI_DOCKER_COMPOSE_OPTS) up -d
+	docker-compose $(CI_OPTS) up -d --no-recreate
 
 ci-stop: ## Stop Django app's supporting services (in CI)
-	docker-compose $(CI_DOCKER_COMPOSE_OPTS) down
+	docker-compose $(CI_OPTS) down
 
 ci-tests: ## Run Django app tests in Docker
-	docker exec --env-file=$(CI_ENV_FILE) web make test
+	docker-compose $(CI_OPTS) logs --tail="all"
+	docker exec --env-file=$(CI_ENV_FILE) web wait-for-it rds:3306 -- make test
 
 ci-test: ci-tests ## Alias for ci-tests
 
 ci-clean: ## Remove all the CI service images (including those in docker-compose-services)
-	docker-compose $(CI_DOCKER_COMPOSE_OPTS) down --rmi all
+	docker-compose $(CI_OPTS) down --rmi all
 
 lint-check: ## Run lint check
 	pre-commit run --all-files
@@ -54,6 +57,9 @@ lint-fix: ## Fix lint-checking issues
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make lint-fix ; done
 
 lint: lint-check lint-fix ## Lint the code
+
+migrate: ## Run Django data model migrations (inside container)
+	python manage.py migrate
 
 dev-deps: ## Install local development environment dependencies
 	pip install pre-commit black bandit safety

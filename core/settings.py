@@ -189,20 +189,32 @@ SESSION_COOKIE_SECURE = (
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-default_db = env.db_url("DATABASE_URL")
-# allow for password to be stored separately from connection string
-if not default_db["PASSWORD"]:
-    default_db["PASSWORD"] = env("DATABASE_PASSWORD")
+if os.environ.get("DATABASE_URL"):
+    default_db = env.db_url("DATABASE_URL")
+    # allow for password to be stored separately from connection string
+    if not default_db["PASSWORD"]:
+        default_db["PASSWORD"] = env("DATABASE_PASSWORD")
+elif os.environ.get("DB_SCHEMA"):
+    default_db = {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env.str("DB_SCHEMA"),
+        "USER": env.str("DB_ADMIN_USER"),
+        "PASSWORD": env.str("DB_PWD"),
+        "HOST": "mysql-service",  # WCMS creates DNS entry for this
+        "PORT": "3306",
+    }
+else:
+    default_db = {"ENGINE": "django.db.backends.sqlite3", "NAME": "mydatabase"}
 
-default_db["OPTIONS"] = {
-    "init_command": "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'"
-}
 
-# disabled till we have RDS, models, migrations
-# DATABASES = {"default": default_db}
-# this is the default just to quiet the dummy db warning/error
-# it should never actually get created, since we don't yet have any models.
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "mydatabase"}}
+if "mysql" in default_db["ENGINE"]:
+    default_db["OPTIONS"] = {
+        "init_command": "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'"
+    }
+
+# logger.debug("DATABASES={}".format(pprint.pformat(default_db)))
+
+DATABASES = {"default": default_db}
 
 
 # Internationalization
