@@ -11,6 +11,8 @@ COPY Makefile .
 COPY initclaim/Makefile ./initclaim/
 COPY initclaim/package.json ./initclaim/
 COPY initclaim/yarn.lock ./initclaim/
+COPY initclaim/tsconfig.json ./initclaim/
+COPY initclaim/.eslintrc.yml ./initclaim/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
 RUN make react-deps

@@ -4,9 +4,11 @@ env:
   commonjs: true
   es2021: true
   jest: true
+parser: "@typescript-eslint/parser"
 extends:
   - "eslint:recommended"
   - "plugin:react/recommended"
+  - "plugin:@typescript-eslint/recommended"
 parserOptions:
   ecmaVersion: 12
   sourceType: module
@@ -17,4 +19,4 @@ settings:
     version: '17'
 rules:
    "react/react-in-jsx-scope": "off"
-   "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+   "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
