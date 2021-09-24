@@ -73,7 +73,7 @@ container-run: ## Run the Django app in Docker
 container: container-build ## Alias for container-build
 
 secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
-	python -c "import secrets; print(secrets.token_urlsafe(32))"
+	@python -c "import secrets; print(secrets.token_hex(16))" | base64
 
 x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
 	scripts/gen-x509-certs.sh
