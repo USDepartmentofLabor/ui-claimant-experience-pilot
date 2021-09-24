@@ -11,3 +11,4 @@ pyjwt==2.1.0
 redis==3.5.3
 request-id-django-log==0.2.0
 requests==2.26.0
+whitenoise==5.3.0
