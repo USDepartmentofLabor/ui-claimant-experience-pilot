@@ -81,6 +81,7 @@ RUN make build-static
 
 ARG ENV_CLEANUP
 RUN rm -f ${ENV_CLEANUP} && \
+  rm -f requirements*.txt && \
   apt-get purge -y --auto-remove gcc
 
 CMD ["./start-server.sh"]
