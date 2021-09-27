@@ -42,7 +42,7 @@ ci-stop: ## Stop Django app's supporting services (in CI)
 
 ci-tests: ## Run Django app tests in Docker
 	docker-compose $(CI_OPTS) logs --tail="all"
-	docker exec --env-file=$(CI_ENV_FILE) web wait-for-it rds:3306 -- make test
+	docker exec -e ENV_PATH=/app/core/.env-ci web wait-for-it rds:3306 -- make test
 
 ci-test: ci-tests ## Alias for ci-tests
 
@@ -72,8 +72,9 @@ container-run: ## Run the Django app in Docker
 
 container: container-build ## Alias for container-build
 
+SECRET_LENGTH := 32
 secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
-	@python -c "import secrets; print(secrets.token_hex(16))" | base64
+	@python -c "import secrets; import base64; print(base64.urlsafe_b64encode(secrets.token_bytes($(SECRET_LENGTH))).decode('utf-8'))"
 
 x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
 	scripts/gen-x509-certs.sh
@@ -85,6 +86,7 @@ else
   ENV_FILENAME = .env-$(ENV_NAME)
 endif
 build-static: export ENV_PATH=/app/core/$(ENV_FILENAME)
+build-static: export BUILD_STATIC=true
 build-static: ## Build the static assets (intended for during container-build (inside the container))
 	echo $$ENV_PATH
 	rm -rf static/

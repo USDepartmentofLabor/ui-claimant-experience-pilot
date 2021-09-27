@@ -14,6 +14,7 @@ import os
 import environ
 import logging
 import logging.config
+import base64
 from corsheaders.defaults import default_headers
 
 # import pprint
@@ -143,6 +144,17 @@ redis_base_options = {
     "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},
     "REDIS_CLIENT_KWARGS": {"ssl": True, "ssl_cert_reqs": None},
 }
+redis_secret_key = env.str("REDIS_SECRET_KEY")
+redis_secret_key_len = len(base64.urlsafe_b64decode(redis_secret_key))
+if redis_secret_key_len != 32:
+    err = (
+        "REDIS_SECRET_KEY '{}' is not a 32-byte base64-encoded string: {} [{}]".format(
+            redis_secret_key,
+            base64.urlsafe_b64decode(redis_secret_key),
+            redis_secret_key_len,
+        )
+    )
+    raise Exception(err)
 if os.environ.get("REDIS_HOST"):
     # in WCMS env the config is set with separate env vars.
     REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/{REDIS_DB}"
@@ -154,7 +166,7 @@ CACHES = {
         | {
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
             # A URL-safe base64-encoded 32-byte key.
-            "REDIS_SECRET_KEY": os.environ.get("REDIS_SECRET_KEY"),
+            "REDIS_SECRET_KEY": redis_secret_key,
             "SERIALIZER": "secure_redis.serializer.SecureSerializer",
         },
         "KEY_PREFIX": "claimantsapi:secure",

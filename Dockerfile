@@ -52,7 +52,10 @@ FROM djangobase as djangobase-ci
 RUN echo "ENV_NAME=ci"
 # leave .env-ci intact for tests to run
 ARG ENV_CLEANUP=core/.env-example
-RUN pip install --no-cache-dir -r requirements-ci.txt
+RUN pip install --no-cache-dir -r requirements-ci.txt && \
+  echo SECRET_KEY=`make secret SECRET_LENGTH=64` >> core/.env-ci && \
+  echo REDIS_SECRET_KEY=`make secret SECRET_LENGTH=32` >> core/.env-ci && \
+  echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env-ci
 
 FROM djangobase as djangobase-wcms
 RUN echo "ENV_NAME=wcms"

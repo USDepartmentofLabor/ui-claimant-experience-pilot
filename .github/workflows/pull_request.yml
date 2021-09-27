@@ -34,8 +34,12 @@ jobs:
       run: make react-deps
     - name: Run JS Tests
       run: make test-react
+    - name: Docker logs
+      run: docker logs web --details
+      if: failure()
     - name: Stop CI docker compose
       run: make ci-stop
+      if: always()
 
   lint:
     name: Code lint
