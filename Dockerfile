@@ -19,7 +19,6 @@ RUN make react-deps
 
 COPY initclaim/public/ ./initclaim/public/
 COPY initclaim/src/ ./initclaim/src/
-# TODO build initclaim/.env here?
 RUN make react-build
 
 ##########################################

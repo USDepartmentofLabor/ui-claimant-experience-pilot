@@ -19,9 +19,7 @@ const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React
 
     const handleLogin = () => {
       // SSO server
-      // if the index.html file has not been served by Django,
-      // it will have the {{ templating var delimiter instead of a valid URL.
-      const base_url = window.UI_BASE_URL.match(/^\{\{/) ? "https://sandbox.ui.dol.gov:4430" : window.UI_BASE_URL;
+      const base_url = process.env.REACT_APP_BASE_URL || "";
       const login_url = base_url + "/idp?redirect_to=" + window.location.href;
       window.location.href = login_url;
       console.warn("redirect to idp", login_url);

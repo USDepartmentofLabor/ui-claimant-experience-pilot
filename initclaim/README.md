@@ -5,6 +5,7 @@ This React application is for a claimants initial UI claim filing.
 ## Setup
 
 ```sh
+% cp .env-example .env
 % make deps
 % make dev-run
 ```
