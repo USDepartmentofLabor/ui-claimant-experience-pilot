@@ -46,7 +46,7 @@ function App(props: Props) {
   ];
 
   return (
-    <Router basename="/initclaim">
+    <Router basename="/claimant">
       <GovBanner />
       <Header basic>
         <div className="usa-nav-container">

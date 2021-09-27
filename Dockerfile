@@ -7,18 +7,17 @@ RUN apt-get update -y && apt-get install --no-install-recommends -y make
 
 COPY Makefile .
 
-# TODO figure out a better way to maintain a list of all react apps in one place
-COPY initclaim/Makefile ./initclaim/
-COPY initclaim/package.json ./initclaim/
-COPY initclaim/yarn.lock ./initclaim/
-COPY initclaim/tsconfig.json ./initclaim/
-COPY initclaim/.eslintrc.yml ./initclaim/
+COPY claimant/Makefile ./claimant/
+COPY claimant/package.json ./claimant/
+COPY claimant/yarn.lock ./claimant/
+COPY claimant/tsconfig.json ./claimant/
+COPY claimant/.eslintrc.yml ./claimant/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
 RUN make react-deps
 
-COPY initclaim/public/ ./initclaim/public/
-COPY initclaim/src/ ./initclaim/src/
+COPY claimant/public/ ./claimant/public/
+COPY claimant/src/ ./claimant/src/
 RUN make react-build
 
 ##########################################
@@ -45,7 +44,7 @@ COPY api ./api
 COPY certs ./certs
 
 # copy over just the precompiled react app(s)
-COPY --from=reactapps /app/initclaim/build /app/initclaim/build
+COPY --from=reactapps /app/claimant/build /app/claimant/build
 
 # we define multiple base layers with ENV_NAME as a suffix, then pick one based on ARG.
 FROM djangobase as djangobase-ci

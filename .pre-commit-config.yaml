@@ -69,4 +69,4 @@ repos:
         name: Check Makefile
         entry: scripts/check-makefile.py
         language: script
-        files: (Makefile|initclaim/Makefile)
+        files: (Makefile|claimant/Makefile)

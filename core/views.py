@@ -6,5 +6,5 @@ from home.views import base_url
 logger = logging.getLogger("core")
 
 
-def initclaim(request):
+def claimant(request):
     return render(None, "build/index.html", {"base_url": base_url(request)})

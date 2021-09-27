@@ -10,7 +10,8 @@ We prefer a directory layout that looks like:
 * CONTRIBUTING.md
 * LICENSE
 * core (Django application)
-* initclaim (React application)
+* api (Django application)
+* claimant (React application)
 * ... other Django applications as the app evolves
 
 ## Fork or branch

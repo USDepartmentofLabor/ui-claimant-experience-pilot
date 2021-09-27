@@ -18,12 +18,12 @@ from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
-from core.views import initclaim
+from core.views import claimant as claimant_app
 
 urlpatterns = [
     path("", include("home.urls")),
     # wildcard pattern for react apps so that any path under that app is matched.
-    re_path(r"initclaim/.*$", initclaim, name="initclaim"),
+    re_path(r"claimant/.*$", claimant_app, name="claimant"),
     path("logindotgov/", include("login-dot-gov.urls")),
     path("api/", include("api.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

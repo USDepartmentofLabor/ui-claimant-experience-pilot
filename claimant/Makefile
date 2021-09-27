@@ -22,7 +22,7 @@ lint-fix: ## Fix linting issues
 lint: lint-check lint-fix ## Run all the lint targets (i.e. make lint-check lint-fix)
 
 test-unit: ## Run all unit tests
-	yarn test --watchAll=false --testURL https://sandbox.ui.dol.gov:4430/initclaim
+	yarn test --watchAll=false --testURL https://sandbox.ui.dol.gov:4430/claimant
 
 test-browser: ## Run browser (cypress) tests
 	@echo "Not yet implemented"

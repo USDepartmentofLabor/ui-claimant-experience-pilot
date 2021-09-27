@@ -25,7 +25,7 @@ mysql-cli: ## Connect to the MySQL server
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 # list all react frontend apps here, space delimited
-REACT_APPS = initclaim
+REACT_APPS = claimant
 CI_ENV_FILE=core/.env-ci
 CI_SERVICES=-f docker-compose-services.yml
 CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-ci.yml

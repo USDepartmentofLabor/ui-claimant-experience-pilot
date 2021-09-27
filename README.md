@@ -103,13 +103,13 @@ some dynamic rendering via the Django templating system. It is managed separatel
 Set up your `.env` file for each React application.
 
 ```sh
-% cp initclaim/.env-example initclaim/.env
+% cp claimant/.env-example claimant/.env
 ```
 
 To run the React app independently of Django:
 
 ```sh
-(.venv) % cd initclaim
+(.venv) % cd claimant
 (.venv) % make dev-run
 ```
 
@@ -122,11 +122,11 @@ parts of the React app because your browser will send the correct session cookie
 To view the React app via Django, you need to build it:
 
 ```sh
-(.venv) % cd initclaim
+(.venv) % cd claimant
 (.venv) % make build
 ```
 
-and if your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/initclaim/.
+and if your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
 
 ### HTTPS
 
