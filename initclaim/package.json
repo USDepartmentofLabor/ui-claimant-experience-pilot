@@ -25,7 +25,7 @@
     "@typescript-eslint/parser": "^4.31.2",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.0",
-    "retire": "^3.0.1",
+    "retire": "^3.0.2",
     "typescript": "^4.4.3"
   },
   "proxy": "https://sandbox.ui.dol.gov:4430",
