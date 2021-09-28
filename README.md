@@ -60,6 +60,14 @@ Stop the services:
 (.venv) % make services-stop
 ```
 
+If you need to run the development SMTP server (does not send actual email, just logs to stdout), you can start with:
+
+```sh
+(.venv) % make smtp-server
+```
+
+NOTE that the SMTP server runs in the foreground, like the HTTPS proxy, so start it in a dedicated terminal window. You can stop it with `Ctrl-C`.
+
 If you ever need to connect to the Redis service directly from the terminal with the `redis-cli` tool (assuming you already have it installed),
 use the make target:
 

@@ -128,6 +128,9 @@ list-outdated: ## List outdated dependencies
 dev-ssl-proxy: ## Run ssl-proxy
 	ssl-proxy -from 0.0.0.0:4430 -to 127.0.0.1:8004
 
+smtp-server: ## Starts the debugging SMTP server
+	python -m smtpd -n -c DebuggingServer localhost:1025
+
 react-deps: ## Install React app dependencies
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make deps ; done
 

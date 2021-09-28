@@ -286,6 +286,14 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "X-DOL",
 ]
 
+# Email
+EMAIL_HOST = env.str("SMTP_HOSTNAME")
+EMAIL_PORT = env.str("SMTP_PORT")
+EMAIL_HOST_USER = env.str("SMTP_USERNAME", default=None)
+EMAIL_HOST_PASSWORD = env.str("SMTP_PASSWORD", default=None)
+EMAIL_FROM = env.str("EMAIL_FROM", default="no-reply@dol.gov")
+EMAIL_REPLY_TO = env.str("EMAIL_REPLY_TO", default="no-reply@dol.gov")
+
 # Identity Providers
 LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get("LOGIN_DOT_GOV_REDIRECT_URI")
 LOGIN_DOT_GOV_SCOPES = [
