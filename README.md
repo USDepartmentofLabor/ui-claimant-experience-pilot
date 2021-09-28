@@ -126,7 +126,8 @@ To view the React app via Django, you need to build it:
 (.venv) % make build
 ```
 
-and if your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
+If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
+Note that the Django-served React app is the production version and doesn't live-update as the source code is updated.
 
 ### HTTPS
 
@@ -142,17 +143,23 @@ which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ a
 ## Identity Providers
 
 Eventually, multiple Identity Providers (IdPs) will be available in the application.
+The app is currently using login.gov only.
 
-For development and testing, the [login.gov sandbox](https://idp.int.identitysandbox.gov/) is available to anyone.
+For development and testing:
+* Go to the [login.gov sandbox](https://idp.int.identitysandbox.gov/).
+* Create an account with a valid email address that you control
+* Respond to the verification email and set up valid two-factor authentication
+* Get the `logindotgov-private.pem` file from an existing team member.
+* Copy the file to the `/certs` directory of the repo. It should *not* be checked into Git.
+
 Your account can be added to the [ARPA UI claimant application](https://dashboard.int.identitysandbox.gov/)
 via an existing team member with a .gov or .mil email address.
-To use the AAL2/IAL2 flow locally, you will need the private cert, also available from an existing team member.
+
 
 ### Testing the login.gov sandbox integration
 
 If you are running the application locally, you can test out the complete IdP integration.
 
-* Copy the `logindotgov-private.pem` file to the root path of the repo. It should *not* be checked into Git.
 * Your local server should be listening at https://sandbox.ui.dol.gov:4430/. If not, check out the sections above on HTTPS and running the Django
 app via `make login`.
 * Visit https://sandbox.ui.dol.gov:4430/logindotgov/
