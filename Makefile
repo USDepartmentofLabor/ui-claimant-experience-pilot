@@ -64,6 +64,10 @@ migrate: ## Run Django data model migrations (inside container)
 dev-deps: ## Install local development environment dependencies
 	pip install pre-commit black bandit safety
 
+dev-env-files: ## Reset local env files based on .env-example files
+	cp ./core/.env-example ./core/.env
+	cp ./claimant/.env-example ./claimant/.env
+
 container-build: ## Build the Django app container image
 	docker build -f Dockerfile -t $(DOCKER_IMG) .
 
