@@ -4,10 +4,10 @@ help: ## Print the help documentation
 build: ## Build the app
 	yarn build
 
-dev-run: ## Run the app
+dev-run: node_modules ## Run the app
 	yarn start
 
-deps: ## Install dependencies
+deps node_modules: ## Install dependencies
 	yarn install
 
 clean: ## Delete the build/ directory
