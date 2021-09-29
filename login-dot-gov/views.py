@@ -74,6 +74,7 @@ def result(request):
         return HttpResponse(error, status=403)
 
     logger.debug("code={} state={}".format(auth_code, auth_state))
+    logger.debug("session: {}".format(request.session["logindotgov"]))
     if auth_state != request.session["logindotgov"]["state"]:
         logger.error("state mismatch")
         return HttpResponse("state mismatch", status=403)
