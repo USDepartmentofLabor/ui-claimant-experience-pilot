@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
+from core.utils import session_as_dict
 import logging
 
 logger = logging.getLogger("home")
@@ -20,9 +21,7 @@ def idp(request):
 
 def test(request):
     request.session.set_test_cookie()
-    this_session = {}
-    for k in request.session.keys():
-        this_session[k] = request.session[k]
+    this_session = session_as_dict(request)
     this_session["test_cookie_worked"] = request.session.test_cookie_worked()
     return JsonResponse(this_session)
 
