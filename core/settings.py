@@ -195,7 +195,8 @@ SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
 # SESSION_COOKIE_SAMESITE is set to None in the .env-example for dev.
 # NOTE that this assumes you are running react app on http and django on https behind proxy
 # Chrome requires SameSite=None to be paired with Secure
-SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Strict")
+# The Chrome default is Lax so if this env var is not set, it should behave as if not set.
+SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 SESSION_COOKIE_SECURE = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
