@@ -65,6 +65,7 @@ RUN cp core/.env-example core/.env-wcms && \
   echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 # TODO remove this before we go to staging
 ENV DEBUG=true
+ENV SESSION_COOKIE_SAMESITE=Lax
 
 FROM djangobase as djangobase-
 ARG ENV_CLEANUP=core/.env-*
