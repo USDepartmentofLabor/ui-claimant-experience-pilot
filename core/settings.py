@@ -333,7 +333,12 @@ else:  # pragma: no cover
     if file_exists(private_key_file):
         with open(private_key_file, "rb") as pf:
             logindotgov_private_key = pf.read()
-        LOGIN_DOT_GOV_PRIVATE_KEY = logindotgov_private_key
+        LOGIN_DOT_GOV_PRIVATE_KEY = (
+            logindotgov_private_key.decode("utf-8")
+            .replace(" ", "\n")
+            .replace("\nPRIVATE\n", " PRIVATE ")
+            .encode("utf-8")
+        )
     else:
         logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
         LOGIN_DOT_GOV_PRIVATE_KEY = False
