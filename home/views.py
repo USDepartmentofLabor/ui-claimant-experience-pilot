@@ -19,7 +19,7 @@ def idp(request):
     return render(None, "idp.html", {"base_url": base_url(request)})
 
 
-def test(request):
+def test(request):  # pragma: no cover
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
     this_session["test_cookie_worked"] = request.session.test_cookie_worked()

@@ -116,7 +116,7 @@ shell: ## Open interactive Django shell (run inside container)
 # important! this env var must be set to trigger the correct key/config generation.
 test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
-	coverage run manage.py test --pattern="*tests*py"
+	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
 
 test-react: ## Run React tests

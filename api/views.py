@@ -4,7 +4,11 @@ from django.http import JsonResponse
 import logging
 import secrets
 import os
+import django.middleware.csrf
 from django.conf import settings
+from django.views.decorators.http import require_http_methods
+from .decorators import verified_claimant_session
+from core.email import Email
 
 logger = logging.getLogger("api")
 
@@ -18,16 +22,18 @@ or still requires IdP AAL2 login.
 """
 
 
+@require_http_methods(["GET"])
+@verified_claimant_session
 def whoami(request):
-    if not request.session or not request.session.get("verified"):
-        return JsonResponse({"error": "un-verified session"}, status=401)
     if not request.session.get("form_id"):
         request.session["form_id"] = secrets.token_hex(16)
     whoami = request.session.get("whoami")
     whoami["form_id"] = request.session["form_id"]
+    whoami["csrf_token"] = django.middleware.csrf.get_token(request)
     return JsonResponse(whoami, status=200)
 
 
+@require_http_methods(["GET"])
 def index(request):
     return JsonResponse(
         {
@@ -39,3 +45,11 @@ def index(request):
             else f"{request.scheme}://{request.get_host()}",
         }
     )
+
+
+@require_http_methods(["POST"])
+@verified_claimant_session
+def claim(request):
+    whoami = request.session.get("whoami")
+    Email(to=whoami["email"], subject="hello world", body="hello world").send()
+    return JsonResponse({"ok": "sent"}, status=201)
