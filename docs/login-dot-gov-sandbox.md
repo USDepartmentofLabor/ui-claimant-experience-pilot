@@ -4,12 +4,35 @@ Per the [0005 ADR](adr/0005-initial-identity-provider.md) we are using the login
 for our initial Identity Provider (IdP) implementation. This document describes what developers of the application need
 to know about the login.gov sandbox.
 
-## Logging in
+## Initial Setup
 
-You will need an account at the [login.gov sandbox](https://idp.int.identitysandbox.gov/). You can use any legitimate
-email address to create an account. One tip: you may eventually want multiple accounts in order to facilitate testing of
+For development and testing:
+
+- Go to the [login.gov sandbox](https://idp.int.identitysandbox.gov/).
+- Create an account with a valid email address that you control
+- Respond to the verification email and set up valid two-factor authentication
+- Get the `logindotgov-private.pem` file from an existing team member.
+- Copy the file to the `/certs` directory of the repo. It should _not_ be checked into Git.
+
+Managing our [application registration](https://dashboard.int.identitysandbox.gov/) requires a .gov email address.
+Once you have created your account, contact an existing team member to get yourself added to the `dol-ui-claimant-sandbox` team. This is an optional step.
+
+One tip: you may eventually want multiple accounts in order to facilitate testing of
 various IAL2 error scenarios. If your email host supports the [subaddressing feature](https://simplelogin.io/blog/email-alias-vs-plus-sign)
 then you can use that to indicate the identity conditions with which you set up your account.
+
+## Testing the login.gov sandbox integration
+
+If you are running the application locally, you can test out the complete IdP integration.
+
+- Your local server should be listening at https://sandbox.ui.dol.gov:4430/. If not, check out the sections above on HTTPS and running the Django
+  app via `make login`.
+- Visit https://sandbox.ui.dol.gov:4430/logindotgov/
+- Sign in or Create an account, depending on whether you already have a sandbox account
+- Walk through the IAL2 proofing flow (should only need to do this if you are creating an account for the first time).
+  See https://developers.login.gov/testing/#testing-ial2 for details.
+- On successful IAL2 validation, you should be redirected to https://sandbox.ui.dol.gov:4430/logindotgov/explain where you can see all the attributes
+  that login.gov asserts to our application.
 
 ## Identity Proofing
 
@@ -25,32 +48,29 @@ You will need a `certs/logindotgov-private.pem` file, which you can obtain from 
 
 ## Administration
 
-Being a part of the administration team is *not required* to use the login.gov sandbox when acting as a claimant with the application.
+Being a part of the administration team is _not required_ to use the login.gov sandbox when acting as a claimant with the application.
 You only need to pay attention to this section if you are tasked with rotating a certificate set or creating/modifying the application
 configuration.
-
-Managing our [application registration](https://dashboard.int.identitysandbox.gov/) requires a .gov email address.
-Once you have created your account, contact an existing team member to get yourself added to the `dol-ui-claimant-sandbox` team.
 
 ### Managing a login.gov application
 
 Each installation requires a separate login.gov registration. So local development, and each WCMS environment,
 have separate registrations, certificates, and configuration values.
 
-We use the naming convention: `urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-`*envname* for the `Issuer`
+We use the naming convention: `urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-`_envname_ for the `Issuer`
 value in each application.
 
 The "redirect_uri" address should be the HTTPS hostname of the environment, ending with `/logindotgov/result`.
 
 Example from our local development configuration:
 
-Field | Value
------ | -----
-Friendly Name  | dol-ui-claimant-sandbox
-Issuer | urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-sandbox
-Redirect URI | https://sandbox.ui.dol.gov:4430/logindotgov/result
-Identity Protocol | openid_connect_private_key_jwt
-Attribute Bundle | check all the boxes
+| Field             | Value                                                                  |
+| ----------------- | ---------------------------------------------------------------------- |
+| Friendly Name     | dol-ui-claimant-sandbox                                                |
+| Issuer            | urn:gov:gsa:openidconnect.profiles:sp:sso:dol:ui-arpa-claimant-sandbox |
+| Redirect URI      | https://sandbox.ui.dol.gov:4430/logindotgov/result                     |
+| Identity Protocol | openid_connect_private_key_jwt                                         |
+| Attribute Bundle  | check all the boxes                                                    |
 
 Every application has a x509 public/private certificate set. You can generate certificates with:
 
@@ -72,7 +92,7 @@ To update an application certificate:
 1. Scroll to the bottom and click Edit
 1. Select and upload the `certs/identitysandbox.gov-public.crt` file you just created in step 1
 1. Copy the contents of `certs/identitysandbox.gov-private.pem` to wherever you store secrets for the team. Be sure to give it a name to correlate with the Friendly Name of this particular application,
-since there are multiple private certificates to manage.
+   since there are multiple private certificates to manage.
 1. Click the Update button at the bottom of the page
 
 If you need to verify the contents of a public certificate, the relevant command is:

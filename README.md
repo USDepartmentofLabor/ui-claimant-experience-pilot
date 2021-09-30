@@ -10,8 +10,8 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 
 This application requires:
 
-* Python 3.x
-* Node.js 14.16
+- Python 3.x
+- Node.js 14.16
 
 Both are specified in `Dockerfile` but you will likely need both locally (natively) installed on your host machine as well.
 
@@ -143,31 +143,8 @@ which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ a
 ## Identity Providers
 
 Eventually, multiple Identity Providers (IdPs) will be available in the application.
-The app is currently using login.gov only.
-
-For development and testing:
-* Go to the [login.gov sandbox](https://idp.int.identitysandbox.gov/).
-* Create an account with a valid email address that you control
-* Respond to the verification email and set up valid two-factor authentication
-* Get the `logindotgov-private.pem` file from an existing team member.
-* Copy the file to the `/certs` directory of the repo. It should *not* be checked into Git.
-
-Your account can be added to the [ARPA UI claimant application](https://dashboard.int.identitysandbox.gov/)
-via an existing team member with a .gov or .mil email address.
-
-
-### Testing the login.gov sandbox integration
-
-If you are running the application locally, you can test out the complete IdP integration.
-
-* Your local server should be listening at https://sandbox.ui.dol.gov:4430/. If not, check out the sections above on HTTPS and running the Django
-app via `make login`.
-* Visit https://sandbox.ui.dol.gov:4430/logindotgov/
-* Sign in or Create an account, depending on whether you already have a sandbox account
-* Walk through the IAL2 proofing flow (should only need to do this if you are creating an account for the first time).
-See https://developers.login.gov/testing/#testing-ial2 for details.
-* On successful IAL2 validation, you should be redirected to https://sandbox.ui.dol.gov:4430/logindotgov/explain where you can see all the attributes
-that login.gov asserts to our application.
+The app is currently integrated with login.gov only.
+Use the instructions for [login.gov sandbox setup](docs/login-dot-gov-sandbox.md).
 
 ## Security
 
