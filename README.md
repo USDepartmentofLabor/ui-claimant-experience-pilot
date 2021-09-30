@@ -127,7 +127,7 @@ To view the React app via Django, you need to build it:
 ```
 
 If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
-Note that the Django-served React app is the production version and doesn't live-update as the source code is updated.
+Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
 ### HTTPS
 
