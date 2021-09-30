@@ -146,7 +146,7 @@ redis_base_options = {
 }
 redis_secret_key = env.str("REDIS_SECRET_KEY")
 redis_secret_key_len = len(base64.urlsafe_b64decode(redis_secret_key))
-if redis_secret_key_len != 32:
+if redis_secret_key_len != 32:  # pragma: no cover
     err = (
         "REDIS_SECRET_KEY '{}' is not a 32-byte base64-encoded string: {} [{}]".format(
             redis_secret_key,
@@ -155,7 +155,7 @@ if redis_secret_key_len != 32:
         )
     )
     raise Exception(err)
-if os.environ.get("REDIS_HOST"):
+if os.environ.get("REDIS_HOST"):  # pragma: no cover
     # in WCMS env the config is set with separate env vars.
     REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/{REDIS_DB}"
 CACHES = {
@@ -195,10 +195,12 @@ SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
 # SESSION_COOKIE_SAMESITE is set to None in the .env-example for dev.
 # NOTE that this assumes you are running react app on http and django on https behind proxy
 # Chrome requires SameSite=None to be paired with Secure
-SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Strict")
+# The Chrome default is Lax so if this env var is not set, it should behave as if not set.
+SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 SESSION_COOKIE_SECURE = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
+CSRF_USE_SESSIONS = True  # store our CSRF tokens server-side in the session
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -207,7 +209,7 @@ if os.environ.get("DATABASE_URL"):
     # allow for password to be stored separately from connection string
     if not default_db["PASSWORD"]:
         default_db["PASSWORD"] = env("DATABASE_PASSWORD")
-elif os.environ.get("DB_SCHEMA"):
+elif os.environ.get("DB_SCHEMA"):  # pragma: no cover
     default_db = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": env.str("DB_SCHEMA"),
@@ -216,7 +218,7 @@ elif os.environ.get("DB_SCHEMA"):
         "HOST": "mysql-service",  # WCMS creates DNS entry for this
         "PORT": "3306",
     }
-else:
+else:  # pragma: no cover
     default_db = {"ENGINE": "django.db.backends.sqlite3", "NAME": "mydatabase"}
 
 
@@ -286,6 +288,14 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "X-DOL",
 ]
 
+# Email
+EMAIL_HOST = env.str("SMTP_HOSTNAME")
+EMAIL_PORT = env.str("SMTP_PORT")
+EMAIL_HOST_USER = env.str("SMTP_USERNAME", default=None)
+EMAIL_HOST_PASSWORD = env.str("SMTP_PASSWORD", default=None)
+EMAIL_FROM = env.str("EMAIL_FROM", default="no-reply@dol.gov")
+EMAIL_REPLY_TO = env.str("EMAIL_REPLY_TO", default="no-reply@dol.gov")
+
 # Identity Providers
 LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get("LOGIN_DOT_GOV_REDIRECT_URI")
 LOGIN_DOT_GOV_SCOPES = [
@@ -325,7 +335,18 @@ else:  # pragma: no cover
     if file_exists(private_key_file):
         with open(private_key_file, "rb") as pf:
             logindotgov_private_key = pf.read()
-        LOGIN_DOT_GOV_PRIVATE_KEY = logindotgov_private_key
+        LOGIN_DOT_GOV_PRIVATE_KEY = (
+            logindotgov_private_key.decode("utf-8")
+            .replace(" ", "\n")
+            .replace("\nPRIVATE\n", " PRIVATE ")
+            .encode("utf-8")
+        )
     else:
         logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
         LOGIN_DOT_GOV_PRIVATE_KEY = False
+
+# The /login/ page bypasses all other IdP so only use in CI/dev
+if os.environ.get("ENV_NAME") == "wcms":
+    SHOW_LOGIN_PAGE = False
+else:
+    SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"

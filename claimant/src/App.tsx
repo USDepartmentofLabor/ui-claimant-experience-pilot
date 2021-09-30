@@ -77,6 +77,9 @@ function App(props: Props) {
               {currentClaimant && <WhoAmIPage whoami={currentClaimant} />}
             </Route>
             <Route path={HOME_PAGE}>
+              <main>
+                <h1>Welcome</h1>
+              </main>
             </Route>
           </Switch>
         </GridContainer>

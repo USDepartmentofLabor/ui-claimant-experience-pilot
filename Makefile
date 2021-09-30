@@ -64,6 +64,10 @@ migrate: ## Run Django data model migrations (inside container)
 dev-deps: ## Install local development environment dependencies
 	pip install pre-commit black bandit safety
 
+dev-env-files: ## Reset local env files based on .env-example files
+	cp ./core/.env-example ./core/.env
+	cp ./claimant/.env-example ./claimant/.env
+
 container-build: ## Build the Django app container image
 	docker build -f Dockerfile -t $(DOCKER_IMG) .
 
@@ -112,7 +116,7 @@ shell: ## Open interactive Django shell (run inside container)
 # important! this env var must be set to trigger the correct key/config generation.
 test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
-	coverage run manage.py test --pattern="*tests*py"
+	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
 
 test-react: ## Run React tests
@@ -127,6 +131,9 @@ list-outdated: ## List outdated dependencies
 # https://github.com/suyashkumar/ssl-proxy
 dev-ssl-proxy: ## Run ssl-proxy
 	ssl-proxy -from 0.0.0.0:4430 -to 127.0.0.1:8004
+
+smtp-server: ## Starts the debugging SMTP server
+	python -m smtpd -n -c DebuggingServer localhost:1025
 
 react-deps: ## Install React app dependencies
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make deps ; done

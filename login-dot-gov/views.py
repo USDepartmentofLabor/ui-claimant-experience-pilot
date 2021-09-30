@@ -5,6 +5,7 @@ import logging
 import secrets
 import os
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2
+from core.utils import session_as_dict
 
 # import pprint
 
@@ -33,9 +34,7 @@ def explain(request):
     if not settings.DEBUG:
         return JsonResponse({"error": "DEBUG is off"}, status=401)
 
-    this_session = {}
-    for k in request.session.keys():
-        this_session[k] = request.session[k]
+    this_session = session_as_dict(request)
     return JsonResponse(this_session)
 
 
@@ -74,6 +73,7 @@ def result(request):
         return HttpResponse(error, status=403)
 
     logger.debug("code={} state={}".format(auth_code, auth_state))
+    logger.debug("session: {}".format(session_as_dict(request)))
     if auth_state != request.session["logindotgov"]["state"]:
         logger.error("state mismatch")
         return HttpResponse("state mismatch", status=403)
