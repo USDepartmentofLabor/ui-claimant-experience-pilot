@@ -43,6 +43,8 @@ repos:
     rev: v7.32.0
     hooks:
       - id: eslint
+        files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+        types: [file]
         additional_dependencies:
           - eslint@7.32.0
           - eslint-plugin-react@7.25.1

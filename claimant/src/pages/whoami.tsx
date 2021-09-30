@@ -8,7 +8,7 @@ const WhoAmIPage: React.FC<Props> = (props) => {
   const { whoami } = props;
 
   return (
-    <section>
+    <main>
       <h1>Who am I</h1>
 
       <p className="usa-intro">Displays the account attributes from the AAL2/IAL2 session</p>
@@ -27,7 +27,7 @@ const WhoAmIPage: React.FC<Props> = (props) => {
           Birthdate: {whoami.birthdate}
         </li>
       </ul>
-    </section>
+    </main>
   );
 };
 

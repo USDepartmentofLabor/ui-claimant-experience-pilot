@@ -8,5 +8,5 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "Apply for benefits", status_code=200)
 
     def test_idp_page(self):
-        response = self.client.get("/idp?redirect_to=/some/place")
+        response = self.client.get("/idp/?redirect_to=/some/place")
         self.assertContains(response, "Sign in", status_code=200)
