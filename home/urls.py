@@ -9,5 +9,5 @@ urlpatterns = [
     path("test/", views.test),
 ]
 
-if settings.DEBUG:
+if settings.SHOW_LOGIN_PAGE:
     urlpatterns.append(path("login/", views.login))
