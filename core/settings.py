@@ -344,3 +344,9 @@ else:  # pragma: no cover
     else:
         logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
         LOGIN_DOT_GOV_PRIVATE_KEY = False
+
+# The /login/ page bypasses all other IdP so only use in CI/dev
+if os.environ.get("ENV_NAME") == "wcms":
+    SHOW_LOGIN_PAGE = False
+else:
+    SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"
