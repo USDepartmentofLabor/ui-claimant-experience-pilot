@@ -1,0 +1,22 @@
+{
+  "baseUrl": "https://sandbox.ui.dol.gov:4430",
+  "integrationFolder": "cypress/integration/tests",
+  "ignoreTestFiles": "**/examples/*.spec.js",
+  "screenshotOnRunFailure": false,
+  "video": false,
+  "defaultCommandTimeout": 5000,
+  "nodeVersion": "system",
+  "retries": {
+    "runMode": 1,
+    "openMode": 1
+  },
+  "viewportWidth": 1920,
+  "viewportHeight": 1080,
+  "lighthouse": {
+    "performance": 1,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1,
+    "pwa": 1
+  }
+}

@@ -25,9 +25,15 @@ test-unit: ## Run all unit tests
 	yarn test --watchAll=false --testURL https://sandbox.ui.dol.gov:4430/claimant
 
 test-browser: ## Run browser (cypress) tests
-	@echo "Not yet implemented"
+	npx cypress run --headless --browser chrome
 
-test: test-unit test-browser ## Run all tests
+dev-test-browser: ## Run browser tests against local dev server (port 3000)
+	npx cypress run --headless --browser chrome -c baseUrl=https://sandbox.ui.dol.gov:3000
+
+cypress: ## Start the Cypress interactive application
+	npx cypress open
+
+test: test-unit ## Run all unit tests
 
 security: ## Run security scans
 	@echo "yarn audit disabled"
@@ -39,4 +45,4 @@ list-outdated: ## List outdated dependencies
 
 default: help
 
-.PHONY: build dev-run deps clean lint-check lint-fix lint
+.PHONY: build dev-run deps clean lint-check lint-fix lint cypress
