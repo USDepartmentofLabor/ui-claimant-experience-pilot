@@ -26,6 +26,15 @@ const WhoAmIPage: React.FC<Props> = (props) => {
         <li>
           Birthdate: {whoami.birthdate}
         </li>
+        <li>
+          Email: {whoami.email}
+        </li>
+        <li>
+          SSN: {whoami.ssn}
+        </li>
+        <li>
+          Phone: {whoami.phone}
+        </li>
       </ul>
     </main>
   );

@@ -15,12 +15,22 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "Sign in", status_code=200)
 
     def test_login_page(self):
-        response = self.client.get("/login/")
+        response = self.client.get("/login/?redirect_to=http://example.com/")
         self.assertContains(response, "Test | Login", status_code=200)
+        self.assertEquals(self.client.session["redirect_to"], "http://example.com/")
         response = self.client.post(
             "/login/", {"first_name": "Some", "last_name": "Body"}
         )
-        self.assertEquals(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            "http://example.com/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
         self.assertEquals(
             self.client.session["whoami"], {"first_name": "Some", "last_name": "Body"}
         )
+
+        # GET or POST only
+        response = self.client.head("/login/")
+        self.assertEquals(response.status_code, 405)

@@ -200,7 +200,6 @@ SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 SESSION_COOKIE_SECURE = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
-CSRF_USE_SESSIONS = True  # store our CSRF tokens server-side in the session
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -346,7 +345,7 @@ else:  # pragma: no cover
         LOGIN_DOT_GOV_PRIVATE_KEY = False
 
 # The /login/ page bypasses all other IdP so only use in CI/dev
-if os.environ.get("ENV_NAME") == "wcms":
+if os.environ.get("ENV_NAME") == "wcms":  # pragma: no cover
     SHOW_LOGIN_PAGE = False
 else:
     SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"

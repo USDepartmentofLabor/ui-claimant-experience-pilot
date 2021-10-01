@@ -21,6 +21,7 @@ import {
 
 import { Routes } from './routes';
 import WhoAmIPage from './pages/whoami';
+import HomePage from './pages/home';
 import withClaimant, { WithClaimantProps } from './hoc/with-claimant';
 
 import './App.css';
@@ -45,6 +46,29 @@ function App(props: Props) {
     </NavLink>,
   ];
 
+  if (!currentClaimant) {
+    return (
+      <Router basename="/claimant">
+        <GovBanner />
+        <Header basic>
+          <div className="usa-nav-container">
+            <div className="usa-navbar">
+              <Title>
+                <Link to={HOME_PAGE}>Unemployment Insurance</Link>
+              </Title>
+            </div>
+          </div>
+        </Header>
+        <section className="usa-section">
+          <GridContainer>
+            <img src="https://www.dol.gov/themes/opa_theme/img/logo-primary.svg" alt="logo" height="200" />
+            <h2>Checking authorization...</h2>
+          </GridContainer>
+        </section>
+      </Router>
+    );
+  }
+
   return (
     <Router basename="/claimant">
       <GovBanner />
@@ -52,7 +76,7 @@ function App(props: Props) {
         <div className="usa-nav-container">
           <div className="usa-navbar">
             <Title>
-              <Link to={HOME_PAGE}>Example Application</Link>
+              <Link to={HOME_PAGE}>Unemployment Insurance</Link>
             </Title>
             <NavMenuButton
               label="Menu"
@@ -77,9 +101,7 @@ function App(props: Props) {
               {currentClaimant && <WhoAmIPage whoami={currentClaimant} />}
             </Route>
             <Route path={HOME_PAGE}>
-              <main>
-                <h1>Welcome</h1>
-              </main>
+              {currentClaimant && <HomePage whoami={currentClaimant} />}
             </Route>
           </Switch>
         </GridContainer>

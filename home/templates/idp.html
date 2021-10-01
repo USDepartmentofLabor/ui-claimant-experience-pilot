@@ -162,6 +162,11 @@
                         <img src="https://www.ssa.gov/fleximg/Log_in_logo1.png" alt="Sign in with Login.gov, external website" class="cspLogo-imgBorder" />
                       </a>
                     </div>
+                    {% if show_login_page %}
+                    <div>
+                      <a class="usa-button" href="{{ base_url }}/login/">Test Login</a>
+                    </div>
+                    {% endif %}
                   </div>
                   <div class="layout__region layout__region--second">
                   </div>

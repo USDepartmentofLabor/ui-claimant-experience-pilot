@@ -32,11 +32,46 @@ import "cypress-audit/commands";
 Cypress.Commands.add(
   "login",
   () => {
-    cy.visit("/login/");
+    if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+      cy.post_login();
+    } else {
+      cy.real_login();
+    }
+  }
+);
+
+Cypress.Commands.add(
+  "real_login",
+  () => {
+    cy.visit("https://sandbox.ui.dol.gov:4430/login/");
+    cy.log("on /login/ page");
     cy.get("#email").should("be.visible").type("someone@example.com");
+    cy.log("found email input");
     cy.get('button[type="submit"]')
       .should('be.visible')
       .click();
+    cy.log("clicked submit");
+  }
+);
+
+Cypress.Commands.add(
+  "post_login",
+  () => {
+    cy.request("POST", "/api/login/", { email: "someone@example.com" });
+  }
+);
+
+Cypress.Commands.add(
+  "mock_login",
+  () => {
+    cy.intercept("GET", "/api/whoami/", (req) => {
+      req.reply({
+        form_id: "abc123",
+        email: "someone@example.com",
+        first_name: "Some",
+        last_name: "One",
+      });
+    }).as("api-whoami");
   }
 );
 

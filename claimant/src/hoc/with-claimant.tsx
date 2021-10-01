@@ -20,7 +20,7 @@ const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React
     const handleLogin = () => {
       // SSO server
       const base_url = process.env.REACT_APP_BASE_URL || "";
-      const login_url = base_url + "/idp?redirect_to=" + window.location.href;
+      const login_url = base_url + "/idp/?redirect_to=" + window.location.href;
       window.location.href = login_url;
       console.warn("redirect to idp", login_url);
     };
@@ -30,11 +30,11 @@ const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React
 
       if (! currentClaimant) {
         httpclient
-          .get("/api/whoami", { withCredentials: true, headers: {"X-DOL": "axios"} })
+          .get("/api/whoami/", { withCredentials: true, headers: {"X-DOL": "axios"} })
           .then((resp) => {
             if (cancelled) return;
 
-            console.log("then", resp);
+            // console.log("then", resp);
 
             if (resp && resp.data) {
               setCurrentClaimant(resp.data);
@@ -46,7 +46,14 @@ const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React
 
             console.error(err);
 
-            handleLogin();
+            if (err.response) {
+              if (err.response.status === 401) {
+                handleLogin();
+                return;
+              }
+            }
+            // re-throw so our error boundary can handle
+            throw err;
           });
       } else {
         if (cancelled) return;

@@ -74,7 +74,10 @@ container-build: ## Build the Django app container image
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
 
-container: container-build ## Alias for container-build
+container-clean: ## Remove the Django app container image
+	docker image rm $(DOCKER_IMG)
+
+container: container-clean container-build ## Alias for container-clean container-build
 
 SECRET_LENGTH := 32
 secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
@@ -97,9 +100,11 @@ build-static: ## Build the static assets (intended for during container-build (i
 	mkdir static
 	python manage.py collectstatic
 
+# the --mount option ignores the local build dir for what is on the image
 login: ## Log into the Django app docker container
 	docker run --rm -it \
 	--name $(DOCKER_NAME) \
+	--mount type=volume,dst=/app/claimant/build \
 	-v $(PWD):/app \
 	-p 8004:8000 \
 	$(DOCKER_IMG) /bin/bash

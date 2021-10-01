@@ -10,6 +10,7 @@
 
  <body>
   <form action="/login/" method="POST">
+   <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
    <fieldset>
      <legend>Test Login</legend>
 
@@ -26,7 +27,9 @@
      <label for="phone">Phone</label>
      <input type="text" id="phone" name="phone" />
 
-     <button type="submit">Login</button>
+     <div>
+      <button type="submit">Login</button>
+     </div>
    </fieldset>
   </form>
  </body>
