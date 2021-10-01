@@ -101,12 +101,25 @@ To run the tests:
 root@randomdockerstring:/app# make test
 ```
 
+### HTTPS
+
+In order to view an https connection locally, you will need to set up a proxy. You can use the [ssl-proxy](https://github.com/suyashkumar/ssl-proxy) tool.
+You will need to install it somewhere locally in your `PATH`, and create a symlink to it called `ssl-proxy`. Then:
+
+```sh
+(.venv) % make dev-ssl-proxy
+```
+
+which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ and proxy to the Django server running at http://sandbox.ui.dol.gov:8004/
+
 ### Home page
 
 The default home page is a static file in `home/templates/index.html`. In theory it can be templatized for
 some dynamic rendering via the Django templating system. It is managed separately from the React application(s).
 
 ### React frontend
+
+The frontend application is found inside of `./initclaim`. The `initclaim` application has its own README and `make` commands.
 
 Set up your `.env` file for each React application.
 
@@ -118,6 +131,7 @@ To run the React app independently of Django:
 
 ```sh
 (.venv) % cd claimant
+(.venv) % make deps
 (.venv) % make dev-run
 ```
 
@@ -129,6 +143,8 @@ parts of the React app because your browser will send the correct session cookie
 
 To view the React app via Django, you need to build it:
 
+Make sure the proxy is running (`make dev-ssl-proxy`). Then:
+
 ```sh
 (.venv) % cd claimant
 (.venv) % make build
@@ -137,16 +153,7 @@ To view the React app via Django, you need to build it:
 If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
 Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
-### HTTPS
-
-If you need a https connection for testing anything locally, you can use the [ssl-proxy](https://github.com/suyashkumar/ssl-proxy) tool.
-You will need to install it somewhere locally in your `PATH`, and create a symlink to it called `ssl-proxy`. Then:
-
-```sh
-(.venv) % make dev-ssl-proxy
-```
-
-which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ and proxy to the Django server running at http://sandbox.ui.dol.gov:8004/
+Note: you may get a "your connection is not private" warning in your browser.  In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
 
 ## Identity Providers
 
