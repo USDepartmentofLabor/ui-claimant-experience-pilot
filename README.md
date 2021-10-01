@@ -10,8 +10,8 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 
 This application requires:
 
-* Python 3.x
-* Node.js 14.16
+- Python 3.x
+- Node.js 14.16
 
 Both are specified in `Dockerfile` but you will likely need both locally (natively) installed on your host machine as well.
 
@@ -134,7 +134,8 @@ To view the React app via Django, you need to build it:
 (.venv) % make build
 ```
 
-and if your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
+If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
+Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
 ### HTTPS
 
@@ -150,25 +151,8 @@ which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ a
 ## Identity Providers
 
 Eventually, multiple Identity Providers (IdPs) will be available in the application.
-
-For development and testing, the [login.gov sandbox](https://idp.int.identitysandbox.gov/) is available to anyone.
-Your account can be added to the [ARPA UI claimant application](https://dashboard.int.identitysandbox.gov/)
-via an existing team member with a .gov or .mil email address.
-To use the AAL2/IAL2 flow locally, you will need the private cert, also available from an existing team member.
-
-### Testing the login.gov sandbox integration
-
-If you are running the application locally, you can test out the complete IdP integration.
-
-* Copy the `logindotgov-private.pem` file to the root path of the repo. It should *not* be checked into Git.
-* Your local server should be listening at https://sandbox.ui.dol.gov:4430/. If not, check out the sections above on HTTPS and running the Django
-app via `make login`.
-* Visit https://sandbox.ui.dol.gov:4430/logindotgov/
-* Sign in or Create an account, depending on whether you already have a sandbox account
-* Walk through the IAL2 proofing flow (should only need to do this if you are creating an account for the first time).
-See https://developers.login.gov/testing/#testing-ial2 for details.
-* On successful IAL2 validation, you should be redirected to https://sandbox.ui.dol.gov:4430/logindotgov/explain where you can see all the attributes
-that login.gov asserts to our application.
+The app is currently integrated with login.gov only.
+Use the instructions for [login.gov sandbox setup](docs/login-dot-gov-sandbox.md).
 
 ## Security
 
