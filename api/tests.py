@@ -79,3 +79,13 @@ class ApiTestCase(TestCase):
         response = self.client.post("/api/login/", {"email": "someone@example.com"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["verified"])
+
+    def test_login_json(self):
+        self.assertFalse("verified" in self.client.session)
+        response = self.client.post(
+            "/api/login/",
+            data={"email": "someone@example.com"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.client.session["verified"])

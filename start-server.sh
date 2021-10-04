@@ -4,5 +4,6 @@
 SCRIPT_DIR=$(dirname "$0")
 cd "$SCRIPT_DIR" || exit
 
-python manage.py migrate
+make migrate
+make celery-start
 gunicorn core.wsgi:application --bind 0.0.0.0:8000

@@ -349,3 +349,15 @@ if os.environ.get("ENV_NAME") == "wcms":  # pragma: no cover
     SHOW_LOGIN_PAGE = False
 else:
     SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"
+
+# Celery is our task runner
+# unfortunately the ssl config syntax is different than for CACHES
+# we turn cert verification OFF since in WCMS/AWS we don't have a CA chain to verify.
+# we accept that risk because the AWS config prevents anyone but our app from connecting
+# to Redis.
+# TODO encrypted storage similar to sessions.
+CELERY_BROKER_URL = REDIS_URL + "?ssl_cert_reqs=none"
+CELERY_RESULT_BACKEND = REDIS_URL + "?ssl_cert_reqs=none"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"

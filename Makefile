@@ -61,6 +61,19 @@ lint: lint-check lint-fix ## Lint the code
 migrate: ## Run Django data model migrations (inside container)
 	python manage.py migrate
 
+# this runs 2 workers named w1 and w2. Each worker will have N child prefork processes,
+# by default the number of cores on the machine. See
+# http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
+# By default logs are written to /var/log/celery
+celery-start: ## Run the celery queue manager (inside container)
+	celery multi start w1 w2 -A core -l info
+
+celery-restart: ## Restart the celery queue manager (inside container)
+	celery multi restart w1 w2 -A core -l info
+
+celery-stop: ## Stop the celery queue manager (inside container)
+	celery multi stopwait w1 w2 -A core -l info
+
 dev-deps: ## Install local development environment dependencies
 	pip install pre-commit black bandit safety
 
