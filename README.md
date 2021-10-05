@@ -85,7 +85,7 @@ MySQL [unemployment]>
 
 You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
-To log into the Docker container interactively and run the Django web server:
+To start a Docker container interactively and run the Django web server:
 
 ```sh
 (.venv) % make login
@@ -191,6 +191,12 @@ To run the container:
 
 ```sh
 % make container-run
+```
+
+To open a shell in the running container (requires `make container-run` previously):
+
+```sh
+% make container-attach
 ```
 
 ## Help

@@ -24,6 +24,7 @@ mysql-cli: ## Connect to the MySQL server
 
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
+DOCKER_CONTAINER_ID := $(shell docker ps --filter ancestor=$(DOCKER_IMG) --format "{{.ID}}")
 # list all react frontend apps here, space delimited
 REACT_APPS = claimant
 CI_ENV_FILE=core/.env-ci
@@ -121,6 +122,9 @@ login: ## Log into the Django app docker container
 	-v $(PWD):/app \
 	-p 8004:8000 \
 	$(DOCKER_IMG) /bin/bash
+
+container-attach: ## Attach to a running container and open a shell (like login for running container)
+	docker exec -it $(DOCKER_CONTAINER_ID) /bin/bash
 
 dev-run: ## Run the Django app, tracking changes
 	python manage.py runserver 0:8000
