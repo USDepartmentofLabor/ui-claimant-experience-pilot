@@ -73,5 +73,5 @@ def claim(request):
     # payload = json.loads(request.body.decode("utf-8"))
     # TODO ignoring payload for now, will use once we have a form.
     whoami = request.session.get("whoami")
-    Email(to=whoami["email"], subject="hello world", body="hello world").send()
+    Email(to=whoami["email"], subject="hello world", body="hello world").send_later()
     return JsonResponse({"ok": "sent"}, status=201)

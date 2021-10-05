@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase, Client
+from django.test import Client
 from django.core import mail
+from core.tasks_tests import CeleryTestCase
 
 
-class ApiTestCase(TestCase):
+class ApiTestCase(CeleryTestCase):
     def setUp(self):
         # Empty the test outbox
         mail.outbox = []
