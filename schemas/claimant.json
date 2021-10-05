@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/claimant.json",
+  "title": "UI Claimant Application Form",
+  "description": "Unemployment Insurance claimant application form schema",
+  "type": "object",
+  "properties": {
+    "agreement": {
+      "description": "",
+      "type": "boolean"
+    },
+    "first_name": {
+        "description": "",
+        "type": "string"
+    },
+    "last_name": {
+        "description": "",
+        "type": "string"
+    },
+    "dob": {
+        "description": "",
+        "type": "date-time"
+    },
+    "gender": {
+        "description": "",
+        "type": "string"
+    },
+    "race": {
+        "description": "",
+        "type": "string"
+    },
+    "ethnicity": {
+        "description": "",
+        "type": "string"
+    },
+    "home_address": {
+        "description": "",
+        "type": "string"
+    },
+    "telephone": {
+        "description": "",
+        "type": "string"
+    },
+    "preferred_language": {
+        "description": "",
+        "type": "string"
+    },
+    "mailing_home_address_same": {
+        "description": "",
+        "type": "boolean"
+    },
+    "ssn": {
+        "description": "",
+        "type": "string"
+    },
+    "ssn_confirm": {
+        "description": "",
+        "type": "string"
+    },
+    "has_dl_or_state_id": {
+        "description": "",
+        "type": "boolean"
+    },
+    "is_us_citizen": {
+        "description": "",
+        "type": "boolean"
+    },
+    "military-veteran": {
+        "description": "",
+        "type": "boolean"
+    },
+    "active-duty-start": {
+        "description": "",
+        "type": "date-time"
+    },
+    "active-duty-end": {
+        "description": "",
+        "type": "date-time"
+    },
+    "military-disability": {
+        "description": "",
+        "type": "string"
+    },
+    "military-active-last-two-years": {
+        "description": "",
+        "type": "boolean"
+    },
+    "military-last-pay-grade": {
+        "description": "",
+        "type": "string"
+    },
+    "military-accrued-paid-leave": {
+        "description": "",
+        "type": "string"
+    },
+    "military-reason-for-separation": {
+        "description": "",
+        "type": "string"
+    },
+    "military-branch": {
+        "description": "",
+        "type": "string"
+    },
+    "military-work-end": {
+        "description": "",
+        "type": "date-time"
+    },
+    "military-character-of-service": {
+        "description": "",
+        "type": "string"
+    },
+    "military-net-service": {
+        "description": "",
+        "type": "string"
+    },
+    "last-week-paid": {
+        "description": "",
+        "type": "string"
+    },
+    "employment-current-status": {
+        "description": "",
+        "type": "boolean"
+    },
+    "last-week-hours": {
+        "description": "",
+        "type": "string"
+    },
+    "employment-able-to-work": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-option-to-telework": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-available-to-work": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-last-12-months": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-employers-in-last-18-months": {
+        "description": "",
+        "type": "string"
+    },
+    "employment-federal-employee": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-federal-employee-last-date": {
+        "description": "",
+        "type": "date-time"
+    },
+    "employment-in-trade-union": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employment-trade-union": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-name": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-address": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-phone-number": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-id-number": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-job-title": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-first-day-of-work": {
+        "description": "",
+        "type": "date-time"
+    },
+    "employer-last-day-of-work": {
+        "description": "",
+        "type": "date-time"
+    },
+    "employer-type": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-pay-rate": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-pay-unit": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-reason-for-separation": {
+        "description": "",
+        "type": "boolean"
+    },
+    "covid-19-reason": {
+        "description": "",
+        "type": "string"
+    },
+    "employer-current-benefits": {
+        "description": "",
+        "type": "boolean"
+    },
+    "employer-current-teleworking": {
+        "description": "",
+        "type": "boolean"
+    },
+    "tax-info-have-tax-return": {
+        "description": "",
+        "type": "boolean"
+    },
+    "tax-info-married": {
+        "description": "",
+        "type": "string"
+    },
+    "tax-info-agi": {
+        "description": "",
+        "type": "string"
+    },
+    "tax-info-dependents": {
+        "description": "",
+        "type": "string"
+    },
+    "unemployment-in-another-state": {
+        "description": "",
+        "type": "boolean"
+    },
+    "unemployment-in-another-state-state": {
+        "description": "",
+        "type": "string"
+    },
+    "unemployment-in-another-state-date": {
+        "description": "",
+        "type": "date-time"
+    },
+    "unemployment-in-another-state-employment-since": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-public-assistance": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-dhs-work": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-snap": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-temp-disability-insurance": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-workers-comp": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-disability-payments": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-retirement-pension": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-retirement annuity": {
+        "description": "",
+        "type": "boolean"
+    },
+    "other-income-social-security": {
+        "description": "",
+        "type": "boolean"
+    },
+    "payment-income-withheld": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-option": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-bank-name": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-account-type": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-account-number": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-account-number-confirm": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-routing-number": {
+        "description": "",
+        "type": "string"
+    },
+    "payment-routing-number-confirm": {
+        "description": "",
+        "type": "string"
+    }
+  }
+}
