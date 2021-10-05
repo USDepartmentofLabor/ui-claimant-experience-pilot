@@ -153,7 +153,7 @@ Make sure the proxy is running (`make dev-ssl-proxy`). Then:
 If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
 Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
-Note: you may get a "your connection is not private" warning in your browser.  In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
+Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
 
 ## Identity Providers
 
