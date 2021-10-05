@@ -22,14 +22,14 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  require('@cypress/code-coverage/task')(on, config)
-  on('task', {
-    log (message) {
+  require("@cypress/code-coverage/task")(on, config);
+  on("task", {
+    log(message) {
       if (console) {
         console.log(message);
       }
-      return null
-    }
+      return null;
+    },
   });
 
   on("before:browser:launch", (browser = {}, launchOptions) => {
@@ -50,5 +50,4 @@ module.exports = (on, config) => {
     }),
   });
   return config;
-}
-
+};

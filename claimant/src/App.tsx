@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 import {
   BrowserRouter as Router,
@@ -6,10 +6,10 @@ import {
   Route,
   NavLink,
   Link,
-} from 'react-router-dom';
+} from "react-router-dom";
 
-import '@trussworks/react-uswds/lib/uswds.css';
-import '@trussworks/react-uswds/lib/index.css';
+import "@trussworks/react-uswds/lib/uswds.css";
+import "@trussworks/react-uswds/lib/index.css";
 import {
   GovBanner,
   Header,
@@ -17,24 +17,24 @@ import {
   NavMenuButton,
   PrimaryNav,
   GridContainer,
-} from '@trussworks/react-uswds';
+} from "@trussworks/react-uswds";
 
-import { Routes } from './routes';
-import WhoAmIPage from './pages/whoami';
-import HomePage from './pages/home';
-import withClaimant, { WithClaimantProps } from './hoc/with-claimant';
+import { Routes } from "./routes";
+import WhoAmIPage from "./pages/whoami";
+import HomePage from "./pages/home";
+import withClaimant, { WithClaimantProps } from "./hoc/with-claimant";
 
-import './App.css';
+import "./App.css";
 
 type Props = WithClaimantProps;
 
 function App(props: Props) {
   const { currentClaimant } = props;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { HOME_PAGE, WHOAMI_PAGE, } = Routes
+  const { HOME_PAGE, WHOAMI_PAGE } = Routes;
 
   const toggleMobileNav = () => {
-    setMobileNavOpen((prevOpen) => !prevOpen)
+    setMobileNavOpen((prevOpen) => !prevOpen);
   };
 
   const navItems = [
@@ -61,7 +61,11 @@ function App(props: Props) {
         </Header>
         <section className="usa-section">
           <GridContainer>
-            <img src="https://www.dol.gov/themes/opa_theme/img/logo-primary.svg" alt="logo" height="200" />
+            <img
+              src="https://www.dol.gov/themes/opa_theme/img/logo-primary.svg"
+              alt="logo"
+              height="200"
+            />
             <h2>Checking authorization...</h2>
           </GridContainer>
         </section>
@@ -111,4 +115,3 @@ function App(props: Props) {
 }
 
 export default withClaimant(App);
-

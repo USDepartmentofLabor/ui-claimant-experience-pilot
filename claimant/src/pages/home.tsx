@@ -1,16 +1,13 @@
-import React from 'react';
-import { Formik } from 'formik';
-import Cookies from 'universal-cookie';
-import {
-  Button,
-  Form,
-} from '@trussworks/react-uswds';
+import React from "react";
+import { Formik } from "formik";
+import Cookies from "universal-cookie";
+import { Button, Form } from "@trussworks/react-uswds";
 
 import httpclient from "../utils/httpclient";
 
 type Props = {
-  whoami: WhoAmI
-}
+  whoami: WhoAmI;
+};
 
 const HomePage: React.FC<Props> = (props) => {
   const { whoami } = props;
@@ -27,9 +24,15 @@ const HomePage: React.FC<Props> = (props) => {
           setSubmitting(true);
           console.log("submit!", { values, whoami });
           const cookies = new Cookies();
-          const csrftoken = cookies.get('csrftoken');
+          const csrftoken = cookies.get("csrftoken");
           httpclient
-            .post("/api/claim/", values, { withCredentials: true, headers: { "X-CSRFToken": csrftoken, "Content-Type": "application/json", } })
+            .post("/api/claim/", values, {
+              withCredentials: true,
+              headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json",
+              },
+            })
             .then((resp) => {
               console.log("then", resp);
 
@@ -42,7 +45,8 @@ const HomePage: React.FC<Props> = (props) => {
               console.error(err);
               setSubmitting(false);
             });
-        }}>
+        }}
+      >
         {({
           // TODO props commented out as example only
           // values,
@@ -53,7 +57,9 @@ const HomePage: React.FC<Props> = (props) => {
           // setFieldValue,
         }) => (
           <Form onSubmit={handleSubmit}>
-            <Button type="submit" disabled={isSubmitting}>Test Email</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              Test Email
+            </Button>
           </Form>
         )}
       </Formik>
