@@ -49,6 +49,7 @@ COPY --from=reactapps /app/claimant/build /app/claimant/build
 # we define multiple base layers with ENV_NAME as a suffix, then pick one based on ARG.
 FROM djangobase as djangobase-ci
 RUN echo "ENV_NAME=ci"
+COPY run-ci-tests.sh .
 # leave .env-ci intact for tests to run
 ARG ENV_CLEANUP=core/.env-example
 RUN pip install --no-cache-dir -r requirements-ci.txt && \
@@ -79,7 +80,7 @@ FROM djangobase-${ENV_NAME} as django-final
 # invoke inside the FROM scope so that make build-static gets it as an env var.
 ARG ENV_NAME
 
-# collects all the static assets, including react apps, into the /static dir
+# precompile any static assets
 RUN make build-static
 
 ARG ENV_CLEANUP

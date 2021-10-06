@@ -68,6 +68,10 @@ class ApiTestCase(CeleryTestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {"ok": "sent"})
+
+        # this requires celery task to run to completion async,
+        # so wait a little
+        self.wait_for_workers_to_finish()
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "hello world")
 

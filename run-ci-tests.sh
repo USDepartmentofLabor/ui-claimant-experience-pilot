@@ -7,11 +7,23 @@ set -e
 SCRIPT_DIR=$(dirname "$0")
 cd "$SCRIPT_DIR" || exit
 
-make migrate
+wait-for-it rds:3306
+wait-for-it 127.0.0.1:8000
+until make celery-status
+do
+  echo "waiting for celery to be ready"
+  sleep 1
+done
+
+# we run our own celery inside tests
+make celery-stop
+
+make test
+
+# start again for any other use of the container
 make celery-start
 until make celery-status
 do
   echo "waiting for celery to be ready"
   sleep 1
 done
-gunicorn core.wsgi:application --bind 0.0.0.0:8000

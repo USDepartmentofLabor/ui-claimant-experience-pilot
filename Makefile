@@ -24,7 +24,7 @@ mysql-cli: ## Connect to the MySQL server
 
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
-DOCKER_CONTAINER_ID := $(shell docker ps --filter ancestor=$(DOCKER_IMG) --format "{{.ID}}")
+DOCKER_CONTAINER_ID := $(shell docker ps --filter ancestor=$(DOCKER_IMG) --format "{{.ID}}" -a)
 # list all react frontend apps here, space delimited
 REACT_APPS = claimant
 CI_ENV_FILE=core/.env-ci
@@ -43,7 +43,7 @@ ci-stop: ## Stop Django app's supporting services (in CI)
 
 ci-tests: ## Run Django app tests in Docker
 	docker-compose $(CI_OPTS) logs --tail="all"
-	docker exec -e ENV_PATH=/app/core/.env-ci web wait-for-it rds:3306 -- make test
+	docker exec -e ENV_PATH=/app/core/.env-ci web ./run-ci-tests.sh
 
 ci-test: ci-tests ## Alias for ci-tests
 
@@ -75,6 +75,9 @@ celery-restart: ## Restart the celery queue manager (inside container)
 celery-stop: ## Stop the celery queue manager (inside container)
 	celery multi stopwait w1 w2 -A core -l info
 
+celery-status: ## Display status of celery worker(s) (inside the container)
+	celery -A core status
+
 dev-deps: ## Install local development environment dependencies
 	pip install pre-commit black bandit safety
 
@@ -87,6 +90,12 @@ container-build: ## Build the Django app container image
 
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
+
+container-stop: ## Stop the Django app container with DOCKER_CONTAINER_ID
+	docker stop $(DOCKER_CONTAINER_ID)
+
+container-rm: ## Remove the Django app container with DOCKER_CONTAINER_ID
+	docker rm $(DOCKER_CONTAINER_ID)
 
 container-clean: ## Remove the Django app container image
 	docker image rm $(DOCKER_IMG)
@@ -170,4 +179,4 @@ security: ## Run all security scans
 
 default: help
 
-.PHONY: services-start services-stop services-logs
+.PHONY: services-start services-stop services-logs ci-start ci-stop

@@ -5,6 +5,11 @@ from core.celery import app as celery_app
 from core import tasks
 import contextlib
 import io
+import time
+import logging
+
+
+logger = logging.getLogger("tasks_tests")
 
 
 @celery_app.task
@@ -29,6 +34,38 @@ class CeleryTestCase(TransactionTestCase):
 
         # Close worker
         cls.celery_worker.__exit__(None, None, None)
+
+    def wait_for_workers_to_finish(self):
+        status = self.get_celery_worker_status()
+        tries = 0
+        while status["queued"] != 0:
+            tries += 1
+            if tries > 10:
+                break
+            logger.debug("[{}] waiting for Celery to finish...".format(tries))
+            time.sleep(1)
+            status = self.get_celery_worker_status()
+        return tries
+
+    def get_celery_worker_status(self):
+        insp = celery_app.control.inspect()
+        availability = insp.ping()
+        stats = insp.stats()
+        registered_tasks = insp.registered()
+        active_tasks = insp.active()
+        scheduled_tasks = insp.scheduled()
+        queued = 0
+        for host, task_list in scheduled_tasks.items():
+            queued += len(task_list)
+        result = {
+            "availability": availability,
+            "stats": stats,
+            "registered_tasks": registered_tasks,
+            "active_tasks": active_tasks,
+            "scheduled_tasks": scheduled_tasks,
+            "queued": queued,
+        }
+        return result
 
 
 class CoreTasksTestCase(CeleryTestCase):
