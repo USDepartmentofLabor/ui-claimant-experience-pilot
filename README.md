@@ -153,7 +153,7 @@ Make sure the proxy is running (`make dev-ssl-proxy`). Then:
 If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
 Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
-Note: you may get a "your connection is not private" warning in your browser.  In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
+Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
 
 ## Identity Providers
 
@@ -176,6 +176,10 @@ but are available for running indepedently as well.
 
 In addition, we rely on the GitHub [Dependabot](https://docs.github.com/en/code-security/supply-chain-security/managing-vulnerabilities-in-your-projects-dependencies/configuring-dependabot-security-updates)
 tool to maintain dependencies.
+
+## Development
+
+When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
 
 ## Deployment
 

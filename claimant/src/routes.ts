@@ -1,8 +1,8 @@
 const Routes = {
-  HOME_PAGE: '/',
-  WHOAMI_PAGE: '/whoami',
-  FORMS_PAGE: '/forms',
-  ICONS_PAGE: '/icons',
-}
+  HOME_PAGE: "/",
+  WHOAMI_PAGE: "/whoami",
+  FORMS_PAGE: "/forms",
+  ICONS_PAGE: "/icons",
+};
 
-export { Routes }
+export { Routes };

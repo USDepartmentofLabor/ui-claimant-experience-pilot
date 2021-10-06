@@ -4,13 +4,13 @@
 */
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
-module.exports = function(app) {
+module.exports = function (app) {
   app.use(
-    '/api/**',
+    "/api/**",
     createProxyMiddleware({
-      target: 'https://sandbox.ui.dol.gov:4430',
+      target: "https://sandbox.ui.dol.gov:4430",
       secure: false, // self-signed certs
       changeOrigin: true,
     })

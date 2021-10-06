@@ -1,37 +1,40 @@
 <html>
- <head>
-  <title>UI Test | Login</title>
-  <style>
-    label {
-      display: block;
-    }
-  </style>
- </head>
+  <head>
+    <title>UI Test | Login</title>
+    <style>
+      label {
+        display: block;
+      }
+    </style>
+  </head>
 
- <body>
-  <form action="/login/" method="POST">
-   <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-   <fieldset>
-     <legend>Test Login</legend>
+  <body>
+    <form action="/login/" method="POST">
+      <input
+        type="hidden"
+        name="csrfmiddlewaretoken"
+        value="{{ csrf_token }}"
+      />
+      <fieldset>
+        <legend>Test Login</legend>
 
-     <label for="first_name">First Name</label>
-     <input type="text" id="first_name" name="first_name" />
-     <label for="last_name">Last Name</label>
-     <input type="text" id="last_name" name="last_name" />
-     <label for="email">Email</label>
-     <input type="text" id="email" name="email" />
-     <label for="birthdate">Birthdate</label>
-     <input type="text" id="birthdate" name="birthdate" />
-     <label for="ssn">SSN</label>
-     <input type="text" id="ssn" name="ssn" />
-     <label for="phone">Phone</label>
-     <input type="text" id="phone" name="phone" />
+        <label for="first_name">First Name</label>
+        <input type="text" id="first_name" name="first_name" />
+        <label for="last_name">Last Name</label>
+        <input type="text" id="last_name" name="last_name" />
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" />
+        <label for="birthdate">Birthdate</label>
+        <input type="text" id="birthdate" name="birthdate" />
+        <label for="ssn">SSN</label>
+        <input type="text" id="ssn" name="ssn" />
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" name="phone" />
 
-     <div>
-      <button type="submit">Login</button>
-     </div>
-   </fieldset>
-  </form>
- </body>
-
+        <div>
+          <button type="submit">Login</button>
+        </div>
+      </fieldset>
+    </form>
+  </body>
 </html>

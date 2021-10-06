@@ -3,7 +3,7 @@
 context("Initial Claim form", { scrollBehavior: false }, () => {
   it("sends test email", () => {
     cy.login();
-    cy.on('window:alert', (str) => {
+    cy.on("window:alert", (str) => {
       expect(str).to.equal("Email sent to someone@example.com");
     });
     cy.visit("/claimant/");

@@ -4,15 +4,17 @@ import React, { useState, useEffect } from "react";
 import httpclient from "../utils/httpclient";
 
 export type WithClaimantProps = {
-  currentClaimant: WhoAmI | undefined,
-  handleLogin: () => void,
-  initializingClaimant: boolean,
-  setCurrentClaimant: React.Dispatch<React.SetStateAction<WhoAmI | undefined>>
-}
+  currentClaimant: WhoAmI | undefined;
+  handleLogin: () => void;
+  initializingClaimant: boolean;
+  setCurrentClaimant: React.Dispatch<React.SetStateAction<WhoAmI | undefined>>;
+};
 
 type FullProps<P extends Record<string, unknown>> = P & WithClaimantProps;
 
-const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React.ComponentType<FullProps<P>>): React.ComponentType<P> => {
+const withClaimant = <P extends Record<string, unknown>>(
+  WrappedComponent: React.ComponentType<FullProps<P>>
+): React.ComponentType<P> => {
   const ClaimantHOC = (props: P) => {
     const [currentClaimant, setCurrentClaimant] = useState<WhoAmI>();
     const [initializingClaimant, setInitializingClaimant] = useState(true);
@@ -28,9 +30,12 @@ const withClaimant = <P extends Record<string, unknown>>(WrappedComponent: React
     useEffect(() => {
       let cancelled = false;
 
-      if (! currentClaimant) {
+      if (!currentClaimant) {
         httpclient
-          .get("/api/whoami/", { withCredentials: true, headers: {"X-DOL": "axios"} })
+          .get("/api/whoami/", {
+            withCredentials: true,
+            headers: { "X-DOL": "axios" },
+          })
           .then((resp) => {
             if (cancelled) return;
 

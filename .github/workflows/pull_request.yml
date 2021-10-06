@@ -14,46 +14,46 @@ jobs:
       matrix:
         node-version: [14.16]
     steps:
-    - uses: actions/checkout@v2
-    - name: Start CI docker compose
-      run: make ci-start
-      env:
-        DOCKER_BUILDKIT: 1
-        ENV_NAME: ci
-    - name: Run Django Tests
-      run: make ci-tests
-    # we must build the react apps (again) in the native host in order to run the tests
-    # and to run the cypress (browser) tests against the web server in the running docker-compose
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-        cache-dependency-path: 'claimant/yarn.lock'
-    - name: Install JS dependencies
-      run: make react-deps
-    - name: Add /etc/hosts entry
-      run: echo '127.0.0.1  sandbox.ui.dol.gov' | sudo tee -a /etc/hosts
-    - name: Install SSL proxy
-      run: |
-        curl -LJ "https://getbin.io/suyashkumar/ssl-proxy?os=linux" | tar xvz
-        mv ssl-proxy-linux-amd64 ssl-proxy
-    - name: Start SSL proxy
-      run: PATH=.:$PATH make dev-ssl-proxy &
-    - name: Cypress tests
-      uses: cypress-io/github-action@v2
-      with:
-        browser: chrome
-        headless: true
-        working-directory: claimant
-    - name: Run JS Tests
-      run: make test-react
-    - name: Docker logs
-      run: docker logs web --details
-      if: failure()
-    - name: Stop CI docker compose
-      run: make ci-stop
-      if: always()
+      - uses: actions/checkout@v2
+      - name: Start CI docker compose
+        run: make ci-start
+        env:
+          DOCKER_BUILDKIT: 1
+          ENV_NAME: ci
+      - name: Run Django Tests
+        run: make ci-tests
+      # we must build the react apps (again) in the native host in order to run the tests
+      # and to run the cypress (browser) tests against the web server in the running docker-compose
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "claimant/yarn.lock"
+      - name: Install JS dependencies
+        run: make react-deps
+      - name: Add /etc/hosts entry
+        run: echo '127.0.0.1  sandbox.ui.dol.gov' | sudo tee -a /etc/hosts
+      - name: Install SSL proxy
+        run: |
+          curl -LJ "https://getbin.io/suyashkumar/ssl-proxy?os=linux" | tar xvz
+          mv ssl-proxy-linux-amd64 ssl-proxy
+      - name: Start SSL proxy
+        run: PATH=.:$PATH make dev-ssl-proxy &
+      - name: Cypress tests
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          headless: true
+          working-directory: claimant
+      - name: Run JS Tests
+        run: make test-react
+      - name: Docker logs
+        run: docker logs web --details
+        if: failure()
+      - name: Stop CI docker compose
+        run: make ci-stop
+        if: always()
 
   lint:
     name: Code lint
@@ -64,24 +64,24 @@ jobs:
         python-version: [3.9]
         node-version: [14.16]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-        cache-dependency-path: 'claimant/yarn.lock'
-    - uses: actions/cache@v2
-      with:
-        key: pre-commit-dot-cache-{{ hashFiles(".pre-commit-config.yaml") }}
-        path: ~/.cache/pre-commit
-    - name: Install Dev Dependencies
-      run: make dev-deps react-deps
-    - name: Lint
-      run: make lint
-    - name: Check outdated dependencies
-      run: make list-outdated
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "claimant/yarn.lock"
+      - uses: actions/cache@v2
+        with:
+          key: pre-commit-dot-cache-{{ hashFiles(".pre-commit-config.yaml") }}
+          path: ~/.cache/pre-commit
+      - name: Install Dev Dependencies
+        run: make dev-deps react-deps
+      - name: Lint
+        run: make lint
+      - name: Check outdated dependencies
+        run: make list-outdated

@@ -1,27 +1,27 @@
 # Title of ADR
 
-* Status: [In progress or Decided]
-* Deciders: [Names of deciders]
-* Date: [Date created]
+- Status: [In progress or Decided]
+- Deciders: [Names of deciders]
+- Date: [Date created]
 
 Description and background on decision to be made
 
 ## Considered Alternatives
 
-* Option 1
-* Option 2
+- Option 1
+- Option 2
 
 ## Pros and Cons of the Alternatives
 
 ### Option 1
 
-* `+` A pro of the option
-* `-` A con of the option
+- `+` A pro of the option
+- `-` A con of the option
 
 ### Option 2
 
-* `+` A pro of the option
-* `-` A con of the option
+- `+` A pro of the option
+- `-` A con of the option
 
 ## Decision Outcome
 

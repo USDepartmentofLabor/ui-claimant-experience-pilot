@@ -16,7 +16,8 @@ parserOptions:
     jsx: true
 settings:
   react:
-    version: '17'
+    version: "17"
 rules:
-   "react/react-in-jsx-scope": "off"
-   "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
+  "react/react-in-jsx-scope": "off"
+  "react/jsx-filename-extension":
+    [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]

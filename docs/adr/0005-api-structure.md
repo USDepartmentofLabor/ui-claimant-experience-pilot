@@ -1,44 +1,44 @@
 # API Structure
 
-* Status: Decided
-* Deciders: Team consensus
-* Date: 2021-09-22
+- Status: Decided
+- Deciders: Team consensus
+- Date: 2021-09-22
 
 The Pilot application will need to serve two distinct groups of users: Claimants and SWAs. Each user group will
 require some kind of API. Some salient facts:
 
-* The APIs may have significantly different scaling needs. The total number of concurrent
-Claimants could be 1000+ times greater than SWAs.
-* The APIs will need to communicate with the same data stores (RDS, S3, ElastiCache).
-* Due to differing business use cases, the APIs may have different computing resource needs. E.g. a SWA API request may take 30 seconds
-to complete a query and fetch of submitted claims, while a single Claimant API request should never take longer than a second or two.
-* Managing multiple codebases can increase developer cognitive overhead tax.
-* DOL deployment and change management constraints place a relatively high cost (time) on deploying a single application to production.
+- The APIs may have significantly different scaling needs. The total number of concurrent
+  Claimants could be 1000+ times greater than SWAs.
+- The APIs will need to communicate with the same data stores (RDS, S3, ElastiCache).
+- Due to differing business use cases, the APIs may have different computing resource needs. E.g. a SWA API request may take 30 seconds
+  to complete a query and fetch of submitted claims, while a single Claimant API request should never take longer than a second or two.
+- Managing multiple codebases can increase developer cognitive overhead tax.
+- DOL deployment and change management constraints place a relatively high cost (time) on deploying a single application to production.
 
 ## Considered Alternatives
 
-* Create a separate Django project for the SWA API (microservices)
-* Include the SWA API and Claimant API in a single Django project (monolith)
+- Create a separate Django project for the SWA API (microservices)
+- Include the SWA API and Claimant API in a single Django project (monolith)
 
 ## Pros and Cons of the Alternatives
 
 ### Create a separate Django project for the SWA API
 
-* `+` independent deployment and scaling
-* `+` enforced separation of concerns could allow for engineering teams to work in parallel ([SOA](https://en.wikipedia.org/wiki/Service-oriented_architecture) principles)
-* `-` higher cognitive tax on developers
-* `-` multiple application deployments increases time cost with DOL infra
-* `-` the two APIs need to share a data model
-* `-` the two APIs would require duplicate configuration for talking to the same data stores
+- `+` independent deployment and scaling
+- `+` enforced separation of concerns could allow for engineering teams to work in parallel ([SOA](https://en.wikipedia.org/wiki/Service-oriented_architecture) principles)
+- `-` higher cognitive tax on developers
+- `-` multiple application deployments increases time cost with DOL infra
+- `-` the two APIs need to share a data model
+- `-` the two APIs would require duplicate configuration for talking to the same data stores
 
 ### Include the SWA API and Claimant API in a single Django project
 
-* `+` single deployment reduces friction with DOL infra
-* `+` single codebase reduces developer cognitive tax
-* `+` single data model reduces number of code lines to manage
-* `+` single set of data store configuration to manage
-* `-` scaling is tightly coupled
-* `-` leans heavily on team discipline to keep concerns properly encapsulated
+- `+` single deployment reduces friction with DOL infra
+- `+` single codebase reduces developer cognitive tax
+- `+` single data model reduces number of code lines to manage
+- `+` single set of data store configuration to manage
+- `-` scaling is tightly coupled
+- `-` leans heavily on team discipline to keep concerns properly encapsulated
 
 ## Decision Outcome
 

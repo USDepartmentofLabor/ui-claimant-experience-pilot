@@ -6,13 +6,13 @@ This template is designed as a list of examples, questions and/or prompts for te
 
 We prefer a directory layout that looks like:
 
-* README.md
-* CONTRIBUTING.md
-* LICENSE
-* core (Django application)
-* api (Django application)
-* claimant (React application)
-* ... other Django applications as the app evolves
+- README.md
+- CONTRIBUTING.md
+- LICENSE
+- core (Django application)
+- api (Django application)
+- claimant (React application)
+- ... other Django applications as the app evolves
 
 ## Fork or branch
 
@@ -20,7 +20,7 @@ For our project, we prefer that pull requests originate from branches within the
 
 ## Branch naming
 
-When creating branches within a shared repo, our naming conventions look like *ticketnumber-myinitials-feature-name*
+When creating branches within a shared repo, our naming conventions look like _ticketnumber-myinitials-feature-name_
 
 ## Creating PRs
 
