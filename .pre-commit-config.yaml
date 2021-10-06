@@ -15,7 +15,6 @@ repos:
       - id: check-ast
       - id: check-json
       - id: check-merge-conflict
-      - id: check-yaml
       - id: debug-statements
       - id: detect-private-key
       - id: fix-encoding-pragma
@@ -26,12 +25,6 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-
-  - repo: git://github.com/igorshubovych/markdownlint-cli
-    rev: v0.28.1
-    hooks:
-      - id: markdownlint
-        entry: markdownlint --ignore .github/*.md
 
   - repo: git://github.com/detailyang/pre-commit-shell
     rev: 1.0.5
