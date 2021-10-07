@@ -6,6 +6,7 @@ node_modules
 *.pem
 certs/
 .coverage
+static/
 
 # IDE configurations
 .idea

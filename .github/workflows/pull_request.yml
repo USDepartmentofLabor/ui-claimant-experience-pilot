@@ -48,6 +48,8 @@ jobs:
           working-directory: claimant
       - name: Run JS Tests
         run: make test-react
+      - name: Test nothing has changed
+        run: make diff-test
       - name: Docker logs
         run: docker logs web --details
         if: failure()

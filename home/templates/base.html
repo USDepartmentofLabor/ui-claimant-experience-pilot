@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html5>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="canonical" href="{{base_url}}" />
+    <link rel="shortlink" href="{{base_url}}" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{% static 'favicon.ico' %}"
+      type="image/vnd.microsoft.icon"
+    />
+    <link rel="revision" href="{{base_url}}" />
+    <title>
+      Unemployment Insurance Claim Application | U.S. Department of Labor
+    </title>
+
+    <script src="{% static 'js/uswds-init.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
+
+    <!-- styles intentionally hardcoded here as an extra reminder to remove.
+         we are doing just bare minimum definitions here until USWDS fully integrated.
+    -->
+    <style>
+      /* header */
+      .dol-header-logo img {
+        width: 56px;
+      }
+      .usa-logo__text {
+        font-size: 1.1875rem;
+        text-transform: uppercase;
+        margin-top: 20px;
+        padding-left: 65px;
+      }
+      .usa-navbar {
+        height: auto;
+      }
+      .usa-navbar .usa-logo {
+        padding: 8px 0;
+      }
+      /* USWDS seems to break nav here */
+      @media only screen and (min-width: 64em) {
+        .usa-header--extended .usa-logo {
+          margin-top: 0;
+          margin-bottom: 1rem;
+          padding-top: 0;
+        }
+        .usa-logo__text {
+          margin-top: 4px;
+          padding-top: 16px;
+        }
+        .usa-nav__secondary {
+          bottom: 2rem;
+        }
+      }
+      /* home page */
+      .usa-hero {
+        background-image: url("//www.dol.gov/sites/dolgov/files/OPA/images/hero-20201113-worker-with-face-covering.jpg");
+      }
+      .usa-hero__callout {
+        background-color: #fff;
+        color: #000;
+      }
+      .usa-hero__heading {
+        color: #000;
+      }
+      /* footer */
+      .dol-footer-seal .dol-seal img {
+        width: 120px;
+      }
+      .dol-footer-seal .footer-seal-block .dol-name-and-seal span {
+        font-size: 0.9375rem;
+        font-family: "Source Sans Pro", sans-serif;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .usa-footer__social-links {
+        justify-content: inherit;
+      }
+      .dol-utility-menu {
+        text-align: right;
+        padding-top: 20px;
+      }
+      .dol-utility-menu a {
+        color: #212121;
+        text-decoration: none;
+        padding: 0 20px;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        font-family: "Source Sans Pro", sans-serif;
+        font-size: 0.8125rem;
+        line-height: 17px;
+      }
+      .dol-utility-menu a + a {
+        border-left: 1px solid #a9a9a9;
+      }
+      .address-block {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+      #dol-footer-nav2 {
+        background-color: #fff;
+      }
+      #dol-footer-nav li + li {
+        border-left: 1px solid #aeb0b5;
+        border-top: 0;
+      }
+      #dol-footer-nav ul {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 15px 15px 15px 0;
+      }
+      #dol-footer-nav nav {
+        padding-top: 0;
+        margin-left: 4rem;
+      }
+      #dol-footer-nav a {
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body class="">
+    <script src="{% static 'js/uswds.min.js' %}"></script>
+    <section>{% include '_header.html' %}</section>
+    <section>{% block content %}{% endblock %}</section>
+    <section>{% include '_footer.html' %}</section>
+  </body>
+</html>

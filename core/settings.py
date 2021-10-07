@@ -97,6 +97,7 @@ if os.environ.get("COLOR_LOGGING", "false").lower() == "true":
             },
         },
         "loggers": {
+            "django.utils.autoreload": {"level": "INFO"},
             "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
         },
     }

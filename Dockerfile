@@ -81,6 +81,7 @@ FROM djangobase-${ENV_NAME} as django-final
 ARG ENV_NAME
 
 # precompile any static assets
+COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
 RUN make build-static
 
 ARG ENV_CLEANUP

@@ -24,7 +24,11 @@ mysql-cli: ## Connect to the MySQL server
 
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
+ifeq (, $(shell which docker))
+DOCKER_CONTAINER_ID := docker-is-not-installed
+else
 DOCKER_CONTAINER_ID := $(shell docker ps --filter ancestor=$(DOCKER_IMG) --format "{{.ID}}" -a)
+endif
 # list all react frontend apps here, space delimited
 REACT_APPS = claimant
 CI_ENV_FILE=core/.env-ci
@@ -120,8 +124,10 @@ build-static: export BUILD_STATIC=true
 build-static: ## Build the static assets (intended for during container-build (inside the container))
 	echo $$ENV_PATH
 	rm -rf static/
+	rm -f home/static/*.md
 	mkdir static
 	python manage.py collectstatic
+	cp home/templates/favicon.ico static/
 
 # the --mount option ignores the local build dir for what is on the image
 login: ## Log into the Django app docker container
@@ -176,6 +182,9 @@ security: ## Run all security scans
 	bandit -x ./.venv -r .
 	safety check
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make security; done
+
+diff-test: ## Fails if there are any local changes, using git diff
+	@changed_files=`git diff --name-only`; if [ "$$changed_files" != "" ]; then echo "Local changes exist:\n$$changed_files" && exit 1; fi
 
 default: help
 

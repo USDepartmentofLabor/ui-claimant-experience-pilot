@@ -16,11 +16,13 @@ Description and background on decision to be made
 ### Option 1
 
 - `+` A pro of the option
+- `±` A facet of the option that could be both positive and negative
 - `-` A con of the option
 
 ### Option 2
 
 - `+` A pro of the option
+- `±` A facet of the option that could be both positive and negative
 - `-` A con of the option
 
 ## Decision Outcome
