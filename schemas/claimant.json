@@ -66,7 +66,7 @@
         "type": "boolean"
     },
     "military-veteran": {
-        "description": "",
+        "description": "Unemployment Compensation for Ex-Servicemembers (CFR, Title 20, Chapter V, Part 614)",
         "type": "boolean"
     },
     "active-duty-start": {
@@ -126,7 +126,7 @@
         "type": "string"
     },
     "employment-able-to-work": {
-        "description": "",
+        "description": "Ability to Work (CFR, Title 20, Chapter V, Part 604.4)",
         "type": "boolean"
     },
     "employment-option-to-telework": {
@@ -134,7 +134,7 @@
         "type": "boolean"
     },
     "employment-available-to-work": {
-        "description": "",
+        "description": "Availability for Work (CFR, Title 20, Chapter V, Part 604.4)",
         "type": "boolean"
     },
     "employment-last-12-months": {
@@ -146,7 +146,7 @@
         "type": "string"
     },
     "employment-federal-employee": {
-        "description": "",
+        "description": "Unemployment Compensation for Federal Civilian Employees (CFR Title 20, Chapter V, Part 609)",
         "type": "boolean"
     },
     "employment-federal-employee-last-date": {
@@ -234,7 +234,7 @@
         "type": "string"
     },
     "unemployment-in-another-state": {
-        "description": "",
+        "description": "Interstate Arrangement for Combining Employment and Wages (CFR Title 20, Chapter V, Part 616)",
         "type": "boolean"
     },
     "unemployment-in-another-state-state": {
