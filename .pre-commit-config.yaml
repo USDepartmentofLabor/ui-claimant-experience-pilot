@@ -47,6 +47,8 @@ repos:
           - eslint@7.32.0
           - eslint-plugin-react@7.25.1
 
+  # hadolint v2.7.0 incorrectly points to a non-existent v2.6.1 docker image.
+  # stay pinned on v2.6.0 until that issue is fixed.
   - repo: https://github.com/hadolint/hadolint
     rev: v2.6.0
     hooks:
