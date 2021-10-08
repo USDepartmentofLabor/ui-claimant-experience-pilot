@@ -1,0 +1,32 @@
+// Configuration and theme settings
+// Used by both global SCSS and SCSS Modules
+// No actual CSS rules should be here, just settings.
+
+// USWDS standard theme settings and utilities
+@import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-general.scss";
+$theme-show-notifications: false;
+@import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-typography.scss";
+@import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-spacing.scss";
+@import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-color.scss";
+@import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-utilities.scss";
+@import "node_modules/uswds/src/stylesheets/packages/required";
+
+// App customizations and overrides
+
+/* GENERAL */
+$theme-image-path: "../../../img";
+
+/* TYPOGRAPHY */
+$theme-respect-user-font-size: false;
+$theme-root-font-size: 14px;
+$theme-font-path: "../../../fonts";
+$theme-font-type-sans: "public-sans";
+$theme-style-body-element: true;
+
+/* SPACING */
+$theme-grid-container-max-width: "desktop-lg";
+
+/* COLOR */
+
+/* COMPONENTS */
+$theme-hero-image: "../../../img/hero.png";

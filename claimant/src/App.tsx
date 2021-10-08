@@ -8,8 +8,6 @@ import {
   Link,
 } from "react-router-dom";
 
-import "@trussworks/react-uswds/lib/uswds.css";
-import "@trussworks/react-uswds/lib/index.css";
 import {
   GovBanner,
   Header,
@@ -25,7 +23,9 @@ import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
 import { AuthContainer } from "./common/AuthContainer";
 
-import "./App.css";
+// These classes are imported globally and can be used on every page
+import "./styles.scss";
+import "@trussworks/react-uswds/lib/index.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
