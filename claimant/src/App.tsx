@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import {
   BrowserRouter as Router,
@@ -22,14 +22,10 @@ import {
 import { Routes } from "./routes";
 import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
-import withClaimant, { WithClaimantProps } from "./hoc/with-claimant";
 
 import "./App.css";
 
-type Props = WithClaimantProps;
-
-function App(props: Props) {
-  const { currentClaimant } = props;
+function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { HOME_PAGE, WHOAMI_PAGE } = Routes;
 
@@ -45,33 +41,6 @@ function App(props: Props) {
       Who am I
     </NavLink>,
   ];
-
-  if (!currentClaimant) {
-    return (
-      <Router basename="/claimant">
-        <GovBanner />
-        <Header basic>
-          <div className="usa-nav-container">
-            <div className="usa-navbar">
-              <Title>
-                <Link to={HOME_PAGE}>Unemployment Insurance</Link>
-              </Title>
-            </div>
-          </div>
-        </Header>
-        <section className="usa-section">
-          <GridContainer>
-            <img
-              src="https://www.dol.gov/themes/opa_theme/img/logo-primary.svg"
-              alt="logo"
-              height="200"
-            />
-            <h2>Checking authorization...</h2>
-          </GridContainer>
-        </section>
-      </Router>
-    );
-  }
 
   return (
     <Router basename="/claimant">
@@ -102,10 +71,10 @@ function App(props: Props) {
         <GridContainer>
           <Switch>
             <Route path={WHOAMI_PAGE}>
-              {currentClaimant && <WhoAmIPage whoami={currentClaimant} />}
+              <WhoAmIPage />
             </Route>
             <Route path={HOME_PAGE}>
-              {currentClaimant && <HomePage whoami={currentClaimant} />}
+              <HomePage />
             </Route>
           </Switch>
         </GridContainer>
@@ -114,4 +83,4 @@ function App(props: Props) {
   );
 }
 
-export default withClaimant(App);
+export default App;
