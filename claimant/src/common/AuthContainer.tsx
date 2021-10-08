@@ -1,8 +1,17 @@
-import { RequestWrapper } from "../queries/RequestWrapper";
+import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../queries/whoami";
 
 const Auth: React.FC = ({ children }) => {
-  useWhoAmI();
+  const { error, isLoading } = useWhoAmI();
+
+  if (isLoading) {
+    return <AuthLoader />;
+  }
+
+  if (error) {
+    throw error;
+  }
+
   return <>{children}</>;
 };
 
@@ -19,8 +28,8 @@ const AuthLoader = () => (
 
 export const AuthContainer: React.FC = ({ children }) => {
   return (
-    <RequestWrapper fallback={<AuthLoader />}>
+    <RequestErrorBoundary>
       <Auth>{children}</Auth>
-    </RequestWrapper>
+    </RequestErrorBoundary>
   );
 };

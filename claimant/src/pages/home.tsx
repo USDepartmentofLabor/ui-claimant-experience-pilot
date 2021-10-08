@@ -2,17 +2,17 @@ import { Formik } from "formik";
 import { Button, Form } from "@trussworks/react-uswds";
 
 import { useWhoAmI } from "../queries/whoami";
-import { RequestWrapper } from "../queries/RequestWrapper";
 import { useSendEmail } from "../queries/claim";
+import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 
 const HomePage = () => {
   return (
     <main>
       <h1>Welcome</h1>
       <p className="usa-intro">File an unemployment insurance claim.</p>
-      <RequestWrapper>
+      <RequestErrorBoundary>
         <ClaimForm />
-      </RequestWrapper>
+      </RequestErrorBoundary>
     </main>
   );
 };
@@ -20,15 +20,15 @@ const HomePage = () => {
 export default HomePage;
 
 const ClaimForm = () => {
-  const { data: whoami } = useWhoAmI();
+  const { data: whoami, error, isLoading } = useWhoAmI();
   const sendEmail = useSendEmail();
 
-  if (!whoami) {
-    return <></>;
+  if (isLoading) {
+    return <>Loading</>;
   }
 
-  if (sendEmail.error) {
-    throw sendEmail.error;
+  if (error || sendEmail.error || !whoami) {
+    throw error || sendEmail.error;
   }
 
   return (

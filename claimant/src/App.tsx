@@ -30,7 +30,6 @@ import "./App.css";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: true,
       retry: 0,
       // Cache queries up to five minutes by default
       cacheTime: 1000 * 5 * 60,

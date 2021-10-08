@@ -1,12 +1,15 @@
-import React from "react";
-import { RequestWrapper } from "../queries/RequestWrapper";
+import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../queries/whoami";
 
 const WhoAmI = () => {
-  const { data: whoami } = useWhoAmI();
+  const { data: whoami, isLoading, error } = useWhoAmI();
 
-  if (!whoami) {
-    return <></>;
+  if (isLoading) {
+    return <>Loading</>;
+  }
+
+  if (error || !whoami) {
+    throw error;
   }
 
   return (
@@ -29,9 +32,9 @@ const WhoAmIPage = () => {
       <p className="usa-intro">
         Displays the account attributes from the AAL2/IAL2 session
       </p>
-      <RequestWrapper>
+      <RequestErrorBoundary>
         <WhoAmI />
-      </RequestWrapper>
+      </RequestErrorBoundary>
     </main>
   );
 };
