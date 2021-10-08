@@ -70,14 +70,15 @@ migrate: ## Run Django data model migrations (inside container)
 # by default the number of cores on the machine. See
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
 # By default logs are written to /var/log/celery
+CELERY_OPTS = w1 -c 2 -A core -l info
 celery-start: ## Run the celery queue manager (inside container)
-	celery multi start w1 w2 -A core -l info
+	celery multi start $(CELERY_OPTS)
 
 celery-restart: ## Restart the celery queue manager (inside container)
-	celery multi restart w1 w2 -A core -l info
+	celery multi restart $(CELERY_OPTS)
 
 celery-stop: ## Stop the celery queue manager (inside container)
-	celery multi stopwait w1 w2 -A core -l info
+	celery multi stopwait $(CELERY_OPTS)
 
 celery-status: ## Display status of celery worker(s) (inside the container)
 	celery -A core status
