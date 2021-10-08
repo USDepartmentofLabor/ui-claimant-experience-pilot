@@ -23,6 +23,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Routes } from "./routes";
 import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
+import { AuthContainer } from "./common/AuthContainer";
 
 import "./App.css";
 
@@ -84,14 +85,16 @@ function App() {
 
         <section className="usa-section">
           <GridContainer>
-            <Switch>
-              <Route path={WHOAMI_PAGE}>
-                <WhoAmIPage />
-              </Route>
-              <Route path={HOME_PAGE}>
-                <HomePage />
-              </Route>
-            </Switch>
+            <AuthContainer>
+              <Switch>
+                <Route path={WHOAMI_PAGE}>
+                  <WhoAmIPage />
+                </Route>
+                <Route path={HOME_PAGE}>
+                  <HomePage />
+                </Route>
+              </Switch>
+            </AuthContainer>
           </GridContainer>
         </section>
       </Router>
