@@ -18,12 +18,26 @@ import {
   PrimaryNav,
   GridContainer,
 } from "@trussworks/react-uswds";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import { Routes } from "./routes";
 import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
 
 import "./App.css";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: 0,
+      // Cache queries up to five minutes by default
+      cacheTime: 1000 * 5 * 60,
+      // Queries are immediately stale. Can change on a per-query basis.
+      staleTime: 0,
+    },
+  },
+});
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -43,43 +57,45 @@ function App() {
   ];
 
   return (
-    <Router basename="/claimant">
-      <GovBanner />
-      <Header basic>
-        <div className="usa-nav-container">
-          <div className="usa-navbar">
-            <Title>
-              <Link to={HOME_PAGE}>Unemployment Insurance</Link>
-            </Title>
-            <NavMenuButton
-              label="Menu"
-              onClick={toggleMobileNav}
-              className="usa-menu-btn"
+    <QueryClientProvider client={queryClient}>
+      <Router basename="/claimant">
+        <GovBanner />
+        <Header basic>
+          <div className="usa-nav-container">
+            <div className="usa-navbar">
+              <Title>
+                <Link to={HOME_PAGE}>Unemployment Insurance</Link>
+              </Title>
+              <NavMenuButton
+                label="Menu"
+                onClick={toggleMobileNav}
+                className="usa-menu-btn"
+              />
+            </div>
+
+            <PrimaryNav
+              aria-label="Primary navigation"
+              items={navItems}
+              onToggleMobileNav={toggleMobileNav}
+              mobileExpanded={mobileNavOpen}
             />
           </div>
+        </Header>
 
-          <PrimaryNav
-            aria-label="Primary navigation"
-            items={navItems}
-            onToggleMobileNav={toggleMobileNav}
-            mobileExpanded={mobileNavOpen}
-          />
-        </div>
-      </Header>
-
-      <section className="usa-section">
-        <GridContainer>
-          <Switch>
-            <Route path={WHOAMI_PAGE}>
-              <WhoAmIPage />
-            </Route>
-            <Route path={HOME_PAGE}>
-              <HomePage />
-            </Route>
-          </Switch>
-        </GridContainer>
-      </section>
-    </Router>
+        <section className="usa-section">
+          <GridContainer>
+            <Switch>
+              <Route path={WHOAMI_PAGE}>
+                <WhoAmIPage />
+              </Route>
+              <Route path={HOME_PAGE}>
+                <HomePage />
+              </Route>
+            </Switch>
+          </GridContainer>
+        </section>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
