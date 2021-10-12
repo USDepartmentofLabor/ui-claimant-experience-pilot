@@ -1,5 +1,5 @@
 celery==5.1.2
-colorlog==6.4.1
+colorlog==6.5.0
 Django==3.2.8
 django-cors-headers==3.10.0
 django-environ==0.7.0
