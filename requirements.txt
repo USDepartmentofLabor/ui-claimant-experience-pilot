@@ -8,7 +8,7 @@ gunicorn==20.1.0
 jwcrypto==1.0
 git+https://github.com/trussworks/logindotgov-oidc-py.git@ec548a7#egg=logindotgov-oidc
 mysqlclient==2.0.3
-pyjwt==2.1.0
+pyjwt==2.2.0
 redis==3.5.3
 request-id-django-log==0.2.0
 requests==2.26.0
