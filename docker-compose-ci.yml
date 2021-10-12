@@ -15,11 +15,7 @@ services:
     image: dolui:${ENV_NAME}
     build:
       context: .
-      args:
-        ENV_NAME: ${ENV_NAME}
+      target: djangobase-ci
     ports:
       - "8004:8000"
-    # set env at run time, but also populate the build args values
-    env_file:
-      - ./core/.env-ci
     command: ["wait-for-it", "rds:3306", "--", "./start-server.sh"]

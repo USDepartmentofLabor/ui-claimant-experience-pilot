@@ -47,7 +47,7 @@ ci-stop: ## Stop Django app's supporting services (in CI)
 
 ci-tests: ## Run Django app tests in Docker
 	docker-compose $(CI_OPTS) logs --tail="all"
-	docker exec -e ENV_PATH=/app/core/.env-ci web ./run-ci-tests.sh
+	docker exec web ./run-ci-tests.sh
 
 ci-test: ci-tests ## Alias for ci-tests
 
@@ -62,6 +62,9 @@ lint-fix: ## Fix lint-checking issues
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make lint-fix ; done
 
 lint: lint-check lint-fix ## Lint the code
+
+dockerlint-run: ## Run redcoolbeans/dockerlint
+	docker run --rm -v "$(PWD)/Dockerfile":/Dockerfile:ro redcoolbeans/dockerlint:0.3.1
 
 migrate: ## Run Django data model migrations (inside container)
 	python manage.py migrate
@@ -91,7 +94,7 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./claimant/.env-example ./claimant/.env
 
 container-build: ## Build the Django app container image
-	docker build -f Dockerfile -t $(DOCKER_IMG) .
+	docker build -f Dockerfile -t $(DOCKER_IMG) --target djangobase-devlocal .
 
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
@@ -114,16 +117,9 @@ secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
 x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
 	scripts/gen-x509-certs.sh
 
-# important! sets the path to the correct .env file to use (e.g. ENV_NAME=ci)
-ifeq ($(ENV_NAME),)
-  ENV_FILENAME = .env
-else
-  ENV_FILENAME = .env-$(ENV_NAME)
-endif
-build-static: export ENV_PATH=/app/core/$(ENV_FILENAME)
+# this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 build-static: ## Build the static assets (intended for during container-build (inside the container))
-	echo $$ENV_PATH
 	rm -rf static/
 	rm -f home/static/*.md
 	mkdir static

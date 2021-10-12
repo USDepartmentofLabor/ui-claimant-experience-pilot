@@ -1,5 +1,3 @@
-ARG ENV_NAME
-
 FROM node:14.16.0 as reactapps
 WORKDIR /app
 
@@ -45,48 +43,49 @@ COPY certs ./certs
 
 # copy over just the precompiled react app(s)
 COPY --from=reactapps /app/claimant/build /app/claimant/build
+# copy USWDS static assets for Django to consume
+COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
 
-# we define multiple base layers with ENV_NAME as a suffix, then pick one based on ARG.
-FROM djangobase as djangobase-ci
-RUN echo "ENV_NAME=ci"
-COPY run-ci-tests.sh .
-# leave .env-ci intact for tests to run
-ARG ENV_CLEANUP=core/.env-example
-RUN pip install --no-cache-dir -r requirements-ci.txt && \
-  echo SECRET_KEY=`make secret SECRET_LENGTH=64` >> core/.env-ci && \
-  echo REDIS_SECRET_KEY=`make secret SECRET_LENGTH=32` >> core/.env-ci && \
-  echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env-ci
+CMD ["./start-server.sh"]
 
-FROM djangobase as djangobase-wcms
-RUN echo "ENV_NAME=wcms"
-# leave the .env file intact
-ARG ENV_CLEANUP=core/.env-*
-# TODO create an actual .env-wcms if we need special build-time vars
-RUN cp core/.env-example core/.env-wcms && \
-  echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
-# TODO remove this before we go to staging
-ENV DEBUG=true
+##########################################
+# for local development
 
-FROM djangobase as djangobase-
-ARG ENV_CLEANUP=core/.env-*
-RUN echo "ENV_NAME build-arg is undefined" && \
-  if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi && \
+FROM djangobase as djangobase-devlocal
+RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi && \
   pip install --no-cache-dir -r requirements-ci.txt
 
-# pick the layer to run env-specific tasks within.
-# linter exception here because we include a variable in the name.
-# hadolint ignore=DL3006
-FROM djangobase-${ENV_NAME} as django-final
-# invoke inside the FROM scope so that make build-static gets it as an env var.
-ARG ENV_NAME
-
-# precompile any static assets
-COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
-RUN make build-static
-
-ARG ENV_CLEANUP
-RUN rm -f ${ENV_CLEANUP} && \
+# leave the .env file intact
+RUN make build-static && \
+  rm -f core/.env-* && \
   rm -f requirements*.txt && \
   apt-get purge -y --auto-remove gcc
 
-CMD ["./start-server.sh"]
+##########################################
+# for ci environment
+
+FROM djangobase as djangobase-ci
+COPY run-ci-tests.sh .
+RUN pip install --no-cache-dir -r requirements-ci.txt && \
+  cp core/.env-ci core/.env && \
+  echo SECRET_KEY=`make secret SECRET_LENGTH=64` >> core/.env && \
+  echo REDIS_SECRET_KEY=`make secret SECRET_LENGTH=32` >> core/.env && \
+  echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
+
+# leave the .env file intact
+RUN make build-static && \
+  rm -f core/.env-* && \
+  rm -f requirements*.txt && \
+  apt-get purge -y --auto-remove gcc
+
+##########################################
+# for deployed environment
+
+FROM djangobase as djangobase-wcms
+RUN echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
+
+# leave the .env file intact
+RUN make build-static && \
+  rm -f core/.env-* && \
+  rm -f requirements*.txt && \
+  apt-get purge -y --auto-remove gcc
