@@ -21,3 +21,5 @@ rules:
   "react/react-in-jsx-scope": "off"
   "react/jsx-filename-extension":
     [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
+  "@typescript-eslint/explicit-module-boundary-types": "off"
+  "react/prop-types": "off"

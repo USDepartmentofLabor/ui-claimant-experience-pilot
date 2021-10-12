@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import {
   BrowserRouter as Router,
@@ -18,18 +18,28 @@ import {
   PrimaryNav,
   GridContainer,
 } from "@trussworks/react-uswds";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import { Routes } from "./routes";
 import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
-import withClaimant, { WithClaimantProps } from "./hoc/with-claimant";
+import { AuthContainer } from "./common/AuthContainer";
 
 import "./App.css";
 
-type Props = WithClaimantProps;
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 0,
+      // Cache queries up to five minutes by default
+      cacheTime: 1000 * 5 * 60,
+      // Queries are immediately stale. Can change on a per-query basis.
+      staleTime: 0,
+    },
+  },
+});
 
-function App(props: Props) {
-  const { currentClaimant } = props;
+function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { HOME_PAGE, WHOAMI_PAGE } = Routes;
 
@@ -46,8 +56,8 @@ function App(props: Props) {
     </NavLink>,
   ];
 
-  if (!currentClaimant) {
-    return (
+  return (
+    <QueryClientProvider client={queryClient}>
       <Router basename="/claimant">
         <GovBanner />
         <Header basic>
@@ -56,62 +66,39 @@ function App(props: Props) {
               <Title>
                 <Link to={HOME_PAGE}>Unemployment Insurance</Link>
               </Title>
+              <NavMenuButton
+                label="Menu"
+                onClick={toggleMobileNav}
+                className="usa-menu-btn"
+              />
             </div>
+
+            <PrimaryNav
+              aria-label="Primary navigation"
+              items={navItems}
+              onToggleMobileNav={toggleMobileNav}
+              mobileExpanded={mobileNavOpen}
+            />
           </div>
         </Header>
+
         <section className="usa-section">
           <GridContainer>
-            <img
-              src="https://www.dol.gov/themes/opa_theme/img/logo-primary.svg"
-              alt="logo"
-              height="200"
-            />
-            <h2>Checking authorization...</h2>
+            <AuthContainer>
+              <Switch>
+                <Route path={WHOAMI_PAGE}>
+                  <WhoAmIPage />
+                </Route>
+                <Route path={HOME_PAGE}>
+                  <HomePage />
+                </Route>
+              </Switch>
+            </AuthContainer>
           </GridContainer>
         </section>
       </Router>
-    );
-  }
-
-  return (
-    <Router basename="/claimant">
-      <GovBanner />
-      <Header basic>
-        <div className="usa-nav-container">
-          <div className="usa-navbar">
-            <Title>
-              <Link to={HOME_PAGE}>Unemployment Insurance</Link>
-            </Title>
-            <NavMenuButton
-              label="Menu"
-              onClick={toggleMobileNav}
-              className="usa-menu-btn"
-            />
-          </div>
-
-          <PrimaryNav
-            aria-label="Primary navigation"
-            items={navItems}
-            onToggleMobileNav={toggleMobileNav}
-            mobileExpanded={mobileNavOpen}
-          />
-        </div>
-      </Header>
-
-      <section className="usa-section">
-        <GridContainer>
-          <Switch>
-            <Route path={WHOAMI_PAGE}>
-              {currentClaimant && <WhoAmIPage whoami={currentClaimant} />}
-            </Route>
-            <Route path={HOME_PAGE}>
-              {currentClaimant && <HomePage whoami={currentClaimant} />}
-            </Route>
-          </Switch>
-        </GridContainer>
-      </section>
-    </Router>
+    </QueryClientProvider>
   );
 }
 
-export default withClaimant(App);
+export default App;

@@ -11,6 +11,7 @@
     "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-query": "^3.25.1",
     "react-router-dom": "5.3.0",
     "react-scripts": "^4.0.3",
     "universal-cookie": "^4.0.4",
@@ -31,6 +32,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.0",
     "http-proxy-middleware": "^2.0.1",
+    "msw": "^0.35.0",
     "pa11y": "^6.0.1",
     "prettier": "2.4.1",
     "retire": "^3.0.3",
@@ -40,7 +42,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --testURL https://sandbox.ui.dol.gov/claimant",
     "eject": "react-scripts eject"
   },
   "browserslist": {
