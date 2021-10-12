@@ -56,6 +56,17 @@ repos:
 
   - repo: local
     hooks:
+      - id: make-dockerlint
+        name: redcoolbeans/dockerlint
+        entry: make
+        description: Runs make dockerlint-run
+        language: system
+        args: ["dockerlint-run"]
+        files: Dockerfile
+        pass_filenames: false
+
+  - repo: local
+    hooks:
       - id: make-security
         name: Check Security
         entry: make
