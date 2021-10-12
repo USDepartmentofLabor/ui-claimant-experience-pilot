@@ -84,6 +84,8 @@ RUN make build-static && \
 FROM djangobase as djangobase-wcms
 RUN echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 
+ARG ENV_PATH=/app/core/.env-example
+
 # leave the .env file intact
 RUN make build-static && \
   rm -f core/.env-* && \
