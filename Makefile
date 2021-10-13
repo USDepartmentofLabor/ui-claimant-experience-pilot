@@ -153,6 +153,7 @@ test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
 	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
+	coverage xml --fail-under 90
 
 test-react: ## Run React tests
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make test ; done
