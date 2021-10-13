@@ -125,6 +125,7 @@ build-static: ## Build the static assets (intended for during container-build (i
 	mkdir static
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
+	cp home/templates/sureroute-test-object.html static/
 
 # the --mount option ignores the local build dir for what is on the image
 login: ## Log into the Django app docker container
