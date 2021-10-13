@@ -66,7 +66,7 @@ If you need to run the development SMTP server (does not send actual email, just
 (.venv) % make smtp-server
 ```
 
-NOTE that the SMTP server runs in the foreground, like the HTTPS proxy, so start it in a dedicated terminal window. You can stop it with `Ctrl-C`.
+NOTE that the SMTP server runs in the foreground, so start it in a dedicated terminal window. You can stop it with `Ctrl-C`.
 
 If you ever need to connect to the Redis service directly from the terminal with the `redis-cli` tool (assuming you already have it installed),
 use the make target:
@@ -112,16 +112,20 @@ You will need to install it somewhere locally in your `PATH`, and create a symli
 
 which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ and proxy to the Django server running at http://sandbox.ui.dol.gov:8004/
 
-### Home page
+Like the SMTP server, the HTTPS proxy will log to stdout so start it in its own terminal window.
 
-The default home page is a static file in `home/templates/index.html`. In theory it can be templatized for
-some dynamic rendering via the Django templating system. It is managed separately from the React application(s).
+### Home page and Django templates
+
+The default home page is a static file in `home/templates/index.html`. It uses the Django templating system. It is managed separately from the React application(s).
+
+There are additional static template files in `home/templates` that are used during the Identity Provider authentication workflow. They all share and extend
+a common `base.html` template.
 
 ### React frontend
 
-The frontend application is found inside of `./initclaim`. The `initclaim` application has its own README and `make` commands.
+The frontend application is found inside of `./claimant`. The `claimant` application has its own README and `make` commands.
 
-Set up your `.env` file for each React application.
+Set up your `.env` file for the React application.
 
 ```sh
 % cp claimant/.env-example claimant/.env
@@ -150,10 +154,11 @@ Make sure the proxy is running (`make dev-ssl-proxy`). Then:
 (.venv) % make build
 ```
 
-If your Django app is running, it's available at http://sandbox.ui.dol.gov:8004/claimant/.
+If your Django app is running, it's available at https://sandbox.ui.dol.gov:4430/claimant/.
 Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
 
-Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway. If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. try clearing your browser cache and cookies.
+Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway.
+If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. Try clearing your browser cache and cookies.
 
 ## Identity Providers
 
