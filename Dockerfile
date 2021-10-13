@@ -46,6 +46,11 @@ COPY --from=reactapps /app/claimant/build /app/claimant/build
 # copy USWDS static assets for Django to consume
 COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
 
+ARG APPLICATION_VERSION=""
+ARG APPLICATION_TIMESTAMP=""
+ENV UI_API_SHA=${APPLICATION_VERSION}
+ENV BUILD_TIME=${APPLICATION_TIMESTAMP}
+
 CMD ["./start-server.sh"]
 
 ##########################################
@@ -82,12 +87,10 @@ RUN make build-static && \
 # for deployed environment
 
 FROM djangobase as djangobase-wcms
-RUN echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 
 ARG ENV_PATH=/app/core/.env-example
 
-# leave the .env file intact
 RUN make build-static && \
-  rm -f core/.env-* && \
+  rm -f core/.env* && \
   rm -f requirements*.txt && \
   apt-get purge -y --auto-remove gcc
