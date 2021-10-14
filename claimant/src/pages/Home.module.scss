@@ -1,0 +1,11 @@
+@import "../theme";
+
+// Example using USWDS macros and tokens
+.hello {
+  @include u-border("red-warm-50");
+  background-color: color("violet-warm-10");
+  @include u-font("mono", 10);
+  font-weight: 800;
+  padding: units(1);
+  margin-top: units(2);
+}

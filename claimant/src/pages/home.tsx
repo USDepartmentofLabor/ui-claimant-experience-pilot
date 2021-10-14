@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import { Button, Form } from "@trussworks/react-uswds";
-
+import HomeStyles from "./Home.module.scss";
 import { useWhoAmI } from "../queries/whoami";
 import { useSendEmail } from "../queries/claim";
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
@@ -10,6 +10,9 @@ const HomePage = () => {
     <main>
       <h1>Welcome</h1>
       <p className="usa-intro">File an unemployment insurance claim.</p>
+      <section className="usa-section">
+        <p className={HomeStyles.hello}>Hello from a CSS Module style</p>
+      </section>
       <RequestErrorBoundary>
         <ClaimForm />
       </RequestErrorBoundary>
