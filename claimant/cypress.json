@@ -13,10 +13,10 @@
   "viewportWidth": 1920,
   "viewportHeight": 1080,
   "lighthouse": {
-    "performance": 1,
-    "accessibility": 1,
-    "best-practices": 1,
-    "seo": 1,
-    "pwa": 1
+    "performance": 100,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "pwa": 100
   }
 }
