@@ -26,20 +26,12 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
     const thresholds = {
       performance: 75,
       accessibility: 100,
-      "best-practices": 80,
-      seo: 100,
-      pwa: 0,
     };
     const options = {};
     const config = {
       extends: "lighthouse:default",
       settings: {
-        onlyCategories: [
-          "performance",
-          "accessibility",
-          "seo",
-          "best-practices",
-        ],
+        onlyCategories: ["performance", "accessibility"],
         skipAudits: [
           "installable-manifest",
           "splash-screen",
