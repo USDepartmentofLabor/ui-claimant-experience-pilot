@@ -17,6 +17,7 @@
  */
 /* eslint-disable @typescript-eslint/no-unused-vars, no-undef, @typescript-eslint/no-var-requires */
 const { lighthouse, pa11y, prepareAudit } = require("cypress-audit");
+const { linkSync } = require("fs");
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -32,15 +33,36 @@ module.exports = (on, config) => {
     },
   });
 
-  on("before:browser:launch", (browser = {}, launchOptions) => {
+  on("before:browser:launch", (browser, launchOptions) => {
     prepareAudit(launchOptions);
   });
 
   on("task", {
     // log the reports, because the UI doesn't show all the relevant info
-    lighthouse: lighthouse((lighthouseReport) => {
+    // See https://github.com/GoogleChrome/lighthouse/blob/master/docs/understanding-results.md#lighthouse-result-object-lhr
+    lighthouse: lighthouse((lh) => {
       if (console) {
-        console.log(lighthouseReport); // raw lighthouse report
+        console.log(
+          `--- Lighthouse ${lh.lighthouseVersion} at ${lh.fetchTime} ---`
+        );
+        console.log(`Final URL: ${lh.finalUrl}`);
+        if (lh.runtimeError) {
+          console.log(`ERROR: ${lh.runtimeError}`);
+        }
+        if (lh.runWarnings) {
+          console.log(`Warnings:\n  ${lh.runWarnings.join("\n  ")}`);
+        }
+        lh.categories.forEach((cat) => {
+          console.log(`Category: ${cat.id} ${cat.title} ${cat.score}`);
+        });
+        Object.entries(lh.audits).forEach((key, audit) => {
+          console.log(
+            `Audit: ${audit.id}: ${audit.score} ${audit.displayValue}\n`
+          );
+          console.log(JSON.stringify(audit.details, null, 2));
+        });
+
+        // console.log(lh); // raw lighthouse report
       }
     }),
     pa11y: pa11y((pa11yReport) => {
