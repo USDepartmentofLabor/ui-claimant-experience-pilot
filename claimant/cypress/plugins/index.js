@@ -53,17 +53,26 @@ module.exports = (on, config) => {
         if (lh.runWarnings) {
           console.log(`Warnings:\n  ${lh.runWarnings.join("\n  ")}`);
         }
+        console.log("CATEGORIES");
         Object.entries(lh.categories).forEach(([key, cat]) => {
-          console.log(`Category: ${cat.id} ${cat.title} ${cat.score}`);
+          console.log(`*  ${cat.id} ${cat.score}`);
         });
+        console.log("AUDITS");
         Object.entries(lh.audits).forEach(([key, audit]) => {
           console.log(
-            `Audit: ${audit.id}: ${audit.score} ${audit.displayValue}\n`
+            `*  ${audit.id}: ${audit.score} ${audit.displayValue ?? ""}`
           );
-          console.log(JSON.stringify(audit.details, null, 2));
+          if (
+            /^(table|debugdata|criticalrequestchain)$/.test(
+              audit.details?.type
+            ) &&
+            audit.details?.items?.length
+          ) {
+            console.log(JSON.stringify(audit.details.items, null, 2));
+          }
         });
 
-        // console.log(lh); // raw lighthouse report
+        // console.log(lh.lhr); // raw lighthouse report
       }
     }),
     pa11y: pa11y((pa11yReport) => {
