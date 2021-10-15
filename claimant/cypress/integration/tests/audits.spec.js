@@ -40,7 +40,15 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
           "seo",
           "best-practices",
         ],
-        skipAudits: ["installable-manifest", "mainthread-work-breakdown"],
+        skipAudits: [
+          "installable-manifest",
+          "splash-screen",
+          "themed-omnibox",
+          "mainthread-work-breakdown",
+          "network-requests",
+          "main-thread-tasks",
+          "js-libraries",
+        ],
       },
     };
     cy.lighthouse(thresholds, options, config);
