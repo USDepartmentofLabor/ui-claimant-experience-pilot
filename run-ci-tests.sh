@@ -25,7 +25,11 @@ done
 # we run our own celery inside tests
 make celery-stop
 
-make test
+if [ -z "${DB_SCHEMA}" ]; then
+  make test
+else
+  make test-wcms
+fi
 
 # start again for any other use of the container
 make celery-start
