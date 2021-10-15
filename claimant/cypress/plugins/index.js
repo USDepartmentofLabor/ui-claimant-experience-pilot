@@ -53,10 +53,10 @@ module.exports = (on, config) => {
         if (lh.runWarnings) {
           console.log(`Warnings:\n  ${lh.runWarnings.join("\n  ")}`);
         }
-        Object.entries(lh.categories).forEach((key, cat) => {
+        Object.entries(lh.categories).forEach(([key, cat]) => {
           console.log(`Category: ${cat.id} ${cat.title} ${cat.score}`);
         });
-        Object.entries(lh.audits).forEach((key, audit) => {
+        Object.entries(lh.audits).forEach(([key, audit]) => {
           console.log(
             `Audit: ${audit.id}: ${audit.score} ${audit.displayValue}\n`
           );
