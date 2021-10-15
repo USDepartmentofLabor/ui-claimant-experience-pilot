@@ -23,6 +23,26 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
     cy.url().should("not.include", "/idp/?redirect_to");
 
     // performance tests
-    cy.lighthouse();
+    const thresholds = {
+      performance: 75,
+      accessibility: 100,
+      "best-practices": 80,
+      seo: 100,
+      pwa: 0,
+    };
+    const options = {};
+    const config = {
+      extends: "lighthouse:default",
+      settings: {
+        onlyCategories: [
+          "performance",
+          "accessibility",
+          "seo",
+          "best-practices",
+        ],
+        skipAudits: ["installable-manifest", "mainthread-work-breakdown"],
+      },
+    };
+    cy.lighthouse(thresholds, options, config);
   });
 });

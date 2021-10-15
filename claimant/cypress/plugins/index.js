@@ -59,15 +59,17 @@ module.exports = (on, config) => {
         });
         console.log("AUDITS");
         Object.entries(lh.audits).forEach(([key, audit]) => {
+          const hasDetails =
+            /^(table|debugdata|criticalrequestchain)$/.test(
+              audit.details?.type
+            ) && audit.details?.items?.length;
+          if (audit.score === null && !hasDetails) {
+            return;
+          }
           console.log(
             `*  ${audit.id}: ${audit.score} ${audit.displayValue ?? ""}`
           );
-          if (
-            /^(table|debugdata|criticalrequestchain)$/.test(
-              audit.details?.type
-            ) &&
-            audit.details?.items?.length
-          ) {
+          if (hasDetails) {
             console.log(JSON.stringify(audit.details.items, null, 2));
           }
         });
