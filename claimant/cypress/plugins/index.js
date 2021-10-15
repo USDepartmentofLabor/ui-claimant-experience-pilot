@@ -40,7 +40,8 @@ module.exports = (on, config) => {
   on("task", {
     // log the reports, because the UI doesn't show all the relevant info
     // See https://github.com/GoogleChrome/lighthouse/blob/master/docs/understanding-results.md#lighthouse-result-object-lhr
-    lighthouse: lighthouse((lh) => {
+    lighthouse: lighthouse((results) => {
+      const lh = results.lhr;
       if (console) {
         console.log(
           `--- Lighthouse ${lh.lighthouseVersion} at ${lh.fetchTime} ---`
