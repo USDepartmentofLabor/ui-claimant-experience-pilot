@@ -186,6 +186,21 @@ tool to maintain dependencies.
 
 When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
 
+## Data Model Migrations
+
+Django migrations are run automatically on every deployment.
+
+To create a new migration, start by reading the [Django documentation](https://docs.djangoproject.com/en/3.2/topics/migrations/).
+These are the basic steps. Some steps require you are logged into the running Docker container with `make login`, as indicated.
+
+- modify the appropriate `models.py` file to add a new class (table) or modify an existing class.
+- within the running Docker container, create the migrations with `python manage.py makemigrations`
+- `git add` the migration files created above (the previous step will echo the new file names to stdout on success)
+- within the running Docker container, run the migrations with `make migrate`
+- add tests as appropriate to the `models_tests.py` file that corresponds to the `models.py` file you modified
+- within the running Docker container, run the tests with `make test`
+- `git commit`
+
 ## Deployment
 
 To build the Docker container:
