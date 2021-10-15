@@ -14,7 +14,7 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
       standard: "WCAG2AA",
     });
 
-    // performance tests TODO
-    // cy.lighthouse();
+    // performance tests
+    cy.lighthouse();
   });
 });
