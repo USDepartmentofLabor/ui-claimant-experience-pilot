@@ -15,11 +15,7 @@
     },
     "dob": {
       "description": "",
-      "type": "date-time"
-    },
-    "gender": {
-      "description": "",
-      "type": "string"
+      "type": "date"
     },
     "race": {
       "description": "",
@@ -41,15 +37,7 @@
       "description": "",
       "type": "string"
     },
-    "mailing_home_address_same": {
-      "description": "",
-      "type": "boolean"
-    },
     "ssn": {
-      "description": "",
-      "type": "string"
-    },
-    "ssn_confirm": {
       "description": "",
       "type": "string"
     }
