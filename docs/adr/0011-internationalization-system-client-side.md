@@ -5,10 +5,8 @@
 - Date: 10/19/21
 
 In order for unemployment compensation to be accessible to all who qualify, people who speak various languages must
-be able to use and understand the UI. States may also have localization specific to their needs.
-Although the initial MVP for DOL-ARPA UI Pilot will likely only be in English, it
-makes sense to integrate a system for internationalization during this MVP stage and to apply it first with English.
-Depending on the states selected, state-based localization may be applied. It
+be able to use and understand the presentation language. Although the initial MVP will only be in English, it
+makes sense to integrate a system for internationalization during this MVP stage and to apply it first using English. It
 would be more overhead to apply it later, and once the system and patterns are set up it will be low effort
 to utilize it.
 
@@ -29,6 +27,7 @@ This ADR addresses options for internationalization for the client-side React ap
 - `+` potential to utilize [locize](locize.com), a localization management system that bridges translation and development (though adoption by DOL is unknown)
 - `+` current engineers have familiarity
 - `+` has translation formatting
+- `-` Use of hooks may make it harder to follow for those unfamiliar with them
 
 ### Option 2: react-intl (format.js)
 
@@ -54,4 +53,4 @@ This ADR addresses options for internationalization for the client-side React ap
 
 ## Considerations
 
-- How does gov do their localization (translation) and how can it integrate with the available libraries?
+- How do existing DOL websites do their localization (translation) and how can it integrate with the available libraries?

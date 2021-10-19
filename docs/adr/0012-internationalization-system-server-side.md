@@ -2,13 +2,14 @@
 - Deciders: [Names of deciders]
 - Date: 10/19/21
 
-In order for unemployment compensation to be accessible to all who qualify, people who speak various languages must be
-be able to use and understand the UI. Although the initial MVP for DOL-ARPA UI Pilot will only be in English, it is
-makes sense to integrate a system for internationalization during this MVP stage and to apply it first with English. It
+In order for unemployment compensation to be accessible to all who qualify, people who speak various languages must
+be able to use and understand the presentation language. Although the initial MVP will only be in English, it
+makes sense to integrate a system for internationalization during this MVP stage and to apply it first using English. It
 would be significantly more overhead to apply it later, and once the system and patterns are set up it will be low effort
 to utilize it.
 
-Because the application utilizes server-generated templates for the home page and emails we need a system for internationalization, taking into consideration what system is used on the client-side.
+Because the application utilizes server-generated templates for the home page and emails we need a system for internationalization,
+taking into consideration what system is used on the client-side.
 
 ## Considered Alternatives
 
@@ -25,7 +26,7 @@ Because the application utilizes server-generated templates for the home page an
 ## Option 2: i18next-backend
 
 - `+` if using `react-i18next` on the client side, using the i18next tool on the server side would have matching patterns
-- `+` backend usage of i18next would need to be in node.js, which we aren't using right now
+- `-` backend usage of i18next would need to be in node.js, which we aren't using right now
 
 ## Decision Outcome
 
