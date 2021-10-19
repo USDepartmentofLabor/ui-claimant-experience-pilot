@@ -22,6 +22,10 @@ redis-cli: ## Connect to Redis service with redis-cli
 mysql-cli: ## Connect to the MySQL server
 	mysql -h 127.0.0.1 -u user -psecret -D unemployment
 
+mysql-reset: ## Reset the local database
+	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
+	mysql -h 127.0.0.1 -u root -psecretpassword -e "CREATE DATABASE IF NOT EXISTS unemployment"
+
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 ifeq (, $(shell which docker))
@@ -153,12 +157,19 @@ test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
 	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
+
+test-django-wcms: export LOGIN_DOT_GOV_ENV=test
+test-django-wcms: export WCMS_TEST_ENV=true
+test-django-wcms: ## Run Django app tests in the WCMS environment
+	coverage run manage.py test --keepdb --noinput -v 2 --pattern="*tests*py"
 	coverage xml --fail-under 90
 
 test-react: ## Run React tests
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make test ; done
 
 test: test-django ## Run tests (must be run within Django app docker container)
+
+test-wcms: test-django-wcms ## Run tests in WCMS envinronment (must be run within Django app docker container)
 
 list-outdated: ## List outdated dependencies
 	pip list --outdated

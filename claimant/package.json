@@ -5,13 +5,13 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.3.0",
+    "@testing-library/user-event": "^13.4.1",
     "@trussworks/react-uswds": "^2.0.0",
     "axios": "0.22.0",
     "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-query": "^3.25.1",
+    "react-query": "^3.27.0",
     "react-router-dom": "5.3.0",
     "react-scripts": "^4.0.3",
     "universal-cookie": "^4.0.4",
@@ -21,13 +21,13 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.11",
     "@types/jest": "^27.0.2",
-    "@types/node": "^16.10.1",
-    "@types/react": "^17.0.27",
+    "@types/node": "^16.11.0",
+    "@types/react": "^17.0.30",
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.3.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.32.0",
-    "cypress": "^8.5.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "cypress": "^8.6.0",
     "cypress-audit": "^1.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.0",
@@ -37,7 +37,7 @@
     "prettier": "2.4.1",
     "retire": "^3.0.3",
     "sass": "1.26.3",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.4"
   },
   "proxy": "https://sandbox.ui.dol.gov:4430",
   "scripts": {

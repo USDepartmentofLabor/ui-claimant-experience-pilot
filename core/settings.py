@@ -215,8 +215,11 @@ elif os.environ.get("DB_SCHEMA"):  # pragma: no cover
         "NAME": env.str("DB_SCHEMA"),
         "USER": env.str("DB_ADMIN_USER"),
         "PASSWORD": env.str("DB_PWD"),
-        "HOST": "mysql-service",  # WCMS creates DNS entry for this
+        "HOST": env.str("DB_HOST", "mysql-service"),  # WCMS creates DNS entry for this
         "PORT": "3306",
+        "TEST": {
+            "NAME": env.str("DB_SCHEMA"),  # re-use provisioned schema in lower envs
+        },
     }
 else:  # pragma: no cover
     default_db = {"ENGINE": "django.db.backends.sqlite3", "NAME": "mydatabase"}
@@ -231,6 +234,7 @@ if "mysql" in default_db["ENGINE"]:
 
 DATABASES = {"default": default_db}
 
+TEST_RUNNER = "core.test_runner.MyTestRunner"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
