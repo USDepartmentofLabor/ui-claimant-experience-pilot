@@ -17,6 +17,7 @@
  */
 /* eslint-disable @typescript-eslint/no-unused-vars, no-undef, @typescript-eslint/no-var-requires */
 const { lighthouse, pa11y, prepareAudit } = require("cypress-audit");
+const { linkSync } = require("fs");
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -32,15 +33,48 @@ module.exports = (on, config) => {
     },
   });
 
-  on("before:browser:launch", (browser = {}, launchOptions) => {
+  on("before:browser:launch", (browser, launchOptions) => {
     prepareAudit(launchOptions);
   });
 
   on("task", {
     // log the reports, because the UI doesn't show all the relevant info
-    lighthouse: lighthouse((lighthouseReport) => {
+    // See https://github.com/GoogleChrome/lighthouse/blob/master/docs/understanding-results.md#lighthouse-result-object-lhr
+    lighthouse: lighthouse((results) => {
+      const lh = results.lhr;
       if (console) {
-        console.log(lighthouseReport); // raw lighthouse report
+        console.log(
+          `--- Lighthouse ${lh.lighthouseVersion} at ${lh.fetchTime} ---`
+        );
+        console.log(`Final URL: ${lh.finalUrl}`);
+        if (lh.runtimeError) {
+          console.log(`ERROR: ${lh.runtimeError}`);
+        }
+        if (lh.runWarnings) {
+          console.log(`Warnings:\n  ${lh.runWarnings.join("\n  ")}`);
+        }
+        console.log("CATEGORIES");
+        Object.entries(lh.categories).forEach(([key, cat]) => {
+          console.log(`*  ${cat.id} ${cat.score}`);
+        });
+        console.log("AUDITS");
+        Object.entries(lh.audits).forEach(([key, audit]) => {
+          const hasDetails =
+            /^(table|debugdata|criticalrequestchain)$/.test(
+              audit.details?.type
+            ) && audit.details?.items?.length;
+          if (audit.score === null && !hasDetails) {
+            return;
+          }
+          console.log(
+            `*  ${audit.id}: ${audit.score} ${audit.displayValue ?? ""}`
+          );
+          if (hasDetails) {
+            console.log(JSON.stringify(audit.details.items, null, 2));
+          }
+        });
+
+        // console.log(lh.lhr); // raw lighthouse report
       }
     }),
     pa11y: pa11y((pa11yReport) => {
