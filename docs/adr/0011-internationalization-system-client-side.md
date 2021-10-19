@@ -16,15 +16,11 @@ This ADR addresses options for internationalization for the client-side React ap
 
 ## Considered Alternatives
 
-Client-side:
-
 - [react-i18next](https://react.i18next.com/)
 - [react-intl](https://formatjs.io/docs/getting-started/installation/)
 - [lingui.js](https://lingui.js.org/index.html)
 
 ## Pros and Cons of the Alternatives
-
-## Client-side
 
 ### Option 1: react-i18next
 
