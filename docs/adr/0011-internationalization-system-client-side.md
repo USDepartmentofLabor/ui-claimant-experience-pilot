@@ -43,6 +43,9 @@ This ADR addresses options for internationalization for the client-side React ap
 
 ## Decision Outcome
 
+**Use react-i18next**: There's not a strong determinant between the two most popular tools, `react-i18next` and `react-intl`. Since `react-i18next` is
+increasing in popularity, is well-maintained, and current engineers have had good experiences with it, we will go with that.
+
 ## Resources
 
 - [Lost in Translation](https://digital.gov/2012/10/01/automated-translation-good-solution-or-not/) - an article evaluating
