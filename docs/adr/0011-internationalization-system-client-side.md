@@ -1,4 +1,4 @@
-# Use react-i18next for client side Internationalization
+# Use react-i18next for client side internationalization
 
 - Status: In progress
 - Deciders: [Names of deciders]
@@ -45,7 +45,7 @@ This ADR addresses options for internationalization for the client-side React ap
 
 ## Resources
 
-- [Lost in Translation](https://digital.gov/2012/10/01/automated-translation-good-solution-or-not/) - an article evaluation
+- [Lost in Translation](https://digital.gov/2012/10/01/automated-translation-good-solution-or-not/) - an article evaluating
   the use of automation in translation
 - [The Best Libraries for React i18n](https://phrase.com/blog/posts/react-i18n-best-libraries/)
 - [w3.org Internationalization vs. Localization](https://www.w3.org/International/questions/qa-i18n)
