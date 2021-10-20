@@ -127,7 +127,7 @@
   <body class="">
     <script src="{% static 'js/uswds.min.js' %}"></script>
     <section>{% include '_header.html' %}</section>
-    <section>{% block content %}{% endblock %}</section>
+    <section id="main-content">{% block content %}{% endblock %}</section>
     <section>{% include '_footer.html' %}</section>
   </body>
 </html>

@@ -9,7 +9,7 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
     cy.url().should("not.include", "/idp/?redirect_to");
 
     // run the 508 checks
-    cy.pa11y("/claimant/", {
+    cy.pa11y({
       runners: ["htmlcs"],
       standard: "WCAG2AA",
     });
