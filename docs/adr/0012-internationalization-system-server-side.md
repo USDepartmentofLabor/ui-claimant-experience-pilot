@@ -1,3 +1,5 @@
+# Use Django Translation for server side internationalization
+
 - Status: In progress
 - Deciders: [Names of deciders]
 - Date: 10/19/21
