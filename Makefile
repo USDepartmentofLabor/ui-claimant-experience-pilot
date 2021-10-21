@@ -121,6 +121,22 @@ secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
 x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
 	scripts/gen-x509-certs.sh
 
+rsa-keys: ## Generate RSA public/private key pair
+	scripts/gen-rsa-keys.sh $(PREFIX)
+
+add-swa-key: ## Import a public .pem file into a SWA record. Requires SWA=code and PEM=path/file.pem arguments.
+ifeq ($(ROTATE),)
+	python manage.py import_swa_public_key $(SWA) $(PEM)
+else
+	python manage.py import_swa_public_key $(SWA) $(PEM) --rotate
+endif
+
+create-swa: ## Create a SWA model record. Requires SWA=code and NAME=name values.
+	python manage.py create_swa $(SWA) $(NAME)
+
+activate-swa: ## Set SWA record status=Active
+	python manage.py activate_swa $(SWA)
+
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 build-static: ## Build the static assets (intended for during container-build (inside the container))
