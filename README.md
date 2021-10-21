@@ -201,6 +201,34 @@ These are the basic steps. Some steps require you are logged into the running Do
 - within the running Docker container, run the tests with `make test`
 - `git commit`
 
+## SWA API Management
+
+Each SWA model record will require a public/private key registration. To ease this in local development, there are some make commands available.
+
+For example, create a new SWA record for Kansas in your local development area, you might do:
+
+```sh
+% make rsa-keys PREFIX=KS
+% make login
+> make create-swa SWA=KS NAME=Kansas
+> make activate-swa SWA=KS
+> make add-swa-key SWA=KS PEM=KS-public.pem
+```
+
+In a production environment, the SWA would create their own RSA keys and communicate the public key PEM file to DOL via email.
+
+You only need run `create-swa` and `activate-swa` once per environment.
+
+To rotate a key, `add-swa-key` will, by default, refuse to overwrite any previously set public key value.
+We only store one public key at a time. A SWA will want to keep private keys around after they rotate them,
+in order to decrypt any Claims that were created with the older public key before we rotated it on our end.
+
+To rotate a key, add the `ROTATE=yes` flag:
+
+```sh
+> make add-swa-key SWA=KS PEM=KS-public.pem ROTATE=yes
+```
+
 ## Deployment
 
 To build the Docker container:

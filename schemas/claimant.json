@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/claimant.json",
+  "title": "UI Claimant Application Form",
+  "description": "Unemployment Insurance claimant application form schema",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "description": "",
+      "type": "string"
+    },
+    "last_name": {
+      "description": "",
+      "type": "string"
+    },
+    "dob": {
+      "description": "",
+      "type": "date"
+    },
+    "race": {
+      "description": "",
+      "type": "string"
+    },
+    "ethnicity": {
+      "description": "",
+      "type": "string"
+    },
+    "home_address": {
+      "description": "",
+      "type": "string"
+    },
+    "telephone": {
+      "description": "",
+      "type": "string"
+    },
+    "preferred_language": {
+      "description": "",
+      "type": "string"
+    },
+    "ssn": {
+      "description": "",
+      "type": "string"
+    }
+  }
+}

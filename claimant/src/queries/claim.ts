@@ -3,10 +3,10 @@ import { useMutation } from "react-query";
 import Cookies from "universal-cookie";
 import httpclient from "../utils/httpclient";
 
-const sendEmail = (): Promise<{ ok: "sent" }> => {
+const sendEmail = () => {
   const cookies = new Cookies();
   const csrftoken = cookies.get("csrftoken");
-  return httpclient.post(
+  return httpclient.post<Record<string, never>, { ok: "sent" }>(
     "/api/claim/",
     {},
     {
