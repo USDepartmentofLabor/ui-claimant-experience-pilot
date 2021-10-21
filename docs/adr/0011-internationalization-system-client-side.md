@@ -1,7 +1,7 @@
 # Use react-i18next for client side internationalization
 
-- Status: In progress
-- Deciders: [Names of deciders]
+- Status: Decided
+- Deciders: Kim Allen, Peter Karman, Nick Scialli, Dave Methvin
 - Date: 10/19/21
 
 In order for unemployment compensation to be accessible to all who qualify, people who speak various languages must

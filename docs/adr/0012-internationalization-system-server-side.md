@@ -1,7 +1,7 @@
 # Use Django Translation for server side internationalization
 
 - Status: In progress
-- Deciders: [Names of deciders]
+- Deciders: Kim Allen, Peter Karman
 - Date: 10/19/21
 
 In order for unemployment compensation to be accessible to all who qualify, people who speak various languages must
