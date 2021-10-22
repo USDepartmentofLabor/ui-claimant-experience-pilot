@@ -1,3 +1,6 @@
+ARG BASE_PYTHON_IMAGE_REGISTRY=docker.io/library
+ARG BASE_PYTHON_IMAGE_VERSION=3.9.7-slim
+
 FROM node:14.16.0 as reactapps
 WORKDIR /app
 
@@ -21,14 +24,25 @@ RUN make react-build
 ##########################################
 # Django
 
-FROM python:3.9 as djangobase
+FROM ${BASE_PYTHON_IMAGE_REGISTRY}/python:${BASE_PYTHON_IMAGE_VERSION} as djangobase
+
+# Temporarily set the user to root during the docker build phase and set it
+# back to a non-root user in the final stages below.
+# hadolint ignore=DL3002
+USER root
+
 WORKDIR /app
+
+# Create a non-root user and group for running the app
+RUN groupadd doluiapp && \
+  useradd -g doluiapp doluiapp
+
 EXPOSE 8000
 
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev wait-for-it \
+   --no-install-recommends gcc libmariadb-dev wait-for-it git make \
    && rm -rf /var/lib/apt/lists/* \
    && pip install --no-cache-dir -r requirements.txt
 
@@ -63,8 +77,9 @@ RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-examp
 # leave the .env file intact
 RUN make build-static && \
   rm -f core/.env-* && \
-  rm -f requirements*.txt && \
-  apt-get purge -y --auto-remove gcc
+  make build-cleanup
+
+USER doluiapp
 
 ##########################################
 # for ci environment
@@ -80,8 +95,9 @@ RUN pip install --no-cache-dir -r requirements-ci.txt && \
 # leave the .env file intact
 RUN make build-static && \
   rm -f core/.env-* && \
-  rm -f requirements*.txt && \
-  apt-get purge -y --auto-remove gcc
+  make build-cleanup
+
+USER doluiapp
 
 ##########################################
 # for deployed environment
@@ -92,5 +108,6 @@ ARG ENV_PATH=/app/core/.env-example
 
 RUN make build-static && \
   rm -f core/.env* && \
-  rm -f requirements*.txt && \
-  apt-get purge -y --auto-remove gcc
+  make build-cleanup
+
+USER doluiapp

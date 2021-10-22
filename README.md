@@ -251,6 +251,18 @@ To open a shell in the running container (requires `make container-run` previous
 % make container-attach
 ```
 
+The DOL base python image used in deployed environments requires Azure Container
+Registry credentials to pull the image. Reach out to a team member for the
+credentials.
+
+To build the image as used in deployed environments (useful for testing
+changes), run the following commands:
+
+```sh
+% make acr-login
+% make container-build-wcms
+```
+
 ## Help
 
 Run `make` or `make help` to display a full list of available `make` commands.

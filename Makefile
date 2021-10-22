@@ -97,8 +97,14 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
 	cp ./claimant/.env-example ./claimant/.env
 
-container-build: ## Build the Django app container image
+acr-login: ## Log into the Azure Container Registry
+	docker login ddphub.azurecr.io
+
+container-build: ## Build the Django app container image (local development)
 	docker build -f Dockerfile -t $(DOCKER_IMG) --target djangobase-devlocal .
+
+container-build-wcms: ## Build the Django app container image (to test image configuration for deployed environment)
+	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.7.0 .
 
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
@@ -146,6 +152,15 @@ build-static: ## Build the static assets (intended for during container-build (i
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
 	cp home/templates/sureroute-test-object.html static/
+
+build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
+	rm -f requirements*.txt
+	apt-get purge -y --auto-remove gcc
+	chown -R doluiapp:doluiapp /app
+	mkdir /var/run/celery
+	chown -R doluiapp:doluiapp /var/run/celery
+	mkdir /var/log/celery
+	chown -R doluiapp:doluiapp /var/log/celery
 
 # the --mount option ignores the local build dir for what is on the image
 login: ## Log into the Django app docker container
