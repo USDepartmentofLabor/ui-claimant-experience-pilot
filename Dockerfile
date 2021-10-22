@@ -19,6 +19,7 @@ RUN make react-deps
 
 COPY claimant/public/ ./claimant/public/
 COPY claimant/src/ ./claimant/src/
+ARG ENV_NAME=""
 RUN make react-build
 
 ##########################################

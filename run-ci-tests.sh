@@ -14,7 +14,7 @@ else
   RDS_HOSTNAME=mysql-service
 fi
 
-wait-for-it ${RDS_HOSTNAME}:3306
+wait-for-it -t 60 ${RDS_HOSTNAME}:3306
 wait-for-it 127.0.0.1:8000
 until make celery-status
 do

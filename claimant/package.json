@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.11",
+    "@cypress/instrument-cra": "^1.4.0",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.0",
     "@types/react": "^17.0.30",
@@ -40,10 +41,54 @@
   },
   "proxy": "https://sandbox.ui.dol.gov:4430",
   "scripts": {
-    "start": "react-scripts start",
+    "cypress:run": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome",
+    "cypress:run:dev": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome --config-file cypress-dev.json",
+    "coverage": "yarn test --coverage --watchAll=false",
+    "test:coverage": "yarn coverage && yarn cypress:run",
+    "pretest:coverage": "rm -rf .nyc_output",
+    "posttest:coverage": "yarn report:combined && node src/coverageCheck.js",
+    "mkdir:reports": "mkdir reports || true",
+    "precopy:reports": "yarn mkdir:reports",
+    "copy:reports": "cp coverage-cypress/coverage-final.json reports/from-cypress.json && cp coverage/coverage-final.json reports/from-jest.json",
+    "precombine:reports": "yarn copy:reports && mkdir .nyc_output || true",
+    "combine:reports": "npx nyc merge reports && mv coverage.json .nyc_output/out.json",
+    "prereport:combined": "yarn combine:reports",
+    "report:combined": "mkdir coverage-all || true && npx nyc report --reporter lcov --reporter text --reporter json-summary --report-dir coverage-all",
+    "test:ci": "yarn coverage && yarn cypress:run",
+    "pretest:ci": "rm -rf .nyc_output",
+    "posttest:ci": "yarn report:ci && node src/coverageCheck.js",
+    "precopy:ci": "yarn mkdir:reports",
+    "copy:ci": "cp coverage-cypress/coverage-final.json reports/from-cypress.json && cp coverage/coverage-final.json reports/from-jest.json",
+    "precombine:ci": "yarn copy:ci && mkdir .nyc_output || true",
+    "combine:ci": "npx nyc merge reports && mv coverage.json .nyc_output/out.json",
+    "prereport:ci": "yarn combine:ci",
+    "report:ci": "mkdir coverage-all || true && npx nyc report --reporter text --reporter json-summary --report-dir coverage-all",
+    "start": "react-scripts -r @cypress/instrument-cra start",
+    "build:instrumented": "CYPRESS_INSTRUMENT_PRODUCTION=true react-scripts -r @cypress/instrument-cra build",
     "build": "react-scripts build",
     "test": "react-scripts test --testURL https://sandbox.ui.dol.gov/claimant",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "resetMocks": false,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**",
+      "!**/coverageCheck.js",
+      "!**/setupProxy.tsx",
+      "!**/react-app-env.d.ts",
+      "!**/types.d.ts"
+    ]
+  },
+  "nyc": {
+    "report-dir": "coverage-cypress",
+    "exclude": [
+      "**/node_modules/**",
+      "**/coverageCheck.js",
+      "**/setupProxy.tsx",
+      "**/react-app-env.d.ts",
+      "**/types.d.ts"
+    ]
   },
   "browserslist": {
     "production": [

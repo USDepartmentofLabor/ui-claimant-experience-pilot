@@ -16,6 +16,8 @@ services:
     build:
       context: .
       target: djangobase-ci
+      args:
+        ENV_NAME: ${ENV_NAME}
     ports:
       - "8004:8000"
     command: ["wait-for-it", "rds:3306", "--", "./start-server.sh"]

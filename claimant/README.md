@@ -61,6 +61,18 @@ To run the Jest (unit) tests:
 % make test-unit
 ```
 
+To run all the tests and display test coverage (assuming your Docker container is running):
+
+```sh
+% make test-coverage
+```
+
+To run all the tests and display test coverage, using the local dev server (`make dev-run`):
+
+```sh
+% make dev-test-coverage
+```
+
 ## Build
 
 ```sh

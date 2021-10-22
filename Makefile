@@ -97,11 +97,11 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
 	cp ./claimant/.env-example ./claimant/.env
 
+container-build: ## Build the Django app container image (local development)
+	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
+
 acr-login: ## Log into the Azure Container Registry
 	docker login ddphub.azurecr.io
-
-container-build: ## Build the Django app container image (local development)
-	docker build -f Dockerfile -t $(DOCKER_IMG) --target djangobase-devlocal .
 
 container-build-wcms: ## Build the Django app container image (to test image configuration for deployed environment)
 	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.7.0 .
@@ -195,8 +195,8 @@ test-django-wcms: ## Run Django app tests in the WCMS environment
 	coverage run manage.py test --keepdb --noinput -v 2 --pattern="*tests*py"
 	coverage xml --fail-under 90
 
-test-react: ## Run React tests
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make test ; done
+ci-test-react: ## Run React tests in CI
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make ci-tests ; done
 
 test: test-django ## Run tests (must be run within Django app docker container)
 
@@ -217,7 +217,13 @@ react-deps: ## Install React app dependencies
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make deps ; done
 
 react-build: ## Build the React apps
+ifeq ($(ENV_NAME), ci)
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make instrumented-build ; done
+else ifeq ($(ENV_NAME), devlocal)
+	for reactapp in $(REACT_APPS); do cd $$reactapp && make instrumented-build ; done
+else
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make build ; done
+endif
 
 security: ## Run all security scans
 	bandit -x ./.venv -r .

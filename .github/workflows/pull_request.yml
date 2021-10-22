@@ -40,14 +40,8 @@ jobs:
           mv ssl-proxy-linux-amd64 ssl-proxy
       - name: Start SSL proxy
         run: PATH=.:$PATH make dev-ssl-proxy &
-      - name: Cypress tests
-        uses: cypress-io/github-action@v2
-        with:
-          browser: chrome
-          headless: true
-          working-directory: claimant
       - name: Run JS Tests
-        run: make test-react
+        run: make ci-test-react
       - name: Test nothing has changed
         run: make diff-test
       - name: Docker logs

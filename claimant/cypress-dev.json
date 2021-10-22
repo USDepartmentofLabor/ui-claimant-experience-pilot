@@ -1,8 +1,8 @@
 {
-  "baseUrl": "https://sandbox.ui.dol.gov:4430",
+  "baseUrl": "https://sandbox.ui.dol.gov:3000",
   "env": {
     "codeCoverage": {
-      "url": "https://sandbox.ui.dol.gov:4430/claimant/__coverage__"
+      "url": "https://sandbox.ui.dol.gov:3000/claimant/__coverage__"
     }
   },
   "integrationFolder": "cypress/integration/tests",

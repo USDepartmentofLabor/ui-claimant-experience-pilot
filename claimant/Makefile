@@ -4,6 +4,9 @@ help: ## Print the help documentation
 build: ## Build the app
 	yarn build
 
+instrumented-build: ## Build the app for CI (includes Cypress instrumentation for coverage)
+	yarn build:instrumented
+
 dev-run: node_modules ## Run the app
 	yarn start
 
@@ -28,12 +31,24 @@ test-browser: ## Run browser (cypress) tests
 	npx cypress run --headless --browser chrome
 
 dev-test-browser: ## Run browser tests against local dev server (port 3000)
-	npx cypress run --headless --browser chrome -c baseUrl=https://sandbox.ui.dol.gov:3000
+	npx cypress run --headless --browser chrome --config-file cypress-dev.json
 
 cypress: ## Start the Cypress interactive application
 	npx cypress open
 
 test: test-unit ## Run all unit tests
+
+ci-tests: ## Run CI tests
+	yarn test:ci
+
+test-coverage: ## Run all tests and display coverage
+	yarn test:coverage
+
+dev-test-coverage: ## Run all tests and display coverage against local dev server (port 3000)
+	yarn pretest:coverage
+	yarn coverage
+	yarn cypress:run:dev
+	yarn posttest:coverage
 
 security: ## Run security scans
 	@echo "yarn audit disabled"
