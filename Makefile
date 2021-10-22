@@ -157,9 +157,9 @@ build-cleanup: ## Common final tasks for the various Dockerfile targets (intende
 	rm -f requirements*.txt
 	apt-get purge -y --auto-remove gcc
 	chown -R doluiapp:doluiapp /app
-	mkdir /var/run/celery
+	mkdir -p /var/run/celery
 	chown -R doluiapp:doluiapp /var/run/celery
-	mkdir /var/log/celery
+	mkdir -p /var/log/celery
 	chown -R doluiapp:doluiapp /var/log/celery
 
 # the --mount option ignores the local build dir for what is on the image
