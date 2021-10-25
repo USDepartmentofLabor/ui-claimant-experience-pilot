@@ -104,7 +104,7 @@ acr-login: ## Log into the Azure Container Registry
 	docker login ddphub.azurecr.io
 
 container-build-wcms: ## Build the Django app container image (to test image configuration for deployed environment)
-	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.7.0 .
+	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.7.0 .
 
 container-run: ## Run the Django app in Docker
 	docker run -it -p 8004:8000 $(DOCKER_IMG)
