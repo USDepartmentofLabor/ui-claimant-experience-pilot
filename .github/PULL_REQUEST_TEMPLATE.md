@@ -31,22 +31,19 @@
     ```
 --->
 
-## Code Review Verification Steps
+## [Code Review](https://github.com/USDOLEnterprise/ARPAUI/blob/main/docs/team-norms.md#reviewing-prs) Verification Steps
 
 ### As the original developer, I have
 
+- [ ] Met the acceptance criteria, or will meet them in a subsequent PR
+- [ ] Created/modified automated tests
 - [ ] Tested user-facing changes with voice-over
 - [ ] Checked for landmarks, page heading structure and links using [rotor menu](https://github.com/trussworks/accessibility/blob/master/README.md#how-to-use-the-rotor-menu)
 - [ ] Requested a design review for user-facing changes
-- [ ] Met the acceptance criteria, or will meet them in a subsequent PR
-- [ ] Added or updated tests for the backend
-- [ ] Added or updated client tests for new components, parent components,
-      functions, or e2e tests as necessary
 - For any new migrations/schema changes:
   - [ ] Followed guidelines for zero-downtime deploys
-  - [ ] Deployed this branch to the remote dev environment via CI
 
-### As the code reviewer, I have
+### As code reviewer(s), I have
 
 - [ ] Pulled this branch locally and tested it
 - [ ] Reviewed this code and left comments
@@ -54,7 +51,7 @@
 - [ ] Made it clear which comments need to be addressed before this work is merged
 - [ ] Considered marking this as accepted even if there are small changes needed
 
-### As a designer, I have
+### As a designer reviewer, I have
 
 - [ ] Checked in the design translated visually
 - [ ] Checked behavior
