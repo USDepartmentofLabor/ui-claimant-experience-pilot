@@ -73,6 +73,9 @@ dockerlint-run: ## Run redcoolbeans/dockerlint
 migrate: ## Run Django data model migrations (inside container)
 	python manage.py migrate
 
+migrations: ## Generate Django migrations from models (inside container)
+	python manage.py makemigrations
+
 # this runs 2 workers named w1 and w2. Each worker will have N child prefork processes,
 # by default the number of cores on the machine. See
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker

@@ -194,7 +194,7 @@ To create a new migration, start by reading the [Django documentation](https://d
 These are the basic steps. Some steps require you are logged into the running Docker container with `make login`, as indicated.
 
 - modify the appropriate `models.py` file to add a new class (table) or modify an existing class.
-- within the running Docker container, create the migrations with `python manage.py makemigrations`
+- within the running Docker container, create the migrations with `make migrations`
 - `git add` the migration files created above (the previous step will echo the new file names to stdout on success)
 - within the running Docker container, run the migrations with `make migrate`
 - add tests as appropriate to the `models_tests.py` file that corresponds to the `models.py` file you modified

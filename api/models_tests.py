@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from jwcrypto import jwk
 from jwcrypto.common import json_decode
 from api.models import SWA, IdentityProvider
+import datetime
 
 
 class ApiModelsTestCase(TransactionTestCase):
@@ -24,6 +25,11 @@ class ApiModelsTestCase(TransactionTestCase):
             public_key_fingerprint=public_key_jwk.thumbprint(),
         )
         ks_swa.save()
+
+        self.assertTrue(ks_swa.created_at)
+        self.assertTrue(ks_swa.updated_at)
+        self.assertIsInstance(ks_swa.created_at, datetime.datetime)
+        self.assertIsInstance(ks_swa.updated_at, datetime.datetime)
 
         # cannot create another KS row
         with self.assertRaises(IntegrityError) as context:
