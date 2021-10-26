@@ -18,7 +18,7 @@ from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
-from core.views import claimant as claimant_app
+from core.views import claimant as claimant_app, live
 
 urlpatterns = [
     path("", include("home.urls")),
@@ -26,4 +26,5 @@ urlpatterns = [
     re_path(r"claimant/.*$", claimant_app, name="claimant"),
     path("logindotgov/", include("login-dot-gov.urls")),
     path("api/", include("api.urls")),
+    path("live/", live, name="live"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
