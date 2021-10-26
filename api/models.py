@@ -5,14 +5,22 @@ from django.db import models
 # other apps (like the swas app) so we prefer not to namespace them with api_*
 
 
-class IdentityProvider(models.Model):
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class IdentityProvider(TimeStampedModel):
     class Meta:
         db_table = "identity_providers"
 
     name = models.CharField(max_length=255)
 
 
-class SWA(models.Model):
+class SWA(TimeStampedModel):
     class Meta:
         db_table = "swas"
 

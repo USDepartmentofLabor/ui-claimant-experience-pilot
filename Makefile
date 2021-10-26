@@ -73,6 +73,9 @@ dockerlint-run: ## Run redcoolbeans/dockerlint
 migrate: ## Run Django data model migrations (inside container)
 	python manage.py migrate
 
+migrations: ## Generate Django migrations from models (inside container)
+	python manage.py makemigrations
+
 # this runs 2 workers named w1 and w2. Each worker will have N child prefork processes,
 # by default the number of cores on the machine. See
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
@@ -129,6 +132,9 @@ x509-certs: ## Generate x509 public/private certs for registrying with Identity 
 
 rsa-keys: ## Generate RSA public/private key pair
 	scripts/gen-rsa-keys.sh $(PREFIX)
+
+ec-keys: ## Generate ECDSA public/private key pair
+	scripts/gen-ec-keys.sh $(PREFIX)
 
 add-swa-key: ## Import a public .pem file into a SWA record. Requires SWA=code and PEM=path/file.pem arguments.
 ifeq ($(ROTATE),)

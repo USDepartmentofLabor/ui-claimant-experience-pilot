@@ -4,12 +4,13 @@ from django.db import IntegrityError
 from jwcrypto import jwk
 from jwcrypto.common import json_decode
 from api.models import SWA, IdentityProvider
+import datetime
 
 
 class ApiModelsTestCase(TransactionTestCase):
     def test_swa(self):
         # generate a public/private key pair for the test
-        private_key_jwk = jwk.JWK.generate(kty="RSA", size=1024)
+        private_key_jwk = jwk.JWK.generate(kty="EC", crv="P-256")
         # leaving here as an example in case we need it in future
         # private_key = private_key_jwk.export_to_pem(True, None).decode("utf-8")
         public_key_jwk = jwk.JWK()
@@ -24,6 +25,11 @@ class ApiModelsTestCase(TransactionTestCase):
             public_key_fingerprint=public_key_jwk.thumbprint(),
         )
         ks_swa.save()
+
+        self.assertTrue(ks_swa.created_at)
+        self.assertTrue(ks_swa.updated_at)
+        self.assertIsInstance(ks_swa.created_at, datetime.datetime)
+        self.assertIsInstance(ks_swa.updated_at, datetime.datetime)
 
         # cannot create another KS row
         with self.assertRaises(IntegrityError) as context:
