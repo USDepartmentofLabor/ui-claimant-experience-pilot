@@ -208,14 +208,14 @@ Each SWA model record will require a public/private key registration. To ease th
 For example, create a new SWA record for Kansas in your local development area, you might do:
 
 ```sh
-% make rsa-keys PREFIX=KS
+% make ec-keys PREFIX=KS
 % make login
 > make create-swa SWA=KS NAME=Kansas
 > make activate-swa SWA=KS
 > make add-swa-key SWA=KS PEM=KS-public.pem
 ```
 
-In a production environment, the SWA would create their own RSA keys and communicate the public key PEM file to DOL via email.
+In a production environment, the SWA would create their own keys and communicate the public key PEM file to DOL via email.
 
 You only need run `create-swa` and `activate-swa` once per environment.
 

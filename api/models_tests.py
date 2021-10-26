@@ -10,7 +10,7 @@ import datetime
 class ApiModelsTestCase(TransactionTestCase):
     def test_swa(self):
         # generate a public/private key pair for the test
-        private_key_jwk = jwk.JWK.generate(kty="RSA", size=1024)
+        private_key_jwk = jwk.JWK.generate(kty="EC", crv="P-256")
         # leaving here as an example in case we need it in future
         # private_key = private_key_jwk.export_to_pem(True, None).decode("utf-8")
         public_key_jwk = jwk.JWK()
