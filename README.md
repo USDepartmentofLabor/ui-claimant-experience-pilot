@@ -40,8 +40,87 @@ Bootstrap your environment for the first time:
 (.venv) % pre-commit install
 (.venv) % make services-setup
 (.venv) % make container-build
+(.venv) % make services-start
 ```
 
+To start a Docker container interactively and run the Django web server:
+
+```sh
+(.venv) % make login
+root@randomdockerstring:/app# make dev-run
+```
+
+You can now visit http://sandbox.ui.dol.gov:8004/ (thanks to your `/etc/hosts` entries) or http://localhost:8004/.
+
+To run the tests:
+
+```sh
+(.venv) % make login
+root@randomdockerstring:/app# make test
+```
+
+#### HTTPS
+
+In order to view an https connection locally, you will need to set up a proxy. You can use the [ssl-proxy](https://github.com/suyashkumar/ssl-proxy) tool.
+You will need to install it somewhere locally in your `PATH`, and create a symlink to it called `ssl-proxy`. Then:
+
+```sh
+(.venv) % make dev-ssl-proxy
+```
+
+which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ and proxy to the Django server running at http://sandbox.ui.dol.gov:8004/
+
+Like the SMTP server, the HTTPS proxy will log to stdout so start it in its own terminal window.
+
+#### Home page and Django templates
+
+The default home page is a static file in `home/templates/index.html`. It uses the Django templating system. It is managed separately from the React application(s).
+
+There are additional static template files in `home/templates` that are used during the Identity Provider authentication workflow. They all share and extend
+a common `base.html` template.
+
+#### React frontend
+
+The frontend application is found inside of `./claimant`. The `claimant` application has its own README and `make` commands.
+
+Set up your `.env` file for the React application.
+
+```sh
+% cp claimant/.env-example claimant/.env
+```
+
+To run the React app independently of Django:
+
+```sh
+(.venv) % cd claimant
+(.venv) % make deps
+(.venv) % make dev-run
+```
+
+Note that because Django and React, when run independently, are listening on different ports, your browser
+will consider them different domains and so cookies are not passed between them. We avoid this using the
+"proxy" feature in `package.json` which should (in theory) pass cookies correctly. If you cannot run the proxy,
+you may need to initiate an authenticated session first directly via Django, and then you should be able to view the authenticated
+parts of the React app because your browser will send the correct session cookie to Django.
+
+To view the React app via Django, you need to build it:
+
+Make sure the proxy is running (`make dev-ssl-proxy`). Then:
+
+```sh
+(.venv) % cd claimant
+(.venv) % make build
+```
+
+If your Django app is running, it's available at https://sandbox.ui.dol.gov:4430/claimant/.
+Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
+
+Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway.
+If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. Try clearing your browser cache and cookies.
+
+### Using Services
+
+Development services you can run include mysql, redis, and a development smtp server.
 During local development, you can run the app dependency services with:
 
 ```sh
@@ -85,80 +164,9 @@ MySQL [unemployment]>
 
 You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
-To start a Docker container interactively and run the Django web server:
+### Pre-commits
 
-```sh
-(.venv) % make login
-root@randomdockerstring:/app# make dev-run
-```
-
-You can now visit http://sandbox.ui.dol.gov:8004/ (thanks to your `/etc/hosts` entries) or http://localhost:8004/.
-
-To run the tests:
-
-```sh
-(.venv) % make login
-root@randomdockerstring:/app# make test
-```
-
-### HTTPS
-
-In order to view an https connection locally, you will need to set up a proxy. You can use the [ssl-proxy](https://github.com/suyashkumar/ssl-proxy) tool.
-You will need to install it somewhere locally in your `PATH`, and create a symlink to it called `ssl-proxy`. Then:
-
-```sh
-(.venv) % make dev-ssl-proxy
-```
-
-which will start a reverse proxy listening at https://sandbox.ui.dol.gov:4430/ and proxy to the Django server running at http://sandbox.ui.dol.gov:8004/
-
-Like the SMTP server, the HTTPS proxy will log to stdout so start it in its own terminal window.
-
-### Home page and Django templates
-
-The default home page is a static file in `home/templates/index.html`. It uses the Django templating system. It is managed separately from the React application(s).
-
-There are additional static template files in `home/templates` that are used during the Identity Provider authentication workflow. They all share and extend
-a common `base.html` template.
-
-### React frontend
-
-The frontend application is found inside of `./claimant`. The `claimant` application has its own README and `make` commands.
-
-Set up your `.env` file for the React application.
-
-```sh
-% cp claimant/.env-example claimant/.env
-```
-
-To run the React app independently of Django:
-
-```sh
-(.venv) % cd claimant
-(.venv) % make deps
-(.venv) % make dev-run
-```
-
-Note that because Django and React, when run independently, are listening on different ports, your browser
-will consider them different domains and so cookies are not passed between them. We avoid this using the
-"proxy" feature in `package.json` which should (in theory) pass cookies correctly. If you cannot run the proxy,
-you may need to initiate an authenticated session first directly via Django, and then you should be able to view the authenticated
-parts of the React app because your browser will send the correct session cookie to Django.
-
-To view the React app via Django, you need to build it:
-
-Make sure the proxy is running (`make dev-ssl-proxy`). Then:
-
-```sh
-(.venv) % cd claimant
-(.venv) % make build
-```
-
-If your Django app is running, it's available at https://sandbox.ui.dol.gov:4430/claimant/.
-Note that the Django-served React app is the pre-built (`NODE_ENV=production`) version and doesn't live-update as the source code is updated.
-
-Note: you may get a "your connection is not private" warning in your browser. In Chrome, go to 'advanced' and choose to go to the site anyway.
-If you get a message saying HSTS is required, it may be that another `.dol.gov` site has cached a cookie. Try clearing your browser cache and cookies.
+When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
 
 ## Identity Providers
 
@@ -181,10 +189,6 @@ but are available for running indepedently as well.
 
 In addition, we rely on the GitHub [Dependabot](https://docs.github.com/en/code-security/supply-chain-security/managing-vulnerabilities-in-your-projects-dependencies/configuring-dependabot-security-updates)
 tool to maintain dependencies.
-
-## Development
-
-When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
 
 ## Data Model Migrations
 
