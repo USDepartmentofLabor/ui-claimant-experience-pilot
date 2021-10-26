@@ -173,6 +173,7 @@ login: ## Log into the Django app docker container
 	docker run --rm -it \
 	--name $(DOCKER_NAME) \
 	--mount type=volume,dst=/app/claimant/build \
+	--mount type=volume,dst=/app/home/static \
 	-v $(PWD):/app \
 	-p 8004:8000 \
 	$(DOCKER_IMG) /bin/bash
