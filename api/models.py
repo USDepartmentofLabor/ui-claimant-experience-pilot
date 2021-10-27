@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+import uuid
+
 
 # we specify table names because these models will be accessed from
 # other apps (like the swas app) so we prefer not to namespace them with api_*
@@ -42,3 +44,20 @@ class SWA(TimeStampedModel):
         from jwcrypto import jwk
 
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))
+
+
+class Claimant(TimeStampedModel):
+    class Meta:
+        db_table = "claimants"
+
+    idp = models.ForeignKey(IdentityProvider, on_delete=models.PROTECT)
+    idp_user_xid = models.CharField(max_length=255, unique=True)
+
+
+class Claim(TimeStampedModel):
+    class Meta:
+        db_table = "claims"
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    swa = models.ForeignKey(SWA, on_delete=models.PROTECT)
+    claimant = models.ForeignKey(Claimant, on_delete=models.PROTECT)
