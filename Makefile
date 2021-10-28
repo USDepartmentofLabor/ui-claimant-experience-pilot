@@ -110,7 +110,10 @@ container-build-wcms: ## Build the Django app container image (to test image con
 	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.7.0 .
 
 container-run: ## Run the Django app in Docker
-	docker run -it -p 8004:8000 $(DOCKER_IMG)
+	docker run --rm -it -p 8004:8000 $(DOCKER_IMG)
+
+container-run-wcms: ## Run the Django app in Docker using the wcms version of the image
+	docker run --rm -it -p 8004:8000 --env-file=core/.env $(DOCKER_IMG)
 
 container-stop: ## Stop the Django app container with DOCKER_CONTAINER_ID
 	docker stop $(DOCKER_CONTAINER_ID)
@@ -163,8 +166,8 @@ build-cleanup: ## Common final tasks for the various Dockerfile targets (intende
 	rm -f requirements*.txt
 	apt-get purge -y --auto-remove gcc
 	chown -R doluiapp:doluiapp /app
-	mkdir -p /var/run/celery
-	chown -R doluiapp:doluiapp /var/run/celery
+	mkdir -p /run/celery
+	chown -R doluiapp:doluiapp /run/celery
 	mkdir -p /var/log/celery
 	chown -R doluiapp:doluiapp /var/log/celery
 
