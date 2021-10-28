@@ -112,7 +112,7 @@ container-build-wcms: ## Build the Django app container image (to test image con
 container-run: ## Run the Django app in Docker
 	docker run --rm -it -p 8004:8000 $(DOCKER_IMG)
 
-container-run-wcms: ## Run the Django app in Docker using the wcms version of the image
+container-run-with-env-file: ## Run the Django app in Docker using core/.env env-file (useful in combination with container-build-wcms)
 	docker run --rm -it -p 8004:8000 --env-file=core/.env $(DOCKER_IMG)
 
 container-stop: ## Stop the Django app container with DOCKER_CONTAINER_ID
@@ -166,6 +166,10 @@ build-cleanup: ## Common final tasks for the various Dockerfile targets (intende
 	rm -f requirements*.txt
 	apt-get purge -y --auto-remove gcc
 	chown -R doluiapp:doluiapp /app
+	# Use /run/celery in these commands rather than /var/run/celery
+	# due to differences in how the docker engine and kaniko handle
+	# the /var/run directory during the docker image build. In the
+	# docker image, /var/run is symlinked to /run.
 	mkdir -p /run/celery
 	chown -R doluiapp:doluiapp /run/celery
 	mkdir -p /var/log/celery
