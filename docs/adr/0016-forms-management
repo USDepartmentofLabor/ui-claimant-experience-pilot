@@ -1,0 +1,58 @@
+# Forms Management
+
+- Status: Decided
+- Deciders: Team concensus
+- Date: 2021-10-28
+
+The claimant app will make use of many form fields for data entry. The application should have a consistent way to define fields, validate input, and store the data in the app.
+
+## Assumptions
+
+We will make use of the form components from the react-uswds package, which follow the USWDS guidelines. This ADR addresses the programming components and libraries required to support those guidelines.
+
+## Constraints
+
+The selected technology should integrate well with the React framework we are using for the frontend.
+
+## Considered Alternatives
+
+- Formik
+- JSON Forms
+- react-hook-form
+
+## Pros and Cons of the Alternatives
+
+### Formik
+
+- `+` Moderately small (13KB) library
+- `+` Includes some validation support in the library
+- `±` Provides and manages its own data store
+- `-` May conflict with our existing React data store
+- `-` Requires a special `Field` wrapper component
+- `-` Typescript types can be complex
+
+### JSON Forms
+
+- `+` Builds form presentation and validation off the JSON schema
+- `+` Supports i18n via external functions such as react-i18next
+- `+` Very simple to define and manage new fields
+- `+` Includes validation via the JSON schema
+- `-` Extremely large JS load (~1MB) library (mobile-hostile)
+- `-` Runs slowly on large JSON schemas; hard to define "large"
+
+### react-hook-form
+
+- `+` Very small (~6KB) and performant library
+- `+` Straightforward to integrate with Typescript
+- `-` More custom code per field than with JSON schema validation
+- `-` Requires validation via a separate `yup` package
+
+## Decision Outcome
+
+Use `react-hook-form` with `yup` for validation.
+
+Supporting research:
+
+- https://blog.logrocket.com/react-hook-form-vs-formik-comparison/
+- https://formik.org/docs/guides/typescript
+- https://react-hook-form.com/ts/
