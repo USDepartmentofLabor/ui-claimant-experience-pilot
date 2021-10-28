@@ -8,7 +8,6 @@ const resources = {
   en: en,
 };
 
-console.log("en", en);
 i18n.use(LanguageDetector).use(initReactI18next).init({
   lng: "en",
   fallbackLng: "en",

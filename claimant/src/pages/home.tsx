@@ -46,7 +46,7 @@ const ClaimForm = () => {
       initialValues={{}}
       onSubmit={async () => {
         await sendEmail.mutateAsync();
-        alert(`Email sent to ${whoami.email}`);
+        alert(t("sampleForm.emailAlert", { emailAddress: whoami.email }));
       }}
     >
       {({
