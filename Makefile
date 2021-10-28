@@ -202,11 +202,6 @@ test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
 	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
-
-test-django-wcms: export LOGIN_DOT_GOV_ENV=test
-test-django-wcms: export WCMS_TEST_ENV=true
-test-django-wcms: ## Run Django app tests in the WCMS environment
-	coverage run manage.py test --keepdb --noinput -v 2 --pattern="*tests*py"
 	coverage xml --fail-under 90
 
 ci-test-react: ## Run React tests in CI

@@ -234,8 +234,6 @@ if "mysql" in default_db["ENGINE"]:
 
 DATABASES = {"default": default_db}
 
-TEST_RUNNER = "core.test_runner.MyTestRunner"
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
