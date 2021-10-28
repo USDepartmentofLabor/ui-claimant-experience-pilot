@@ -6,6 +6,14 @@
 
 Description and background on decision to be made
 
+## Assumptions
+
+A brief listing of any underlying assumptions specific to this decision: cost, timeline, technologies, compliance, etc.
+
+## Constraints
+
+Include any decisions explicitly out of scope for this ADR.
+
 ## Considered Alternatives
 
 - Option 1
