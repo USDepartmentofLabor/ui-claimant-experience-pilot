@@ -364,3 +364,7 @@ CELERY_RESULT_BACKEND = REDIS_URL + "?ssl_cert_reqs=none"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+
+# S3
+AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
+CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")

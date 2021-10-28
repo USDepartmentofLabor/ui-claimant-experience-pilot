@@ -61,3 +61,18 @@ class Claim(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     swa = models.ForeignKey(SWA, on_delete=models.PROTECT)
     claimant = models.ForeignKey(Claimant, on_delete=models.PROTECT)
+
+    def payload_path(self):
+        if self.is_complete():
+            return self.completed_payload_path()
+        else:
+            return self.partial_payload_path()
+
+    def completed_payload_path(self):
+        return f"{self.swa.code}/{self.uuid}.json"
+
+    def partial_payload_path(self):
+        return f"{self.swa.code}/{self.uuid}.partial.json"
+
+    def is_complete(self):
+        return True  # TODO use events to determine

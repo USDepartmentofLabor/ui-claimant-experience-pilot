@@ -1,7 +1,12 @@
 help: ## Print the help documentation
 	@grep -E '^[/a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+LOCALSTACK_SERVICES := s3
+LOCALSTACK_DATA_DIR := /tmp/localstack/data
+services-start: export SERVICES=$(LOCALSTACK_SERVICES)
+services-start: export DATA_DIR=$(LOCALSTACK_DATA_DIR)
 services-start: ## Start Django app's supporting services
+	mkdir -p /tmp/localstack
 	docker-compose -f docker-compose-services.yml up -d --remove-orphans
 
 services-stop: ## Stop Django app's supporting services
