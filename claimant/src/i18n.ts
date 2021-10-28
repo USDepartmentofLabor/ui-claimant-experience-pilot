@@ -4,13 +4,19 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "./i18n/en";
 
-const resources = {
+export const defaultNS = "home";
+export const resources = {
   en: en,
-};
+} as const;
 
-i18n.use(LanguageDetector).use(initReactI18next).init({
-  lng: "en",
-  fallbackLng: "en",
-  resources,
-});
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    lng: "en",
+    fallbackLng: "en",
+    ns: ["common", "home", "whoami"],
+    defaultNS,
+    resources,
+  });
 export default i18n;
