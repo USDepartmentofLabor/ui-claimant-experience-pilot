@@ -11,7 +11,7 @@ app.autodiscover_tasks()
 
 
 @app.task(bind=True)
-def debug_task(self):
+def debug_task(self):  # pragma: nocover
     print("Request: {0!r}".format(self.request))
 
 

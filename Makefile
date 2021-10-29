@@ -1,7 +1,12 @@
 help: ## Print the help documentation
 	@grep -E '^[/a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+LOCALSTACK_SERVICES := s3
+LOCALSTACK_DATA_DIR := /tmp/localstack/data
+services-start: export SERVICES=$(LOCALSTACK_SERVICES)
+services-start: export DATA_DIR=$(LOCALSTACK_DATA_DIR)
 services-start: ## Start Django app's supporting services
+	mkdir -p /tmp/localstack
 	docker-compose -f docker-compose-services.yml up -d --remove-orphans
 
 services-stop: ## Stop Django app's supporting services
@@ -75,6 +80,9 @@ migrate: ## Run Django data model migrations (inside container)
 
 migrations: ## Generate Django migrations from models (inside container)
 	python manage.py makemigrations
+
+migrations-check: ## Check for Django model changes not reflected in migrations (inside container)
+	python manage.py makemigrations --check --no-input
 
 # this runs 2 workers named w1 and w2. Each worker will have N child prefork processes,
 # by default the number of cores on the machine. See
@@ -202,11 +210,6 @@ test-django: export LOGIN_DOT_GOV_ENV=test
 test-django: ## Run Django app tests
 	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
-
-test-django-wcms: export LOGIN_DOT_GOV_ENV=test
-test-django-wcms: export WCMS_TEST_ENV=true
-test-django-wcms: ## Run Django app tests in the WCMS environment
-	coverage run manage.py test --keepdb --noinput -v 2 --pattern="*tests*py"
 	coverage xml --fail-under 90
 
 ci-test-react: ## Run React tests in CI
