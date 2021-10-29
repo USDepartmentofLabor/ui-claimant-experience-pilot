@@ -25,6 +25,7 @@ done
 # we run our own celery inside tests
 make celery-stop
 
+make migrations-check
 make test
 
 # start again for any other use of the container
