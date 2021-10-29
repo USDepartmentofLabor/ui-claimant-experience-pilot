@@ -1,11 +1,15 @@
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../queries/whoami";
+import { useTranslation } from "react-i18next";
+
+import PageLoader from "../common/PageLoader";
 
 const WhoAmI = () => {
   const { data: whoami, isLoading, error } = useWhoAmI();
+  const { t } = useTranslation("whoami");
 
   if (isLoading) {
-    return <>Loading</>;
+    return <PageLoader />;
   }
 
   if (error || !whoami) {
@@ -14,24 +18,23 @@ const WhoAmI = () => {
 
   return (
     <ul className="usa-list">
-      <li>Form ID: {whoami.form_id}</li>
-      <li>First Name: {whoami.first_name}</li>
-      <li>Last Name: {whoami.last_name}</li>
-      <li>Birthdate: {whoami.birthdate}</li>
-      <li>Email: {whoami.email}</li>
-      <li>SSN: {whoami.ssn}</li>
-      <li>Phone: {whoami.phone}</li>
+      <li>{t("info.formId", { formId: whoami.form_id })}</li>
+      <li>{t("info.firstName", { firstName: whoami.first_name })}</li>
+      <li>{t("info.lastName", { lastName: whoami.last_name })}</li>
+      <li>{t("info.dob", { dob: whoami.birthdate })}</li>
+      <li>{t("info.email", { email: whoami.email })}</li>
+      <li>{t("info.ssn", { ssn: whoami.ssn })}</li>
+      <li>{t("info.phone", { phone: whoami.phone })}</li>
     </ul>
   );
 };
 
 const WhoAmIPage = () => {
+  const { t } = useTranslation("whoami");
   return (
     <main>
-      <h1>Who am I</h1>
-      <p className="usa-intro">
-        Displays the account attributes from the AAL2/IAL2 session
-      </p>
+      <h1>{t("heading")}</h1>
+      <p className="usa-intro">{t("intro")}</p>
       <RequestErrorBoundary>
         <WhoAmI />
       </RequestErrorBoundary>

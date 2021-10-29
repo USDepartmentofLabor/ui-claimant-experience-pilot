@@ -4,14 +4,19 @@ import HomeStyles from "./Home.module.scss";
 import { useWhoAmI } from "../queries/whoami";
 import { useSendEmail } from "../queries/claim";
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
+import { useTranslation } from "react-i18next";
+
+import PageLoader from "../common/PageLoader";
 
 const HomePage = () => {
+  const { t } = useTranslation("home");
+
   return (
     <main>
-      <h1>Welcome</h1>
-      <p className="usa-intro">File an unemployment insurance claim.</p>
+      <h1>{t("welcome")}</h1>
+      <p className="usa-intro">{t("intro")}</p>
       <section className="usa-section">
-        <p className={HomeStyles.hello}>Hello from a CSS Module style</p>
+        <p className={HomeStyles.hello}>{t("sampleStyle")}</p>
       </section>
       <RequestErrorBoundary>
         <ClaimForm />
@@ -24,10 +29,12 @@ export default HomePage;
 
 const ClaimForm = () => {
   const { data: whoami, error, isLoading } = useWhoAmI();
+  const { t } = useTranslation("home");
+
   const sendEmail = useSendEmail();
 
   if (isLoading) {
-    return <>Loading</>;
+    return <PageLoader />;
   }
 
   if (error || sendEmail.error || !whoami) {
@@ -39,7 +46,7 @@ const ClaimForm = () => {
       initialValues={{}}
       onSubmit={async () => {
         await sendEmail.mutateAsync();
-        alert(`Email sent to ${whoami.email}`);
+        alert(t("sampleForm.emailAlert", { emailAddress: whoami.email }));
       }}
     >
       {({
@@ -53,7 +60,7 @@ const ClaimForm = () => {
       }) => (
         <Form onSubmit={handleSubmit}>
           <Button type="submit" disabled={sendEmail.isLoading}>
-            Test Email
+            {t("sampleForm.emailButton")}
           </Button>
         </Form>
       )}
