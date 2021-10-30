@@ -8,6 +8,7 @@ from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
 from .claim_writer import ClaimWriter
+from .test_utils import create_s3_bucket, delete_s3_bucket
 
 
 class CoreTestCase(TestCase):
@@ -17,18 +18,13 @@ class CoreTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # create our S3 bucket
-        cw = ClaimWriter(True, True)
-        cw.s3_client().create_bucket(Bucket=cw.bucket_name())
+        super().setUpClass()
+        create_s3_bucket()
 
     @classmethod
     def tearDownClass(cls):
-        # destroy bucket
-        cw = ClaimWriter(True, True)
-        # must delete all objects first, then delete bucket
-        bucket = cw.bucket()
-        bucket.objects.all().delete()
-        cw.s3_client().delete_bucket(Bucket=cw.bucket_name())
+        super().tearDownClass()
+        delete_s3_bucket()
 
     def test_claimant_page(self):
         response = self.client.get("/claimant/")
@@ -69,6 +65,15 @@ class CoreTestCase(TestCase):
             Bucket=cw.bucket_name(), Key=claim.payload_path()
         )
         self.assertEqual(bucket_asset["Body"].read().decode("utf-8"), "test payload")
+
+        # explicit path declaration
+        cw = ClaimWriter(claim, "test path", "path/to/my/object")
+        self.assertTrue(cw.write())
+
+        bucket_asset = cw.s3_client().get_object(
+            Bucket=cw.bucket_name(), Key="path/to/my/object"
+        )
+        self.assertEqual(bucket_asset["Body"].read().decode("utf-8"), "test path")
 
     @patch("core.claim_writer.ClaimWriter.s3_client")
     def test_claim_writer_error(self, mock_boto3_client):

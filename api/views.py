@@ -4,13 +4,16 @@ from django.http import JsonResponse
 import logging
 import secrets
 import os
+import json
 from django.conf import settings
 import django.middleware.csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .decorators import verified_claimant_session
+from .claim_request import ClaimRequest
 from core.email import Email
 from core.utils import register_local_login
+from core.claim_writer import ClaimWriter
 
 # import json
 
@@ -53,6 +56,11 @@ def whoami(request):
     return JsonResponse(whoami, status=200)
 
 
+"""
+Root endpoint for the /api/ space. Returns metadata about the API itself.
+"""
+
+
 @require_http_methods(["GET"])
 def index(request):
     return JsonResponse(
@@ -70,8 +78,25 @@ def index(request):
 @require_http_methods(["POST"])
 @verified_claimant_session
 def claim(request):
-    # payload = json.loads(request.body.decode("utf-8"))
-    # TODO ignoring payload for now, will use once we have a form.
-    whoami = request.session.get("whoami")
-    Email(to=whoami["email"], subject="hello world", body="hello world").send_later()
-    return JsonResponse({"ok": "sent"}, status=201)
+    claim_request = ClaimRequest(request)
+    if claim_request.error:
+        return claim_request.response
+
+    # TODO validation
+    # TODO encryption
+    writeable_payload = json.dumps(claim_request.payload)
+
+    cw = ClaimWriter(claim_request.claim, writeable_payload)
+    if cw.write():
+        # only send email if the Claim was "complete"
+        if claim_request.claim.is_complete():
+            Email(
+                to=claim_request.whoami["email"],
+                subject="hello world",
+                body="hello world",
+            ).send_later()
+        return JsonResponse({"status": "accepted"}, status=201)
+    else:
+        return JsonResponse(
+            {"status": "error", "message": "unable to save claim"}, status=500
+        )

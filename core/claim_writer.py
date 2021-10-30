@@ -10,9 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class ClaimWriter(object):
-    def __init__(self, claim, payload):
+    def __init__(self, claim, payload, path=None):
         self.claim = claim
         self.payload = payload
+        if path:
+            self.path = path
+        elif hasattr(claim, "payload_path"):
+            self.path = claim.payload_path()
 
     def s3_client(self):
         # TODO region?
@@ -30,7 +34,7 @@ class ClaimWriter(object):
         try:
             self.s3_client().put_object(
                 Bucket=self.bucket_name(),
-                Key=self.claim.payload_path(),
+                Key=self.path,
                 Body=self.payload,
             )
             # TODO mark claim event as written

@@ -1,13 +1,35 @@
 # -*- coding: utf-8 -*-
-from django.test import Client
+from django.test import Client, RequestFactory
 from django.core import mail
 from core.tasks_tests import CeleryTestCase
+from .test_utils import create_idp, create_swa, create_claimant
+from .models import Claim
+from core.test_utils import create_s3_bucket, delete_s3_bucket
+from .claim_request import (
+    ClaimRequest,
+    MISSING_SWA_CODE,
+    INVALID_SWA_CODE,
+    MISSING_CLAIMANT_ID,
+    INVALID_CLAIMANT_ID,
+    INVALID_CLAIM_ID,
+)
+import uuid
 
 
 class ApiTestCase(CeleryTestCase):
     def setUp(self):
         # Empty the test outbox
         mail.outbox = []
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
 
     def verify_session(self, client=None):
         client = client if client else self.client
@@ -58,16 +80,19 @@ class ApiTestCase(CeleryTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_claim_with_csrf(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
         csrf_client = self.csrf_client()
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/claim/"
-        payload = {}
+        payload = {"claimant_id": claimant.idp_user_xid, "swa_code": swa.code}
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), {"ok": "sent"})
+        self.assertEqual(response.json(), {"status": "accepted"})
 
         # this requires celery task to run to completion async,
         # so wait a little
@@ -94,3 +119,73 @@ class ApiTestCase(CeleryTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["verified"])
+
+    def create_api_claim_request(self, body):
+        request = RequestFactory().post(
+            "/api/claim", content_type="application/json", data=body
+        )
+        request.session = self.client.session
+        claim_request = ClaimRequest(request)
+        return claim_request
+
+    def test_claim_request(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        self.verify_session()
+
+        # happy path
+        body = {"claimant_id": claimant.idp_user_xid, "swa_code": swa.code}
+        claim_request = self.create_api_claim_request(body)
+        self.assertFalse(claim_request.error)
+
+        # missing swa
+        body = {"claimant_id": claimant.idp_user_xid}
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, MISSING_SWA_CODE)
+        self.assertEqual(claim_request.response.status_code, 400)
+
+        # invalid swa
+        body = {"claimant_id": claimant.idp_user_xid, "swa_code": "nonsense"}
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, INVALID_SWA_CODE)
+        self.assertEqual(claim_request.response.status_code, 404)
+
+        # missing claimant
+        body = {"swa_code": swa.code}
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, MISSING_CLAIMANT_ID)
+        self.assertEqual(claim_request.response.status_code, 400)
+
+        # invalid claimant
+        body = {"swa_code": swa.code, "claimant_id": "nonsense"}
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, INVALID_CLAIMANT_ID)
+        self.assertEqual(claim_request.response.status_code, 404)
+
+        # invalid claim
+        body = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "id": str(uuid.uuid4()),
+        }
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, INVALID_CLAIM_ID)
+        self.assertEqual(claim_request.response.status_code, 404)
+
+        # valid claim
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+        body = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "id": claim.uuid,
+        }
+        claim_request = self.create_api_claim_request(body)
+        self.assertFalse(claim_request.error)
+        self.assertEqual(claim.id, claim_request.claim.id)
