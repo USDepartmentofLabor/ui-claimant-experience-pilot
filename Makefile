@@ -171,6 +171,7 @@ build-static: ## Build the static assets (intended for during container-build (i
 	mkdir static
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
+	cp claimant/build/manifest.json static/manifest.json
 	cp home/templates/sureroute-test-object.html static/
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
