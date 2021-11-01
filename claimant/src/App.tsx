@@ -59,8 +59,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router basename="/claimant">
-        <GovBanner />
         <Header basic>
+          <GovBanner />
           <div className="usa-nav-container">
             <div className="usa-navbar">
               <Title>

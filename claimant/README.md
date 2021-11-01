@@ -69,9 +69,16 @@ To run all the tests and display test coverage (assuming your Docker container i
 
 To run all the tests and display test coverage, using the local dev server (`make dev-run`):
 
-```sh
+````sh
 % make dev-test-coverage
-```
+
+## Storybook
+
+The front-end uses [Storybook](https://storybook.js.org/) to display isolated components of the React application without the need to run the complete app. To run Storybook:
+
+```sh
+% yarn storybook
+````
 
 ## Build
 

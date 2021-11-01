@@ -23,3 +23,4 @@ rules:
     [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
   "@typescript-eslint/explicit-module-boundary-types": "off"
   "react/prop-types": "off"
+  "import/no-anonymous-default-export": "off"
