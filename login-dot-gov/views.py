@@ -5,7 +5,8 @@ import logging
 import secrets
 import os
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2
-from core.utils import session_as_dict
+from core.utils import session_as_dict, hash_idp_user_xid
+from api.models import Claimant, IdentityProvider
 
 # import pprint
 
@@ -42,6 +43,10 @@ def index(request):
     # if we already have a verified session, redirect to frontend app
     if request.session.get("verified"):
         return redirect("/")
+
+    # stash selection
+    if "swa" in request.GET:
+        request.session["swa"] = request.GET["swa"]
 
     # otherwise, initiate login.gov session
     # create our session with a "state" we can use to track IdP response.
@@ -96,6 +101,12 @@ def result(request):
 
     # logger.debug("userinfo={}".format(pprint.pformat(userinfo)))
 
+    logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
+    idp_user_xid = hash_idp_user_xid(userinfo["sub"])
+    claimant, _ = Claimant.objects.get_or_create(
+        idp_user_xid=idp_user_xid, idp=logindotgov_idp
+    )
+
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
     # TODO standardize on a WhoAmI class structure for serializing all IdPs attributes.
@@ -106,6 +117,7 @@ def result(request):
         "ssn": userinfo["social_security_number"],
         "email": userinfo["email"],
         "phone": userinfo["phone"],
+        "claimant_id": idp_user_xid,
     }
 
     redirect_to = "/logindotgov/explain"

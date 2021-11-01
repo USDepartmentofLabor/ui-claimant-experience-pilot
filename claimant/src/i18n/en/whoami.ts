@@ -9,6 +9,8 @@ const whoami = {
     email: "Email: {{email}}",
     ssn: "SSN: {{ssn}}",
     phone: "Phone: {{phone}}",
+    SWA: "SWA: {{SWA}}",
+    claim: "Claim: {{claim}}",
   },
 };
 

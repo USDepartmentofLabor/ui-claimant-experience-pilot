@@ -21,7 +21,7 @@ def live(request):
         connection.ensure_connection()
         db_ok = connection.is_usable()
         db_response_time = time.time() - db_start
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         logger.exception(err)
         db_ok = False
         db_response_time = 0

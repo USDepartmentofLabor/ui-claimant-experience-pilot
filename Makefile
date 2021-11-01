@@ -160,6 +160,9 @@ create-swa: ## Create a SWA model record. Requires SWA=code and NAME=name values
 activate-swa: ## Set SWA record status=Active
 	python manage.py activate_swa $(SWA)
 
+bucket: ## Create S3 bucket in localstack service (run inside container)
+	python manage.py create_bucket
+
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 build-static: ## Build the static assets (intended for during container-build (inside the container))
@@ -211,6 +214,9 @@ test-django: ## Run Django app tests
 	coverage run manage.py test -v 2 --pattern="*tests*py"
 	coverage report -m --skip-covered --fail-under 90
 	coverage xml --fail-under 90
+
+ci-setup-react-tests: ## Create test data required for React (Cypress) tests
+	docker exec web ./setup-cypress-tests.sh
 
 ci-test-react: ## Run React tests in CI
 	for reactapp in $(REACT_APPS); do cd $$reactapp && make ci-tests ; done

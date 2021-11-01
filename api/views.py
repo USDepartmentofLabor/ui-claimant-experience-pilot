@@ -51,6 +51,8 @@ def whoami(request):
         request.session["form_id"] = secrets.token_hex(16)
     whoami = request.session.get("whoami")
     whoami["form_id"] = request.session["form_id"]
+    if "swa" in request.session and "swa_code" not in whoami:
+        whoami["swa_code"] = request.session["swa"]
     # set csrftoken cookie
     django.middleware.csrf.get_token(request)
     return JsonResponse(whoami, status=200)
@@ -80,11 +82,16 @@ def index(request):
 def claim(request):
     claim_request = ClaimRequest(request)
     if claim_request.error:
+        logger.error(claim_request.error)
         return claim_request.response
 
     # TODO validation
     # TODO encryption
     writeable_payload = json.dumps(claim_request.payload)
+
+    # now that we have a Claim, stash its id in session
+    claim_id = claim_request.payload["id"]
+    request.session["whoami"]["claim_id"] = claim_id
 
     cw = ClaimWriter(claim_request.claim, writeable_payload)
     if cw.write():
@@ -95,8 +102,8 @@ def claim(request):
                 subject="hello world",
                 body="hello world",
             ).send_later()
-        return JsonResponse({"status": "accepted"}, status=201)
+        return JsonResponse({"status": "accepted", "claim_id": claim_id}, status=202)
     else:
         return JsonResponse(
-            {"status": "error", "message": "unable to save claim"}, status=500
+            {"status": "error", "error": "unable to save claim"}, status=500
         )

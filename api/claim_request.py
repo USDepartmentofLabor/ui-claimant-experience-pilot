@@ -57,6 +57,12 @@ class ClaimRequest(object):
         try:
             if claim_id:
                 self.claim = Claim.objects.get(uuid=claim_id)
+                if self.claim.claimant != self.claimant:
+                    self.error = INVALID_CLAIM_ID
+                    self.response = JsonResponse(
+                        {"error": INVALID_CLAIM_ID}, status=401
+                    )
+                    return
             else:
                 self.claim = Claim(claimant=self.claimant, swa=self.swa)
                 self.claim.save()

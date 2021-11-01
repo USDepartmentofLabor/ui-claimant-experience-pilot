@@ -20,4 +20,4 @@ services:
         ENV_NAME: ${ENV_NAME}
     ports:
       - "8004:8000"
-    command: ["wait-for-it", "rds:3306", "--", "./start-server.sh"]
+    command: ["wait-for-it", "-t", "60", "rds:3306", "--", "./start-server.sh"]

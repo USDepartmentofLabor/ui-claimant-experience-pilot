@@ -1,40 +1,77 @@
-<html>
-  <head>
-    <title>UI Test | Login</title>
-    <style>
-      label {
-        display: block;
-      }
-    </style>
-  </head>
+{% extends "base.html" %} {% block content %}
+<main role="main">
+  <div class="grid-container">
+    <div class="grid-row">
+      <form class="usa-form usa-form--large" action="/login/" method="POST">
+        <input
+          type="hidden"
+          name="csrfmiddlewaretoken"
+          value="{{ csrf_token }}"
+        />
+        <fieldset class="usa-fieldset">
+          <legend class="usa-legend usa-legend--large">Test Login</legend>
 
-  <body>
-    <form action="/login/" method="POST">
-      <input
-        type="hidden"
-        name="csrfmiddlewaretoken"
-        value="{{ csrf_token }}"
-      />
-      <fieldset>
-        <legend>Test Login</legend>
+          <p>
+            Required fields are marked with an asterisk (<abbr
+              title="required"
+              class="usa-hint usa-hint--required"
+              >*</abbr
+            >).
+          </p>
 
-        <label for="first_name">First Name</label>
-        <input type="text" id="first_name" name="first_name" />
-        <label for="last_name">Last Name</label>
-        <input type="text" id="last_name" name="last_name" />
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" />
-        <label for="birthdate">Birthdate</label>
-        <input type="text" id="birthdate" name="birthdate" />
-        <label for="ssn">SSN</label>
-        <input type="text" id="ssn" name="ssn" />
-        <label for="phone">Phone</label>
-        <input type="text" id="phone" name="phone" />
+          <label class="usa-label" for="swa_code">State</label>
+          <select name="swa_code" class="usa-select">
+            <option disabled selected value>--</option>
+            {% for swa in swas %}
+            <option value="{{swa.code}}">{{swa.name}}</option>
+            {% endfor %}
+          </select>
 
-        <div>
-          <button type="submit">Login</button>
-        </div>
-      </fieldset>
-    </form>
-  </body>
-</html>
+          <label class="usa-label" for="first_name">First Name</label>
+          <input
+            class="usa-input"
+            type="text"
+            id="first_name"
+            name="first_name"
+          />
+          <label class="usa-label" for="last_name">Last Name</label>
+          <input
+            class="usa-input"
+            type="text"
+            id="last_name"
+            name="last_name"
+          />
+          <label class="usa-label" for="email">
+            Email
+            <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
+          </label>
+          <input
+            class="usa-input"
+            type="text"
+            id="email"
+            name="email"
+            required
+          />
+          <label class="usa-label" for="birthdate">Birthdate</label>
+          <input
+            class="usa-input"
+            type="text"
+            id="birthdate"
+            name="birthdate"
+          />
+          <label class="usa-label" for="ssn">SSN</label>
+          <input class="usa-input" type="text" id="ssn" name="ssn" />
+          <label class="usa-label" for="phone">Phone</label>
+          <input class="usa-input" type="text" id="phone" name="phone" />
+
+          <div>
+            <button class="usa-button" type="submit" data-testid="loginbutton">
+              Login
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}

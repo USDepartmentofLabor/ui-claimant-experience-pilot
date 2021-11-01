@@ -25,6 +25,8 @@ const WhoAmI = () => {
       <li>{t("info.email", { email: whoami.email })}</li>
       <li>{t("info.ssn", { ssn: whoami.ssn })}</li>
       <li>{t("info.phone", { phone: whoami.phone })}</li>
+      <li>{t("info.SWA", { SWA: whoami.swa_code })}</li>
+      <li>{t("info.claim", { claim: whoami.claim_id })}</li>
     </ul>
   );
 };
