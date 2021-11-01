@@ -1,4 +1,4 @@
-boto3==1.18.57
+boto3==1.19.7
 celery==5.1.2
 colorlog==6.5.0
 Django==3.2.8
