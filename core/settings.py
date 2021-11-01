@@ -126,7 +126,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
-    "django.middleware.locale.LocaleMiddleware",
+    # "django.middleware.locale.LocaleMiddleware", (apply this when ready to determine locale by session data)
 ]
 
 ROOT_URLCONF = "core.urls"

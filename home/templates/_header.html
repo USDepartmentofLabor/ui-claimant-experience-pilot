@@ -12,7 +12,7 @@
       <div class="usa-banner__inner">
         <div class="grid-col-auto">
           <img class="usa-banner__header-flag" src="{% static
-          'img/us_flag_small.png' %}" alt={% translate "U.S. flag" %} />
+          'img/us_flag_small.png' %}" alt="{% translate "U.S. flag" %}" />
         </div>
         <div class="grid-col-fill tablet:grid-col-auto">
           <p class="usa-banner__header-text">
@@ -66,7 +66,7 @@
             <p>
               <strong>{% translate "Secure .gov websites use HTTPS" %} </strong>
               <br />
-              {% blocktranslate %} A <strong>lock</strong> (
+              {% translate "A <strong>lock</strong>" %}(
               <span class="icon-lock"
                 ><svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -78,17 +78,19 @@
                   aria-labelledby="banner-lock-title banner-lock-description"
                   focusable="false"
                 >
-                  <title id="banner-lock-title">Lock</title>
-                  <desc id="banner-lock-description">A locked padlock</desc>
+                  <title id="banner-lock-title">{% translate "Lock" %}</title>
+                  <desc id="banner-lock-description">
+                    {% translate "A locked padlock" %}
+                  </desc>
                   <path
                     fill="#000000"
                     fill-rule="evenodd"
                     d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
                   /></svg
               ></span>
-              ) or <strong>https://</strong> means you’ve safely connected to
-              the .gov website. Share sensitive information only on official,
-              secure websites. {% endblocktranslate %}
+              ) {% translate "or <strong>https://</strong> means you’ve safely
+              connected to the .gov website. Share sensitive information only on
+              official, secure websites." %}
             </p>
           </div>
         </div>
@@ -103,8 +105,8 @@
       <a href="/" class="navbar-brand" title="Home">
         <span class="dol-header-logo">
           <img class="not-responsive float-left logo"
-          src="//www.dol.gov/themes/opa_theme/img/logo-primary.svg" alt={%
-          translate "United States Department of Labor" %} title="Home" />
+          src="//www.dol.gov/themes/opa_theme/img/logo-primary.svg"
+          alt={%translate "United States Department of Labor" %} title="Home" />
         </span>
         <em class="usa-logo__text"
           >{% translate "U.S. Department of Labor" %}</em
