@@ -13,7 +13,7 @@
     <div class="grid-row grid-gap">
       <div class="tablet:grid-col-4">
         <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
-          Select a State
+          {% translate "Select a State" %}
         </h2>
       </div>
       <div class="tablet:grid-col-8 usa-prose">
@@ -21,7 +21,9 @@
           <select class="usa-select" onchange="addSwaCode(this.value)">
             <option disabled selected value>--</option>
             {% for swa in swas %}
-            <option value="{{swa.code}}">{{swa.name}}</option>
+            <option value="{{swa.code}}">
+              {% translate "swa.name" noop %}
+            </option>
             {% endfor %}
           </select>
         </form>
@@ -38,8 +40,8 @@
       <div class="tablet:grid-col-8 usa-prose">
         <p>
           <a class="idp-link" href="{{ base_url }}/logindotgov/">
-            <img src="https://www.ssa.gov/fleximg/Log_in_logo1.png"
-                 alt="{% translate "Sign in with Login.gov, external website" %}"
+            <img src="https://www.ssa.gov/fleximg/Log_in_logo1.png" alt="{%
+            translate "Sign in with Login.gov, external website" %}"
             class="cspLogo-imgBorder" />
           </a>
         </p>

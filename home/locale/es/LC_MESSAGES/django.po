@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-01 12:15-0700\n"
+"POT-Creation-Date: 2021-11-01 16:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE &lt;LL@li.org>\n"
@@ -18,118 +18,120 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/_header.html:3
+#: home/templates/_header.html:3
 msgid "Skip to main content"
 msgstr "Saltar al contento principal"
 
-#: templates/_header.html:15
+#: home/templates/_header.html:15
 msgid "U.S. flag"
 msgstr "Bandera de los Estados Unidos"
 
 #. Translators: official website of US government banner
-#: templates/_header.html:20
+#: home/templates/_header.html:20
 msgid "An official website of the United States government"
 msgstr "Un sitio web del gobierno de los Estados Unidos"
 
-#: templates/_header.html:23 templates/_header.html:32
+#: home/templates/_header.html:23 home/templates/_header.html:32
 msgid "Here’s how you know"
 msgstr "Cómo se sabe"
 
-#: templates/_header.html:49
+#: home/templates/_header.html:49
 msgid "Official websites use .gov"
 msgstr ""
 
-#: templates/_header.html:51
+#: home/templates/_header.html:51
 msgid ""
 "A <strong>.gov</strong> website belongs to an official government "
 "organization in the United States."
 msgstr ""
 
-#: templates/_header.html:67
+#: home/templates/_header.html:67
 msgid "Secure .gov websites use HTTPS"
 msgstr ""
 
-#: templates/_header.html:69
+#: home/templates/_header.html:69
 msgid "A <strong>lock</strong>"
 msgstr ""
 
-#: templates/_header.html:81
+#: home/templates/_header.html:81
 msgid "Lock"
 msgstr ""
 
-#: templates/_header.html:82
+#: home/templates/_header.html:83
 msgid "A locked padlock"
 msgstr ""
 
-#: templates/_header.html:89
-msgid ""
-"or <strong>https://</strong> means you’ve safely connected to the .gov "
-"website. Share sensitive information only on official, secure websites."
-msgstr ""
-
-#: templates/_header.html:104
+#: home/templates/_header.html:109
 msgid "United States Department of Labor"
 msgstr ""
 
-#: templates/_header.html:107
+#: home/templates/_header.html:112
 msgid "U.S. Department of Labor"
 msgstr ""
 
-#: templates/_header.html:111
+#: home/templates/_header.html:116
 msgid "Menu"
 msgstr "Menú"
 
-#: templates/_header.html:116
-msgid "Close"
-msgstr ""
-
-#: templates/_header.html:125
+#: home/templates/_header.html:131
 msgid "Current section"
 msgstr "&lt;Sección actual &gt;"
 
-#: templates/_header.html:130
+#: home/templates/_header.html:136
 msgid "&lt;Navigation link&lt;"
 msgstr "&lt;Navigación&gt;"
 
-#: templates/_header.html:133 templates/_header.html:136
-#: templates/_header.html:151 templates/_header.html:154
-#: templates/_header.html:157
+#: home/templates/_header.html:139 home/templates/_header.html:142
+#: home/templates/_header.html:157 home/templates/_header.html:160
+#: home/templates/_header.html:163
 msgid "&lt;Navigation link&gt;"
 msgstr "&lt;Navigación &gt;"
 
-#: templates/_header.html:146
+#: home/templates/_header.html:152
 msgid "&lt;Section&gt;"
-msgstr ""
+msgstr "&lt;Sección&gt;"
 
-#: templates/_header.html:163
+#: home/templates/_header.html:169
 msgid "&lt;Simple link&gt;"
 msgstr "&lt;Enlace&gt;"
 
-#: templates/_header.html:170
+#: home/templates/_header.html:176
 msgid "&lt;Secondary link&gt;"
 msgstr "&lt;Enlace segondario&gt;"
 
-#: templates/_header.html:173
+#: home/templates/_header.html:179
 msgid "&lt;Another secondary link&gt;"
 msgstr "&lt;Otro enlace segundario&gt;"
 
-#: templates/_header.html:179 templates/_header.html:188
+#: home/templates/_header.html:185 home/templates/_header.html:194
 msgid "Search"
 msgstr "Buscar"
 
-#: templates/idp.html:7
+#: home/templates/idp.html:24
+msgid "swa.name"
+msgstr ""
+
+#: home/templates/idp.html:35
 msgid "Log In or Sign Up"
 msgstr "Iniciar sessión o Registrar"
 
-#: templates/index.html:7
+#: home/templates/idp.html:42
+msgid "Sign in with Login.gov, external website"
+msgstr ""
+
+#: home/templates/idp.html:49
+msgid "Test Login"
+msgstr ""
+
+#: home/templates/index.html:7
 msgid "Unemployment Insurance Claim Application"
 msgstr "Solicitud de reclamo del seguro de desempleo"
 
-#: templates/index.html:9
+#: home/templates/index.html:9
 msgid "Apply for benefits"
 msgstr "Solicitar beneficios"
 
-#: templates/index.html:11
+#: home/templates/index.html:11
 msgid "Get started"
 msgstr "Empezar"
 
