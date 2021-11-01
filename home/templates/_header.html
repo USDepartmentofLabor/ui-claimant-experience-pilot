@@ -1,5 +1,7 @@
-{% load static %}
-<a class="usa-skipnav" href="#main-content">Skip to main content</a>
+{% load static %} {% load i18n %}
+<a class="usa-skipnav" href="#main-content"
+  >{% translate "Skip to main content" %}</a
+>
 <section
   role="banner"
   class="usa-banner"
@@ -9,18 +11,16 @@
     <header class="usa-banner__header">
       <div class="usa-banner__inner">
         <div class="grid-col-auto">
-          <img
-            class="usa-banner__header-flag"
-            src="{% static 'img/us_flag_small.png' %}"
-            alt="U.S. flag"
-          />
+          <img class="usa-banner__header-flag" src="{% static
+          'img/us_flag_small.png' %}" alt={% translate "U.S. flag" %} />
         </div>
         <div class="grid-col-fill tablet:grid-col-auto">
           <p class="usa-banner__header-text">
-            An official website of the United States government
+            {# Translators: official website of US government banner #} {%
+            translate "An official website of the United States government" %}
           </p>
           <p class="usa-banner__header-action" aria-hidden="true">
-            Here’s how you know
+            {% translate "Here’s how you know" %}
           </p>
         </div>
         <button
@@ -28,7 +28,9 @@
           aria-expanded="false"
           aria-controls="gov-banner"
         >
-          <span class="usa-banner__button-text">Here’s how you know</span>
+          <span class="usa-banner__button-text"
+            >{% translate "Here’s how you know" %}</span
+          >
         </button>
       </div>
     </header>
@@ -44,10 +46,11 @@
           />
           <div class="usa-media-block__body">
             <p>
-              <strong> Official websites use .gov </strong>
+              <strong>{% translate "Official websites use .gov" %}</strong>
               <br />
-              A <strong>.gov</strong> website belongs to an official government
-              organization in the United States.
+              {% blocktranslate trimmed %} A <strong>.gov</strong> website
+              belongs to an official government organization in the United
+              States. {% endblocktranslate %}
             </p>
           </div>
         </div>
@@ -61,9 +64,9 @@
           />
           <div class="usa-media-block__body">
             <p>
-              <strong> Secure .gov websites use HTTPS </strong>
+              <strong>{% translate "Secure .gov websites use HTTPS" %} </strong>
               <br />
-              A <strong>lock</strong> (
+              {% blocktranslate %} A <strong>lock</strong> (
               <span class="icon-lock"
                 ><svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +88,7 @@
               ></span>
               ) or <strong>https://</strong> means you’ve safely connected to
               the .gov website. Share sensitive information only on official,
-              secure websites.
+              secure websites. {% endblocktranslate %}
             </p>
           </div>
         </div>
@@ -99,26 +102,22 @@
     <div class="usa-logo" id="extended-mega-logo">
       <a href="/" class="navbar-brand" title="Home">
         <span class="dol-header-logo">
-          <img
-            class="not-responsive float-left logo"
-            src="//www.dol.gov/themes/opa_theme/img/logo-primary.svg"
-            alt="United States Department of Labor"
-            title="Home"
-          />
+          <img class="not-responsive float-left logo"
+          src="//www.dol.gov/themes/opa_theme/img/logo-primary.svg" alt={%
+          translate "United States Department of Labor" %} title="Home" />
         </span>
-        <em class="usa-logo__text">U.S. Department of Labor</em>
+        <em class="usa-logo__text"
+          >{% translate "U.S. Department of Labor" %}</em
+        >
       </a>
     </div>
-    <button class="usa-menu-btn">Menu</button>
+    <button class="usa-menu-btn">{% translate "Menu" %}</button>
   </div>
   <nav aria-label="Primary navigation" class="usa-nav">
     <div class="usa-nav__inner">
       <button class="usa-nav__close">
-        <img
-          src="{% static 'img/usa-icons/close.svg' %}"
-          role="img"
-          alt="Close"
-        />
+        <img src="{% static 'img/usa-icons/close.svg' %}" role="img" alt={%
+        translate "Close" %} />
       </button>
       <ul class="usa-nav__primary usa-accordion">
         <li class="usa-nav__primary-item">
@@ -127,18 +126,18 @@
             aria-expanded="false"
             aria-controls="extended-nav-section-one"
           >
-            <span>&lt;Current section&gt;</span>
+            <span>{% translate "Current section" %}</span>
           </button>
 
           <ul id="extended-nav-section-one" class="usa-nav__submenu">
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#"> {% translate "&lt;Navigation link&lt;" %} </a>
             </li>
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#">{% translate "&lt;Navigation link&gt;" %}</a>
             </li>
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#">{% translate "&lt;Navigation link&gt;" %} </a>
             </li>
           </ul>
         </li>
@@ -148,40 +147,40 @@
             aria-expanded="false"
             aria-controls="extended-nav-section-two"
           >
-            <span>&lt;Section&gt;</span>
+            <span>{% translate "&lt;Section&gt;" %}</span>
           </button>
 
           <ul id="extended-nav-section-two" class="usa-nav__submenu">
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
             </li>
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
             </li>
             <li class="usa-nav__submenu-item">
-              <a href="#"> &lt;Navigation link&gt; </a>
+              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
             </li>
           </ul>
         </li>
         <li class="usa-nav__primary-item">
           <a href="javascript:void(0)" class="usa-nav__link">
-            <span>&lt;Simple link&gt;</span>
+            <span>{% translate "&lt;Simple link&gt;" %}</span>
           </a>
         </li>
       </ul>
       <div class="usa-nav__secondary">
         <ul class="usa-nav__secondary-links">
           <li class="usa-nav__secondary-item">
-            <a href="">&lt;Secondary link&gt;</a>
+            <a href="">{% translate "&lt;Secondary link&gt;" %}</a>
           </li>
           <li class="usa-nav__secondary-item">
-            <a href="">&lt;Another secondary link&gt;</a>
+            <a href="">{% translate "&lt;Another secondary link&gt;" %}</a>
           </li>
         </ul>
 
         <form class="usa-search usa-search--small" role="search">
           <label class="usa-sr-only" for="extended-search-field-en-small">
-            Search
+            {% translate "Search" %}
           </label>
           <input
             class="usa-input"
@@ -190,7 +189,7 @@
             name="search"
           />
           <button class="usa-button" type="submit">
-            <span class="usa-sr-only">Search</span>
+            <span class="usa-sr-only">{% translate "Search" %}</span>
           </button>
         </form>
       </div>
