@@ -1,8 +1,9 @@
+import { useQueryClient } from "react-query";
 import { Formik } from "formik";
 import { Button, Form } from "@trussworks/react-uswds";
 import HomeStyles from "./Home.module.scss";
 import { useWhoAmI } from "../queries/whoami";
-import { useSendEmail } from "../queries/claim";
+import { useSubmitClaim } from "../queries/claim";
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
 
@@ -29,41 +30,67 @@ export default HomePage;
 
 const ClaimForm = () => {
   const { data: whoami, error, isLoading } = useWhoAmI();
+  const submitClaim = useSubmitClaim();
+  const queryClient = useQueryClient();
   const { t } = useTranslation("home");
-
-  const sendEmail = useSendEmail();
 
   if (isLoading) {
     return <PageLoader />;
   }
 
-  if (error || sendEmail.error || !whoami) {
-    throw error || sendEmail.error;
+  if (error || submitClaim.error || !whoami) {
+    throw error || submitClaim.error;
   }
 
   return (
-    <Formik
-      initialValues={{}}
-      onSubmit={async () => {
-        await sendEmail.mutateAsync();
-        alert(t("sampleForm.emailAlert", { emailAddress: whoami.email }));
-      }}
-    >
-      {({
-        // TODO props commented out as example only
-        // values,
-        // errors,
-        // touched,
-        handleSubmit,
-        // isSubmitting,
-        // setFieldValue,
-      }) => (
-        <Form onSubmit={handleSubmit}>
-          <Button type="submit" disabled={sendEmail.isLoading}>
-            {t("sampleForm.emailButton")}
-          </Button>
-        </Form>
+    <div>
+      {submitClaim.isSuccess ? (
+        <div className="usa-alert usa-alert--success">
+          <div className="usa-alert__body">
+            <h4 className="usa-alert__heading">Success status</h4>
+            <p className="usa-alert__text">
+              {t("sampleForm.claimSuccess")} <code>{whoami.claim_id}</code>
+            </p>
+          </div>
+        </div>
+      ) : (
+        ""
       )}
-    </Formik>
+      <Formik
+        initialValues={{}}
+        onSubmit={async () => {
+          const claim: Claim = {
+            swa_code: whoami.swa_code,
+            claimant_id: whoami.claimant_id,
+          };
+          if (whoami.claim_id) {
+            claim.id = whoami.claim_id;
+          }
+          const r = await submitClaim.mutateAsync(claim);
+          if (!whoami.claim_id) {
+            queryClient.setQueryData("whoami", {
+              ...whoami,
+              claim_id: r.data.claim_id,
+            });
+          }
+        }}
+      >
+        {({
+          // TODO props commented out as example only
+          // values,
+          // errors,
+          // touched,
+          handleSubmit,
+          // isSubmitting,
+          // setFieldValue,
+        }) => (
+          <Form onSubmit={handleSubmit}>
+            <Button type="submit" disabled={submitClaim.isLoading}>
+              {t("sampleForm.claimButton")}
+            </Button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };

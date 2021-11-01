@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
+from api.models import SWA
 import django.middleware.csrf
 import logging
 
@@ -14,13 +15,17 @@ def index(request):
 
 
 def idp(request):
-    # TODO pass in a SWA?
     if "redirect_to" in request.GET:
         request.session["redirect_to"] = request.GET["redirect_to"]
+    active_swas = SWA.objects.filter(status=SWA.StatusOptions.ACTIVE)
     return render(
         None,
         "idp.html",
-        {"base_url": base_url(request), "show_login_page": settings.SHOW_LOGIN_PAGE},
+        {
+            "base_url": base_url(request),
+            "show_login_page": settings.SHOW_LOGIN_PAGE,
+            "swas": active_swas,
+        },
     )
 
 
@@ -37,12 +42,20 @@ def login(request):
         # make sure we init both session and CSRF cookies
         request.session.set_test_cookie()
         csrf_token = django.middleware.csrf.get_token(request)
+        # stash params for post-login
         if "redirect_to" in request.GET:
             request.session["redirect_to"] = request.GET["redirect_to"]
+        if "swa" in request.GET:
+            request.session["swa"] = request.GET["swa"]
+        active_swas = SWA.objects.filter(status=SWA.StatusOptions.ACTIVE)
         return render(
             None,
             "login.html",
-            {"base_url": base_url(request), "csrf_token": csrf_token},
+            {
+                "base_url": base_url(request),
+                "csrf_token": csrf_token,
+                "swas": active_swas,
+            },
         )
     elif request.method == "POST":
         register_local_login(request)

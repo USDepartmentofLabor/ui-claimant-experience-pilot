@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.test import Client, RequestFactory
 from django.core import mail
+from unittest.mock import patch
+import boto3
+from botocore.stub import Stubber
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
-from .models import Claim
+from .models import Claim, Claimant
 from core.test_utils import create_s3_bucket, delete_s3_bucket
 from .claim_request import (
     ClaimRequest,
@@ -37,6 +40,7 @@ class ApiTestCase(CeleryTestCase):
         session["verified"] = True
         session["whoami"] = {"hello": "world", "email": "someone@example.com"}
         session.save()
+        return session
 
     def csrf_client(self):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
@@ -53,6 +57,15 @@ class ApiTestCase(CeleryTestCase):
         # only GET allowed
         response = self.client.post("/api/whoami/")
         self.assertEqual(response.status_code, 405)
+
+    def test_whoami_swa(self):
+        session = self.verify_session()
+        session["swa"] = "XX"
+        session.save()
+
+        response = self.client.get("/api/whoami/")
+        whoami = response.json()
+        self.assertEqual(whoami["swa_code"], "XX")
 
     def test_whoami_unverified(self):
         response = self.client.get("/api/whoami/")
@@ -91,8 +104,11 @@ class ApiTestCase(CeleryTestCase):
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), {"status": "accepted"})
+        self.assertEqual(response.status_code, 202)
+        claim = claimant.claim_set.all()[0]
+        self.assertEqual(
+            response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
+        )
 
         # this requires celery task to run to completion async,
         # so wait a little
@@ -103,6 +119,27 @@ class ApiTestCase(CeleryTestCase):
         # only POST allowed
         response = csrf_client.get(url)
         self.assertEqual(response.status_code, 405)
+
+        # missing param returns error
+        response = csrf_client.post(
+            url, content_type="application/json", data={}, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # failure to write claim returns error
+        with patch("core.claim_writer.ClaimWriter.s3_client") as mocked_client:
+            client = boto3.client("s3")
+            stubber = Stubber(client)
+            stubber.add_client_error("put_object")
+            stubber.activate()
+            mocked_client.return_value = client
+            response = csrf_client.post(
+                url, content_type="application/json", data=payload, **headers
+            )
+            self.assertEqual(response.status_code, 500)
+            self.assertEqual(
+                response.json(), {"status": "error", "error": "unable to save claim"}
+            )
 
     def test_login(self):
         self.assertFalse("verified" in self.client.session)
@@ -167,7 +204,7 @@ class ApiTestCase(CeleryTestCase):
         self.assertEqual(claim_request.error, INVALID_CLAIMANT_ID)
         self.assertEqual(claim_request.response.status_code, 404)
 
-        # invalid claim
+        # invalid claim (bad id)
         body = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
@@ -177,6 +214,21 @@ class ApiTestCase(CeleryTestCase):
         self.assertTrue(claim_request.error)
         self.assertEqual(claim_request.error, INVALID_CLAIM_ID)
         self.assertEqual(claim_request.response.status_code, 404)
+
+        # invalid claim (belongs to a different claimant)
+        diff_claimant = Claimant(idp=idp, idp_user_xid="diff claimant")
+        diff_claimant.save()
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+        body = {
+            "claimant_id": diff_claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "id": claim.uuid,
+        }
+        claim_request = self.create_api_claim_request(body)
+        self.assertTrue(claim_request.error)
+        self.assertEqual(claim_request.error, INVALID_CLAIM_ID)
+        self.assertEqual(claim_request.response.status_code, 401)
 
         # valid claim
         claim = Claim(claimant=claimant, swa=swa)

@@ -5,6 +5,7 @@ from logindotgov.mock_server import OIDC as MockServer
 from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
+from api.models import IdentityProvider
 
 # import pprint
 
@@ -38,6 +39,11 @@ def mimic_oidc_server_authorized(url):
     new=MagicMock(side_effect=mocked_logindotdov_oidc_server),
 )
 class LoginDotGovTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        IdentityProvider.objects.get_or_create(name="login.gov")
+
     @override_settings(DEBUG=True)  # so that /explain works
     def test_oidc_flow(self):
         response = self.client.get("/logindotgov/")
@@ -119,3 +125,8 @@ class LoginDotGovTestCase(TestCase):
         self.assertRedirects(
             response, "/some/place/else", status_code=302, fetch_redirect_response=False
         )
+
+    def test_swa_selection(self):
+        response = self.client.get("/logindotgov/?swa=XX")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["swa"], "XX")

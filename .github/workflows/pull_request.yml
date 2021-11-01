@@ -41,7 +41,7 @@ jobs:
       - name: Start SSL proxy
         run: PATH=.:$PATH make dev-ssl-proxy &
       - name: Run JS Tests
-        run: make ci-test-react
+        run: make ci-setup-react-tests ci-test-react
       - name: Test nothing has changed
         run: make diff-test
       - name: Docker logs

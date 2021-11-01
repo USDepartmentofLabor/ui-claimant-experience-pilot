@@ -38,16 +38,19 @@ Cypress.Commands.add("login", () => {
 });
 
 Cypress.Commands.add("real_login", () => {
-  cy.visit("https://sandbox.ui.dol.gov:4430/login/");
-  cy.log("on /login/ page");
+  cy.visit("https://sandbox.ui.dol.gov:4430/login/?swa=XX");
+  // cy.log("on /login/ page");
   cy.get("#email").should("be.visible").type("someone@example.com");
-  cy.log("found email input");
-  cy.get('button[type="submit"]').should("be.visible").click();
-  cy.log("clicked submit");
+  // cy.log("found email input");
+  cy.get("[data-testid='loginbutton']").should("be.visible").click();
+  // cy.log("clicked submit");
 });
 
 Cypress.Commands.add("post_login", () => {
-  cy.request("POST", "/api/login/", { email: "someone@example.com" });
+  cy.request("POST", "/api/login/", {
+    email: "someone@example.com",
+    swa_code: "XX",
+  });
 });
 
 Cypress.Commands.add("mock_login", () => {
@@ -57,6 +60,8 @@ Cypress.Commands.add("mock_login", () => {
       email: "someone@example.com",
       first_name: "Some",
       last_name: "One",
+      swa_code: "XX",
+      claimant_id: "the-claimant-id",
     });
   }).as("api-whoami");
 });

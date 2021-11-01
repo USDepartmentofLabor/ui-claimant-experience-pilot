@@ -38,7 +38,7 @@ class CeleryTestCase(TransactionTestCase):
     def wait_for_workers_to_finish(self):
         status = self.get_celery_worker_status()
         tries = 0
-        while status["queued"] != 0:
+        while status["queued"] != 0:  # pragma: no cover
             tries += 1
             if tries > 10:
                 break

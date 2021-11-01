@@ -15,9 +15,10 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "Sign in", status_code=200)
 
     def test_login_page(self):
-        response = self.client.get("/login/?redirect_to=http://example.com/")
-        self.assertContains(response, "Test | Login", status_code=200)
+        response = self.client.get("/login/?swa=XX&redirect_to=http://example.com/")
+        self.assertContains(response, "Login", status_code=200)
         self.assertEquals(self.client.session["redirect_to"], "http://example.com/")
+        self.assertEquals(self.client.session["swa"], "XX")
         response = self.client.post(
             "/login/", {"first_name": "Some", "last_name": "Body"}
         )

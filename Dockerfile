@@ -87,6 +87,7 @@ USER doluiapp
 
 FROM djangobase as djangobase-ci
 COPY run-ci-tests.sh .
+COPY setup-cypress-tests.sh .
 RUN pip install --no-cache-dir -r requirements-ci.txt && \
   cp core/.env-ci core/.env && \
   echo SECRET_KEY=`make secret SECRET_LENGTH=64` >> core/.env && \
