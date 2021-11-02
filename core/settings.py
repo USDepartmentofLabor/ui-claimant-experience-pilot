@@ -121,12 +121,12 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # must come after session middleware and before common middleware
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
-    # "django.middleware.locale.LocaleMiddleware", (apply this when ready to determine locale by session data)
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -238,7 +238,7 @@ DATABASES = {"default": default_db}
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
 
 TIME_ZONE = "UTC"
 
