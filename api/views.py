@@ -13,7 +13,7 @@ from .decorators import verified_claimant_session
 from .claim_request import ClaimRequest
 from core.email import Email
 from core.utils import register_local_login
-from core.claim_writer import ClaimWriter
+from core.claim_storage import ClaimWriter
 
 # import json
 
