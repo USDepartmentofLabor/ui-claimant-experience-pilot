@@ -7,7 +7,7 @@ from core.email import Email
 from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
-from .claim_writer import ClaimWriter
+from .claim_storage import ClaimWriter, ClaimReader
 from .test_utils import create_s3_bucket, delete_s3_bucket
 
 
@@ -15,16 +15,6 @@ class CoreTestCase(TestCase):
     def setUp(self):
         # Empty the test outbox
         mail.outbox = []
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_s3_bucket()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        delete_s3_bucket()
 
     def test_claimant_page(self):
         response = self.client.get("/claimant/")
@@ -51,6 +41,18 @@ class CoreTestCase(TestCase):
         # status is 503 because celery is offline
         self.assertEqual(response.status_code, 503)
 
+
+class CoreClaimStorageTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+
     def test_claim_writer(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -61,21 +63,19 @@ class CoreTestCase(TestCase):
         cw = ClaimWriter(claim, "test payload")
         self.assertTrue(cw.write())
 
-        bucket_asset = cw.s3_client().get_object(
-            Bucket=cw.bucket_name(), Key=claim.payload_path()
-        )
-        self.assertEqual(bucket_asset["Body"].read().decode("utf-8"), "test payload")
+        cr = ClaimReader(claim)
+        bucket_asset = cr.read()
+        self.assertEqual(bucket_asset, "test payload")
 
         # explicit path declaration
         cw = ClaimWriter(claim, "test path", "path/to/my/object")
         self.assertTrue(cw.write())
 
-        bucket_asset = cw.s3_client().get_object(
-            Bucket=cw.bucket_name(), Key="path/to/my/object"
-        )
-        self.assertEqual(bucket_asset["Body"].read().decode("utf-8"), "test path")
+        cr = ClaimReader(claim, "path/to/my/object")
+        bucket_asset = cr.read()
+        self.assertEqual(bucket_asset, "test path")
 
-    @patch("core.claim_writer.ClaimWriter.s3_client")
+    @patch("core.claim_storage.ClaimStore.s3_client")
     def test_claim_writer_error(self, mock_boto3_client):
         idp = create_idp()
         swa, _ = create_swa()

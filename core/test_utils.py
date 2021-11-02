@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from jwcrypto import jwk
 from jwcrypto.common import json_decode
-from .claim_writer import ClaimWriter
+from .claim_storage import ClaimStore
 
 
 def generate_keypair():
@@ -16,13 +16,13 @@ def generate_keypair():
 
 
 def create_s3_bucket():
-    cw = ClaimWriter(True, True)
-    cw.s3_client().create_bucket(Bucket=cw.bucket_name())
+    cs = ClaimStore()
+    cs.bucket().create()
 
 
 def delete_s3_bucket():
-    cw = ClaimWriter(True, True)
+    cs = ClaimStore()
     # must delete all objects first, then delete bucket
-    bucket = cw.bucket()
+    bucket = cs.bucket()
     bucket.objects.all().delete()
-    cw.s3_client().delete_bucket(Bucket=cw.bucket_name())
+    bucket.delete()

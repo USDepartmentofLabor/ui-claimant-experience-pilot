@@ -127,7 +127,7 @@ class ApiTestCase(CeleryTestCase):
         self.assertEqual(response.status_code, 400)
 
         # failure to write claim returns error
-        with patch("core.claim_writer.ClaimWriter.s3_client") as mocked_client:
+        with patch("core.claim_storage.ClaimStore.s3_client") as mocked_client:
             client = boto3.client("s3")
             stubber = Stubber(client)
             stubber.add_client_error("put_object")
