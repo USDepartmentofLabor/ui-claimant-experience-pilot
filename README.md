@@ -168,6 +168,27 @@ You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
 When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
 
+### Internationalization (i18n)
+
+I18n for the static templates served by Django uses the built-in [Translation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/) feature of Django.
+
+To apply translations for simple cases, use the `{% translation <string> %}` within the template. Be sure to translate `alt` text for screen readers. The default language is English, `en`, so an `en` translation file is not necessary.
+Translation messages are applied in `home/locale` in a `.po` file. After making changes to plain language in the template, in the `home` directory run:
+
+```
+django-admin makemessages -l <locale code>
+```
+
+This will create or update a `.po` file.
+
+The `.po` file must be compiled into a binary `.mo` file with this command:
+
+```
+django-admin compilemessages
+```
+
+There is also a make command that will create the .mo file upon build: `build-translations`
+
 ## Identity Providers
 
 Eventually, multiple Identity Providers (IdPs) will be available in the application.
