@@ -1,5 +1,5 @@
 const whoami = {
-  heading: "Who am I",
+  whoamiHeading: "Who am I",
   intro: "Displays the account attributes from the AAL2/IAL2 session",
   info: {
     formId: "Form ID: {{formId}}",

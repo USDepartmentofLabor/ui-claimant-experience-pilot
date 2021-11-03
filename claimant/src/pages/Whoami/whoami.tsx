@@ -1,8 +1,8 @@
-import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
-import { useWhoAmI } from "../queries/whoami";
+import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
+import { useWhoAmI } from "../../queries/whoami";
 import { useTranslation } from "react-i18next";
 
-import PageLoader from "../common/PageLoader";
+import PageLoader from "../../common/PageLoader";
 
 export const WhoAmI = () => {
   const { data: whoami, isLoading, error } = useWhoAmI();
@@ -35,7 +35,7 @@ const WhoAmIPage = () => {
   const { t } = useTranslation("whoami");
   return (
     <main data-testid="who-am-i-page">
-      <h1>{t("heading")}</h1>
+      <h1>{t("whoamiHeading")}</h1>
       <p className="usa-intro">{t("intro")}</p>
       <RequestErrorBoundary>
         <WhoAmI />

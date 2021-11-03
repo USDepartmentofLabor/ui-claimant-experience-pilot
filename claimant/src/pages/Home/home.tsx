@@ -2,12 +2,12 @@ import { useQueryClient } from "react-query";
 import { Formik } from "formik";
 import { Button, Form } from "@trussworks/react-uswds";
 import HomeStyles from "./Home.module.scss";
-import { useWhoAmI } from "../queries/whoami";
-import { useSubmitClaim } from "../queries/claim";
-import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
+import { useWhoAmI } from "../../queries/whoami";
+import { useSubmitClaim } from "../../queries/claim";
+import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
 
-import PageLoader from "../common/PageLoader";
+import PageLoader from "../../common/PageLoader";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
