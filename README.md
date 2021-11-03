@@ -170,10 +170,12 @@ When using `git commit` to change or add files, the pre-commit hooks run. Some h
 
 ### Internationalization (i18n)
 
+#### Server-side
+
 I18n for the static templates served by Django uses the built-in [Translation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/) feature of Django.
 
 To apply translations for simple cases, use the `{% translation <string> %}` within the template. Be sure to translate `alt` text for screen readers. The default language is English, `en`, so an `en` translation file is not necessary.
-Translation messages are applied in `home/locale` in a `.po` file. After making changes to plain language in the template, in the `home` directory run:
+Translation messages are applied in `home/locale/<locale code>/LC_MESSAGES` in a `.po` file. After making changes to plain language in the template, in the `home` directory run:
 
 ```
 django-admin makemessages -l <locale code>
@@ -188,6 +190,11 @@ django-admin compilemessages
 ```
 
 There is also a make command that will create the .mo file upon build: `build-translations`
+
+#### Client-side
+
+In React, we are using [react-i18next](https://react.i18next.com/).
+Translation is found in `claimant/src/i18n` in corresponding locale directories by app page.
 
 ## Identity Providers
 
