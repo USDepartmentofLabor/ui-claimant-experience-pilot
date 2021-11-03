@@ -22,6 +22,11 @@ class IdentityProvider(TimeStampedModel):
     name = models.CharField(max_length=255, unique=True)
 
 
+class ActiveSwaManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=SWA.StatusOptions.ACTIVE)
+
+
 class SWA(TimeStampedModel):
     class Meta:
         db_table = "swas"
@@ -39,6 +44,9 @@ class SWA(TimeStampedModel):
     status = models.IntegerField(
         choices=StatusOptions.choices, default=StatusOptions.INACTIVE
     )
+
+    objects = models.Manager()  # MUST come first
+    active = ActiveSwaManager()
 
     def public_key_as_jwk(self):
         from jwcrypto import jwk

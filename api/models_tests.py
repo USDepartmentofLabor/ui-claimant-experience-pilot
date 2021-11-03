@@ -1,10 +1,32 @@
 # -*- coding: utf-8 -*-
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, TestCase
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 from api.models import SWA, IdentityProvider, Claimant, Claim
 import datetime
 from api.test_utils import create_swa, create_idp, create_claimant
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
+class ApiModelsManagerTestCase(TestCase):
+    def test_swa_manager(self):
+        ks_swa, _ = create_swa()
+        swas = SWA.active.all()
+        for swa in swas:
+            logger.debug("SWA: {} {}".format(swa.code, swa.get_status_display()))
+        # 2 default + filters out ks_swa becase not active
+        self.assertEqual(len(swas), 2)
+
+        ks_swa.status = SWA.StatusOptions.ACTIVE
+        ks_swa.save()
+        another_swa = SWA(code="AA", name="Alpha", status=SWA.StatusOptions.ACTIVE)
+        another_swa.save()
+        swas = SWA.active.order_by("name").all()
+        self.assertEqual(swas[0].code, "AA")  # sorts first
+        self.assertEqual(swas[2].code, "KS")  # included now that it is active
 
 
 class ApiModelsTestCase(TransactionTestCase):

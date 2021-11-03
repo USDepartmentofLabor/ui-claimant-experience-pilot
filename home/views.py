@@ -10,6 +10,10 @@ import logging
 logger = logging.getLogger("home")
 
 
+def active_swas_ordered_by_name():
+    return SWA.active.order_by("name").all()
+
+
 def index(request):
     return render(None, "index.html", {"base_url": base_url(request)})
 
@@ -17,14 +21,13 @@ def index(request):
 def idp(request):
     if "redirect_to" in request.GET:
         request.session["redirect_to"] = request.GET["redirect_to"]
-    active_swas = SWA.objects.filter(status=SWA.StatusOptions.ACTIVE)
     return render(
         None,
         "idp.html",
         {
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
-            "swas": active_swas,
+            "swas": active_swas_ordered_by_name(),
         },
     )
 
@@ -47,14 +50,13 @@ def login(request):
             request.session["redirect_to"] = request.GET["redirect_to"]
         if "swa" in request.GET:
             request.session["swa"] = request.GET["swa"]
-        active_swas = SWA.objects.filter(status=SWA.StatusOptions.ACTIVE)
         return render(
             None,
             "login.html",
             {
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
-                "swas": active_swas,
+                "swas": active_swas_ordered_by_name(),
             },
         )
     elif request.method == "POST":
