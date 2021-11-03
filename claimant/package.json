@@ -91,7 +91,9 @@
       "!**/coverageCheck.js",
       "!**/setupProxy.tsx",
       "!**/react-app-env.d.ts",
-      "!**/types.d.ts"
+      "!**/types.d.ts",
+      "!src/**/*.stories.{jsx,tsx}",
+      "!src/stories/**"
     ]
   },
   "nyc": {
