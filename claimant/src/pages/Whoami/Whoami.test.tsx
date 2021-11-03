@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import WhoAmIPage from "./whoami";
+import WhoAmIPage from "./Whoami";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 jest.mock("react-i18next", () => ({
