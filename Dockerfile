@@ -44,7 +44,7 @@ EXPOSE 8000
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev wait-for-it git make \
+   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext \
    && rm -rf /var/lib/apt/lists/* \
    && pip install --no-cache-dir -r requirements.txt
 
@@ -77,7 +77,7 @@ RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-examp
   pip install --no-cache-dir -r requirements-ci.txt
 
 # leave the .env file intact
-RUN make build-static && \
+RUN make build-static build-translations && \
   rm -f core/.env-* && \
   make build-cleanup
 
@@ -96,7 +96,7 @@ RUN pip install --no-cache-dir -r requirements-ci.txt && \
   echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 
 # leave the .env file intact
-RUN make build-static && \
+RUN make build-static build-translations && \
   rm -f core/.env-* && \
   make build-cleanup
 
@@ -109,7 +109,7 @@ FROM djangobase as djangobase-wcms
 
 ARG ENV_PATH=/app/core/.env-example
 
-RUN make build-static && \
+RUN make build-static build-translations && \
   rm -f core/.env* && \
   make build-cleanup
 

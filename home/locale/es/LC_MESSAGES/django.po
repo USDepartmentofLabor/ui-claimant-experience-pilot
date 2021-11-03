@@ -1,0 +1,141 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR &lt;EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-02 15:14-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE &lt;LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/_header.html:3
+msgid "Skip to main content"
+msgstr "Saltar al contento principal"
+
+#: templates/_header.html:15
+msgid "U.S. flag"
+msgstr "Bandera de los Estados Unidos"
+
+#: templates/_header.html:21
+#| msgid "An official website of the United States government"
+msgid "An official website of the United States government"
+msgstr "Un sitio web del gobierno de los Estados Unidos"
+
+#: templates/_header.html:24 templates/_header.html:33
+msgid "Here’s how you know"
+msgstr "Cómo se sabe"
+
+#: templates/_header.html:50
+msgid "Official websites use .gov"
+msgstr ""
+
+#: templates/_header.html:52
+msgid ""
+"A <strong>.gov</strong> website belongs to an official government "
+"organization in the United States."
+msgstr ""
+
+#: templates/_header.html:68
+msgid "Secure .gov websites use HTTPS"
+msgstr ""
+
+#: templates/_header.html:70
+msgid "A <strong>lock</strong>"
+msgstr ""
+
+#: templates/_header.html:82
+msgid "Lock"
+msgstr ""
+
+#: templates/_header.html:84
+msgid "A locked padlock"
+msgstr ""
+
+#: templates/_header.html:110
+msgid "United States Department of Labor"
+msgstr ""
+
+#: templates/_header.html:113
+msgid "U.S. Department of Labor"
+msgstr ""
+
+#: templates/_header.html:117
+msgid "Menu"
+msgstr "Menú"
+
+#: templates/_header.html:124
+msgid "Close"
+msgstr ""
+
+#: templates/_header.html:133
+msgid "Current section"
+msgstr "&lt;Sección actual &gt;"
+
+#: templates/_header.html:138
+msgid "&lt;Navigation link&lt;"
+msgstr "&lt;Navigación&gt;"
+
+#: templates/_header.html:141 templates/_header.html:144
+#: templates/_header.html:159 templates/_header.html:162
+#: templates/_header.html:165
+msgid "&lt;Navigation link&gt;"
+msgstr "&lt;Navigación &gt;"
+
+#: templates/_header.html:154
+msgid "&lt;Section&gt;"
+msgstr "&lt;Sección&gt;"
+
+#: templates/_header.html:171
+msgid "&lt;Simple link&gt;"
+msgstr "&lt;Enlace&gt;"
+
+#: templates/_header.html:178
+msgid "&lt;Secondary link&gt;"
+msgstr "&lt;Enlace segondario&gt;"
+
+#: templates/_header.html:181
+msgid "&lt;Another secondary link&gt;"
+msgstr "&lt;Otro enlace segundario&gt;"
+
+#: templates/_header.html:187 templates/_header.html:196
+msgid "Search"
+msgstr "Buscar"
+
+#: templates/idp.html:16
+msgid "Select a State"
+msgstr ""
+
+#: templates/idp.html:25
+msgid "swa.name"
+msgstr ""
+
+#: templates/idp.html:37
+msgid "Log In or Sign Up"
+msgstr "Iniciar sessión o Registrar"
+
+#: templates/idp.html:51
+msgid "Test Login"
+msgstr ""
+
+#: templates/index.html:7
+msgid "Unemployment Insurance Claim Application"
+msgstr "Solicitud de reclamo del seguro de desempleo"
+
+#: templates/index.html:9
+msgid "Apply for benefits"
+msgstr "Solicitar beneficios"
+
+#: templates/index.html:11
+msgid "Get started"
+msgstr "Empezar"
+

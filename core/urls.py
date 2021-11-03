@@ -17,12 +17,16 @@ Including another URLconf
 from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 
 from core.views import claimant as claimant_app, live
 
 urlpatterns = (
-    [
-        path("", include("home.urls")),
+    i18n_patterns(
+        path("", include(("home.urls", "home"), namespace="home")),
+        prefix_default_language=False,
+    )
+    + [
         # wildcard pattern for react apps so that any path under that app is matched.
         re_path(r"claimant/.*$", claimant_app, name="claimant"),
         path("logindotgov/", include("login-dot-gov.urls")),
@@ -30,5 +34,5 @@ urlpatterns = (
         path("live/", live, name="live"),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    + static("/", document_root=settings.STATIC_ROOT)
+    + static("/", document_root=settings.STATIC_ROOT)  # this should come last
 )

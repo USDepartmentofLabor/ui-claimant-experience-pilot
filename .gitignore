@@ -8,6 +8,7 @@ certs/
 .coverage
 coverage.xml
 static/
+*.mo
 
 # IDE configurations
 .idea

@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load i18n %}
 <!DOCTYPE html5>
 <html lang="en" dir="ltr">
   <head>
@@ -14,8 +14,9 @@
       type="image/vnd.microsoft.icon"
     />
     <link rel="revision" href="{{base_url}}" />
+    <!-- prettier-ignore -->
     <title>
-      Unemployment Insurance Claim Application | U.S. Department of Labor
+      {% translate "Unemployment Insurance Claim Application | U.S. Department of Labor" %}
     </title>
 
     <script src="{% static 'js/uswds-init.min.js' %}"></script>

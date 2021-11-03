@@ -165,6 +165,7 @@ bucket: ## Create S3 bucket in localstack service (run inside container)
 
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
+
 build-static: ## Build the static assets (intended for during container-build (inside the container))
 	rm -rf static/
 	rm -f home/static/*.md
@@ -173,6 +174,9 @@ build-static: ## Build the static assets (intended for during container-build (i
 	cp home/templates/favicon.ico static/
 	cp claimant/build/manifest.json static/manifest.json
 	cp home/templates/sureroute-test-object.html static/
+
+build-translations: ## Compiles .po (translation) files into binary files
+	python manage.py compilemessages
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
 	rm -f requirements*.txt

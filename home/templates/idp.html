@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main" class="">
   <section class="grid-container usa-section">
     <script type="text/javascript">
@@ -13,7 +13,7 @@
     <div class="grid-row grid-gap">
       <div class="tablet:grid-col-4">
         <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
-          Select a State
+          {% translate "Select a State" %}
         </h2>
       </div>
       <div class="tablet:grid-col-8 usa-prose">
@@ -21,7 +21,9 @@
           <select class="usa-select" onchange="addSwaCode(this.value)">
             <option disabled selected value>--</option>
             {% for swa in swas %}
-            <option value="{{swa.code}}">{{swa.name}}</option>
+            <option value="{{swa.code}}">
+              {% translate "swa.name" noop %}
+            </option>
             {% endfor %}
           </select>
         </form>
@@ -32,23 +34,21 @@
     <div class="grid-row grid-gap">
       <div class="tablet:grid-col-4">
         <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
-          Log In or Sign Up
+          {% translate "Log In or Sign Up" %}
         </h2>
       </div>
       <div class="tablet:grid-col-8 usa-prose">
         <p>
           <a class="idp-link" href="{{ base_url }}/logindotgov/">
-            <img
-              src="https://www.ssa.gov/fleximg/Log_in_logo1.png"
-              alt="Sign in with Login.gov, external website"
-              class="cspLogo-imgBorder"
-            />
+            <img src="https://www.ssa.gov/fleximg/Log_in_logo1.png" alt="{%
+            translate "Sign in with Login.gov, external website" %}"
+            class="cspLogo-imgBorder" />
           </a>
         </p>
         {% if show_login_page %}
         <p>
           <a class="usa-button idp-link" href="{{ base_url }}/login/"
-            >Test Login</a
+            >{% translate "Test Login" %}</a
           >
         </p>
         {% endif %}
