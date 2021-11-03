@@ -38,8 +38,8 @@ DOCKER_CONTAINER_ID := docker-is-not-installed
 else
 DOCKER_CONTAINER_ID := $(shell docker ps --filter ancestor=$(DOCKER_IMG) --format "{{.ID}}" -a)
 endif
-# list all react frontend apps here, space delimited
-REACT_APPS = claimant
+
+REACT_APP = claimant
 CI_ENV_FILE=core/.env-ci
 CI_SERVICES=-f docker-compose-services.yml
 CI_DOCKER_COMPOSE_OPTS=--env-file=$(CI_ENV_FILE) -f docker-compose-ci.yml
@@ -68,7 +68,7 @@ lint-check: ## Run lint check
 
 lint-fix: ## Fix lint-checking issues
 	black .
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make lint-fix ; done
+	cd $(REACT_APP) && make lint-fix
 
 lint: lint-check lint-fix ## Lint the code
 
@@ -220,7 +220,7 @@ ci-setup-react-tests: ## Create test data required for React (Cypress) tests
 	docker exec web ./setup-cypress-tests.sh
 
 ci-test-react: ## Run React tests in CI
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make ci-tests ; done
+	cd $(REACT_APP) && make ci-tests
 
 test: test-django ## Run tests (must be run within Django app docker container)
 
@@ -228,7 +228,7 @@ test-wcms: test-django-wcms ## Run tests in WCMS envinronment (must be run withi
 
 list-outdated: ## List outdated dependencies
 	pip list --outdated
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make list-outdated ; done
+	cd $(REACT_APP) && make list-outdated
 
 # https://github.com/suyashkumar/ssl-proxy
 dev-ssl-proxy: ## Run ssl-proxy
@@ -237,22 +237,10 @@ dev-ssl-proxy: ## Run ssl-proxy
 smtp-server: ## Starts the debugging SMTP server
 	python -m smtpd -n -c DebuggingServer 0.0.0.0:1025
 
-react-deps: ## Install React app dependencies
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make deps ; done
-
-react-build: ## Build the React apps
-ifeq ($(ENV_NAME), ci)
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make instrumented-build ; done
-else ifeq ($(ENV_NAME), devlocal)
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make instrumented-build ; done
-else
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make build ; done
-endif
-
 security: ## Run all security scans
 	bandit -x ./.venv -r .
 	safety check
-	for reactapp in $(REACT_APPS); do cd $$reactapp && make security; done
+	cd $(REACT_APP) && make security
 
 diff-test: ## Fails if there are any local changes, using git diff
 	@changed_files=`git diff --name-only`; if [ "$$changed_files" != "" ]; then echo "Local changes exist:\n$$changed_files" && exit 1; fi

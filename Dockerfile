@@ -6,8 +6,6 @@ WORKDIR /app
 
 RUN apt-get update -y && apt-get install --no-install-recommends -y make
 
-COPY Makefile .
-
 COPY claimant/Makefile ./claimant/
 COPY claimant/package.json ./claimant/
 COPY claimant/yarn.lock ./claimant/
@@ -15,12 +13,15 @@ COPY claimant/tsconfig.json ./claimant/
 COPY claimant/.eslintrc.yml ./claimant/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
-RUN make react-deps
+WORKDIR /app/claimant
+RUN make deps
 
+WORKDIR /app
 COPY claimant/public/ ./claimant/public/
 COPY claimant/src/ ./claimant/src/
+WORKDIR /app/claimant
 ARG ENV_NAME=""
-RUN make react-build
+RUN make docker-build
 
 ##########################################
 # Django

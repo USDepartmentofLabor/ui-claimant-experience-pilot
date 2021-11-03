@@ -31,7 +31,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "claimant/yarn.lock"
       - name: Install JS dependencies
-        run: make react-deps
+        run: cd claimant && make deps
       - name: Add /etc/hosts entry
         run: echo '127.0.0.1  sandbox.ui.dol.gov' | sudo tee -a /etc/hosts
       - name: Install SSL proxy
@@ -76,7 +76,7 @@ jobs:
           key: pre-commit-dot-cache-{{ hashFiles(".pre-commit-config.yaml") }}
           path: ~/.cache/pre-commit
       - name: Install Dev Dependencies
-        run: make dev-deps react-deps
+        run: make dev-deps && cd claimant && make deps
       - name: Lint
         run: make lint
       - name: Check outdated dependencies
