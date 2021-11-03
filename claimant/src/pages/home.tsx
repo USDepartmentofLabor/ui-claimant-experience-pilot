@@ -13,7 +13,7 @@ import { useWhoAmI } from "../queries/whoami";
 import { useSubmitClaim } from "../queries/claim";
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
-import yup from "yup";
+import * as yup from "yup";
 
 import PageLoader from "../common/PageLoader";
 
