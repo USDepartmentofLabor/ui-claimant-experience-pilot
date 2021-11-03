@@ -13,6 +13,7 @@ import { useWhoAmI } from "../queries/whoami";
 import { useSubmitClaim } from "../queries/claim";
 import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
+import yup from "yup";
 
 import PageLoader from "../common/PageLoader";
 
@@ -49,23 +50,32 @@ const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home");
 
-  // Validation rules for the fields we're rendering on this page only.
-  // Could be done with Yup but it's not clear that's easier.
-  const validate = (values: typeof initialValues) => {
-    const errors = {} as Partial<typeof initialValues>;
-    if (!values.firstName) {
-      errors.firstName = t("validation.required");
-    }
-    if (!/@/.test(values.email)) {
-      errors.email = t("validation.notEmail");
-    }
-    return errors;
-  };
+  // Validation rules for the fields we're rendering on this page ONLY.
+  //
+  // const validate = (values: typeof initialValues) => {
+  //   const errors = {} as Partial<typeof initialValues>;
+  //   if (!values.firstName) {
+  //     errors.firstName = t("validation.required");
+  //   }
+  //   if (!/@/.test(values.email)) {
+  //     errors.email = t("validation.notEmail");
+  //   }
+  //   return errors;
+  // };
+
+  // Yup validation schema for this page ONLY.
+  // Yup supports its own i18n but it seems redundant?
+  // https://github.com/jquense/yup#using-a-custom-locale-dictionary
+  const validationSchema = yup.object().shape({
+    firstName: yup.string().required(t("validation.required")),
+    email: yup.string().email(t("validation.notEmail")),
+  });
 
   // TODO: Put in a common-to-all-pages location
   const formik = useFormik({
     initialValues,
-    validate,
+    // validate,
+    validationSchema,
     onSubmit: async (values) => {
       if (!whoami) {
         return;
