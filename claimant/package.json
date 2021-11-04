@@ -95,7 +95,8 @@
       "!**/react-app-env.d.ts",
       "!**/types.d.ts",
       "!src/**/*.stories.{jsx,tsx}",
-      "!src/stories/**"
+      "!src/stories/**",
+      "!src/i18n/**"
     ]
   },
   "nyc": {
