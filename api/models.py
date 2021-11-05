@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 import uuid
+from django.utils import timezone
 
 
 # we specify table names because these models will be accessed from
@@ -54,21 +58,59 @@ class SWA(TimeStampedModel):
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))
 
 
+class Event(TimeStampedModel):
+    class Meta:
+        db_table = "events"
+        indexes = [
+            models.Index(fields=["model_name", "model_id"]),
+        ]
+
+    model_name = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    model_id = models.BigIntegerField()
+    category = models.IntegerField()
+    description = models.CharField(max_length=255)
+    happened_at = models.DateTimeField(default=timezone.now)
+    event_target = GenericForeignKey("model_name", "model_id")
+
+    # because our enum "choices" are defined on the event_target,
+    # we must define this method ourselves.
+    def get_category_display(self):
+        return dict(type(self.event_target).EventCategories.choices)[self.category]
+
+
 class Claimant(TimeStampedModel):
     class Meta:
         db_table = "claimants"
 
+    class EventCategories(models.IntegerChoices):
+        LOGGED_IN = 1
+
     idp = models.ForeignKey(IdentityProvider, on_delete=models.PROTECT)
     idp_user_xid = models.CharField(max_length=255, unique=True)
+    events = GenericRelation(
+        Event, content_type_field="model_name", object_id_field="model_id"
+    )
 
 
 class Claim(TimeStampedModel):
     class Meta:
         db_table = "claims"
 
+    class EventCategories(models.IntegerChoices):
+        STARTED = 1
+        SUBMITTED = 2
+        COMPLETED = 3
+        FETCHED = 4
+        STORED = 5
+        CONFIRMATION_EMAIL = 6
+        DELETED = 7
+
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     swa = models.ForeignKey(SWA, on_delete=models.PROTECT)
     claimant = models.ForeignKey(Claimant, on_delete=models.PROTECT)
+    events = GenericRelation(
+        Event, content_type_field="model_name", object_id_field="model_id"
+    )
 
     def payload_path(self):
         if self.is_complete():

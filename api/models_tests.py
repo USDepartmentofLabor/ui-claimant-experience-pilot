@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.db.models import ProtectedError
 from api.models import SWA, IdentityProvider, Claimant, Claim
 import datetime
+from datetime import timedelta
+from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
 
@@ -98,3 +100,31 @@ class ApiModelsTestCase(TransactionTestCase):
         stored_claim = Claim.objects.get(uuid=claim_uuid)
         self.assertEqual(stored_claim.swa, ks_swa)
         self.assertEqual(stored_claim.claimant, claimant)
+
+    def test_events(self):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        ks_swa, _ = create_swa()
+        claim = Claim(swa=ks_swa, claimant=claimant)
+        claim.save()
+
+        claim_event = claim.events.create(category=Claim.EventCategories.STARTED)
+        self.assertIsInstance(claim_event.happened_at, datetime.datetime)
+        self.assertEqual(
+            claim.events.filter(category=Claim.EventCategories.STARTED).all()[0],
+            claim_event,
+        )
+        self.assertEqual(claim_event.get_category_display(), "Started")
+
+        yesterday = timezone.now() - timedelta(days=1)
+        claimant_event = claimant.events.create(
+            category=Claimant.EventCategories.LOGGED_IN, happened_at=yesterday
+        )
+        self.assertEqual(
+            claimant.events.filter(category=Claimant.EventCategories.LOGGED_IN).all()[
+                0
+            ],
+            claimant_event,
+        )
+        self.assertEqual(claimant_event.get_category_display(), "Logged In")
+        self.assertEqual(claimant_event.happened_at, yesterday)

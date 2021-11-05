@@ -106,6 +106,7 @@ if os.environ.get("COLOR_LOGGING", "false").lower() == "true":
 # Application definition
 
 INSTALLED_APPS = [
+    "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
