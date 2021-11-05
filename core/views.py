@@ -8,7 +8,13 @@ from django.db import connection
 from django.core.cache import cache
 from .celery import app as celery_app
 
+
 logger = logging.getLogger("core")
+
+
+# for testing 500 handling
+def raise_error(request):
+    raise Exception("Something went wrong")
 
 
 def claimant(request):

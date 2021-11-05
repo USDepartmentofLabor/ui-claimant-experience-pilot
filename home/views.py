@@ -10,6 +10,14 @@ import logging
 logger = logging.getLogger("home")
 
 
+def handle_404(request, exception):
+    return render(None, "404.html", {"base_url": base_url(request)}, status=404)
+
+
+def handle_500(request):
+    return render(None, "500.html", {"base_url": base_url(request)}, status=500)
+
+
 def active_swas_ordered_by_name():
     return SWA.active.order_by("name").all()
 

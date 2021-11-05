@@ -2,7 +2,7 @@
 from unittest.mock import patch
 import boto3
 from botocore.stub import Stubber
-from django.test import TestCase
+from django.test import TestCase, Client
 from core.email import Email
 from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
@@ -26,6 +26,15 @@ class CoreTestCase(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "test")
+
+    def test_404(self):
+        resp = self.client.get("/route-that-does-not-exist")
+        self.assertContains(resp, "Sorry, we could not find that page", status_code=404)
+
+    def test_500(self):
+        c = Client(raise_request_exception=False)
+        resp = c.get("/500/")
+        self.assertContains(resp, "Sorry, we had a problem", status_code=500)
 
     def test_live(self):
         response = self.client.get("/live/")

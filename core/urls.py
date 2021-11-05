@@ -19,11 +19,15 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 
-from core.views import claimant as claimant_app, live
+from core.views import claimant as claimant_app, live, raise_error
+
+handler404 = "home.views.handle_404"
+handler500 = "home.views.handle_500"
 
 urlpatterns = (
     i18n_patterns(
         path("", include(("home.urls", "home"), namespace="home")),
+        path("500/", raise_error),
         prefix_default_language=False,
     )
     + [
