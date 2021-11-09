@@ -35,6 +35,7 @@ urlpatterns = (
         re_path(r"claimant/.*$", claimant_app, name="claimant"),
         path("logindotgov/", include("login-dot-gov.urls")),
         path("api/", include("api.urls")),
+        path("swa/", include("swa.urls")),
         path("live/", live, name="live"),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

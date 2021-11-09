@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from jwcrypto import jwk
+from jwcrypto import jwk, jwt
 from jwcrypto.common import json_decode
 from .claim_storage import ClaimStore
+import secrets
+import time
 
 
 def generate_keypair():
@@ -26,3 +28,18 @@ def delete_s3_bucket():
     bucket = cs.bucket()
     bucket.objects.all().delete()
     bucket.delete()
+
+
+def generate_auth_token(private_key, swa_code):
+    headers = {
+        "alg": "ES256",
+        "kid": private_key.thumbprint(),
+    }
+    claims = {
+        "iss": swa_code,
+        "iat": time.time(),
+        "nonce": secrets.token_hex(8),
+    }
+    token = jwt.JWT(header=headers, claims=claims, algs=["ES256"])
+    token.make_signed_token(private_key)
+    return token.serialize()

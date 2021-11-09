@@ -114,6 +114,7 @@ INSTALLED_APPS = [
     "login-dot-gov",
     "secure_redis",
     "home",
+    "swa",
 ]
 
 MIDDLEWARE = [
@@ -128,6 +129,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
+    "swa.middleware.auth.SWAAuth",
 ]
 
 ROOT_URLCONF = "core.urls"
