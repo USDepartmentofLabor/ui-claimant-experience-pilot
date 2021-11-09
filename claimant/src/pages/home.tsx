@@ -40,7 +40,7 @@ export default HomePage;
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
 const initialValues = {
-  firstName: "",
+  first_name: "",
   email: "",
 };
 
@@ -50,24 +50,11 @@ const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home");
 
-  // Validation rules for the fields we're rendering on this page ONLY.
-  //
-  // const validate = (values: typeof initialValues) => {
-  //   const errors = {} as Partial<typeof initialValues>;
-  //   if (!values.firstName) {
-  //     errors.firstName = t("validation.required");
-  //   }
-  //   if (!/@/.test(values.email)) {
-  //     errors.email = t("validation.notEmail");
-  //   }
-  //   return errors;
-  // };
-
   // Yup validation schema for this page ONLY.
   // Yup supports its own i18n but it seems redundant?
   // https://github.com/jquense/yup#using-a-custom-locale-dictionary
   const validationSchema = yup.object().shape({
-    firstName: yup.string().required(t("validation.required")),
+    first_name: yup.string().required(t("validation.required")),
     email: yup.string().email(t("validation.notEmail")),
   });
 
@@ -124,17 +111,17 @@ const ClaimForm = () => {
       <Form onSubmit={formik.handleSubmit}>
         {/* TODO: create reusable FormGroup+Label+TextInput+ErrorMessage component*/}
         <FormGroup>
-          <Label htmlFor="firstName">{t("label.firstName")}</Label>
+          <Label htmlFor="first_name">{t("label.first_name")}</Label>
           <TextInput
             type="text"
-            id="firstName"
-            name="firstName"
-            error={!!formik.errors.firstName}
-            value={formik.values.firstName}
+            id="first_name"
+            name="first_name"
+            error={!!formik.errors.first_name}
+            value={formik.values.first_name}
             onChange={formik.handleChange}
           />
-          {formik.errors.firstName && (
-            <ErrorMessage>{formik.errors.firstName}</ErrorMessage>
+          {formik.errors.first_name && (
+            <ErrorMessage>{formik.errors.first_name}</ErrorMessage>
           )}
         </FormGroup>
         <FormGroup>

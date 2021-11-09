@@ -7,7 +7,7 @@ const home = {
     claimSuccess: "Claim submitted with ID",
   },
   label: {
-    firstName: "First Name",
+    first_name: "First Name",
     email: "Email",
   },
   validation: {
