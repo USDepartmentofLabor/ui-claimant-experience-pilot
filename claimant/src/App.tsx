@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
   NavLink,
   Link,
@@ -18,7 +18,7 @@ import {
 } from "@trussworks/react-uswds";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { Routes } from "./routes";
+import { Routes as ROUTES } from "./routes";
 import WhoAmIPage from "./pages/whoami";
 import HomePage from "./pages/home";
 import { AuthContainer } from "./common/AuthContainer";
@@ -41,24 +41,34 @@ const queryClient = new QueryClient({
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { HOME_PAGE, WHOAMI_PAGE } = Routes;
+  const { HOME_PAGE, WHOAMI_PAGE } = ROUTES;
 
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
   };
 
   const navItems = [
-    <NavLink to={HOME_PAGE} key={HOME_PAGE} activeClassName="usa-current" exact>
+    <NavLink
+      end
+      to={HOME_PAGE}
+      key={HOME_PAGE}
+      className={({ isActive }) => (isActive ? "usa-current" : "")}
+    >
       Home
     </NavLink>,
-    <NavLink to={WHOAMI_PAGE} key={WHOAMI_PAGE} activeClassName="usa-current">
+    <NavLink
+      end
+      to={WHOAMI_PAGE}
+      key={WHOAMI_PAGE}
+      className={({ isActive }) => (isActive ? "usa-current" : "")}
+    >
       Who am I
     </NavLink>,
   ];
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Router basename="/claimant">
+      <Router basename={ROUTES.BASE_ROUTE}>
         <Header basic>
           <GovBanner />
           <div className="usa-nav-container">
@@ -85,14 +95,10 @@ function App() {
         <section className="usa-section">
           <GridContainer>
             <AuthContainer>
-              <Switch>
-                <Route path={WHOAMI_PAGE}>
-                  <WhoAmIPage />
-                </Route>
-                <Route path={HOME_PAGE}>
-                  <HomePage />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
+                <Route path={HOME_PAGE} element={<HomePage />} />
+              </Routes>
             </AuthContainer>
           </GridContainer>
         </section>
