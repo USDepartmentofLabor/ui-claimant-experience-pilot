@@ -28,7 +28,7 @@ const HomePage = () => {
 
 export default HomePage;
 
-const ClaimForm = () => {
+export const ClaimForm = () => {
   const { data: whoami, error, isLoading } = useWhoAmI();
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
@@ -43,7 +43,7 @@ const ClaimForm = () => {
   }
 
   return (
-    <div>
+    <div data-testid="claim-submission">
       {submitClaim.isSuccess ? (
         <div className="usa-alert usa-alert--success">
           <div className="usa-alert__body">
