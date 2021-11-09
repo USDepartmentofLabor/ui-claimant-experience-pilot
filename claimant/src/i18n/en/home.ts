@@ -6,6 +6,14 @@ const home = {
     claimButton: "Test Claim",
     claimSuccess: "Claim submitted with ID",
   },
+  label: {
+    first_name: "First Name",
+    email: "Email",
+  },
+  validation: {
+    required: "This field is required",
+    notEmail: "This is not a valid email",
+  },
 };
 
 export default home;
