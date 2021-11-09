@@ -2,7 +2,7 @@
 
 - Status: Decided
 - Deciders: Team concensus
-- Date: 2021-10-28
+- Date: 2021-11-09
 
 The claimant app will make use of many form fields for data entry. The application should have a consistent way to define fields, validate input, and store the data in the app.
 
@@ -54,7 +54,7 @@ The claimant pilot backend and SWAs will use JSON Schema descriptions to validat
 
 ## Decision Outcome
 
-TBD
+Use Formik for form definitions and Yup for validation. See #202 for proof of concept.
 
 ## Supporting research:
 
