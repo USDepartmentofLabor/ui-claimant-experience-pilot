@@ -8,6 +8,10 @@ from all examples except in the _Authentication_ section.
 
 Examples are given using the `curl` command for simplicity. The production URL is used in all examples.
 
+## Versioning
+
+The API version is noted in the URL patterns. The current version is `v1`.
+
 ## Authentication
 
 All API authentication and Claim decryption relies on a public/private keypair that each SWA generates. The
@@ -95,16 +99,12 @@ print(token.serialize())
 To get a list of all unprocessed Claims, issue a `GET` request to the `/swa/claims/` endpoint:
 
 ```sh
-% curl -X GET https://ui.dol.gov/swa/claims/?completed=true
+% curl -X GET https://ui.dol.gov/swa/v1/claims/
 {
-  "page": 1,
-  "total": 50,
-  "next": "https://ui.dol.gov/swa/claims/?completed=true&page=2",
+  "total_claims": 50,
+  "next": "https://ui.dol.gov/swa/v1/claims/?page=2",
   "claims": [
     {
-      "version": "1.0",
-      "schema": "https://ui.dol.gov/schemas/encrypted-claim-1.0.json",
-      "submitted_at": "2021-11-05T16:30:17-0500",
       "public_kid": "BS0Qv8Lz4Uk.SaVE2YkNFSbXu6KxBhx3",
       "claim_id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
       "claim": {
@@ -139,7 +139,7 @@ claim = json_decode(jwetoken.payload.decode("utf-8"))
 To remove a Claim from the queue, indicating that the SWA now owns it:
 
 ```sh
-% curl -X PATCH https://ui.dol.gov/swa/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
        --data '{"fetched":true}'
 {"status": "ok"}
 ```
@@ -150,7 +150,7 @@ When a Claim is processed within the SWA system of record, and the SWA wants to 
 as a Claimant might see it:
 
 ```sh
-% curl -X PATCH https://ui.dol.gov/swa/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
        --data '{"status":"established"}'
 {"status": "ok"}
 ```
@@ -162,7 +162,7 @@ data to exist on the DOL site, it's a good idea to remove it from the US DOL ser
 the record history of the Claim, only what the Claimant submitted (sensitive PII).
 
 ```sh
-% curl -X DELETE https://ui.dol.gov/swa/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
+% curl -X DELETE https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
 {"status": "ok"}
 ```
 
@@ -172,7 +172,7 @@ To upload a completed 1099-G Form file via the API, you need the `claimant_id` v
 included in the original encrypted `claim` payload. You can also retrieve it (along with other Claim metadata) via the API:
 
 ```sh
-% curl -X GET https://ui.dol.gov/swa/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
+% curl -X GET https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
 {
   "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
   "created_at": "2021-11-05T16:54:15-0500",
@@ -183,7 +183,7 @@ included in the original encrypted `claim` payload. You can also retrieve it (al
 }
 
 % FORM=`base64 < path/to/1099G-file.pdf` \
-  curl -X POST https://ui.dol.gov/swa/claimant/1d0a0ccc77d551f806d0e99740c1d9607c5f1da1/1099G \
+  curl -X POST https://ui.dol.gov/swa/v1/claimant/1d0a0ccc77d551f806d0e99740c1d9607c5f1da1/1099G \
        --data "{\"file\":\"$FORM\", \"year\":\"2022\", \"type\":\"PDF\"}"
 {
   "status": "ok",
