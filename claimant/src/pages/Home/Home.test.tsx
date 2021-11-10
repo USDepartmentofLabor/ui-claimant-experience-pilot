@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import HomePage, { ClaimForm } from "./Home";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
@@ -8,9 +9,7 @@ jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock("../../queries/whoami", () => ({
-  useWhoAmI: jest.fn(),
-}));
+jest.mock("../../queries/whoami");
 const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 
 jest.mock("../../queries/claim");
@@ -30,6 +29,25 @@ describe("the Home page", () => {
 });
 
 describe("the ClaimForm", () => {
+  const mockMutateAsync = jest.fn();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockedUseWhoAmI.mockImplementation(() => ({
+      data: myPII,
+      isLoading: false,
+      error: null,
+      isError: false,
+    }));
+
+    mockedUseSubmitClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      mutateAsync: mockMutateAsync,
+      data: undefined,
+    }));
+  });
+
   const myPII: WhoAmI = {
     claim_id: "123",
     claimant_id: "321",
@@ -80,10 +98,10 @@ describe("the ClaimForm", () => {
   });
 
   it("throws an error if there is an error returned", () => {
-    mockedUseWhoAmI.mockReturnValueOnce({
-      isError: true,
+    mockedUseWhoAmI.mockReturnValue({
       error: { message: "Error getting your PII" },
     });
+
     expect(() => render(wrappedClaimForm)).toThrow("Error getting your PII");
   });
 
@@ -100,5 +118,32 @@ describe("the ClaimForm", () => {
     expect(screen.queryByRole("heading", { level: 4 })).toHaveTextContent(
       "Success status"
     );
+  });
+
+  it("Submit button submits the form", async () => {
+    mockedUseWhoAmI.mockReturnValue({
+      data: myPII,
+      isError: false,
+      error: null,
+    });
+
+    render(wrappedClaimForm);
+    const claimPayload = {
+      id: myPII.claim_id,
+      swa_code: myPII.swa_code,
+      claimant_id: myPII.claimant_id,
+    };
+    // mockedUseSubmitClaim.mockImplementation(() => Promise.resolve(claimPayload));
+
+    const submitButton = screen.getByRole("button", {
+      name: "sampleForm.claimButton",
+    });
+    expect(submitButton).toBeInTheDocument();
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalledTimes(1);
+      expect(mockMutateAsync).toHaveBeenCalledWith(claimPayload);
+    });
   });
 });
