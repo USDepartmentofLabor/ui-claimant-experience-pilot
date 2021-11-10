@@ -55,6 +55,7 @@ COPY home ./home
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
 COPY api ./api
+COPY swa ./swa
 COPY certs ./certs
 
 # copy over just the precompiled react app(s)
