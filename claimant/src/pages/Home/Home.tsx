@@ -9,13 +9,13 @@ import {
   ErrorMessage,
 } from "@trussworks/react-uswds";
 import HomeStyles from "./Home.module.scss";
-import { useWhoAmI } from "../queries/whoami";
-import { useSubmitClaim } from "../queries/claim";
-import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
+import { useWhoAmI } from "../../queries/whoami";
+import { useSubmitClaim } from "../../queries/claim";
+import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import PageLoader from "../common/PageLoader";
+import PageLoader from "../../common/PageLoader";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
@@ -44,7 +44,7 @@ const initialValues = {
   email: "",
 };
 
-const ClaimForm = () => {
+export const ClaimForm = () => {
   const { data: whoami, error, isLoading } = useWhoAmI();
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
@@ -72,7 +72,6 @@ const ClaimForm = () => {
         swa_code: whoami.swa_code,
         claimant_id: whoami.claimant_id,
       };
-      console.log(claim);
       if (whoami.claim_id) {
         claim.id = whoami.claim_id;
       }
@@ -95,7 +94,7 @@ const ClaimForm = () => {
   }
 
   return (
-    <div>
+    <div data-testid="claim-submission">
       {submitClaim.isSuccess ? (
         <div className="usa-alert usa-alert--success">
           <div className="usa-alert__body">

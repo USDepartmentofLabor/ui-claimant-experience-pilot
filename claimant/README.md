@@ -67,10 +67,17 @@ To run all the tests and display test coverage (assuming your Docker container i
 % make test-coverage
 ```
 
+To run unit test coverage only:
+
+```sh
+% yarn test --coverage --watchAll
+```
+
 To run all the tests and display test coverage, using the local dev server (`make dev-run`):
 
-````sh
+```sh
 % make dev-test-coverage
+```
 
 ## Storybook
 
@@ -78,7 +85,7 @@ The front-end uses [Storybook](https://storybook.js.org/) to display isolated co
 
 ```sh
 % yarn storybook
-````
+```
 
 ## Build
 

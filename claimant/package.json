@@ -5,6 +5,7 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
     "@trussworks/react-uswds": "^2.0.0",
     "axios": "0.24.0",
@@ -17,6 +18,7 @@
     "react-query": "^3.31.0",
     "react-router-dom": "6.0.1",
     "react-scripts": "^4.0.3",
+    "react-test-renderer": "^17.0.2",
     "universal-cookie": "^4.0.4",
     "uswds": "2.10.3",
     "yup": "^0.32.11"
@@ -93,8 +95,10 @@
       "!**/node_modules/**",
       "!**/coverageCheck.js",
       "!**/setupProxy.tsx",
-      "!**/react-app-env.d.ts",
-      "!**/types.d.ts"
+      "!**/*.d.ts",
+      "!src/**/*.stories.{jsx,tsx}",
+      "!src/stories/**",
+      "!src/i18n/**"
     ]
   },
   "nyc": {

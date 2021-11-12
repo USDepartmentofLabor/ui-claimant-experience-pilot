@@ -19,8 +19,8 @@ import {
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import { Routes as ROUTES } from "./routes";
-import WhoAmIPage from "./pages/whoami";
-import HomePage from "./pages/home";
+import WhoAmIPage from "./pages/Whoami/Whoami";
+import HomePage from "./pages/Home/Home";
 import { AuthContainer } from "./common/AuthContainer";
 
 // These classes are imported globally and can be used on every page
