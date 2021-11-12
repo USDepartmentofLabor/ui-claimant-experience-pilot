@@ -95,8 +95,7 @@
       "!**/node_modules/**",
       "!**/coverageCheck.js",
       "!**/setupProxy.tsx",
-      "!**/react-app-env.d.ts",
-      "!**/types.d.ts",
+      "!**/*.d.ts",
       "!src/**/*.stories.{jsx,tsx}",
       "!src/stories/**",
       "!src/i18n/**"

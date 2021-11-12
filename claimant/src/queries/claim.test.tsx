@@ -15,6 +15,8 @@ describe("submit claim", () => {
     );
     return wrapper;
   };
+
+  // TODO: bail on this test in favor of using a service worker on the app page to cover it
   it.skip("calls the api and returns the payload", async () => {
     const claimResponse = { status: "submitted", claim_id: "123" };
 

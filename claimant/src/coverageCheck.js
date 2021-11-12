@@ -6,8 +6,8 @@ const path = require("path");
 // TODO these should be moved up to 90 and 50, respectively,
 // as coverage increases. They are set low to start with,
 // so that we can integrate the test coverage infra.
-const MINIMUM_GLOBAL = 10;
-const MINIMUM_INDIVIDUAL = 0;
+const MINIMUM_GLOBAL = 85;
+const MINIMUM_INDIVIDUAL = 50;
 
 let fileData;
 

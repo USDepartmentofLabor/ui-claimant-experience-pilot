@@ -20,7 +20,7 @@ describe("the Whoami page", () => {
   );
   it("renders without error", () => {
     render(Page);
-    expect(screen.getByRole("heading")).toHaveTextContent("whoamiHeading");
+    expect(screen.getByRole("heading")).toHaveTextContent("heading");
   });
 });
 
