@@ -72,7 +72,6 @@ export const ClaimForm = () => {
         swa_code: whoami.swa_code,
         claimant_id: whoami.claimant_id,
       };
-      console.log(claim);
       if (whoami.claim_id) {
         claim.id = whoami.claim_id;
       }
