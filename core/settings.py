@@ -373,7 +373,7 @@ CELERY_RESULT_SERIALIZER = "json"
 AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
 # in local dev, allow for "TEST" bucket preference when running tests
 # this is to avoid needing to re-create dev bucket between tests
-if os.environ.get("TEST_S3_BUCKET_URL"):
+if os.environ.get("TEST_S3_BUCKET_URL"):  # pragma: no cover
     CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
 else:
     CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")

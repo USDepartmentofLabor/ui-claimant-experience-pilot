@@ -40,6 +40,8 @@ class ClaimWriter(object):
             self.path = path
         elif hasattr(claim, "payload_path"):
             self.path = claim.payload_path()
+        else:
+            raise ValueError("Must provide path or a Claim object")
 
     def write(self):
         try:
@@ -59,6 +61,8 @@ class ClaimReader(object):
             self.path = path
         elif hasattr(claim, "payload_path"):
             self.path = claim.payload_path()
+        else:
+            raise ValueError("Must provide path or a Claim object")
 
     def read(self):
         try:

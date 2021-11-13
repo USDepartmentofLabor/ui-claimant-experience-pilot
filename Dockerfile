@@ -49,6 +49,7 @@ RUN apt-get update -y && apt-get install -y \
    && pip install --no-cache-dir -r requirements.txt
 
 COPY Makefile .
+COPY scripts/*sh ./scripts/
 COPY manage.py .
 COPY start-server.sh .
 COPY home ./home

@@ -4,7 +4,6 @@ from django.http import JsonResponse
 import logging
 import secrets
 import os
-import json
 from django.conf import settings
 import django.middleware.csrf
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +13,8 @@ from .claim_request import ClaimRequest
 from core.email import Email
 from core.utils import register_local_login
 from core.claim_storage import ClaimWriter
+from core.claim_encryption import AsymmetricClaimEncryptor
+
 
 # import json
 
@@ -86,8 +87,13 @@ def claim(request):
         return claim_request.response
 
     # TODO validation
-    # TODO encryption
-    writeable_payload = json.dumps(claim_request.payload)
+
+    # encrypt payload
+    asym_encryptor = AsymmetricClaimEncryptor(
+        claim_request.payload, claim_request.swa.public_key_as_jwk()
+    )
+    packaged_claim = asym_encryptor.packaged_claim()
+    writeable_payload = packaged_claim.as_json()
 
     # now that we have a Claim, stash its id in session
     claim_id = claim_request.payload["id"]

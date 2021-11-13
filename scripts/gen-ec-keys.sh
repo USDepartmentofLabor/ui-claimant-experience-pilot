@@ -8,9 +8,11 @@ if [ -z "$PREFIX" ]; then
   PREFIX="ec"
 fi
 
-echo "Private key password: "
-read -r -s PASSWD
-echo
+if [ -z "$PASSWD" ]; then
+  echo "Private key password: "
+  read -r -s PASSWD
+  echo
+fi
 
 PRIVATE_KEY="${PREFIX}-private.pem"
 PUBLIC_KEY="${PREFIX}-public.pem"

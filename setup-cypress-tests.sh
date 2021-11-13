@@ -8,3 +8,5 @@ set -e
 make bucket
 make create-swa SWA=XX NAME=test
 make activate-swa SWA=XX
+make ec-keys PREFIX=XX PASSWD=secret
+make add-swa-key SWA=XX PEM=XX-public.pem

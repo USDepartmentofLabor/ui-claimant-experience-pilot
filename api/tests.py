@@ -17,6 +17,8 @@ from .claim_request import (
     INVALID_CLAIM_ID,
 )
 import uuid
+from core.claim_encryption import AsymmetricClaimDecryptor
+from core.claim_storage import ClaimReader
 
 
 class ApiTestCase(CeleryTestCase):
@@ -91,6 +93,36 @@ class ApiTestCase(CeleryTestCase):
             "/api/claim/", content_type="application/json", data={}
         )
         self.assertEqual(response.status_code, 403)
+
+    def test_encrypted_claim(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client()
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/claim/"
+        payload = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "field": "value",
+        }
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.post(
+            url, content_type="application/json", data=payload, **headers
+        )
+        self.assertEqual(response.status_code, 202)
+
+        # fetch the encrypted claim from the S3 bucket directly and decrypt it.
+        claim = claimant.claim_set.all()[0]
+        claim_id = response.json()["claim_id"]
+        cr = ClaimReader(claim)
+        packaged_claim_str = cr.read()
+        acd = AsymmetricClaimDecryptor(packaged_claim_str, private_key_jwk)
+        decrypted_claim = acd.decrypt()
+        self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
+        self.assertEqual(decrypted_claim["id"], claim_id)
+        self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
+        self.assertEqual(decrypted_claim["field"], "value")
 
     def test_claim_with_csrf(self):
         idp = create_idp()

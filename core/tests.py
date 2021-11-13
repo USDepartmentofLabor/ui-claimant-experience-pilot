@@ -8,7 +8,20 @@ from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
 from .claim_storage import ClaimWriter, ClaimReader
-from .test_utils import create_s3_bucket, delete_s3_bucket
+from jwcrypto import jwe
+from jwcrypto.common import json_encode, json_decode
+from .claim_encryption import (
+    PackagedClaim,
+    ALG as EncryptionALG,
+    ENC as EncryptionENC,
+    AsymmetricClaimEncryptor,
+    AsymmetricClaimDecryptor,
+)
+from .test_utils import create_s3_bucket, delete_s3_bucket, generate_keypair
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class CoreTestCase(TestCase):
@@ -84,6 +97,17 @@ class CoreClaimStorageTestCase(TestCase):
         bucket_asset = cr.read()
         self.assertEqual(bucket_asset, "test path")
 
+    def test_claim_storage_exceptions(self):
+        with self.assertRaises(ValueError) as context:
+            ClaimWriter(True, True)
+        self.assertIn("Must provide path or a Claim object", str(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            ClaimReader(True)
+        self.assertIn("Must provide path or a Claim object", str(context.exception))
+
+        self.assertFalse(ClaimReader(Claim(), "no/path").read())
+
     @patch("core.claim_storage.ClaimStore.s3_client")
     def test_claim_writer_error(self, mock_boto3_client):
         idp = create_idp()
@@ -100,3 +124,48 @@ class CoreClaimStorageTestCase(TestCase):
 
         cw = ClaimWriter(claim, "test payload")
         self.assertFalse(cw.write())
+
+
+class CoreClaimEncryptionTestCase(TestCase):
+    def test_asymmetric_claim_encryptor(self):
+        private_key_jwk, public_key_jwk = generate_keypair()
+        claim = {"id": "123-abc", "foo": "something-really-private-and-sensitive"}
+        ce = AsymmetricClaimEncryptor(claim, public_key_jwk)
+        self.assertEqual(ce.protected_header()["alg"], EncryptionALG)
+        self.assertEqual(ce.protected_header()["enc"], EncryptionENC)
+        packaged_claim = ce.packaged_claim()
+        self.assertIsInstance(
+            packaged_claim, PackagedClaim, "object is a PackagedClaim"
+        )
+
+        claim_dict = packaged_claim.as_dict()
+        self.assertEqual(claim_dict["claim_id"], "123-abc")
+        self.assertNotIn("foo", claim_dict["claim"]["ciphertext"])
+        self.assertNotIn(
+            "something-really-private-and-sensitive",
+            claim_dict["claim"]["ciphertext"],
+        )
+
+        # round-trip: decrypt
+        jwetoken = jwe.JWE()
+        jwetoken.deserialize(json_encode(claim_dict["claim"]), key=private_key_jwk)
+        decrypted_claim = json_decode(jwetoken.payload)
+        self.assertEqual(decrypted_claim, claim)
+
+        # allows for PEM key as bytes or str
+        private_key_pem = private_key_jwk.export_to_pem(True, None)
+        public_key_pem = public_key_jwk.export_to_pem()
+
+        ce = AsymmetricClaimEncryptor(claim, public_key_pem)
+        packaged_claim = ce.packaged_claim()
+        cd = AsymmetricClaimDecryptor(packaged_claim.as_json(), private_key_pem)
+        decrypted_claim = cd.decrypt()
+        self.assertEqual(decrypted_claim["id"], "123-abc")
+
+        ce = AsymmetricClaimEncryptor(claim, public_key_pem.decode("utf-8"))
+        packaged_claim = ce.packaged_claim()
+        cd = AsymmetricClaimDecryptor(
+            packaged_claim.as_json(), private_key_pem.decode("utf-8")
+        )
+        decrypted_claim = cd.decrypt()
+        self.assertEqual(decrypted_claim["id"], "123-abc")
