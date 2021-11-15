@@ -87,8 +87,8 @@ migrations-check: ## Check for Django model changes not reflected in migrations 
 # this runs 2 workers named w1 and w2. Each worker will have N child prefork processes,
 # by default the number of cores on the machine. See
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
-# By default logs are written to /var/log/celery
-CELERY_OPTS = w1 -c 2 -A core -l info
+# By default logs are written to /var/log/celery but we tail them via start-server.sh
+CELERY_OPTS = w1 -c 2 -A core -l info --verbose
 celery-start: ## Run the celery queue manager (inside container)
 	celery multi start $(CELERY_OPTS)
 
