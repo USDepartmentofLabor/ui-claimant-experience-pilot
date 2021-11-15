@@ -1,6 +1,11 @@
 /* eslint-disable no-undef */
 
 context("Initial Claim form", { scrollBehavior: false }, () => {
+  it("requires login", () => {
+    cy.visit("/claimant/");
+    cy.url().should("include", "/idp/?redirect_to=");
+  });
+
   it("sends test email", () => {
     cy.login();
     cy.visit("/claimant/");

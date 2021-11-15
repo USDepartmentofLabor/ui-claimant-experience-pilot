@@ -75,6 +75,7 @@ CMD ["./start-server.sh"]
 # for local development
 
 FROM djangobase as djangobase-devlocal
+COPY setup-cypress-tests.sh .
 RUN if [ -f core/.env ] ; then echo "core/.env exists" ; else cp core/.env-example core/.env ; fi && \
   pip install --no-cache-dir -r requirements-ci.txt
 
