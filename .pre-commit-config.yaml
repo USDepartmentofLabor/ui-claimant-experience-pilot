@@ -83,3 +83,11 @@ repos:
         entry: scripts/check-makefile.py
         language: script
         files: (Makefile|claimant/Makefile)
+
+  - repo: local
+    hooks:
+      - id: check-adrs
+        name: Check ADRs
+        entry: scripts/check-adrs.py
+        language: script
+        pass_filenames: false
