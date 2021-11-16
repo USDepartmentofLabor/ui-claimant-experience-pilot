@@ -8,6 +8,8 @@ import {
   Link,
 } from "react-router-dom";
 
+import { ReactQueryDevtools } from "react-query/devtools";
+
 import {
   GovBanner,
   Header,
@@ -103,6 +105,7 @@ function App() {
           </GridContainer>
         </section>
       </Router>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

@@ -87,6 +87,15 @@ To run all the tests and display test coverage, using the local dev server (`mak
 % make dev-test-coverage
 ```
 
+## React Query
+
+We are using [React Query](https://react-query.tanstack.com/) for querying and caching of data.
+
+You will see the React Query Devtools (red flower shape) in the bottom left corner when viewing the app on port 3000 (local dev).
+Clicking it will toggle the react query devtools.
+
+(Note: While enabled on local dev, pa11y tests will fail because of its location in the dom. The tests will still pass in CI.)
+
 ## Storybook
 
 The front-end uses [Storybook](https://storybook.js.org/) to display isolated components of the React application without the need to run the complete app. To run Storybook:
