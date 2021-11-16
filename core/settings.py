@@ -385,5 +385,9 @@ else:
     CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
 
 # CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
-CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
-validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")
+try:
+    CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
+    validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")
+except Exception:
+    logger.warn("Re-using REDIS_SECRET_KEY as CLAIM_SECRET_KEY")
+    CLAIM_SECRET_KEY = redis_secret_key
