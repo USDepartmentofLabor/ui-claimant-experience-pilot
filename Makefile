@@ -132,7 +132,10 @@ container-rm: ## Remove the Django app container with DOCKER_CONTAINER_ID
 container-clean: ## Remove the Django app container image
 	docker image rm $(DOCKER_IMG)
 
-container: container-clean container-build ci-setup-react-tests ## Alias for container-clean container-build ci-setup-react-tests
+container-setup-react-tests: ## Create local artifacts required for running Cypress tests
+	docker exec -it $(DOCKER_CONTAINER_ID) ./setup-cypress-tests.sh
+
+container: container-clean container-build ## Alias for container-clean container-build
 
 SECRET_LENGTH := 32
 secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
