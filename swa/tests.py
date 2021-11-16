@@ -3,9 +3,15 @@ from django.test import TestCase, RequestFactory
 from jwcrypto import jwt, jws, jwk
 from jwcrypto.common import json_decode, json_encode
 import logging
-from core.test_utils import generate_auth_token, generate_keypair
-from api.test_utils import create_swa
-from api.models import SWA
+from core.test_utils import (
+    generate_auth_token,
+    generate_keypair,
+    create_s3_bucket,
+    delete_s3_bucket,
+)
+from core.claim_storage import ClaimWriter
+from api.test_utils import create_swa, create_idp, create_claimant
+from api.models import SWA, Claim
 from .middleware.jwt_authorizer import JwtAuthorizer
 
 logger = logging.getLogger("swa.tests")
@@ -222,6 +228,16 @@ class JwtAuthorizerTestCase(TestCase):
 
 
 class SwaTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+
     def test_client_auth_ok(self):
         swa, private_key_jwk = create_swa()
         swa.status = SWA.StatusOptions.ACTIVE
@@ -236,3 +252,102 @@ class SwaTestCase(TestCase):
         header_token = generate_auth_token(private_key_jwk, swa.code)
         resp = self.client.get("/swa/", HTTP_AUTHORIZATION=format_jwt(header_token))
         self.assertEqual(resp.status_code, 401)
+
+    def test_client_v1_GET_claims(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa()
+        swa.status = SWA.StatusOptions.ACTIVE
+        swa.save()
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+        cw = ClaimWriter(claim, json_encode({"hello": "world"}))
+        cw.write()
+
+        # first request is empty because no matching events
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        self.assertEqual(
+            response.json(), {"total_claims": 0, "next": None, "claims": []}
+        )
+
+        # second has 1 claim
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        self.assertEqual(
+            response.json(),
+            {"total_claims": 1, "next": None, "claims": [{"hello": "world"}]},
+        )
+
+        # third back to zero
+        claim.events.create(category=Claim.EventCategories.FETCHED)
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        self.assertEqual(
+            response.json(), {"total_claims": 0, "next": None, "claims": []}
+        )
+
+        # pagination
+        # payloads will be in order by created_at so this exercises our default sorting too.
+        claim_payloads = []
+        for loop in range(11):
+            claim = Claim(claimant=claimant, swa=swa)
+            claim.save()
+            payload = {"doc": loop}
+            cw = ClaimWriter(claim, json_encode(payload))
+            cw.write()
+            claim_payloads.append(payload)
+            claim.events.create(category=Claim.EventCategories.COMPLETED)
+
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        claim_payloads_page_1 = claim_payloads[0:10]
+        claim_payloads_page_2 = claim_payloads[10:]
+        self.assertEqual(
+            response.json(),
+            {
+                "total_claims": 11,
+                "next": "https://sandbox.ui.dol.gov:4430/swa/claims/?page=2",
+                "claims": claim_payloads_page_1,
+            },
+        )
+        self.assertEqual(len(response.json()["claims"]), 10)
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/?page=2", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        self.assertEqual(
+            response.json(),
+            {"total_claims": 11, "next": None, "claims": claim_payloads_page_2},
+        )
+        self.assertEqual(len(response.json()["claims"]), 1)
+
+        # mark all as fetched
+        for claim in swa.claim_queue().all():
+            claim.events.create(category=Claim.EventCategories.FETCHED)
+
+        # error when Claim asset is missing
+        claim_with_no_payload = Claim(swa=swa, claimant=claimant)
+        claim_with_no_payload.save()
+        claim_with_no_payload.events.create(category=Claim.EventCategories.COMPLETED)
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
+        )
+        self.assertEqual(
+            response.json(),
+            {
+                "total_claims": 1,
+                "next": None,
+                "claims": [{"error": f"claim {claim_with_no_payload.uuid} missing"}],
+            },
+        )

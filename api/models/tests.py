@@ -69,6 +69,21 @@ class ApiModelsTestCase(TransactionTestCase):
         ks_swa.save()
         self.assertEqual(ks_swa.get_status_display(), 2)
 
+    def test_swa_claim_queue(self):
+        swa, _ = create_swa()
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+
+        self.assertEqual(swa.claim_queue().count(), 0)
+
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        self.assertEqual(swa.claim_queue().count(), 1)
+
+        claim.events.create(category=Claim.EventCategories.FETCHED)
+        self.assertEqual(swa.claim_queue().count(), 0)
+
     def test_claimant(self):
         idp = create_idp()
 
@@ -128,3 +143,7 @@ class ApiModelsTestCase(TransactionTestCase):
         )
         self.assertEqual(claimant_event.get_category_display(), "Logged In")
         self.assertEqual(claimant_event.happened_at, yesterday)
+
+        # our enum is not enforced, so exercise the error case
+        unknown_event = claim.events.create(category=0)
+        self.assertEqual(unknown_event.get_category_display(), "Unknown")

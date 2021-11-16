@@ -34,3 +34,12 @@ class SWA(TimeStampedModel):
         from jwcrypto import jwk
 
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))
+
+    def claim_queue(self):
+        from .claim import Claim
+
+        return (
+            self.claim_set.filter(events__category=Claim.EventCategories.COMPLETED)
+            .exclude(events__category=Claim.EventCategories.FETCHED)
+            .order_by("created_at")
+        )

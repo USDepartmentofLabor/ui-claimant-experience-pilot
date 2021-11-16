@@ -23,4 +23,8 @@ class Event(TimeStampedModel):
     # because our enum "choices" are defined on the event_target,
     # we must define this method ourselves.
     def get_category_display(self):
-        return dict(type(self.event_target).EventCategories.choices)[self.category]
+        categories = dict(type(self.event_target).EventCategories.choices)
+        if self.category in categories:
+            return categories[self.category]
+        else:
+            return "Unknown"
