@@ -17,6 +17,21 @@ import logging.config
 import base64
 from corsheaders.defaults import default_headers
 
+
+# our symmetric encryptions keys must be 32 bytes (256 bits) base64-encoded
+def validate_secret_key(secret, key_name):
+    secret_len = len(base64.urlsafe_b64decode(secret))
+    if secret_len != 32:  # pragma: no cover
+        err = "{} '{}' is not a 32-byte base64-encoded string: {} [{}]".format(
+            key_name,
+            secret,
+            base64.urlsafe_b64decode(secret),
+            secret_len,
+        )
+        raise Exception(err)
+    return True
+
+
 # import pprint
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -150,16 +165,7 @@ redis_base_options = {
     "REDIS_CLIENT_KWARGS": {"ssl": True, "ssl_cert_reqs": None},
 }
 redis_secret_key = env.str("REDIS_SECRET_KEY")
-redis_secret_key_len = len(base64.urlsafe_b64decode(redis_secret_key))
-if redis_secret_key_len != 32:  # pragma: no cover
-    err = (
-        "REDIS_SECRET_KEY '{}' is not a 32-byte base64-encoded string: {} [{}]".format(
-            redis_secret_key,
-            base64.urlsafe_b64decode(redis_secret_key),
-            redis_secret_key_len,
-        )
-    )
-    raise Exception(err)
+validate_secret_key(redis_secret_key, "REDIS_SECRET_KEY")
 if os.environ.get("REDIS_HOST"):  # pragma: no cover
     # in WCMS env the config is set with separate env vars.
     REDIS_URL = f"rediss://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT', '6379')}/{REDIS_DB}"
@@ -377,3 +383,7 @@ if os.environ.get("TEST_S3_BUCKET_URL"):  # pragma: no cover
     CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
 else:
     CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
+
+# CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
+CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
+validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")

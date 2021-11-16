@@ -70,6 +70,48 @@ class AsymmetricClaimDecryptor(object):
         return self.packaged_claim["decrypted_claim"]
 
 
+class SymmetricClaimEncryptor(object):
+    """
+    Requires "claim" (dict) and "jwkey" JWK (e.g. jwk.JWK(generate='oct', size=256))
+    """
+
+    def __init__(self, claim, jwkey):
+        self.claim = claim
+        self.key = jwkey
+
+    def __encrypt(self):
+        jwetoken = jwe.JWE(
+            json_encode(self.claim), json_encode({"alg": "A256GCMKW", "enc": ENC})
+        )
+        jwetoken.add_recipient(self.key)
+        return jwetoken
+
+    def packaged_claim(self):
+        jwetoken = self.__encrypt()
+        return PackagedClaim(jwetoken, self.key.thumbprint(), self.claim["id"])
+
+
+class SymmetricClaimDecryptor(object):
+    """
+    Requires:
+    * "packaged_claim" string
+    * "jwkey" JWK
+    """
+
+    def __init__(self, packaged_claim_str, jwkey):
+        self.packaged_claim = json_decode(packaged_claim_str)
+        self.key = jwkey
+
+    def decrypt(self):
+        jwetoken = jwe.JWE()
+        jwetoken.deserialize(json_encode(self.packaged_claim["claim"]))
+        jwetoken.decrypt(self.key)
+        self.packaged_claim["decrypted_claim"] = json_decode(
+            jwetoken.payload.decode("utf-8")
+        )
+        return self.packaged_claim["decrypted_claim"]
+
+
 class PackagedClaim(object):
     """
     Requires:

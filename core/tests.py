@@ -8,7 +8,7 @@ from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
 from .claim_storage import ClaimWriter, ClaimReader
-from jwcrypto import jwe
+from jwcrypto import jwe, jwk
 from jwcrypto.common import json_encode, json_decode
 from .claim_encryption import (
     PackagedClaim,
@@ -16,9 +16,12 @@ from .claim_encryption import (
     ENC as EncryptionENC,
     AsymmetricClaimEncryptor,
     AsymmetricClaimDecryptor,
+    SymmetricClaimEncryptor,
+    SymmetricClaimDecryptor,
 )
 from .test_utils import create_s3_bucket, delete_s3_bucket, generate_keypair
 import logging
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -97,6 +100,28 @@ class CoreClaimStorageTestCase(TestCase):
         bucket_asset = cr.read()
         self.assertEqual(bucket_asset, "test path")
 
+    def test_claim_writer_with_sym_encryption(self):
+        key = jwk.JWK(kty="oct", k=settings.CLAIM_SECRET_KEY)
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+        claim_payload = {
+            "id": str(claim.uuid),
+            "foo": "something-really-private-and-sensitive",
+        }
+        ce = SymmetricClaimEncryptor(claim_payload, key)
+        packaged_claim = ce.packaged_claim()
+        cw = ClaimWriter(claim, packaged_claim.as_json())
+        self.assertTrue(cw.write())
+
+        cr = ClaimReader(claim)
+        packaged_claim_str = cr.read()
+        cd = SymmetricClaimDecryptor(packaged_claim_str, key)
+        decrypted_claim = cd.decrypt()
+        self.assertEqual(decrypted_claim, claim_payload)
+
     def test_claim_storage_exceptions(self):
         with self.assertRaises(ValueError) as context:
             ClaimWriter(True, True)
@@ -169,3 +194,25 @@ class CoreClaimEncryptionTestCase(TestCase):
         )
         decrypted_claim = cd.decrypt()
         self.assertEqual(decrypted_claim["id"], "123-abc")
+
+    def test_symmetric_claim_encryptor(self):
+        key = jwk.JWK(generate="oct", size=256)
+        claim = {"id": "123-abc", "foo": "something-really-private-and-sensitive"}
+        ce = SymmetricClaimEncryptor(claim, key)
+        packaged_claim = ce.packaged_claim()
+        self.assertIsInstance(
+            packaged_claim, PackagedClaim, "object is a PackagedClaim"
+        )
+
+        claim_dict = packaged_claim.as_dict()
+        self.assertEqual(claim_dict["claim_id"], "123-abc")
+        self.assertNotIn("foo", claim_dict["claim"]["ciphertext"])
+        self.assertNotIn(
+            "something-really-private-and-sensitive",
+            claim_dict["claim"]["ciphertext"],
+        )
+
+        # round-trip: decrypt
+        cd = SymmetricClaimDecryptor(packaged_claim.as_json(), key)
+        decrypted_claim = cd.decrypt()
+        self.assertEqual(decrypted_claim, claim)

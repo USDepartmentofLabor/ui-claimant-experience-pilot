@@ -96,6 +96,7 @@ RUN pip install --no-cache-dir -r requirements-ci.txt && \
   cp core/.env-ci core/.env && \
   echo SECRET_KEY=`make secret SECRET_LENGTH=64` >> core/.env && \
   echo REDIS_SECRET_KEY=`make secret SECRET_LENGTH=32` >> core/.env && \
+  echo CLAIM_SECRET_KEY=`make secret SECRET_LENGTH=32` >> core/.env && \
   echo "BUILD_TIME=`date '+%Y%m%d-%H%M%S'`" >> core/.env
 
 # leave the .env file intact
