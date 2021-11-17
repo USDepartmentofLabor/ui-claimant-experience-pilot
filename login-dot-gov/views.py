@@ -7,9 +7,6 @@ import os
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider
-
-# import pprint
-
 from django.conf import settings
 
 logger = logging.getLogger("logindotgov")

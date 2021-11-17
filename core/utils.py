@@ -22,14 +22,11 @@ def register_local_login(request):
         for k in request.POST.keys():
             whoami[k] = request.POST[k]
     request.session["whoami"] = whoami
-    if "email" in whoami:
-        if len(whoami["email"]):
-            xid = hash_idp_user_xid(whoami["email"])
-            # ok to ignore return value
-            Claimant.objects.get_or_create(
-                idp_user_xid=xid, idp=local_identity_provider()
-            )
-            whoami["claimant_id"] = xid
+    if "email" in whoami and len(whoami["email"]):
+        xid = hash_idp_user_xid(whoami["email"])
+        # ok to ignore return value
+        Claimant.objects.get_or_create(idp_user_xid=xid, idp=local_identity_provider())
+        whoami["claimant_id"] = xid
     return whoami
 
 

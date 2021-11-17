@@ -16,8 +16,6 @@ from core.claim_storage import ClaimWriter
 from core.claim_encryption import AsymmetricClaimEncryptor
 
 
-# import json
-
 logger = logging.getLogger("api")
 
 """

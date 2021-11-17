@@ -19,7 +19,7 @@ const whoIsYou: WhoAmI = {
 };
 
 jest.mock("../utils/httpclient");
-const mockedHttpClient = httpclient as jest.Mocked<AxiosInstance>;
+const mockedHttpClient = httpclient;
 
 describe("should use whoami", () => {
   const queryClient = new QueryClient();

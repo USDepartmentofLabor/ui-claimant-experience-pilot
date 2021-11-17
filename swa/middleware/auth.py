@@ -3,7 +3,6 @@ import logging
 from django.http import JsonResponse
 from .jwt_authorizer import JwtAuthorizer
 
-# from django.conf import settings
 
 logger = logging.getLogger(__name__)
 

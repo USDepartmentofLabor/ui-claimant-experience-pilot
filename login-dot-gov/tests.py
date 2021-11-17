@@ -7,8 +7,6 @@ from django.test.utils import override_settings
 from django.conf import settings
 from api.models import IdentityProvider
 
-# import pprint
-
 # set up the mock OIDC server
 MockServer.register_client(
     settings.LOGIN_DOT_GOV_CLIENT_ID,

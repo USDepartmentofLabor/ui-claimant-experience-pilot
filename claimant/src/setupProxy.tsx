@@ -3,8 +3,7 @@
    We do this so that custom XHR headers are proxied correctly (like X-CSRFToken).
 */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { createProxyMiddleware } = require("http-proxy-middleware");
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 module.exports = function (app) {
   app.use(

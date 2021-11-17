@@ -6,7 +6,7 @@ import en from "./i18n/en";
 
 export const defaultNS = "home";
 export const resources = {
-  en: en,
+  en,
 } as const;
 
 i18n

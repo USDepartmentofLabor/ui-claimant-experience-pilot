@@ -10,7 +10,7 @@ type State = {
 type Props = Record<string, unknown>;
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
-const loginUrl = baseUrl + "/idp/?redirect_to=" + window.location.href;
+const loginUrl = `${baseUrl}/idp/?redirect_to=${window.location.href}`;
 
 export class RequestErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
