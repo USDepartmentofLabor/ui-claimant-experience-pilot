@@ -1,5 +1,4 @@
-import React from "react";
-import { AxiosInstance } from "axios";
+import React, { ReactNode } from "react";
 import { renderHook } from "@testing-library/react-hooks";
 import { QueryClient, QueryClientProvider } from "react-query";
 import httpclient from "../utils/httpclient";
@@ -23,7 +22,7 @@ const mockedHttpClient = httpclient;
 
 describe("should use whoami", () => {
   const queryClient = new QueryClient();
-  const wrapper = ({ children }: any) => {
+  const wrapper = ({ children }: ReactNode) => {
     return (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );

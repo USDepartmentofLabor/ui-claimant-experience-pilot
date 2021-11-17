@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { RequestErrorBoundary } from "./RequestErrorBoundary";
 
 describe("Error Boundary", () => {
-  const renderComponent = (children: any) => {
+  const renderComponent = (children: ReactNode) => {
     render(<RequestErrorBoundary>{children}</RequestErrorBoundary>);
   };
   it("renders error boundary when there is an error", () => {
