@@ -101,7 +101,9 @@ class ApiModelsTestCase(TransactionTestCase):
         idp = create_idp()
         claimant = create_claimant(idp)
         claim_uuid = "055594e0-3488-4b9d-942c-5203e7c1929f"
-        claim = Claim(uuid=claim_uuid, swa=ks_swa, claimant=claimant)
+        claim = Claim(
+            uuid=claim_uuid, swa=ks_swa, claimant=claimant, status="something"
+        )
         claim.save()
 
         with self.assertRaises(ProtectedError):
@@ -115,6 +117,7 @@ class ApiModelsTestCase(TransactionTestCase):
         stored_claim = Claim.objects.get(uuid=claim_uuid)
         self.assertEqual(stored_claim.swa, ks_swa)
         self.assertEqual(stored_claim.claimant, claimant)
+        self.assertEqual(stored_claim.status, "something")
 
     def test_events(self):
         idp = create_idp()

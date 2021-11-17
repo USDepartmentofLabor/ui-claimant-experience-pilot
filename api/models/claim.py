@@ -24,6 +24,7 @@ class Claim(TimeStampedModel):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     swa = models.ForeignKey(SWA, on_delete=models.PROTECT)
     claimant = models.ForeignKey(Claimant, on_delete=models.PROTECT)
+    status = models.CharField(max_length=255, null=True)
     events = GenericRelation(
         Event, content_type_field="model_name", object_id_field="model_id"
     )
