@@ -15,14 +15,6 @@ This React application is for a claimants initial UI claim filing.
 ### Tests
 
 If you want to run the Cypress tests, the Docker container must be running with the Django server.
-It requires some test data be present, so in the top-level directory you must run:
-
-```sh
-(.venv) % make container-setup-react-tests
-```
-
-one time. If your MySQL database is reset, you must re-run it.
-
 However, you can run the Cypress tests against either the built app (port 4430) or the npm dev server (port 3000).
 
 For the built app (as it runs tests in CI):
@@ -61,6 +53,12 @@ To run Cypress interactively:
 
 ```sh
 % make cypress
+```
+
+To run Cypress interactively, against the dev server:
+
+```sh
+% make dev-cypress
 ```
 
 To run the Jest (unit) tests:

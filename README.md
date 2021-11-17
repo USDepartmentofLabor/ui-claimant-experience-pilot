@@ -197,6 +197,53 @@ to confirm any translation changes.
 In React, we are using [react-i18next](https://react.i18next.com/).
 Translation is found in `claimant/src/i18n` in corresponding locale directories by app page.
 
+### Switching branches
+
+When you switch branches locally, either because you've fetched updates from GitHub or you are developing on different features, there are some common `make` targets
+you will likely want to keep in mind that help reset your local environment to something close to "fresh."
+
+#### The .env file
+
+When `core/.env-example` changes upstream, you will want to make sure your local `core/.env` file stays in sync with any new variables. The easiest way to do this
+(assuming you have not modified your local `core/.env` file from the defaults) is:
+
+```sh
+% make dev-env-files
+```
+
+#### Rebuild your container image
+
+If you intend to run the Django docker container locally, you'll likely need/want to rebuild it when the code changes:
+
+```sh
+% make container
+```
+
+#### Local data setup
+
+The React app expects some data to exist on the server when you run the Cypress (browser) tests. In theory, you should only need to do this once,
+not each time you switch branches, because the S3 bucket and database changes are preserved in your local services containers (mysql and localstack).
+However, if your S3 bucket is deleted or your database is destroyed, you will need to re-run the test data setup.
+
+There are two ways to create those data.
+
+To run interactively, and preserve the test SWA keypair between containers:
+
+```sh
+% make login
+doluiapp@asdfasdf:/app$ ./setup-cypress-tests.sh
+```
+
+The interactive approach should leave two files `XX-private.pem` and `XX-public.pem` in your native workspace.
+
+To run non-interactively, and leave the keys on the container image itself (not in your native workspace):
+
+```sh
+% make container-run
+# in a separate terminal window
+% make container-setup-react-tests
+```
+
 ## Identity Providers
 
 Eventually, multiple Identity Providers (IdPs) will be available in the application.

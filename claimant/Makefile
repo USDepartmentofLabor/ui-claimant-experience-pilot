@@ -45,6 +45,9 @@ dev-test-browser: ## Run browser tests against local dev server (port 3000)
 cypress: ## Start the Cypress interactive application
 	npx cypress open
 
+dev-cypress: ## Start the Cypress interactive application, pointing at dev server (port 3000)
+	npx cypress open --config-file cypress-dev.json
+
 test: test-unit ## Run all unit tests
 
 ci-tests: ## Run CI tests
