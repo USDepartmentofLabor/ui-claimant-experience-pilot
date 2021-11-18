@@ -2,7 +2,6 @@ import { useQueryClient } from "react-query";
 import { Formik, Form } from "formik";
 import { Button } from "@trussworks/react-uswds";
 import TextField from "../../components/form/fields/TextField";
-import HomeStyles from "./Home.module.scss";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
@@ -18,9 +17,6 @@ const HomePage = () => {
     <main>
       <h1>{t("welcome")}</h1>
       <p className="usa-intro">{t("intro")}</p>
-      <section className="usa-section">
-        <p className={HomeStyles.hello}>{t("sampleStyle")}</p>
-      </section>
       <RequestErrorBoundary>
         <ClaimForm />
       </RequestErrorBoundary>

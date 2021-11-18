@@ -1,13 +1,16 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main" class="">
-  <section class="grid-container usa-section">
+  <section class="grid-container margin-top-1">
     <script type="text/javascript">
       function addSwaCode(code) {
-        let idpLinks = document.querySelectorAll(".idp-link");
+        const idpLinks = document.querySelectorAll(".idp-link");
         idpLinks.forEach((el) => {
           let href = el.getAttribute("href").replace(/\?.*/, "");
           el.setAttribute("href", href + "?swa=" + code);
         });
+        // show the IdP links
+        const idpPicker = document.getElementById("idp-picker");
+        idpPicker.classList.remove("display-none");
       }
     </script>
     <div class="grid-row grid-gap">
@@ -28,7 +31,7 @@
       </div>
     </div>
   </section>
-  <section class="grid-container usa-section">
+  <section id="idp-picker" class="display-none grid-container margin-top-1">
     <div class="grid-row grid-gap">
       <div class="tablet:grid-col-4">
         <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
