@@ -16,7 +16,16 @@ type ClaimResponse = {
   claim_id: string;
 };
 
-type Claim = {
+type ClaimantInput = {
+  first_name?: string | null;
+  last_name?: string | null;
+  birthdate?: string;
+  ssn?: string;
+  email?: string;
+  phone?: string | null;
+};
+
+type Claim = ClaimantInput & {
   id?: string;
   swa_code: string;
   claimant_id: string;

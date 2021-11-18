@@ -1,13 +1,7 @@
 import { useQueryClient } from "react-query";
-import { useFormik } from "formik";
-import {
-  Button,
-  Form,
-  FormGroup,
-  TextInput,
-  Label,
-  ErrorMessage,
-} from "@trussworks/react-uswds";
+import { Formik, Form } from "formik";
+import { Button } from "@trussworks/react-uswds";
+import TextField from "../../components/form/fields/TextField";
 import HomeStyles from "./Home.module.scss";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
@@ -39,9 +33,13 @@ export default HomePage;
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
-const initialValues = {
+const initialValues: { [key: string]: string | undefined } = {
   first_name: "",
   email: "",
+  birthdate: "",
+  ssn: "",
+  last_name: "",
+  phone: "",
 };
 
 export const ClaimForm = () => {
@@ -56,34 +54,17 @@ export const ClaimForm = () => {
   const validationSchema = yup.object().shape({
     first_name: yup.string().required(t("validation.required")),
     email: yup.string().email(t("validation.notEmail")),
+    birthdate: yup.string().required(t("validation.required")),
+    ssn: yup.string().required(t("validation.required")),
   });
 
-  // TODO: Put in a common-to-all-pages location
-  const formik = useFormik({
-    initialValues,
-    // validate,
-    validationSchema,
-    onSubmit: async (values) => {
-      if (!whoami) {
-        return;
+  if (whoami) {
+    for (const [key, value] of Object.entries(whoami)) {
+      if (value && key in initialValues && !initialValues[key]) {
+        initialValues[key] = value;
       }
-      const claim: Claim = {
-        ...values,
-        swa_code: whoami.swa_code,
-        claimant_id: whoami.claimant_id,
-      };
-      if (whoami.claim_id) {
-        claim.id = whoami.claim_id;
-      }
-      const r = await submitClaim.mutateAsync(claim);
-      if (!whoami.claim_id) {
-        queryClient.setQueryData("whoami", {
-          ...whoami,
-          claim_id: r.data.claim_id,
-        });
-      }
-    },
-  });
+    }
+  }
 
   if (isLoading) {
     return <PageLoader />;
@@ -107,40 +88,58 @@ export const ClaimForm = () => {
       ) : (
         ""
       )}
-      <Form onSubmit={formik.handleSubmit}>
-        {/* TODO: create reusable FormGroup+Label+TextInput+ErrorMessage component*/}
-        <FormGroup>
-          <Label htmlFor="first_name">{t("label.first_name")}</Label>
-          <TextInput
-            type="text"
-            id="first_name"
-            name="first_name"
-            error={!!formik.errors.first_name}
-            value={formik.values.first_name}
-            onChange={formik.handleChange}
-          />
-          {formik.errors.first_name && (
-            <ErrorMessage>{formik.errors.first_name}</ErrorMessage>
-          )}
-        </FormGroup>
-        <FormGroup>
-          <Label htmlFor="email">{t("label.email")}</Label>
-          <TextInput
-            type="text"
-            id="email"
-            name="email"
-            error={!!formik.errors.email}
-            value={formik.values.email}
-            onChange={formik.handleChange}
-          />
-          {formik.errors.email && (
-            <ErrorMessage>{formik.errors.email}</ErrorMessage>
-          )}
-        </FormGroup>
-        <Button type="submit" disabled={submitClaim.isLoading}>
-          {t("sampleForm.claimButton")}
-        </Button>
-      </Form>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={async (values) => {
+          if (!whoami) {
+            return;
+          }
+          const claim: Claim = {
+            ...values,
+            swa_code: whoami.swa_code,
+            claimant_id: whoami.claimant_id,
+          };
+          if (whoami.claim_id) {
+            claim.id = whoami.claim_id;
+          }
+          const r = await submitClaim.mutateAsync(claim);
+          if (!whoami.claim_id) {
+            queryClient.setQueryData("whoami", {
+              ...whoami,
+              claim_id: r.data.claim_id,
+            });
+          }
+        }}
+      >
+        {() => (
+          //{(props: FormikProps<ClaimantInput>) => (
+          <Form>
+            <TextField
+              name="first_name"
+              label={t("label.first_name")}
+              type="text"
+              id="first_name"
+            />
+            <TextField
+              name="email"
+              label={t("label.email")}
+              type="email"
+              id="email"
+            />
+            <TextField
+              name="birthdate"
+              label={t("label.birthdate")}
+              type="text"
+              id="birthdate"
+            />
+            <TextField name="ssn" label={t("label.ssn")} type="text" id="ssn" />
+            <Button type="submit" disabled={submitClaim.isLoading}>
+              {t("sampleForm.claimButton")}
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

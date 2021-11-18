@@ -9,6 +9,8 @@ const home = {
   label: {
     first_name: "First Name",
     email: "Email",
+    birthdate: "Birthdate",
+    ssn: "Social Security Number",
   },
   validation: {
     required: "This field is required",

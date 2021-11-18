@@ -45,6 +45,8 @@ class ClaimRequest(object):
 
         try:
             self.claimant = Claimant.objects.get(idp_user_xid=claimant_id)
+            if "identity_provider" not in self.payload:
+                self.payload["identity_provider"] = self.claimant.idp.name
         except Claimant.DoesNotExist:
             self.error = INVALID_CLAIMANT_ID
             self.response = JsonResponse({"error": INVALID_CLAIMANT_ID}, status=404)

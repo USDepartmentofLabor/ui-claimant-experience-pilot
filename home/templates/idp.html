@@ -21,9 +21,7 @@
           <select class="usa-select" onchange="addSwaCode(this.value)">
             <option disabled selected value>--</option>
             {% for swa in swas %}
-            <option value="{{swa.code}}">
-              {% translate "swa.name" noop %}
-            </option>
+            <option value="{{swa.code}}">{% translate swa.name %}</option>
             {% endfor %}
           </select>
         </form>

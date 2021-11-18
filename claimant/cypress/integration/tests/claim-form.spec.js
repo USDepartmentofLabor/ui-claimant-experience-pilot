@@ -14,7 +14,8 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.login();
     cy.visit("/claimant/");
     cy.get("[name=first_name]").type("Dave");
-    cy.get("[name=email]").type("dave@example.com");
+    // clear first to replace the whoami.email value
+    cy.get("[name=email]").clear().type("dave@example.com");
     cy.get("[data-testid='button']").contains("Test Claim").click();
     cy.contains("Claim submitted").should("be.visible");
   });

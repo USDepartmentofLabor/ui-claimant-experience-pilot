@@ -10,9 +10,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .decorators import verified_claimant_session
 from .claim_request import ClaimRequest
+from .claim_validator import ClaimValidator
 from core.email import Email
 from core.utils import register_local_login
 from core.claim_storage import ClaimWriter
+from datetime import datetime
 from core.claim_encryption import AsymmetricClaimEncryptor
 
 
@@ -84,7 +86,20 @@ def claim(request):
         logger.error(claim_request.error)
         return claim_request.response
 
-    # TODO validation
+    claim_validator = ClaimValidator(claim_request.payload)
+    if not claim_validator.valid:
+        return JsonResponse(
+            {
+                "status": "error",
+                "error": "invalid claim",
+                "errors": claim_validator.errors_as_dict(),
+            },
+            status=400,
+        )
+    else:
+        # mark our payload with validation info
+        claim_request.payload["validated_at"] = datetime.now().isoformat()
+        claim_request.payload["$schema"] = claim_validator.schema_url
 
     # encrypt payload
     asym_encryptor = AsymmetricClaimEncryptor(
@@ -93,7 +108,7 @@ def claim(request):
     packaged_claim = asym_encryptor.packaged_claim()
     writeable_payload = packaged_claim.as_json()
 
-    # now that we have a Claim, stash its id in session
+    # now that we have a Claim, stash its info in session
     claim_id = claim_request.payload["id"]
     request.session["whoami"]["claim_id"] = claim_id
 

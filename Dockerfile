@@ -55,6 +55,7 @@ COPY scripts/*sh ./scripts/
 COPY manage.py .
 COPY start-server.sh .
 COPY home ./home
+COPY schemas ./schemas
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
 COPY api ./api

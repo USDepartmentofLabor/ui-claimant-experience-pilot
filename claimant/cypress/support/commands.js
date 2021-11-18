@@ -39,11 +39,10 @@ Cypress.Commands.add("login", () => {
 
 Cypress.Commands.add("real_login", () => {
   cy.visit("https://sandbox.ui.dol.gov:4430/login/?swa=XX");
-  // cy.log("on /login/ page");
   cy.get("#email").should("be.visible").type("someone@example.com");
-  // cy.log("found email input");
+  cy.get("#ssn").should("be.visible").type("900-00-1234");
+  cy.get("#birthdate").should("be.visible").type("2000-01-01");
   cy.get("[data-testid='loginbutton']").should("be.visible").click();
-  // cy.log("clicked submit");
 });
 
 Cypress.Commands.add("post_login", () => {
