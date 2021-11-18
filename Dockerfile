@@ -14,6 +14,7 @@ COPY claimant/.eslintrc.yml ./claimant/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
 WORKDIR /app/claimant
+ENV NODE_ENV=production
 RUN make deps
 
 WORKDIR /app
@@ -21,7 +22,8 @@ COPY claimant/public/ ./claimant/public/
 COPY claimant/src/ ./claimant/src/
 WORKDIR /app/claimant
 ARG ENV_NAME=""
-RUN make docker-build
+# remove the stories because storybook deps are not installed due to NODE_ENV=production
+RUN rm -rf src/stories && make docker-build
 
 ##########################################
 # Django
