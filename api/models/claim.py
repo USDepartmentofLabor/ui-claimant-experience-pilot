@@ -15,7 +15,7 @@ class Claim(TimeStampedModel):
         db_table = "claims"
 
     class EventCategories(models.IntegerChoices):
-        STARTED = 1
+        REUSE_ME = 1
         SUBMITTED = 2
         COMPLETED = 3
         FETCHED = 4

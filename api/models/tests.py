@@ -110,7 +110,7 @@ class ApiModelsTestCase(TransactionTestCase):
         event_time = timezone.now()
 
         claim.events.create(
-            category=Claim.EventCategories.STARTED,
+            category=Claim.EventCategories.STORED,
             happened_at=event_time,
             description="wassup",
         )
@@ -145,7 +145,7 @@ class ApiModelsTestCase(TransactionTestCase):
             stored_claim.public_events(),
             [
                 {
-                    "category": "Started",
+                    "category": "Stored",
                     "happened_at": str(event_time),
                     "description": "wassup",
                 },
@@ -178,19 +178,19 @@ class ApiModelsTestCase(TransactionTestCase):
 
         event_time = timezone.now()
         claim_event = claim.events.create(
-            category=Claim.EventCategories.STARTED, happened_at=event_time
+            category=Claim.EventCategories.STORED, happened_at=event_time
         )
         self.assertIsInstance(claim_event.happened_at, datetime.datetime)
         self.assertEqual(
-            claim.events.filter(category=Claim.EventCategories.STARTED).all()[0],
+            claim.events.filter(category=Claim.EventCategories.STORED).all()[0],
             claim_event,
         )
-        self.assertEqual(claim_event.get_category_display(), "Started")
+        self.assertEqual(claim_event.get_category_display(), "Stored")
         self.assertEqual(
             claim_event.as_public_dict(),
             {
                 "happened_at": str(event_time),
-                "category": "Started",
+                "category": "Stored",
                 "description": "",
             },
         )

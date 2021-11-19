@@ -443,7 +443,7 @@ class SwaTestCase(TestCase):
         claim = Claim(claimant=claimant, swa=swa, status="excellent")
         claim.save()
 
-        claim.events.create(category=Claim.EventCategories.STARTED)
+        claim.events.create(category=Claim.EventCategories.STORED)
         claim.events.create(category=Claim.EventCategories.SUBMITTED)
 
         header_token = generate_auth_token(private_key_jwk, swa.code)
