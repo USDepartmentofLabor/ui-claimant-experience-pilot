@@ -389,3 +389,9 @@ try:
 except Exception:  # pragma: no cover
     logger.warn("Re-using REDIS_SECRET_KEY as CLAIM_SECRET_KEY")
     CLAIM_SECRET_KEY = redis_secret_key
+
+# all sites except production should have this turned on, as policy.
+# we make it an env var so that we can test locally w/o it
+DISPLAY_TEST_SITE_BANNER = (
+    os.environ.get("DISPLAY_TEST_SITE_BANNER", "true").lower() == "true"
+)
