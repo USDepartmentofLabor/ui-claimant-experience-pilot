@@ -351,3 +351,33 @@ class SwaTestCase(TestCase):
                 "claims": [{"error": f"claim {claim_with_no_payload.uuid} missing"}],
             },
         )
+
+    def test_v1_act_on_claim(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa()
+        swa.status = SWA.StatusOptions.ACTIVE
+        swa.save()
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa, status="excellent")
+        claim.save()
+
+        claim.events.create(category=Claim.EventCategories.STARTED)
+        claim.events.create(category=Claim.EventCategories.SUBMITTED)
+
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+        )
+        expected_events = claim.public_events()
+
+        expected_response = {
+            "id": str(claim.uuid),
+            "created_at": str(claim.created_at),
+            "updated_at": str(claim.updated_at),
+            "claimant_id": claimant.id,
+            "events": expected_events,
+            "status": claim.status,
+        }
+        self.assertEqual(response.json(), expected_response)

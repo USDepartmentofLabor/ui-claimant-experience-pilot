@@ -105,6 +105,18 @@ class ApiModelsTestCase(TransactionTestCase):
             uuid=claim_uuid, swa=ks_swa, claimant=claimant, status="something"
         )
         claim.save()
+        event_time = timezone.now()
+
+        claim.events.create(
+            category=Claim.EventCategories.STARTED,
+            happened_at=event_time,
+            description="wassup",
+        )
+        claim.events.create(
+            category=Claim.EventCategories.SUBMITTED,
+            happened_at=event_time + timedelta(hours=1),
+            description="right",
+        )
 
         with self.assertRaises(ProtectedError):
             # swa cannot be deleted if it has a claim
@@ -119,6 +131,22 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(stored_claim.claimant, claimant)
         self.assertEqual(stored_claim.status, "something")
 
+        self.assertEqual(
+            stored_claim.public_events(),
+            [
+                {
+                    "category": "Started",
+                    "happened_at": str(event_time),
+                    "description": "wassup",
+                },
+                {
+                    "category": "Submitted",
+                    "happened_at": str(event_time + timedelta(hours=1)),
+                    "description": "right",
+                },
+            ],
+        )
+
     def test_events(self):
         idp = create_idp()
         claimant = create_claimant(idp)
@@ -126,13 +154,24 @@ class ApiModelsTestCase(TransactionTestCase):
         claim = Claim(swa=ks_swa, claimant=claimant)
         claim.save()
 
-        claim_event = claim.events.create(category=Claim.EventCategories.STARTED)
+        event_time = timezone.now()
+        claim_event = claim.events.create(
+            category=Claim.EventCategories.STARTED, happened_at=event_time
+        )
         self.assertIsInstance(claim_event.happened_at, datetime.datetime)
         self.assertEqual(
             claim.events.filter(category=Claim.EventCategories.STARTED).all()[0],
             claim_event,
         )
         self.assertEqual(claim_event.get_category_display(), "Started")
+        self.assertEqual(
+            claim_event.as_public_dict(),
+            {
+                "happened_at": str(event_time),
+                "category": "Started",
+                "description": "",
+            },
+        )
 
         yesterday = timezone.now() - timedelta(days=1)
         claimant_event = claimant.events.create(

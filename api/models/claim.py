@@ -43,3 +43,6 @@ class Claim(TimeStampedModel):
 
     def is_complete(self):
         return True  # TODO use events to determine
+
+    def public_events(self):
+        return list(map(lambda event: event.as_public_dict(), self.events.all()))

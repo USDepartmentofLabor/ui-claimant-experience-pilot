@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
+import uuid
+
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
+from django.views.decorators.http import require_http_methods
+
 from home.views import base_url
 from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
-from django.views.decorators.http import require_http_methods
+from api.models import Claim
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -38,3 +45,42 @@ def GET_v1_claims(request):
         },
         status=200,
     )
+
+
+@require_http_methods(["GET", "DELETE", "PATCH"])
+def v1_act_on_claim(request, claim_uuid):
+    try:
+        uuid.UUID(claim_uuid)
+    except ValueError as err:
+        logger.exception(err)
+        return JsonResponse(
+            {"status": "error", "error": "invalid claim id format"}, status=400
+        )
+
+    try:
+        claim = Claim.objects.get(uuid=claim_uuid)
+    except Claim.DoesNotExist:
+        return JsonResponse(
+            {"status": "error", "error": "invalid claim id"}, status=404
+        )
+
+    if claim.swa != request.user:
+        return JsonResponse(
+            {"status": "error", "error": "permission denied"}, status=401
+        )
+
+    # route further based on HTTP method and payload
+    if request.method == "GET":
+        events = claim.public_events()
+        response_claim = {
+            "id": str(claim.uuid),
+            "created_at": str(claim.created_at),
+            "updated_at": str(claim.updated_at),
+            "claimant_id": claim.claimant_id,
+            "events": events,
+            "status": claim.status,
+        }
+
+        return JsonResponse(response_claim, status=200)
+
+    return JsonResponse({"status": "error", "error": "unknown action"}, status=400)
