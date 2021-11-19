@@ -9,16 +9,18 @@ def create_idp():
     return idp
 
 
-def create_swa():
+def create_swa(is_active=False, code="KS"):
     private_key_jwk, public_key_jwk = generate_keypair()
 
     # ad astra per aspera (the KS state motto)
     swa = SWA(
-        code="KS",
-        name="Kansas",
+        code=code,
+        name=f"{code} state name",
         public_key=public_key_jwk.export_to_pem().decode("utf-8"),
         public_key_fingerprint=public_key_jwk.thumbprint(),
     )
+    if is_active:
+        swa.status = SWA.StatusOptions.ACTIVE
     swa.save()
     return swa, private_key_jwk
 

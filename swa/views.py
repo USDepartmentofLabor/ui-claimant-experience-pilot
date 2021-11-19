@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import uuid
-
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
@@ -10,6 +8,7 @@ from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
 from api.models import Claim
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +46,12 @@ def GET_v1_claims(request):
     )
 
 
+"""
+Act on an individual Claim. Based on the HTTP method
+and request payload, route further to specific method.
+"""
+
+
 @require_http_methods(["GET", "DELETE", "PATCH"])
 def v1_act_on_claim(request, claim_uuid):
     try:
@@ -64,6 +69,9 @@ def v1_act_on_claim(request, claim_uuid):
             {"status": "error", "error": "invalid claim id"}, status=404
         )
 
+    # what's our security posture on this? 404 vs 401
+    # at this point we know it's a valid SWA that somehow got the wrong ID value.
+    # so "we're among friends" might be appropriate to return 401 to be explicit about why we fail.
     if claim.swa != request.user:
         return JsonResponse(
             {"status": "error", "error": "permission denied"}, status=401
@@ -71,16 +79,35 @@ def v1_act_on_claim(request, claim_uuid):
 
     # route further based on HTTP method and payload
     if request.method == "GET":
-        events = claim.public_events()
-        response_claim = {
-            "id": str(claim.uuid),
-            "created_at": str(claim.created_at),
-            "updated_at": str(claim.updated_at),
-            "claimant_id": claim.claimant_id,
-            "events": events,
-            "status": claim.status,
-        }
-
-        return JsonResponse(response_claim, status=200)
+        return GET_v1_claim_details(claim)
+    elif request.method == "PATCH":
+        payload = json_decode(request.body.decode("utf-8"))
+        if "status" in payload:
+            return PATCH_v1_claim_status(claim, payload["status"])
 
     return JsonResponse({"status": "error", "error": "unknown action"}, status=400)
+
+
+def GET_v1_claim_details(claim):
+    events = claim.public_events()
+    response_claim = {
+        "id": str(claim.uuid),
+        "created_at": str(claim.created_at),
+        "updated_at": str(claim.updated_at),
+        "claimant_id": claim.claimant_id,
+        "events": events,
+        "status": claim.status,
+    }
+
+    return JsonResponse(response_claim, status=200)
+
+
+def PATCH_v1_claim_status(claim, new_status):
+    try:
+        claim.change_status(new_status)
+        return JsonResponse({"status": "ok"}, status=200)
+    except Exception as err:
+        logger.exception(err)
+        return JsonResponse(
+            {"status": "error", "error": "failed to save change"}, status=500
+        )

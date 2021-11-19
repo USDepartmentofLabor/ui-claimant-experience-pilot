@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, RequestFactory
+from unittest.mock import MagicMock, patch
 from jwcrypto import jwt, jws, jwk
 from jwcrypto.common import json_decode, json_encode
 import logging
@@ -11,8 +12,9 @@ from core.test_utils import (
 )
 from core.claim_storage import ClaimWriter
 from api.test_utils import create_swa, create_idp, create_claimant
-from api.models import SWA, Claim
+from api.models import Claim
 from .middleware.jwt_authorizer import JwtAuthorizer
+import uuid
 
 logger = logging.getLogger("swa.tests")
 
@@ -48,9 +50,7 @@ def request_with_token(token):
 
 class JwtAuthorizerTestCase(TestCase):
     def test_happy_path(self):
-        swa, private_key_jwk = create_swa()
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
+        swa, private_key_jwk = create_swa(True)
         header_token = generate_auth_token(private_key_jwk, swa.code)
         request = request_with_token(header_token)
         authorizer = JwtAuthorizer(request)
@@ -86,9 +86,7 @@ class JwtAuthorizerTestCase(TestCase):
             )
 
     def test_invalid_token(self):
-        swa, private_key_jwk = create_swa()
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
+        swa, private_key_jwk = create_swa(True)
         token = generate_auth_token(private_key_jwk, swa.code)
 
         for claim in ["iat", "iss", "nonce"]:
@@ -175,10 +173,9 @@ class JwtAuthorizerTestCase(TestCase):
             )
 
     def test_invalid_key_fingerprint(self):
-        swa, private_key_jwk = create_swa()
+        swa, private_key_jwk = create_swa(True)
         token = generate_auth_token(private_key_jwk, swa.code)
         swa.public_key_fingerprint = "something changed"
-        swa.status = SWA.StatusOptions.ACTIVE
         swa.save()
 
         request = request_with_token(token)
@@ -194,11 +191,10 @@ class JwtAuthorizerTestCase(TestCase):
 
     def test_invalid_signature(self):
         _, diff_public_key_jwk = generate_keypair()
-        swa, private_key_jwk = create_swa()
+        swa, private_key_jwk = create_swa(True)
         token = generate_auth_token(private_key_jwk, swa.code)
         swa.public_key = diff_public_key_jwk.export_to_pem().decode("utf-8")
         # do not change fingerprint, just so we pass that check.
-        swa.status = SWA.StatusOptions.ACTIVE
         swa.save()
 
         request = request_with_token(token)
@@ -211,11 +207,8 @@ class JwtAuthorizerTestCase(TestCase):
             )
 
     def test_invalid_nonce(self):
-        swa, private_key_jwk = create_swa()
+        swa, private_key_jwk = create_swa(True)
         token = generate_auth_token(private_key_jwk, swa.code)
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
-
         request = request_with_token(token)
         with self.assertLogs(level="DEBUG") as cm:
             authorizer = JwtAuthorizer(request)
@@ -239,9 +232,7 @@ class SwaTestCase(TestCase):
         delete_s3_bucket()
 
     def test_client_auth_ok(self):
-        swa, private_key_jwk = create_swa()
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
+        swa, private_key_jwk = create_swa(True)
         header_token = generate_auth_token(private_key_jwk, swa.code)
         resp = self.client.get("/swa/", HTTP_AUTHORIZATION=format_jwt(header_token))
         self.assertContains(resp, "hello world")
@@ -253,11 +244,101 @@ class SwaTestCase(TestCase):
         resp = self.client.get("/swa/", HTTP_AUTHORIZATION=format_jwt(header_token))
         self.assertEqual(resp.status_code, 401)
 
-    def test_client_v1_GET_claims(self):
+    def test_client_PATCH_v1_claim_status(self):
         idp = create_idp()
-        swa, private_key_jwk = create_swa()
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
+        swa, private_key_jwk = create_swa(True)
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"status": "new status"},
+        )
+        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertEqual(response.status_code, 200)
+
+        # invalid uuid
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            "/swa/v1/claims/not-a-uuid/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"status": "new status"},
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "invalid claim id format"}
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # no such claim
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{uuid.uuid4()}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"status": "new status"},
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "invalid claim id"}
+        )
+        self.assertEqual(response.status_code, 404)
+
+        # bad payload
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={},
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "unknown action"}
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # different SWA owner
+        swa2, swa2_private_key_jwk = create_swa(True, "AA")
+        header_token = generate_auth_token(swa2_private_key_jwk, swa2.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"status": "new status"},
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "permission denied"}
+        )
+        self.assertEqual(response.status_code, 401)
+
+        # error saving
+        with patch("api.models.Claim.objects") as mocked_objects:
+            mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
+            mocked_claim.swa = swa
+            mocked_claim.change_status.side_effect = Exception("db error!")
+            mocked_objects.get.return_value = mocked_claim
+            header_token = generate_auth_token(private_key_jwk, swa.code)
+            with self.assertLogs(level="DEBUG") as cm:
+                response = self.client.patch(
+                    f"/swa/v1/claims/{claim.uuid}/",
+                    content_type="application/json",
+                    HTTP_AUTHORIZATION=format_jwt(header_token),
+                    data={"status": "new status"},
+                )
+                self.assertEqual(
+                    response.json(),
+                    {"status": "error", "error": "failed to save change"},
+                )
+                self.assertEqual(response.status_code, 500)
+                # the -2 means our logging exception is the 2nd to last in the list
+                self.assertIn("ERROR:swa.views:db error!", cm.output[-2])
+
+    def test_client_GET_v1_claims(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa(True)
         claimant = create_claimant(idp)
         claim = Claim(claimant=claimant, swa=swa)
         claim.save()
@@ -354,9 +435,7 @@ class SwaTestCase(TestCase):
 
     def test_v1_act_on_claim(self):
         idp = create_idp()
-        swa, private_key_jwk = create_swa()
-        swa.status = SWA.StatusOptions.ACTIVE
-        swa.save()
+        swa, private_key_jwk = create_swa(True)
         claimant = create_claimant(idp)
         claim = Claim(claimant=claimant, swa=swa, status="excellent")
         claim.save()

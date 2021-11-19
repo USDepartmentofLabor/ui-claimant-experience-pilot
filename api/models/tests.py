@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
+from jwcrypto.common import json_decode
 
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,9 @@ class ApiModelsManagerTestCase(TestCase):
         another_swa = SWA(code="AA", name="Alpha", status=SWA.StatusOptions.ACTIVE)
         another_swa.save()
         swas = SWA.active.order_by("name").all()
-        self.assertEqual(swas[0].code, "AA")  # sorts first
-        self.assertEqual(swas[2].code, "KS")  # included now that it is active
+        self.assertEqual(
+            list(map(lambda swa: swa.code, swas)), ["AA", "AR", "KS", "NJ"]
+        )
 
 
 class ApiModelsTestCase(TransactionTestCase):
@@ -145,6 +147,13 @@ class ApiModelsTestCase(TransactionTestCase):
                     "description": "right",
                 },
             ],
+        )
+
+        # calling change_status() creates an Event
+        claim.change_status("new status")
+        self.assertEqual(
+            json_decode(claim.events.last().description),
+            {"old": "something", "new": "new status"},
         )
 
     def test_events(self):
