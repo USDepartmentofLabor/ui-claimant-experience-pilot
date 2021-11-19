@@ -11,6 +11,7 @@ from django.views.decorators.http import require_http_methods
 from .decorators import verified_claimant_session
 from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator
+from .models import Claim
 from core.email import Email
 from core.utils import register_local_login
 from core.claim_storage import ClaimWriter
@@ -112,10 +113,17 @@ def claim(request):
     claim_id = claim_request.payload["id"]
     request.session["whoami"]["claim_id"] = claim_id
 
-    cw = ClaimWriter(claim_request.claim, writeable_payload)
+    # TODO if this is a partial claim, write symmetrical
+    # use "is_complete" flag in payload to determine, and do extra validation before packaging.
+    # For now, just treat every validated payload as complete
+    # TODO wrap the write() and the other events in a single db transaction
+    claim = claim_request.claim
+    claim.events.create(category=Claim.EventCategories.COMPLETED)
+
+    cw = ClaimWriter(claim, writeable_payload)
     if cw.write():
         # only send email if the Claim was "complete"
-        if claim_request.claim.is_complete():
+        if claim.is_complete():
             Email(
                 to=claim_request.whoami["email"],
                 subject="hello world",

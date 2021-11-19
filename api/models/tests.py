@@ -132,6 +132,14 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(stored_claim.swa, ks_swa)
         self.assertEqual(stored_claim.claimant, claimant)
         self.assertEqual(stored_claim.status, "something")
+        self.assertFalse(stored_claim.is_complete())
+
+        claim.events.create(
+            category=Claim.EventCategories.COMPLETED,
+            happened_at=event_time + timedelta(minutes=1),
+        )
+        self.assertTrue(claim.is_complete())
+        self.assertTrue(stored_claim.is_complete())
 
         self.assertEqual(
             stored_claim.public_events(),
@@ -140,6 +148,11 @@ class ApiModelsTestCase(TransactionTestCase):
                     "category": "Started",
                     "happened_at": str(event_time),
                     "description": "wassup",
+                },
+                {
+                    "category": "Completed",
+                    "happened_at": str(event_time + timedelta(minutes=1)),
+                    "description": "",
                 },
                 {
                     "category": "Submitted",

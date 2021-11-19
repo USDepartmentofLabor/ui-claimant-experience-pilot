@@ -57,7 +57,12 @@ class Claim(TimeStampedModel):
         return self
 
     def is_complete(self):
-        return True  # TODO use events to determine
+        return self.events.filter(category=Claim.EventCategories.COMPLETED).count() > 0
 
     def public_events(self):
-        return list(map(lambda event: event.as_public_dict(), self.events.all()))
+        return list(
+            map(
+                lambda event: event.as_public_dict(),
+                self.events.order_by("happened_at").all(),
+            )
+        )

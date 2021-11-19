@@ -221,6 +221,8 @@ class JwtAuthorizerTestCase(TestCase):
 
 
 class SwaTestCase(TestCase):
+    maxDiff = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -342,8 +344,6 @@ class SwaTestCase(TestCase):
         claimant = create_claimant(idp)
         claim = Claim(claimant=claimant, swa=swa)
         claim.save()
-        cw = ClaimWriter(claim, json_encode({"hello": "world"}))
-        cw.write()
 
         # first request is empty because no matching events
         header_token = generate_auth_token(private_key_jwk, swa.code)
@@ -356,6 +356,9 @@ class SwaTestCase(TestCase):
 
         # second has 1 claim
         claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cw = ClaimWriter(claim, json_encode({"hello": "world"}))
+        cw.write()
+
         header_token = generate_auth_token(private_key_jwk, swa.code)
         response = self.client.get(
             "/swa/v1/claims/", HTTP_AUTHORIZATION=format_jwt(header_token)
@@ -381,11 +384,11 @@ class SwaTestCase(TestCase):
         for loop in range(11):
             claim = Claim(claimant=claimant, swa=swa)
             claim.save()
+            claim.events.create(category=Claim.EventCategories.COMPLETED)
             payload = {"doc": loop}
             cw = ClaimWriter(claim, json_encode(payload))
             cw.write()
             claim_payloads.append(payload)
-            claim.events.create(category=Claim.EventCategories.COMPLETED)
 
         header_token = generate_auth_token(private_key_jwk, swa.code)
         response = self.client.get(

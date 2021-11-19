@@ -155,6 +155,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(
             response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
         )
+        self.assertTrue(claim.is_complete())
 
         # this requires celery task to run to completion async,
         # so wait a little
