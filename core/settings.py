@@ -386,6 +386,6 @@ else:
 try:
     CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
     validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")
-except Exception:
+except Exception:  # pragma: no cover
     logger.warn("Re-using REDIS_SECRET_KEY as CLAIM_SECRET_KEY")
     CLAIM_SECRET_KEY = redis_secret_key

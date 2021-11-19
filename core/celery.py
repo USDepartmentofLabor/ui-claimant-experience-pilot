@@ -5,7 +5,7 @@ from celery import signals
 
 
 @signals.celeryd_init.connect
-def setup_log_format(sender, conf, **kwargs):
+def setup_log_format(sender, conf, **kwargs):  # pragma: no cover
     conf.worker_log_format = """
         [celery.worker][%(asctime)s: %(levelname)s/%(processName)s {0}] %(message)s
     """.strip().format(

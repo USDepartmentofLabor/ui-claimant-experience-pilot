@@ -49,7 +49,7 @@ class SWAAuth(object):
         """
         return None
 
-    def process_template_response(self, request, response):
+    def process_template_response(self, request, response):  # pragma: no cover
         """
         Called just after the view has finished executing.
         """
