@@ -18,7 +18,20 @@
     <title>
       {% translate "Unemployment Insurance Claim Application | U.S. Department of Labor" %}
     </title>
-
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-W66H9LT");
+    </script>
+    <!-- End Google Tag Manager -->
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
 
