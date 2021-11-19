@@ -39,6 +39,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(env.str("ENV_PATH", "core/.env"))
 
+TEST_RUNNER = "core.test_runner.MyTestRunner"
+
 # since this app usually runs behind one or more reverse proxies that may/not
 # have X-Forwarded-For header set correctly, allow for explicit root URI
 # to be set here via env.
@@ -375,12 +377,8 @@ CELERY_RESULT_SERIALIZER = "json"
 
 # S3
 AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
-# in local dev, allow for "TEST" bucket preference when running tests
-# this is to avoid needing to re-create dev bucket between tests
-if os.environ.get("TEST_S3_BUCKET_URL"):  # pragma: no cover
-    CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
-else:
-    CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
+TEST_CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
+CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
 
 # CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
 try:

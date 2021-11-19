@@ -164,6 +164,14 @@ MySQL [unemployment]>
 
 You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
+For localstack (AWS) services, you can use the Python `aws-cli` package:
+
+```sh
+(.venv) % pip install awscli
+# to list contents of a bucket
+(.venv) % aws --endpoint-url=http://localhost:4566 s3 ls s3://usdol-ui-claims
+```
+
 ### Pre-commits
 
 When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .

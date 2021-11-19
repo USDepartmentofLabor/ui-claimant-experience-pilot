@@ -3,15 +3,23 @@
 import boto3
 from botocore.exceptions import ClientError
 import logging
+import os
 from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
 
+# set constant based on whether we are running tests or not
+DEFAULT_BUCKET_NAME = (
+    settings.TEST_CLAIM_BUCKET_NAME
+    if os.environ.get("RUNNING_TESTS")
+    else settings.CLAIM_BUCKET_NAME
+)
+
 
 class ClaimStore(object):
-    def __init__(self, bucket_name=None):
-        self.bucket_name = bucket_name if bucket_name else settings.CLAIM_BUCKET_NAME
+    def __init__(self, bucket_name=DEFAULT_BUCKET_NAME):
+        self.bucket_name = bucket_name
 
     def s3_client(self):
         # TODO region?
