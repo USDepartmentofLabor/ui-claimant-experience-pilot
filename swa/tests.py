@@ -515,7 +515,7 @@ class SwaTestCase(TestCase):
         with patch("api.models.Claim.objects") as mocked_objects:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
             mocked_claim.swa = swa
-            mocked_claim.change_status.side_effect = Exception("db error!")
+            mocked_claim.events.create.side_effect = Exception("db error!")
             mocked_objects.get.return_value = mocked_claim
             header_token = generate_auth_token(private_key_jwk, swa.code)
             with self.assertLogs(level="DEBUG") as cm:
