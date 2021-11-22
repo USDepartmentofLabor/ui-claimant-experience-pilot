@@ -436,7 +436,7 @@ class SwaTestCase(TestCase):
             },
         )
 
-    def test_v1_act_on_claim(self):
+    def test_v1_act_on_claim_GET_details(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa(True)
         claimant = create_claimant(idp)
@@ -463,3 +463,58 @@ class SwaTestCase(TestCase):
             "status": claim.status,
         }
         self.assertEqual(response.json(), expected_response)
+
+    def test_v1_act_on_claim_PATCH_fetched(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa(True)
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa, status="in process")
+        claim.save()
+
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"fetched": "true"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"status": "ok"})
+
+        # bad payload
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"fetched": "false"},
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "unknown action"}
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # error saving
+        with patch("api.models.Claim.objects") as mocked_objects:
+            mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
+            mocked_claim.swa = swa
+            mocked_claim.change_status.side_effect = Exception("db error!")
+            mocked_objects.get.return_value = mocked_claim
+            header_token = generate_auth_token(private_key_jwk, swa.code)
+            with self.assertLogs(level="DEBUG") as cm:
+                response = self.client.patch(
+                    f"/swa/v1/claims/{claim.uuid}/",
+                    content_type="application/json",
+                    HTTP_AUTHORIZATION=format_jwt(header_token),
+                    data={"status": "new status"},
+                )
+                self.assertEqual(
+                    response.json(),
+                    {"status": "error", "error": "failed to save change"},
+                )
+                self.assertEqual(response.status_code, 500)
+                # the -2 means our logging exception is the 2nd to last in the list
+                self.assertIn("ERROR:swa.views:db error!", cm.output[-2])

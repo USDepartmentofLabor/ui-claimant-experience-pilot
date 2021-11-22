@@ -84,6 +84,8 @@ def v1_act_on_claim(request, claim_uuid):
         payload = json_decode(request.body.decode("utf-8"))
         if "status" in payload:
             return PATCH_v1_claim_status(claim, payload["status"])
+        if "fetched" in payload and payload["fetched"] == "true":
+            return PATCH_v1_claim_fetched(claim, payload["fetched"])
 
     return JsonResponse({"status": "error", "error": "unknown action"}, status=400)
 
@@ -105,6 +107,17 @@ def GET_v1_claim_details(claim):
 def PATCH_v1_claim_status(claim, new_status):
     try:
         claim.change_status(new_status)
+        return JsonResponse({"status": "ok"}, status=200)
+    except Exception as err:
+        logger.exception(err)
+        return JsonResponse(
+            {"status": "error", "error": "failed to save change"}, status=500
+        )
+
+
+def PATCH_v1_claim_fetched(claim, is_fetched):
+    try:
+        claim.events.create(category=Claim.EventCategories.FETCHED)
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as err:
         logger.exception(err)
