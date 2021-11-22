@@ -523,7 +523,7 @@ class SwaTestCase(TestCase):
                     f"/swa/v1/claims/{claim.uuid}/",
                     content_type="application/json",
                     HTTP_AUTHORIZATION=format_jwt(header_token),
-                    data={"status": "new status"},
+                    data={"fetched": "true"},
                 )
                 self.assertEqual(
                     response.json(),
