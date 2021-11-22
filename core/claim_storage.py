@@ -38,6 +38,15 @@ class ClaimStore(object):
     def read(self, path):
         return self.s3_client().get_object(Bucket=self.bucket_name, Key=path)
 
+    def delete(self, paths):
+        try:
+            payload = {"Objects": list(map(lambda path: {"Key": path}, paths))}
+            resp = self.bucket().delete_objects(Delete=payload)
+        except ClientError as e:
+            logger.exception(e)
+            return False
+        return resp
+
 
 class ClaimWriter(object):
     def __init__(self, claim, payload, path=None):

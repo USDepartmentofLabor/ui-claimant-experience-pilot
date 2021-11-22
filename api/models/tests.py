@@ -77,13 +77,21 @@ class ApiModelsTestCase(TransactionTestCase):
         claimant = create_claimant(idp)
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
+        claim2 = Claim(swa=swa, claimant=claimant)
+        claim2.save()
 
         self.assertEqual(swa.claim_queue().count(), 0)
 
         claim.events.create(category=Claim.EventCategories.COMPLETED)
         self.assertEqual(swa.claim_queue().count(), 1)
 
+        claim2.events.create(category=Claim.EventCategories.COMPLETED)
+        self.assertEqual(swa.claim_queue().count(), 2)
+
         claim.events.create(category=Claim.EventCategories.FETCHED)
+        self.assertEqual(swa.claim_queue().count(), 1)
+
+        claim2.events.create(category=Claim.EventCategories.DELETED)
         self.assertEqual(swa.claim_queue().count(), 0)
 
     def test_claimant(self):
@@ -132,14 +140,14 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(stored_claim.swa, ks_swa)
         self.assertEqual(stored_claim.claimant, claimant)
         self.assertEqual(stored_claim.status, "something")
-        self.assertFalse(stored_claim.is_complete())
+        self.assertFalse(stored_claim.is_completed())
 
         claim.events.create(
             category=Claim.EventCategories.COMPLETED,
             happened_at=event_time + timedelta(minutes=1),
         )
-        self.assertTrue(claim.is_complete())
-        self.assertTrue(stored_claim.is_complete())
+        self.assertTrue(claim.is_completed())
+        self.assertTrue(stored_claim.is_completed())
 
         self.assertEqual(
             stored_claim.public_events(),

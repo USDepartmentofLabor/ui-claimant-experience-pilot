@@ -40,6 +40,11 @@ class SWA(TimeStampedModel):
 
         return (
             self.claim_set.filter(events__category=Claim.EventCategories.COMPLETED)
-            .exclude(events__category=Claim.EventCategories.FETCHED)
+            .exclude(
+                events__category__in=[
+                    Claim.EventCategories.FETCHED,
+                    Claim.EventCategories.DELETED,
+                ]
+            )
             .order_by("created_at")
         )
