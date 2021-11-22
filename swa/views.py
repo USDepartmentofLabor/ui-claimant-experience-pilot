@@ -83,9 +83,19 @@ def v1_act_on_claim(request, claim_uuid):
     elif request.method == "PATCH":
         payload = json_decode(request.body.decode("utf-8"))
         if "status" in payload:
-            return PATCH_v1_claim_status(claim, payload["status"])
+            if len(payload) == 1:
+                return PATCH_v1_claim_status(claim, payload["status"])
+            return JsonResponse(
+                {"status": "error", "error": "only one value expected in payload"},
+                status=400,
+            )
         if "fetched" in payload and payload["fetched"] == "true":
-            return PATCH_v1_claim_fetched(claim, payload["fetched"])
+            if len(payload) == 1:
+                return PATCH_v1_claim_fetched(claim, payload["fetched"])
+            return JsonResponse(
+                {"status": "error", "error": "only one value expected in payload"},
+                status=400,
+            )
 
     return JsonResponse({"status": "error", "error": "unknown action"}, status=400)
 

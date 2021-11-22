@@ -497,6 +497,20 @@ class SwaTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+        # only one action in patch payload
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"fetched": "true", "status": "in process"},
+        )
+        self.assertEqual(
+            response.json(),
+            {"status": "error", "error": "only one value expected in payload"},
+        )
+        self.assertEqual(response.status_code, 400)
+
         # error saving
         with patch("api.models.Claim.objects") as mocked_objects:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
