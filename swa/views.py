@@ -89,9 +89,9 @@ def v1_act_on_claim(request, claim_uuid):
                 {"status": "error", "error": "only one value expected in payload"},
                 status=400,
             )
-        if "fetched" in payload and payload["fetched"] == "true":
+        if "fetched" in payload and str(payload["fetched"].lower()) == "true":
             if len(payload) == 1:
-                return PATCH_v1_claim_fetched(claim, payload["fetched"])
+                return PATCH_v1_claim_fetched(claim)
             return JsonResponse(
                 {"status": "error", "error": "only one value expected in payload"},
                 status=400,
@@ -125,7 +125,7 @@ def PATCH_v1_claim_status(claim, new_status):
         )
 
 
-def PATCH_v1_claim_fetched(claim, is_fetched):
+def PATCH_v1_claim_fetched(claim):
     try:
         claim.events.create(category=Claim.EventCategories.FETCHED)
         return JsonResponse({"status": "ok"}, status=200)
