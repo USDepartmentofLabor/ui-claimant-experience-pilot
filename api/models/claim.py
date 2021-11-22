@@ -8,6 +8,14 @@ from django.contrib.contenttypes.fields import GenericRelation
 import uuid
 from django.db import transaction
 from jwcrypto.common import json_encode
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+NOOP = -1
+SUCCESS = 1
+FAILURE = 0
 
 
 class Claim(TimeStampedModel):
@@ -33,7 +41,7 @@ class Claim(TimeStampedModel):
     )
 
     def payload_path(self):
-        if self.is_complete():
+        if self.is_completed():
             return self.completed_payload_path()
         else:
             return self.partial_payload_path()
@@ -56,8 +64,11 @@ class Claim(TimeStampedModel):
             )
         return self
 
-    def is_complete(self):
+    def is_completed(self):
         return self.events.filter(category=Claim.EventCategories.COMPLETED).count() > 0
+
+    def is_deleted(self):
+        return self.events.filter(category=Claim.EventCategories.DELETED).count() > 0
 
     def public_events(self):
         return list(
@@ -66,3 +77,28 @@ class Claim(TimeStampedModel):
                 self.events.order_by("happened_at").all(),
             )
         )
+
+    def delete_artifacts(self):
+        from core.claim_storage import ClaimReader, ClaimStore
+
+        completed_artifact = ClaimReader(self, path=self.completed_payload_path())
+        partial_artifact = ClaimReader(self, path=self.partial_payload_path())
+        with transaction.atomic():
+            to_delete = []
+            for cr in [completed_artifact, partial_artifact]:
+                logger.debug("🚀 read {}".format(cr.path))
+                if cr.read():
+                    to_delete.append(cr.path)
+            if len(to_delete) > 0:
+                resp = ClaimStore().delete(to_delete)
+            else:
+                resp = {"Deleted": []}
+            logger.debug("🚀 resp: {}".format(resp))
+            # only create Event if something actually happened
+            if resp and len(resp["Deleted"]) > 0:
+                self.events.create(
+                    category=Claim.EventCategories.DELETED,
+                    description=json_encode({"deleted": resp["Deleted"]}),
+                )
+                return SUCCESS
+            return NOOP if resp else FAILURE

@@ -84,6 +84,8 @@ def v1_act_on_claim(request, claim_uuid):
         payload = json_decode(request.body.decode("utf-8"))
         if "status" in payload:
             return PATCH_v1_claim_status(claim, payload["status"])
+    elif request.method == "DELETE":
+        return DELETE_v1_claim(claim)
 
     return JsonResponse({"status": "error", "error": "unknown action"}, status=400)
 
@@ -111,3 +113,22 @@ def PATCH_v1_claim_status(claim, new_status):
         return JsonResponse(
             {"status": "error", "error": "failed to save change"}, status=500
         )
+
+
+def DELETE_v1_claim(claim):
+    from api.models.claim import SUCCESS, NOOP
+
+    error_response = JsonResponse(
+        {"status": "error", "error": "failed to delete artifacts"}, status=500
+    )
+    try:
+        resp = claim.delete_artifacts()
+        if resp == SUCCESS:
+            return JsonResponse({"status": "ok"}, status=200)
+        elif resp == NOOP:
+            return JsonResponse({"status": "noop"}, status=404)
+        else:  # pragma: no cover
+            return error_response
+    except Exception as err:
+        logger.exception(err)
+        return error_response

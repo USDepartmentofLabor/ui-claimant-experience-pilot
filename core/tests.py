@@ -7,7 +7,7 @@ from core.email import Email
 from django.core import mail
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
-from .claim_storage import ClaimWriter, ClaimReader
+from .claim_storage import ClaimWriter, ClaimReader, ClaimStore
 from jwcrypto import jwe, jwk
 from jwcrypto.common import json_encode, json_decode
 from .claim_encryption import (
@@ -149,6 +149,23 @@ class CoreClaimStorageTestCase(TestCase):
 
         cw = ClaimWriter(claim, "test payload")
         self.assertFalse(cw.write())
+
+    @patch("core.claim_storage.ClaimStore.bucket")
+    def test_claim_storage_delete_error(self, mock_boto3_bucket):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+
+        bucket = boto3.resource("s3").Bucket("no-such-bucket")
+        stubber = Stubber(bucket.meta.client)
+        stubber.add_client_error("delete_objects")
+        stubber.activate()
+        mock_boto3_bucket.return_value = bucket
+
+        cs = ClaimStore()
+        self.assertFalse(cs.delete("foo"))
 
 
 class CoreClaimEncryptionTestCase(TestCase):

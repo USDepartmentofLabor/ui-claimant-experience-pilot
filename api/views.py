@@ -123,7 +123,7 @@ def claim(request):
     cw = ClaimWriter(claim, writeable_payload)
     if cw.write():
         # only send email if the Claim was "complete"
-        if claim.is_complete():
+        if claim.is_completed():
             Email(
                 to=claim_request.whoami["email"],
                 subject="hello world",
