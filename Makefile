@@ -89,6 +89,16 @@ migrations-check: ## Check for Django model changes not reflected in migrations 
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
 # By default logs are written to /var/log/celery but we tail them via start-server.sh
 CELERY_OPTS = w1 -c 2 -A core -l info --verbose
+CELERY_LOGDIR = /var/log/celery
+# log names are directly tied to OPTS so if you change OPTS, change LOGS
+CELERY_LOGS = w1 w1-1 w1-2
+
+celery-touch-logs: ## Make sure all the celery log files exist (inside container)
+	for logfile in $(CELERY_LOGS); do touch "$(CELERY_LOGDIR)/$$logfile.log"; done
+
+celery-watch-logs: ## Tail all the celery log files (inside container)
+	tail -F -q $(CELERY_LOGDIR)/*
+
 celery-start: ## Run the celery queue manager (inside container)
 	celery multi start $(CELERY_OPTS)
 
