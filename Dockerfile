@@ -46,7 +46,7 @@ EXPOSE 8000
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext \
+   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools \
    && rm -rf /var/lib/apt/lists/* \
    && pip install --no-cache-dir -r requirements.txt
 

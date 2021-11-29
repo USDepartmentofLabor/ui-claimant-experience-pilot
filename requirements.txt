@@ -6,8 +6,10 @@ django-cors-headers==3.10.0
 django-environ==0.8.1
 git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
 gunicorn==20.1.0
+hiredis==2.0.0
 jsonschema==4.2.1
 jwcrypto==1.0
+git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu-fernet-serializers
 git+https://github.com/trussworks/logindotgov-oidc-py.git@ec548a7#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0

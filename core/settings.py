@@ -368,12 +368,11 @@ else:
 # we turn cert verification OFF since in WCMS/AWS we don't have a CA chain to verify.
 # we accept that risk because the AWS config prevents anyone but our app from connecting
 # to Redis.
-# TODO encrypted storage similar to sessions.
 CELERY_BROKER_URL = REDIS_URL + "?ssl_cert_reqs=none"
 CELERY_RESULT_BACKEND = REDIS_URL + "?ssl_cert_reqs=none"
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+
+# this env var triggers kombu-fernet-serializers for Celery encryption
+os.environ["KOMBU_FERNET_KEY"] = redis_secret_key
 
 # S3
 AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
