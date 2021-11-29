@@ -12,6 +12,16 @@ jest.mock("../../queries/whoami");
 const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 
 describe("the Whoami page", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockedUseWhoAmI.mockImplementation(() => ({
+      data: {},
+      isLoading: false,
+      error: null,
+      isError: false,
+      isSuccess: true,
+    }));
+  });
   const queryClient = new QueryClient();
   const Page = (
     <QueryClientProvider client={queryClient}>
@@ -40,11 +50,17 @@ describe("component WhoAmI", () => {
 
   beforeEach(() => {
     resetAllMocks();
+    jest.spyOn(console, "error");
+    console.error.mockImplementation(jest.fn());
     mockedUseWhoAmI.mockImplementation(() => ({
       isSuccess: true,
       data: myPII,
       isLoading: false,
     }));
+  });
+
+  afterEach(() => {
+    console.error.mockRestore();
   });
 
   const queryClient = new QueryClient();
@@ -92,12 +108,15 @@ describe("component WhoAmI", () => {
   });
 
   it("throws an error if there is an error", () => {
-    jest.spyOn(console, "warn").mockImplementation(jest.fn()); // quells error logs in console
     mockedUseWhoAmI.mockReturnValueOnce({
       isError: true,
       error: { message: "Error getting myPII data" },
     });
 
     expect(() => render(whoAmI)).toThrow("Error getting myPII data");
+    expect(console.error).toHaveBeenCalled();
+    expect(console.error.mock.calls[0][0]).toContain(
+      "The above error occurred in the <WhoAmI> component:"
+    );
   });
 });
