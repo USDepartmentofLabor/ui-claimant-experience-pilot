@@ -43,10 +43,21 @@ Bootstrap your environment for the first time:
 (.venv) % make services-start
 ```
 
-To start a Docker container interactively and run the Django web server:
+To start a Docker container interactively and run the Django web server, run the following commands:
 
 ```sh
 (.venv) % make login
+```
+
+If this is the first time setting up your environment, or if new migrations have been created or pulled into your working directory, you will need to run the following command to update your database schema:
+
+```sh
+root@randomdockerstring:/app# make migrate
+```
+
+Finally, run:
+
+```sh
 root@randomdockerstring:/app# make dev-run
 ```
 
