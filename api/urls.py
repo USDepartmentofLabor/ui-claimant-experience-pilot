@@ -8,6 +8,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("whoami/", views.whoami, name="whoami"),
     path("claim/", views.claim, name="claim"),
+    path("logout/", views.logout, name="logout"),
 ]
 
 if settings.SHOW_LOGIN_PAGE:

@@ -217,6 +217,22 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["verified"])
 
+    def test_logout(self):
+        csrf_client = self.csrf_client()
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+
+        session_key = csrf_client.session.session_key
+        self.assertTrue(csrf_client.session.exists(session_key))
+
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.post(
+            "/api/logout/",
+            content_type="application/json",
+            **headers,
+        )
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(self.client.session.exists(session_key))
+
 
 class ClaimApiTestCase(TestCase, SessionVerifier):
     def create_api_claim_request(self, body):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 import logging
 import secrets
 import os
@@ -17,7 +17,6 @@ from core.utils import register_local_login
 from core.claim_storage import ClaimWriter
 from datetime import datetime
 from core.claim_encryption import AsymmetricClaimEncryptor
-
 
 logger = logging.getLogger("api")
 
@@ -44,6 +43,13 @@ form and returned when submitting the form.
 401 response means the session has either not yet been created
 or still requires IdP AAL2 login.
 """
+
+
+@require_http_methods(["POST"])
+@verified_claimant_session
+def logout(request):
+    request.session.flush()
+    return HttpResponse(status=204)
 
 
 @require_http_methods(["GET"])

@@ -8,4 +8,10 @@ context("Home page", { scrollBehavior: false }, () => {
       standard: "WCAG2AA",
     });
   });
+  it("Can log out", () => {
+    cy.login();
+    cy.visit("/claimant/");
+    cy.contains("Log out").click();
+    cy.contains("Unemployment Insurance Claim Application");
+  });
 });
