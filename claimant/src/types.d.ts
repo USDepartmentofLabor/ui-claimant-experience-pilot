@@ -16,9 +16,13 @@ type ClaimResponse = {
   claim_id: string;
 };
 
+type PersonName = {
+  first_name: string;
+  last_name: string;
+};
+
 type ClaimantInput = {
-  first_name?: string | null;
-  last_name?: string | null;
+  claimant_name?: PersonName;
   birthdate?: string;
   ssn?: string;
   email?: string;

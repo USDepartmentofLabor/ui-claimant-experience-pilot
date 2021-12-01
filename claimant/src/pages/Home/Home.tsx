@@ -30,13 +30,13 @@ export default HomePage;
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
-const initialValues: { [key: string]: string | boolean | undefined } = {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+const initialValues: { [key: string]: string | boolean | any } = {
   is_complete: false,
-  first_name: "",
+  claimant_name: { first_name: "", last_name: "" },
   email: "",
   birthdate: "",
   ssn: "",
-  last_name: "",
   phone: "",
 };
 
@@ -50,7 +50,10 @@ export const ClaimForm = () => {
   // Yup supports its own i18n but it seems redundant?
   // https://github.com/jquense/yup#using-a-custom-locale-dictionary
   const validationSchema = yup.object().shape({
-    first_name: yup.string().required(t("validation.required")),
+    claimant_name: yup.object().shape({
+      first_name: yup.string().required(t("validation.required")),
+      last_name: yup.string().required(t("validation.required")),
+    }),
     email: yup.string().email(t("validation.notEmail")),
     birthdate: yup.string().required(t("validation.required")),
     ssn: yup.string().required(t("validation.required")),
@@ -58,7 +61,9 @@ export const ClaimForm = () => {
 
   if (whoami) {
     for (const [key, value] of Object.entries(whoami)) {
-      if (value && key in initialValues && !initialValues[key]) {
+      if (key === "first_name" || key === "last_name") {
+        initialValues.claimant_name[key] = value;
+      } else if (value && key in initialValues && !initialValues[key]) {
         initialValues[key] = value;
       }
     }
@@ -102,16 +107,16 @@ export const ClaimForm = () => {
           //{(props: FormikProps<ClaimantInput>) => (
           <Form>
             <TextField
-              name="first_name"
+              name="claimant_name.first_name"
               label={t("label.first_name")}
               type="text"
-              id="first_name"
+              id="claimant_name.first_name"
             />
             <TextField
-              name="last_name"
+              name="claimant_name.last_name"
               label={t("label.last_name")}
               type="text"
-              id="last_name"
+              id="claimant_name.last_name"
             />
             <TextField
               name="email"

@@ -13,7 +13,8 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   it("saves partial claim", () => {
     cy.login();
     cy.visit("/claimant/");
-    cy.get("[name=first_name]").type("Dave");
+    cy.get("[name=claimant_name\\.first_name]").type("Dave");
+    cy.get("[name=claimant_name\\.last_name]").type("Smith");
     // clear first to replace the whoami.email value
     cy.get("[name=email]").clear().type("dave@example.com");
     cy.get("[data-testid='button']").contains("Test Claim").click();
@@ -23,7 +24,8 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   it("saves completed claim", () => {
     cy.login();
     cy.visit("/claimant/");
-    cy.get("[name=first_name]").type("Dave");
+    cy.get("[name=claimant_name\\.first_name]").type("Dave");
+    cy.get("[name=claimant_name\\.last_name]").type("Dave");
     cy.get("[name=email]").clear().type("dave@example.com");
     cy.get("[name=is_complete]").check({ force: true });
     cy.get("[data-testid='button']").contains("Test Claim").click();

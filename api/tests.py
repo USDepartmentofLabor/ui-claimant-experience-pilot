@@ -120,8 +120,10 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
             "is_complete": True,
-            "first_name": "Ima",
-            "last_name": "Claimant",
+            "claimant_name": {
+                "first_name": "Ima",
+                "last_name": "Claimant",
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -191,8 +193,10 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
-            "first_name": "Ima",
-            "last_name": "Claimant",
+            "claimant_name": {
+                "first_name": "Ima",
+                "last_name": "Claimant",
+            },
             "is_complete": True,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
@@ -265,8 +269,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         )
         self.assertEqual(response.status_code, 400)
         logger.debug("missing complete fields")
-        self.assertIn("'first_name' is a required property", response.json()["errors"])
-        self.assertIn("'last_name' is a required property", response.json()["errors"])
+        self.assertIn(
+            "'claimant_name' is a required property", response.json()["errors"]
+        )
 
         # failure to write partial claim returns error
         payload_with_trouble = {
@@ -412,6 +417,8 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         self.assertFalse(claim_request.error)
         self.assertEqual(claim.id, claim_request.claim.id)
 
+
+class ClaimValidatorTestCase(TestCase):
     def test_claim_validator(self):
         claim = {
             "id": str(uuid.uuid4()),
@@ -433,6 +440,34 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         self.assertIn("'ssn' is a required property", error_dict)
         logger.debug("errors={}".format(error_dict))
 
+    def test_swa_required_fields(self):
+        claim = {
+            "worked_in_other_states": ["CA", "WV"],
+            "id": str(uuid.uuid4()),
+            "identity_provider": "test",
+            "claimant_id": "random-claimaint-string",
+            "swa_code": "XX",
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+        }
+        cv = ClaimValidator(claim)
+        self.assertTrue(cv.valid)
+
+        claim = {
+            "worked_in_other_states": ["CA", "WV", "XX"],
+            "id": str(uuid.uuid4()),
+            "identity_provider": "test",
+            "claimant_id": "random-claimaint-string",
+            "swa_code": "XX",
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+        }
+        cv = ClaimValidator(claim)
+        logger.debug("errors={}".format(cv.errors_as_dict()))
+        error_dict = cv.errors_as_dict()
+        self.assertFalse(cv.valid)
+        self.assertIn("'XX' is not one of", list(error_dict.keys())[0])
+
     def test_completed_claim_validator(self):
         claim = {
             "id": str(uuid.uuid4()),
@@ -441,8 +476,10 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
             "swa_code": "XX",
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
-            "first_name": "Ima",
-            "last_name": "Claimant",
+            "claimant_name": {
+                "first_name": "Ima",
+                "last_name": "Claimant",
+            },
             "validated_at": timezone.now().isoformat(),
         }
         cv = CompletedClaimValidator(claim)
@@ -452,10 +489,9 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 8)
+        self.assertEqual(len(cv.errors), 7)
         error_dict = cv.errors_as_dict()
+        logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'ssn' is a required property", error_dict)
-        self.assertIn("'first_name' is a required property", error_dict)
-        self.assertIn("'last_name' is a required property", error_dict)
-        logger.debug("errors={}".format(error_dict))
+        self.assertIn("'claimant_name' is a required property", error_dict)

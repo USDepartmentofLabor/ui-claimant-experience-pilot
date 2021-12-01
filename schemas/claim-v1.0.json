@@ -4,6 +4,85 @@
   "title": "UI Claimant Application Form",
   "description": "Unemployment Insurance claimant application form schema",
   "type": "object",
+  "$defs": {
+    "person_name": {
+      "$id": "/schemas/person_name",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "first_name": { "type": "string" },
+        "last_name": { "type": "string" },
+        "middle_name": { "type": "string" }
+      },
+      "required": ["first_name", "last_name"]
+    },
+    "state": {
+      "$id": "/schemas/state",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "enum": [
+        "AK",
+        "AL",
+        "AR",
+        "AS",
+        "AZ",
+        "CA",
+        "CO",
+        "CT",
+        "DC",
+        "DE",
+        "FL",
+        "FM",
+        "GA",
+        "GU",
+        "HI",
+        "IA",
+        "ID",
+        "IL",
+        "IN",
+        "KS",
+        "KY",
+        "LA",
+        "MA",
+        "MD",
+        "ME",
+        "MH",
+        "MI",
+        "MN",
+        "MO",
+        "MP",
+        "MS",
+        "MT",
+        "NC",
+        "ND",
+        "NE",
+        "NH",
+        "NJ",
+        "NM",
+        "NV",
+        "NY",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "PR",
+        "PW",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VA",
+        "VI",
+        "VT",
+        "WA",
+        "WI",
+        "WV",
+        "WY"
+      ]
+    }
+  },
   "required": [
     "id",
     "claimant_id",
@@ -39,14 +118,9 @@
       "description": "URL of this schema",
       "type": "string"
     },
-    "first_name": {
-      "description": "",
-      "type": "string",
-      "required_for_swa": true
-    },
-    "last_name": {
-      "description": "",
-      "type": "string",
+    "claimant_name": {
+      "description": "Claimant's name",
+      "$ref": "/schemas/person_name",
       "required_for_swa": true
     },
     "birthdate": {
@@ -75,8 +149,39 @@
       "type": "string"
     },
     "ssn": {
-      "description": "",
+      "description": "Required per 20 CFR 603.3",
       "type": "string"
+    },
+    "currently_reside_in_us": {
+      "description": "Required per 20 CFR Appendix A to Part 625",
+      "type": "boolean",
+      "TODO_required_for_swa": true
+    },
+    "employed_in_last_18_months": {
+      "description": "",
+      "type": "boolean",
+      "TODO_required_for_swa": true
+    },
+    "active_military_in_last_18_months": {
+      "description": "Required per 20 CFR 614",
+      "type": "boolean",
+      "TODO_required_for_swa": true
+    },
+    "federal_employment_in_last_18_months": {
+      "description": "Required per 20 CFR 609",
+      "type": "boolean",
+      "TODO_required_for_swa": true
+    },
+    "worked_in_other_states": {
+      "description": "Required per 20 CFR 616",
+      "type": "array",
+      "items": { "$ref": "/schemas/state" },
+      "TODO_required_for_swa": true
+    },
+    "currently_disabled_unable_to_work": {
+      "description": "",
+      "type": "boolean",
+      "TODO_required_for_swa": true
     }
   }
 }
