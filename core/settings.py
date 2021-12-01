@@ -130,8 +130,11 @@ INSTALLED_APPS = [
     "secure_redis",
     "home",
     "swa",
-    "django_extensions",
 ]
+
+# only install in dev/ci
+if os.environ.get("ENV_NAME") != "wcms":
+    INSTALLED_APPS += ("django_extensions",)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
