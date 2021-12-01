@@ -9,6 +9,9 @@ extends:
   - "eslint:recommended"
   - "plugin:react/recommended"
   - "plugin:@typescript-eslint/recommended"
+  - "plugin:jsx-a11y/recommended"
+plugins:
+  - "jsx-a11y"
 parserOptions:
   ecmaVersion: 12
   sourceType: module

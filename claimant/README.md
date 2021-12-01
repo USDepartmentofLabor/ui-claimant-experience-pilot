@@ -12,6 +12,10 @@ This React application is for a claimants initial UI claim filing.
 
 ## Local development
 
+### Faking authentication
+
+Set the `REACT_APP_FAKE_WHOAMI` env var in your `.env` file to a JSON string per the example in `.env-example`.
+
 ### Tests
 
 If you want to run the Cypress tests, the Docker container must be running with the Django server.

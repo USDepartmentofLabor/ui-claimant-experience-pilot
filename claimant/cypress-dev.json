@@ -10,7 +10,6 @@
   "screenshotOnRunFailure": false,
   "video": false,
   "defaultCommandTimeout": 5000,
-  "nodeVersion": "system",
   "retries": {
     "runMode": 1,
     "openMode": 1

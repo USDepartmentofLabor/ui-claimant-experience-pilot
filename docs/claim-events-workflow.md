@@ -5,11 +5,6 @@ and when each is created. Though some attempt is made to list these in chronolog
 some Events will occur multiple times (e.g. `SUBMITTED`) and due to async processing, some may happen out of the order they
 are listed here (e.g. `CONFIRMATION_EMAIL` and `FETCHED`).
 
-## STARTED
-
-Create this Event on the first time a `POST` is made to the `/api/claim` endpoint. It indicates that the Claimant
-has started filling out the initial claim form.
-
 ## SUBMITTED
 
 After a `STARTED` Event exists, each time a subsequent `POST` is made to the `/api/claim` endpoint, create a `SUBMITTED` Event.
@@ -31,7 +26,7 @@ When a confirmation email is sent to the Claimant about their Claim, this Event 
 
 ## FETCHED
 
-When a SWA wants to remove a Claim from its queue of to-be-processed Claims, it can `PUT` a request to mark the Claim as fetched.
+When a SWA wants to remove a Claim from its queue of to-be-processed Claims, it can `PATCH` a request to mark the Claim as fetched.
 The `FETCHED` Event indicates that the SWA has taken ownership of the Claim. Claims with `COMPLETED` and `FETCHED` Events should
 not be returned as part of the SWA Claim queue.
 
@@ -39,3 +34,7 @@ not be returned as part of the SWA Claim queue.
 
 When a SWA wants us to destroy the encrypted sensitive Claim data we have stored, then can send a `DELETE` HTTP request via our API.
 We will remove the encrypted artifacts and create the `DELETED` Event to track the action.
+
+## STATUS_CHANGED
+
+When a SWA sends a `PATCH` request to change the status of a Claim, the `STATUS_CHANGED` Events tracks the action.

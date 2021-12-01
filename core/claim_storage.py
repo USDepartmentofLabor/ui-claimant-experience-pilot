@@ -3,15 +3,23 @@
 import boto3
 from botocore.exceptions import ClientError
 import logging
+import os
 from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
 
+# set constant based on whether we are running tests or not
+DEFAULT_BUCKET_NAME = (
+    settings.TEST_CLAIM_BUCKET_NAME
+    if os.environ.get("RUNNING_TESTS")
+    else settings.CLAIM_BUCKET_NAME
+)
+
 
 class ClaimStore(object):
-    def __init__(self, bucket_name=None):
-        self.bucket_name = bucket_name if bucket_name else settings.CLAIM_BUCKET_NAME
+    def __init__(self, bucket_name=DEFAULT_BUCKET_NAME):
+        self.bucket_name = bucket_name
 
     def s3_client(self):
         # TODO region?
@@ -29,6 +37,15 @@ class ClaimStore(object):
 
     def read(self, path):
         return self.s3_client().get_object(Bucket=self.bucket_name, Key=path)
+
+    def delete(self, paths):
+        try:
+            payload = {"Objects": list(map(lambda path: {"Key": path}, paths))}
+            resp = self.bucket().delete_objects(Delete=payload)
+        except ClientError as e:
+            logger.exception(e)
+            return False
+        return resp
 
 
 class ClaimWriter(object):

@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
 import HomePage, { ClaimForm } from "./Home";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
@@ -16,6 +15,22 @@ jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
 
 describe("the Home page", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockedUseWhoAmI.mockImplementation(() => ({
+      data: {},
+      isLoading: false,
+      error: null,
+      isError: false,
+    }));
+
+    mockedUseSubmitClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      mutateAsync: jest.fn(),
+      data: { status: 201 },
+    }));
+  });
   const queryClient = new QueryClient();
   const Page = (
     <QueryClientProvider client={queryClient}>
@@ -29,6 +44,15 @@ describe("the Home page", () => {
 });
 
 describe("the ClaimForm", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "error");
+    console.error.mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    console.error.mockRestore();
+  });
+
   const mockMutateAsync = jest.fn();
 
   beforeEach(() => {
@@ -44,7 +68,7 @@ describe("the ClaimForm", () => {
       isLoading: false,
       isError: false,
       mutateAsync: mockMutateAsync,
-      data: undefined,
+      data: { status: 201 },
     }));
   });
 
@@ -103,6 +127,10 @@ describe("the ClaimForm", () => {
     });
 
     expect(() => render(wrappedClaimForm)).toThrow("Error getting your PII");
+    expect(console.error).toHaveBeenCalled();
+    expect(console.error.mock.calls[0][0]).toContain(
+      "Error: Uncaught { message: 'Error getting your PII' }"
+    );
   });
 
   it("renders success message when submitted successfully", () => {
@@ -113,39 +141,11 @@ describe("the ClaimForm", () => {
     });
     mockedUseSubmitClaim.mockReturnValueOnce({
       isSuccess: true,
+      data: { status: 201 },
     });
     render(wrappedClaimForm);
     expect(screen.queryByRole("heading", { level: 4 })).toHaveTextContent(
       "Success status"
     );
-  });
-
-  // TODO: Use a service worker here instead
-  it.skip("Submit button submits the form", async () => {
-    mockedUseWhoAmI.mockReturnValue({
-      data: myPII,
-      isError: false,
-      error: null,
-    });
-
-    render(wrappedClaimForm);
-    const claimPayload = {
-      id: myPII.claim_id,
-      swa_code: myPII.swa_code,
-      claimant_id: myPII.claimant_id,
-      first_name: "Michelle",
-      email: "me@sample.com",
-    };
-
-    const submitButton = screen.getByRole("button", {
-      name: "sampleForm.claimButton",
-    });
-    expect(submitButton).toBeInTheDocument();
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockMutateAsync).toHaveBeenCalledTimes(1);
-      expect(mockMutateAsync).toHaveBeenCalledWith(claimPayload);
-    });
   });
 });

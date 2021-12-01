@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
+from jwcrypto.common import json_decode
 
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,9 @@ class ApiModelsManagerTestCase(TestCase):
         another_swa = SWA(code="AA", name="Alpha", status=SWA.StatusOptions.ACTIVE)
         another_swa.save()
         swas = SWA.active.order_by("name").all()
-        self.assertEqual(swas[0].code, "AA")  # sorts first
-        self.assertEqual(swas[2].code, "KS")  # included now that it is active
+        self.assertEqual(
+            list(map(lambda swa: swa.code, swas)), ["AA", "AR", "KS", "NJ"]
+        )
 
 
 class ApiModelsTestCase(TransactionTestCase):
@@ -75,13 +77,21 @@ class ApiModelsTestCase(TransactionTestCase):
         claimant = create_claimant(idp)
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
+        claim2 = Claim(swa=swa, claimant=claimant)
+        claim2.save()
 
         self.assertEqual(swa.claim_queue().count(), 0)
 
         claim.events.create(category=Claim.EventCategories.COMPLETED)
         self.assertEqual(swa.claim_queue().count(), 1)
 
+        claim2.events.create(category=Claim.EventCategories.COMPLETED)
+        self.assertEqual(swa.claim_queue().count(), 2)
+
         claim.events.create(category=Claim.EventCategories.FETCHED)
+        self.assertEqual(swa.claim_queue().count(), 1)
+
+        claim2.events.create(category=Claim.EventCategories.DELETED)
         self.assertEqual(swa.claim_queue().count(), 0)
 
     def test_claimant(self):
@@ -105,6 +115,18 @@ class ApiModelsTestCase(TransactionTestCase):
             uuid=claim_uuid, swa=ks_swa, claimant=claimant, status="something"
         )
         claim.save()
+        event_time = timezone.now()
+
+        claim.events.create(
+            category=Claim.EventCategories.STORED,
+            happened_at=event_time,
+            description="wassup",
+        )
+        claim.events.create(
+            category=Claim.EventCategories.SUBMITTED,
+            happened_at=event_time + timedelta(hours=1),
+            description="right",
+        )
 
         with self.assertRaises(ProtectedError):
             # swa cannot be deleted if it has a claim
@@ -118,6 +140,42 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(stored_claim.swa, ks_swa)
         self.assertEqual(stored_claim.claimant, claimant)
         self.assertEqual(stored_claim.status, "something")
+        self.assertFalse(stored_claim.is_completed())
+
+        claim.events.create(
+            category=Claim.EventCategories.COMPLETED,
+            happened_at=event_time + timedelta(minutes=1),
+        )
+        self.assertTrue(claim.is_completed())
+        self.assertTrue(stored_claim.is_completed())
+
+        self.assertEqual(
+            stored_claim.public_events(),
+            [
+                {
+                    "category": "Stored",
+                    "happened_at": str(event_time),
+                    "description": "wassup",
+                },
+                {
+                    "category": "Completed",
+                    "happened_at": str(event_time + timedelta(minutes=1)),
+                    "description": "",
+                },
+                {
+                    "category": "Submitted",
+                    "happened_at": str(event_time + timedelta(hours=1)),
+                    "description": "right",
+                },
+            ],
+        )
+
+        # calling change_status() creates an Event
+        claim.change_status("new status")
+        self.assertEqual(
+            json_decode(claim.events.last().description),
+            {"old": "something", "new": "new status"},
+        )
 
     def test_events(self):
         idp = create_idp()
@@ -126,13 +184,24 @@ class ApiModelsTestCase(TransactionTestCase):
         claim = Claim(swa=ks_swa, claimant=claimant)
         claim.save()
 
-        claim_event = claim.events.create(category=Claim.EventCategories.STARTED)
+        event_time = timezone.now()
+        claim_event = claim.events.create(
+            category=Claim.EventCategories.STORED, happened_at=event_time
+        )
         self.assertIsInstance(claim_event.happened_at, datetime.datetime)
         self.assertEqual(
-            claim.events.filter(category=Claim.EventCategories.STARTED).all()[0],
+            claim.events.filter(category=Claim.EventCategories.STORED).all()[0],
             claim_event,
         )
-        self.assertEqual(claim_event.get_category_display(), "Started")
+        self.assertEqual(claim_event.get_category_display(), "Stored")
+        self.assertEqual(
+            claim_event.as_public_dict(),
+            {
+                "happened_at": str(event_time),
+                "category": "Stored",
+                "description": "",
+            },
+        )
 
         yesterday = timezone.now() - timedelta(days=1)
         claimant_event = claimant.events.create(

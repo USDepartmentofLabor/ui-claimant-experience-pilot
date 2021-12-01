@@ -14,6 +14,7 @@ COPY claimant/.eslintrc.yml ./claimant/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
 WORKDIR /app/claimant
+ENV NODE_ENV=production
 RUN make deps
 
 WORKDIR /app
@@ -21,7 +22,8 @@ COPY claimant/public/ ./claimant/public/
 COPY claimant/src/ ./claimant/src/
 WORKDIR /app/claimant
 ARG ENV_NAME=""
-RUN make docker-build
+# remove the stories because storybook deps are not installed due to NODE_ENV=production
+RUN rm -rf src/stories && make docker-build
 
 ##########################################
 # Django
@@ -44,7 +46,7 @@ EXPOSE 8000
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext \
+   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools \
    && rm -rf /var/lib/apt/lists/* \
    && pip install --no-cache-dir -r requirements.txt
 
@@ -53,6 +55,7 @@ COPY scripts/*sh ./scripts/
 COPY manage.py .
 COPY start-server.sh .
 COPY home ./home
+COPY schemas ./schemas
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
 COPY api ./api

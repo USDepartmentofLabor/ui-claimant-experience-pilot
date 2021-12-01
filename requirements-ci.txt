@@ -1,2 +1,4 @@
-coverage==6.1.2
+coverage==6.2
+django-extensions
+graphviz
 pytest==6.2.5

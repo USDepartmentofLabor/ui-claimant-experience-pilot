@@ -84,6 +84,16 @@ repos:
         language: script
         files: (Makefile|claimant/Makefile)
 
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.6.0
+    hooks:
+      - id: check-github-workflows
+      - id: check-jsonschema
+        name: "Check UI schemas"
+        language: python
+        files: ^schemas
+        args: ["--schemafile", "https://json-schema.org/draft/2020-12/schema"]
+
   - repo: local
     hooks:
       - id: check-adrs

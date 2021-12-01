@@ -43,10 +43,21 @@ Bootstrap your environment for the first time:
 (.venv) % make services-start
 ```
 
-To start a Docker container interactively and run the Django web server:
+To start a Docker container interactively and run the Django web server, run the following commands:
 
 ```sh
 (.venv) % make login
+```
+
+If this is the first time setting up your environment, or if new migrations have been created or pulled into your working directory, you will need to run the following command to update your database schema:
+
+```sh
+root@randomdockerstring:/app# make migrate
+```
+
+Finally, run:
+
+```sh
 root@randomdockerstring:/app# make dev-run
 ```
 
@@ -164,6 +175,14 @@ MySQL [unemployment]>
 
 You can install both `mysql` and `redis-cli` on MacOS with Homebrew.
 
+For localstack (AWS) services, you can use the Python `aws-cli` package:
+
+```sh
+(.venv) % pip install awscli
+# to list contents of a bucket
+(.venv) % aws --endpoint-url=http://localhost:4566 s3 ls s3://usdol-ui-claims
+```
+
 ### Pre-commits
 
 When using `git commit` to change or add files, the pre-commit hooks run. Some hooks such as `black` or `prettier` may modify files to enforce consistent styles. When this occurs you may see `Failed` messages and the commit may not complete. Inspect the files mentioned in the error, ensure they're correct, and retry the commit. Most editors have built-in format-on-save support for Prettier, see https://prettier.io/ .
@@ -280,6 +299,12 @@ These are the basic steps. Some steps require you are logged into the running Do
 - add tests as appropriate to the `models_tests.py` file that corresponds to the `models.py` file you modified
 - within the running Docker container, run the tests with `make test`
 - `git commit`
+
+You may want to create a `schema.sql` file and `schema-erd.png` file for documenting the application data models. You can do that with:
+
+```sh
+% make schema erd
+```
 
 ## SWA API Management
 

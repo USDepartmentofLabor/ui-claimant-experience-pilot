@@ -14,5 +14,6 @@ do
   echo "waiting for celery to be ready"
   sleep 1
 done
-tail -F -q /var/log/celery/* &
+make celery-touch-logs
+make celery-watch-logs &
 gunicorn core.wsgi:application --bind 0.0.0.0:8000

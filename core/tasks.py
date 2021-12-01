@@ -8,7 +8,7 @@ def hello():
 
 
 @shared_task
-def fail():
+def fail():  # pragma: no cover
     raise Exception("failure!")
 
 
@@ -16,7 +16,7 @@ def fail():
     bind=True,
     autoretry_for=(Exception,),
     retry_backoff=True,
-    retry_kwargs={"max_retries": 5},
+    retry_kwargs={"max_retries": 2},
 )
-def fail_and_retry(self):
+def fail_and_retry(self):  # pragma: no cover
     raise Exception("failure! but we'll try again as {}".format(self))

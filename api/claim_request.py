@@ -19,6 +19,7 @@ class ClaimRequest(object):
         self.whoami = request.session.get("whoami")
         self.payload = json.loads(request.body.decode("utf-8"))
         self.__build_request()
+        self.is_complete = "is_complete" in self.payload and self.payload["is_complete"]
 
     def __build_request(self):
         # we minimally need the SWA, Claimant, and Claim.
@@ -45,6 +46,8 @@ class ClaimRequest(object):
 
         try:
             self.claimant = Claimant.objects.get(idp_user_xid=claimant_id)
+            if "identity_provider" not in self.payload:
+                self.payload["identity_provider"] = self.claimant.idp.name
         except Claimant.DoesNotExist:
             self.error = INVALID_CLAIMANT_ID
             self.response = JsonResponse({"error": INVALID_CLAIMANT_ID}, status=404)

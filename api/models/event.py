@@ -28,3 +28,10 @@ class Event(TimeStampedModel):
             return categories[self.category]
         else:
             return "Unknown"
+
+    def as_public_dict(self):
+        return {
+            "happened_at": str(self.happened_at),
+            "category": self.get_category_display(),  # public word not integer
+            "description": self.description,
+        }

@@ -31,6 +31,14 @@ mysql-reset: ## Reset the local database
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "CREATE DATABASE IF NOT EXISTS unemployment"
 
+schema: ## Dump the MySQL schema to docs/schema.sql (requires mysqldump command)
+	mysqldump --no-data --no-tablespaces -h 127.0.0.1 -u user -psecret  unemployment > docs/schema.sql
+
+erd: ## Create ERD of the app data models (requires graphviz installed locally with "dot" command)
+	docker exec -it $(DOCKER_CONTAINER_ID) python manage.py graph_models -E --exclude-models TimeStampedModel --dot -o schema-erd.out core -a
+	dot -Tpng schema-erd.out -o docs/schema-erd.png
+	rm schema-erd.out
+
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 ifeq (, $(shell which docker))
@@ -89,6 +97,16 @@ migrations-check: ## Check for Django model changes not reflected in migrations 
 # http://docs.celeryq.org/en/latest/getting-started/next-steps.html#starting-the-worker
 # By default logs are written to /var/log/celery but we tail them via start-server.sh
 CELERY_OPTS = w1 -c 2 -A core -l info --verbose
+CELERY_LOGDIR = /var/log/celery
+# log names are directly tied to OPTS so if you change OPTS, change LOGS
+CELERY_LOGS = w1 w1-1 w1-2
+
+celery-touch-logs: ## Make sure all the celery log files exist (inside container)
+	for logfile in $(CELERY_LOGS); do touch "$(CELERY_LOGDIR)/$$logfile.log"; done
+
+celery-watch-logs: ## Tail all the celery log files (inside container)
+	tail -F -q $(CELERY_LOGDIR)/*
+
 celery-start: ## Run the celery queue manager (inside container)
 	celery multi start $(CELERY_OPTS)
 
@@ -177,6 +195,7 @@ build-static: ## Build the static assets (intended for during container-build (i
 	cp home/templates/favicon.ico static/
 	cp claimant/build/manifest.json static/manifest.json
 	cp home/templates/sureroute-test-object.html static/
+	cd static && ln -s ../schemas schemas
 
 build-translations: ## Compiles .po (translation) files into binary files
 	python manage.py compilemessages

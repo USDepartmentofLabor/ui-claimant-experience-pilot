@@ -39,6 +39,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(env.str("ENV_PATH", "core/.env"))
 
+TEST_RUNNER = "core.test_runner.MyTestRunner"
+
 # since this app usually runs behind one or more reverse proxies that may/not
 # have X-Forwarded-For header set correctly, allow for explicit root URI
 # to be set here via env.
@@ -128,6 +130,7 @@ INSTALLED_APPS = [
     "secure_redis",
     "home",
     "swa",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -366,26 +369,27 @@ else:
 # we turn cert verification OFF since in WCMS/AWS we don't have a CA chain to verify.
 # we accept that risk because the AWS config prevents anyone but our app from connecting
 # to Redis.
-# TODO encrypted storage similar to sessions.
 CELERY_BROKER_URL = REDIS_URL + "?ssl_cert_reqs=none"
 CELERY_RESULT_BACKEND = REDIS_URL + "?ssl_cert_reqs=none"
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+
+# this env var triggers kombu-fernet-serializers for Celery encryption
+os.environ["KOMBU_FERNET_KEY"] = redis_secret_key
 
 # S3
 AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
-# in local dev, allow for "TEST" bucket preference when running tests
-# this is to avoid needing to re-create dev bucket between tests
-if os.environ.get("TEST_S3_BUCKET_URL"):  # pragma: no cover
-    CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
-else:
-    CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
+TEST_CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
+CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
 
 # CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
 try:
     CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
     validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")
-except Exception:
+except Exception:  # pragma: no cover
     logger.warn("Re-using REDIS_SECRET_KEY as CLAIM_SECRET_KEY")
     CLAIM_SECRET_KEY = redis_secret_key
+
+# all sites except production should have this turned on, as policy.
+# we make it an env var so that we can test locally w/o it
+DISPLAY_TEST_SITE_BANNER = (
+    os.environ.get("DISPLAY_TEST_SITE_BANNER", "true").lower() == "true"
+)

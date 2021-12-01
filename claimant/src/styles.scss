@@ -8,8 +8,8 @@
 
 @import "node_modules/uswds/src/stylesheets/packages/global";
 
-// @import 'packages/form-controls';
-// @import 'packages/form-templates';
+@import "node_modules/uswds/src/stylesheets/packages/form-controls";
+@import "node_modules/uswds/src/stylesheets/packages/form-templates";
 // @import 'packages/layout-grid';
 // @import 'packages/typography';
 // @import 'packages/validation';
