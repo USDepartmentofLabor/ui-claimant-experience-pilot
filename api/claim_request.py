@@ -19,6 +19,7 @@ class ClaimRequest(object):
         self.whoami = request.session.get("whoami")
         self.payload = json.loads(request.body.decode("utf-8"))
         self.__build_request()
+        self.is_complete = "is_complete" in self.payload and self.payload["is_complete"]
 
     def __build_request(self):
         # we minimally need the SWA, Claimant, and Claim.

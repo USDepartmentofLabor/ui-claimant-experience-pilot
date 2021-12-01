@@ -23,11 +23,12 @@ describe("the Home page", () => {
       error: null,
       isError: false,
     }));
+
     mockedUseSubmitClaim.mockImplementation(() => ({
       isLoading: false,
       isError: false,
       mutateAsync: jest.fn(),
-      data: undefined,
+      data: { status: 201 },
     }));
   });
   const queryClient = new QueryClient();
@@ -67,7 +68,7 @@ describe("the ClaimForm", () => {
       isLoading: false,
       isError: false,
       mutateAsync: mockMutateAsync,
-      data: undefined,
+      data: { status: 201 },
     }));
   });
 
@@ -140,6 +141,7 @@ describe("the ClaimForm", () => {
     });
     mockedUseSubmitClaim.mockReturnValueOnce({
       isSuccess: true,
+      data: { status: 201 },
     });
     render(wrappedClaimForm);
     expect(screen.queryByRole("heading", { level: 4 })).toHaveTextContent(

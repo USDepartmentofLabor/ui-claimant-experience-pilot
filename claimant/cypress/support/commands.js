@@ -48,6 +48,8 @@ Cypress.Commands.add("real_login", () => {
 Cypress.Commands.add("post_login", () => {
   cy.request("POST", "/api/login/", {
     email: "someone@example.com",
+    ssn: "900-00-1234",
+    birthdate: "2000-01-01",
     swa_code: "XX",
   });
 });
@@ -61,6 +63,8 @@ Cypress.Commands.add("mock_login", () => {
       last_name: "One",
       swa_code: "XX",
       claimant_id: "the-claimant-id",
+      ssn: "900-00-1234",
+      birthdate: "2000-01-01",
     });
   }).as("api-whoami");
 });

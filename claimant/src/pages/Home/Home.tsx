@@ -1,7 +1,8 @@
 import { useQueryClient } from "react-query";
 import { Formik, Form } from "formik";
-import { Button } from "@trussworks/react-uswds";
+import { FormGroup, Button } from "@trussworks/react-uswds";
 import TextField from "../../components/form/fields/TextField";
+import CheckboxField from "../../components/form/fields/CheckboxField";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
@@ -29,7 +30,8 @@ export default HomePage;
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
-const initialValues: { [key: string]: string | undefined } = {
+const initialValues: { [key: string]: string | boolean | undefined } = {
+  is_complete: false,
   first_name: "",
   email: "",
   birthdate: "",
@@ -72,18 +74,6 @@ export const ClaimForm = () => {
 
   return (
     <div data-testid="claim-submission">
-      {submitClaim.isSuccess ? (
-        <div className="usa-alert usa-alert--success">
-          <div className="usa-alert__body">
-            <h4 className="usa-alert__heading">Success status</h4>
-            <p className="usa-alert__text">
-              {t("sampleForm.claimSuccess")} <code>{whoami.claim_id}</code>
-            </p>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -118,6 +108,12 @@ export const ClaimForm = () => {
               id="first_name"
             />
             <TextField
+              name="last_name"
+              label={t("label.last_name")}
+              type="text"
+              id="last_name"
+            />
+            <TextField
               name="email"
               label={t("label.email")}
               type="email"
@@ -130,12 +126,41 @@ export const ClaimForm = () => {
               id="birthdate"
             />
             <TextField name="ssn" label={t("label.ssn")} type="text" id="ssn" />
-            <Button type="submit" disabled={submitClaim.isLoading}>
-              {t("sampleForm.claimButton")}
-            </Button>
+            <CheckboxField
+              id="is_complete"
+              name="is_complete"
+              label={t("label.is_complete")}
+              labelDescription={t("label.is_complete_description")}
+              tile
+            />
+            <FormGroup>
+              <Button
+                type="submit"
+                disabled={
+                  submitClaim.isLoading ||
+                  (submitClaim.isSuccess && submitClaim.data.status === 201)
+                }
+              >
+                {t("sampleForm.claimButton")}
+              </Button>
+            </FormGroup>
           </Form>
         )}
       </Formik>
+      {submitClaim.isSuccess ? (
+        <div className="usa-alert usa-alert--success">
+          <div className="usa-alert__body">
+            <h4 className="usa-alert__heading">Success status</h4>
+            {submitClaim.data.status === 201 ? (
+              <p className="usa-alert__text">
+                {t("sampleForm.claimSuccess")} <code>{whoami.claim_id}</code>
+              </p>
+            ) : (
+              <p className="usa-alert__text">Ready for next page</p>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

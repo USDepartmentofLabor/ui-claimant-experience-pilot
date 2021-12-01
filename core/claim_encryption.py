@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from jwcrypto import jwk, jwe
 from jwcrypto.common import json_encode, json_decode
+from django.conf import settings
 
 
 ALG = "ECDH-ES+A256KW"
 ENC = "A256GCM"
+
+
+def symmetric_encryption_key():
+    return jwk.JWK(kty="oct", k=settings.CLAIM_SECRET_KEY)
 
 
 class AsymmetricClaimEncryptor(object):

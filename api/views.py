@@ -5,18 +5,23 @@ import logging
 import secrets
 import os
 from django.conf import settings
+from django.db import transaction
 import django.middleware.csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.utils import timezone
 from .decorators import verified_claimant_session
 from .claim_request import ClaimRequest
-from .claim_validator import ClaimValidator
+from .claim_validator import ClaimValidator, CompletedClaimValidator
 from .models import Claim
-from core.email import Email
+from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
 from core.claim_storage import ClaimWriter
-from datetime import datetime
-from core.claim_encryption import AsymmetricClaimEncryptor
+from core.claim_encryption import (
+    AsymmetricClaimEncryptor,
+    SymmetricClaimEncryptor,
+    symmetric_encryption_key,
+)
 
 logger = logging.getLogger("api")
 
@@ -105,38 +110,81 @@ def claim(request):
         )
     else:
         # mark our payload with validation info
-        claim_request.payload["validated_at"] = datetime.now().isoformat()
+        claim_request.payload["validated_at"] = timezone.now().isoformat()
         claim_request.payload["$schema"] = claim_validator.schema_url
 
-    # encrypt payload
+    # now that we have a Claim, stash its info in session
+    request.session["whoami"]["claim_id"] = claim_request.payload["id"]
+    request.session["claim"] = claim_request.payload
+
+    if claim_request.is_complete:
+        return save_completed_claim(claim_request)
+    else:
+        return save_partial_claim(claim_request)
+
+
+def save_completed_claim(claim_request):
+    # re-validate with complete schema
+    completed_claim_validator = CompletedClaimValidator(claim_request.payload)
+    if not completed_claim_validator.valid:
+        return JsonResponse(
+            {
+                "status": "error",
+                "error": "invalid complete claim",
+                "errors": completed_claim_validator.errors_as_dict(),
+            },
+            status=400,
+        )
+    # ok to package for SWA
     asym_encryptor = AsymmetricClaimEncryptor(
         claim_request.payload, claim_request.swa.public_key_as_jwk()
     )
     packaged_claim = asym_encryptor.packaged_claim()
-    writeable_payload = packaged_claim.as_json()
-
-    # now that we have a Claim, stash its info in session
-    claim_id = claim_request.payload["id"]
-    request.session["whoami"]["claim_id"] = claim_id
-
-    # TODO if this is a partial claim, write symmetrical
-    # use "is_complete" flag in payload to determine, and do extra validation before packaging.
-    # For now, just treat every validated payload as complete
-    # TODO wrap the write() and the other events in a single db transaction
+    packaged_payload = packaged_claim.as_json()
     claim = claim_request.claim
-    claim.events.create(category=Claim.EventCategories.COMPLETED)
+    try:
+        with transaction.atomic():
+            claim.events.create(category=Claim.EventCategories.COMPLETED)
+            cw = ClaimWriter(
+                claim, packaged_payload, path=claim.completed_payload_path()
+            )
+            if not cw.write():
+                raise Exception("Failed to write completed claim")
+        logger.debug("🚀 wrote completed claim")
+        InitialClaimConfirmationEmail(
+            email_address=claim_request.whoami["email"],
+            claim=claim,
+        ).send_later()
+        return JsonResponse(
+            {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=201
+        )
+    except Exception as error:
+        logger.exception(error)
+        return JsonResponse(
+            {"status": "error", "error": "unable to save claim"}, status=500
+        )
 
-    cw = ClaimWriter(claim, writeable_payload)
-    if cw.write():
-        # only send email if the Claim was "complete"
-        if claim.is_completed():
-            Email(
-                to=claim_request.whoami["email"],
-                subject="hello world",
-                body="hello world",
-            ).send_later()
-        return JsonResponse({"status": "accepted", "claim_id": claim_id}, status=202)
-    else:
+
+def save_partial_claim(claim_request):
+    # save the partial (incomplete) claim
+    sym_encryptor = SymmetricClaimEncryptor(
+        claim_request.payload, symmetric_encryption_key()
+    )
+    packaged_claim = sym_encryptor.packaged_claim()
+    packaged_payload = packaged_claim.as_json()
+    claim = claim_request.claim
+    try:
+        # TODO depending on performance, we might want to move this to an async task
+        with transaction.atomic():
+            cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
+            if not cw.write():
+                raise Exception("Failed to write partial claim")
+        logger.debug("🚀 wrote partial claim")
+        return JsonResponse(
+            {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=202
+        )
+    except Exception as error:
+        logger.exception(error)
         return JsonResponse(
             {"status": "error", "error": "unable to save claim"}, status=500
         )

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import Client, RequestFactory, TestCase
 from django.core import mail
+from django.utils import timezone
 from unittest.mock import patch
 import boto3
 from botocore.stub import Stubber
@@ -16,14 +17,18 @@ from .claim_request import (
     INVALID_CLAIMANT_ID,
     INVALID_CLAIM_ID,
 )
-from .claim_validator import ClaimValidator
+from .claim_validator import ClaimValidator, CompletedClaimValidator
 import uuid
 import logging
-from core.claim_encryption import AsymmetricClaimDecryptor
+from core.claim_encryption import (
+    AsymmetricClaimDecryptor,
+    SymmetricClaimDecryptor,
+    symmetric_encryption_key,
+)
 from core.claim_storage import ClaimReader
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("api.tests")
 
 
 class SessionVerifier:
@@ -101,9 +106,45 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_encrypted_claim(self):
+    def test_encrypted_completed_claim(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client()
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/claim/"
+        payload = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "field": "value",
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+            "is_complete": True,
+            "first_name": "Ima",
+            "last_name": "Claimant",
+        }
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.post(
+            url, content_type="application/json", data=payload, **headers
+        )
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the encrypted claim from the S3 bucket directly and decrypt it.
+        claim = claimant.claim_set.all()[0]
+        self.assertTrue(claim.is_completed())
+        claim_id = response.json()["claim_id"]
+        cr = ClaimReader(claim)
+        packaged_claim_str = cr.read()
+        acd = AsymmetricClaimDecryptor(packaged_claim_str, private_key_jwk)
+        decrypted_claim = acd.decrypt()
+        self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
+        self.assertEqual(decrypted_claim["id"], claim_id)
+        self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
+        self.assertEqual(decrypted_claim["field"], "value")
+
+    def test_encrypted_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
         claimant = create_claimant(idp)
         csrf_client = self.csrf_client()
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
@@ -123,15 +164,20 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
 
         # fetch the encrypted claim from the S3 bucket directly and decrypt it.
         claim = claimant.claim_set.all()[0]
+        self.assertFalse(claim.is_completed())
+
         claim_id = response.json()["claim_id"]
+        self.assertEqual(str(claim.uuid), claim_id)
+
         cr = ClaimReader(claim)
         packaged_claim_str = cr.read()
-        acd = AsymmetricClaimDecryptor(packaged_claim_str, private_key_jwk)
-        decrypted_claim = acd.decrypt()
-        self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
+        scd = SymmetricClaimDecryptor(packaged_claim_str, symmetric_encryption_key())
+        decrypted_claim = scd.decrypt()
+        self.assertEqual(scd.packaged_claim["claim_id"], claim_id)
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["field"], "value")
+        self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
 
     def test_claim_with_csrf(self):
         idp = create_idp()
@@ -145,12 +191,15 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "first_name": "Ima",
+            "last_name": "Claimant",
+            "is_complete": True,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(response.status_code, 201)
         claim = claimant.claim_set.all()[0]
         self.assertEqual(
             response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
@@ -161,7 +210,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         # so wait a little
         self.wait_for_workers_to_finish()
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, "hello world")
+        self.assertEqual(mail.outbox[0].subject, "Your UI Claim receipt")
 
         # only POST allowed
         response = csrf_client.get(url)
@@ -186,7 +235,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(response.status_code, 400)
         self.assertIn("'1234' is not a 'date'", response.json()["errors"])
 
-        # failure to write claim returns error
+        # failure to write completed claim returns error
         with patch("core.claim_storage.ClaimStore.s3_client") as mocked_client:
             client = boto3.client("s3")
             stubber = Stubber(client)
@@ -196,6 +245,49 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             response = csrf_client.post(
                 url, content_type="application/json", data=payload, **headers
             )
+            logger.debug("🚀 expect error")
+            self.assertEqual(response.status_code, 500)
+            self.assertEqual(
+                response.json(), {"status": "error", "error": "unable to save claim"}
+            )
+
+        # has is_complete but is not really complete
+        invalid_payload = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+            "is_complete": True,
+        }
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.post(
+            url, content_type="application/json", data=invalid_payload, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+        logger.debug("missing complete fields")
+        self.assertIn("'first_name' is a required property", response.json()["errors"])
+        self.assertIn("'last_name' is a required property", response.json()["errors"])
+
+        # failure to write partial claim returns error
+        payload_with_trouble = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+        }
+        with patch("core.claim_storage.ClaimStore.s3_client") as mocked_client:
+            client = boto3.client("s3")
+            stubber = Stubber(client)
+            stubber.add_client_error("put_object")
+            stubber.activate()
+            mocked_client.return_value = client
+            response = csrf_client.post(
+                url,
+                content_type="application/json",
+                data=payload_with_trouble,
+                **headers,
+            )
+            logger.debug("🚀 expect error")
             self.assertEqual(response.status_code, 500)
             self.assertEqual(
                 response.json(), {"status": "error", "error": "unable to save claim"}
@@ -339,4 +431,31 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'ssn' is a required property", error_dict)
+        logger.debug("errors={}".format(error_dict))
+
+    def test_completed_claim_validator(self):
+        claim = {
+            "id": str(uuid.uuid4()),
+            "claimant_id": "random-claimaint-string",
+            "identity_provider": "test",
+            "swa_code": "XX",
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+            "first_name": "Ima",
+            "last_name": "Claimant",
+            "validated_at": timezone.now().isoformat(),
+        }
+        cv = CompletedClaimValidator(claim)
+        logger.debug(cv.errors_as_dict())
+        self.assertTrue(cv.valid)
+
+        invalid_claim = {"birthdate": "1234"}
+        cv = CompletedClaimValidator(invalid_claim)
+        self.assertFalse(cv.valid)
+        self.assertEqual(len(cv.errors), 8)
+        error_dict = cv.errors_as_dict()
+        self.assertIn("'1234' is not a 'date'", error_dict)
+        self.assertIn("'ssn' is a required property", error_dict)
+        self.assertIn("'first_name' is a required property", error_dict)
+        self.assertIn("'last_name' is a required property", error_dict)
         logger.debug("errors={}".format(error_dict))

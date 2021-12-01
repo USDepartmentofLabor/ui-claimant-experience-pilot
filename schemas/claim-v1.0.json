@@ -32,7 +32,8 @@
     },
     "validated_at": {
       "description": "Datetime of the last time the Claim was validated against this schema",
-      "type": "datetime"
+      "type": "string",
+      "format": "date-time"
     },
     "$schema": {
       "description": "URL of this schema",
@@ -40,11 +41,13 @@
     },
     "first_name": {
       "description": "",
-      "type": "string"
+      "type": "string",
+      "required_for_swa": true
     },
     "last_name": {
       "description": "",
-      "type": "string"
+      "type": "string",
+      "required_for_swa": true
     },
     "birthdate": {
       "description": "Date of birth",

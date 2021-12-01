@@ -23,6 +23,7 @@ type ClaimantInput = {
   ssn?: string;
   email?: string;
   phone?: string | null;
+  is_complete?: boolean;
 };
 
 type Claim = ClaimantInput & {

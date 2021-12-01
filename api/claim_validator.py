@@ -42,3 +42,12 @@ class ClaimValidator(object):
             }
 
         return errors
+
+
+class CompletedClaimValidator(ClaimValidator):
+    def read_schema(self, schema_name):
+        schema = super().read_schema(schema_name)
+        for prop_name, prop in schema["properties"].items():
+            if "required_for_swa" in prop and prop["required_for_swa"]:
+                schema["required"].append(prop_name)
+        return schema

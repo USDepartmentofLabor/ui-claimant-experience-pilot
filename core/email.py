@@ -35,4 +35,17 @@ class Email(object):
         return email.send()
 
     def send_later(self):
-        send_task.delay(self.to_dict())
+        return send_task.delay(self.to_dict())
+
+
+class InitialClaimConfirmationEmail(object):
+    def __init__(self, claim, email_address):
+        self.claim = claim
+        self.email_address = email_address
+
+    def send_later(self):
+        # TODO pass in claim and claim.swa to the template to create the body
+        email = Email(
+            to=self.email_address, subject="Your UI Claim receipt", body="placeholder"
+        )
+        return email.send_later()
