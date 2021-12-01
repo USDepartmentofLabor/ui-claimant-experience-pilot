@@ -300,6 +300,12 @@ These are the basic steps. Some steps require you are logged into the running Do
 - within the running Docker container, run the tests with `make test`
 - `git commit`
 
+You may want to create a `schema.sql` file and `schema-erd.png` file for documenting the application data models. You can do that with:
+
+```sh
+% make schema erd
+```
+
 ## SWA API Management
 
 Each SWA model record will require a public/private key registration. To ease this in local development, there are some make commands available.

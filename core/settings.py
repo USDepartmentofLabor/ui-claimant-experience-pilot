@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "secure_redis",
     "home",
     "swa",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

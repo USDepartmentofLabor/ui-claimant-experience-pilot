@@ -31,6 +31,14 @@ mysql-reset: ## Reset the local database
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "CREATE DATABASE IF NOT EXISTS unemployment"
 
+schema: ## Dump the MySQL schema to docs/schema.sql (requires mysqldump command)
+	mysqldump --no-data --no-tablespaces -h 127.0.0.1 -u user -psecret  unemployment > docs/schema.sql
+
+erd: ## Create ERD of the app data models (requires graphviz installed locally with "dot" command)
+	docker exec -it $(DOCKER_CONTAINER_ID) python manage.py graph_models -E --exclude-models TimeStampedModel --dot -o schema-erd.out core -a
+	dot -Tpng schema-erd.out -o docs/schema-erd.png
+	rm schema-erd.out
+
 DOCKER_IMG="dolui:claimants"
 DOCKER_NAME="dolui-claimants"
 ifeq (, $(shell which docker))
