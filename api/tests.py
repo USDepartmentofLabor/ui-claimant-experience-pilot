@@ -116,7 +116,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
-            "field": "value",
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
             "is_complete": True,
@@ -142,7 +141,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
-        self.assertEqual(decrypted_claim["field"], "value")
 
     def test_encrypted_partial_claim(self):
         idp = create_idp()
@@ -152,9 +150,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/claim/"
         payload = {
+            "claimant_name": {"first_name": "foo", "last_name": "bar"},
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
-            "field": "value",
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
         }
@@ -178,7 +176,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(scd.packaged_claim["claim_id"], claim_id)
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
-        self.assertEqual(decrypted_claim["field"], "value")
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
 
     def test_claim_with_csrf(self):
@@ -275,6 +272,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
 
         # failure to write partial claim returns error
         payload_with_trouble = {
+            "claimant_name": {"first_name": "foo", "last_name": "bar"},
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
@@ -419,67 +417,102 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
 
 
 class ClaimValidatorTestCase(TestCase):
-    def test_claim_validator(self):
-        claim = {
+    def base_claim(self):
+        return {
             "id": str(uuid.uuid4()),
             "claimant_id": "random-claimaint-string",
             "identity_provider": "test",
             "swa_code": "XX",
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "claimant_name": {"first_name": "first", "last_name": "last"},
+            "mailing_address": {
+                "address1": "123 Any St",
+                "city": "Somewhere",
+                "state": "KS",
+                "zipcode": "00000",
+            },
         }
+
+    def test_claim_validator(self):
+        claim = self.base_claim()
         cv = ClaimValidator(claim)
         self.assertTrue(cv.valid)
 
-        invalid_claim = {"birthdate": "1234"}
+        invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 6)
+        self.assertEqual(len(cv.errors), 8)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
+        self.assertIn("'foo' is not a 'email'", error_dict)
         self.assertIn("'ssn' is a required property", error_dict)
+        self.assertIn("'claimant_name' is a required property", error_dict)
         logger.debug("errors={}".format(error_dict))
 
+        invalid_ssn = {"ssn": "1234"}
+        cv = ClaimValidator(invalid_ssn)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        self.assertIn(
+            "'1234' does not match",
+            list(filter(lambda e: "does not match" in e, error_dict.keys()))[0],
+        )
+
+        claim = self.base_claim() | {"random_field": "value"}
+        cv = ClaimValidator(claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        self.assertIn(
+            "Additional properties are not allowed ('random_field' was unexpected)",
+            error_dict,
+        )
+
     def test_swa_required_fields(self):
-        claim = {
+        claim = self.base_claim() | {
             "worked_in_other_states": ["CA", "WV"],
-            "id": str(uuid.uuid4()),
-            "identity_provider": "test",
-            "claimant_id": "random-claimaint-string",
-            "swa_code": "XX",
-            "birthdate": "2000-01-01",
-            "ssn": "900-00-1234",
         }
         cv = ClaimValidator(claim)
         self.assertTrue(cv.valid)
 
-        claim = {
+        claim = self.base_claim() | {
             "worked_in_other_states": ["CA", "WV", "XX"],
-            "id": str(uuid.uuid4()),
-            "identity_provider": "test",
-            "claimant_id": "random-claimaint-string",
-            "swa_code": "XX",
-            "birthdate": "2000-01-01",
-            "ssn": "900-00-1234",
         }
+        del claim["claimant_name"]
         cv = ClaimValidator(claim)
-        logger.debug("errors={}".format(cv.errors_as_dict()))
         error_dict = cv.errors_as_dict()
         self.assertFalse(cv.valid)
-        self.assertIn("'XX' is not one of", list(error_dict.keys())[0])
+        self.assertIn("'claimant_name' is a required property", error_dict)
+        self.assertIn(
+            "'XX' is not one of",
+            list(filter(lambda e: "XX" in e, error_dict.keys()))[0],
+        )
+
+        citizen_claim = self.base_claim() | {
+            "us_citizenship": {"is_citizen": False, "alien_registration_number": "abc"}
+        }
+        cv = ClaimValidator(citizen_claim)
+        self.assertTrue(cv.valid)
+
+        citizen_claim = self.base_claim() | {
+            "us_citizenship": {"is_citizen": True, "alien_registration_number": "abc"}
+        }
+        # schema is valid but non-sensical
+        cv = ClaimValidator(citizen_claim)
+        self.assertTrue(cv.valid)
+
+        citizen_claim = self.base_claim() | {"us_citizenship": {"is_citizen": False}}
+        cv = ClaimValidator(citizen_claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        logger.debug("errors={}".format(error_dict))
+        self.assertIn(
+            "'alien_registration_number' is a required property",
+            list(error_dict.keys()),
+        )
 
     def test_completed_claim_validator(self):
-        claim = {
-            "id": str(uuid.uuid4()),
-            "claimant_id": "random-claimaint-string",
-            "identity_provider": "test",
-            "swa_code": "XX",
-            "birthdate": "2000-01-01",
-            "ssn": "900-00-1234",
-            "claimant_name": {
-                "first_name": "Ima",
-                "last_name": "Claimant",
-            },
+        claim = self.base_claim() | {
             "validated_at": timezone.now().isoformat(),
         }
         cv = CompletedClaimValidator(claim)
