@@ -334,6 +334,14 @@ To rotate a key, add the `ROTATE=yes` flag:
 > make add-swa-key SWA=KS PEM=KS-public.pem ROTATE=yes
 ```
 
+In WCMS environments you may need to upload a public key file to a running container. You can do that with the `kubectl` tool
+if you have a pod identifier. Pod identifiers follow the naming pattern `arpa-ui-random-string` and you can get the list of identifiers
+with `kubectl get pods`.
+
+```sh
+% kubectl cp ./KS-public.pem eta-arpa/thepodidentifier:/app/KS-public.pem
+```
+
 ## Deployment
 
 To build the Docker container:
