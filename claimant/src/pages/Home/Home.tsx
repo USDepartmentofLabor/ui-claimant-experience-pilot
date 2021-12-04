@@ -1,11 +1,10 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikErrors } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
-import * as yup from "yup";
-
+import YupBuilder from "../../common/YupBuilder";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -30,11 +29,15 @@ const HomePage = () => {
 
 export default HomePage;
 
+interface FormValues {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  [key: string]: string | boolean | any;
+}
+
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const initialValues: { [key: string]: string | boolean | any } = {
+const initialValues: FormValues = {
   is_complete: false,
   claimant_name: { first_name: "", last_name: "" },
   email: "",
@@ -61,6 +64,7 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
   const currentPage = pages[currentPageIndex];
 
   const previousPageLink = () =>
+    !claimCompleted() &&
     pages[currentPageIndex - 1] && (
       <Link
         to={`/claim/${pages[currentPageIndex - 1].path}`}
@@ -70,33 +74,35 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
       </Link>
     );
 
-  const nextPageLink = (submitForm: () => Promise<void>) =>
+  const nextPageLink = (
+    validateForm: () => Promise<FormikErrors<FormValues>>,
+    submitForm: () => Promise<void>
+  ) =>
+    !claimCompleted() &&
     pages[currentPageIndex + 1] && (
       <Button
         type="submit"
         onClick={() => {
-          submitForm();
-          navigate(`/claim/${pages[currentPageIndex + 1].path}`);
+          validateForm().then((errors) => {
+            if (Object.keys(errors).length === 0) {
+              submitForm();
+              navigate(`/claim/${pages[currentPageIndex + 1].path}`);
+            }
+          });
         }}
       >
         {t("pagination.next")} &raquo;
       </Button>
     );
 
-  // Yup validation schema for this page ONLY.
-  // Yup supports its own i18n but it seems redundant?
-  // https://github.com/jquense/yup#using-a-custom-locale-dictionary
-  const validationSchema = yup.object().shape({
-    claimant_name: yup.object().shape({
-      first_name: yup.string().required(t("validation.required")),
-      last_name: yup.string().required(t("validation.required")),
-    }),
-    email: yup.string().email(t("validation.notEmail")),
-    birthdate: yup.string().required(t("validation.required")),
-    ssn: yup.string().required(t("validation.required")),
-  });
+  const validationSchema = YupBuilder("claim-v1.0", currentPage.fields);
+
+  const claimCompleted = () => {
+    return submitClaim.isSuccess && submitClaim.data.status === 201;
+  };
 
   if (whoami) {
+    // TODO more elegant way to populate this?
     for (const [key, value] of Object.entries(whoami)) {
       if (key === "first_name" || key === "last_name") {
         initialValues.claimant_name[key] = value;
@@ -140,27 +146,29 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
           }
         }}
       >
-        {({ submitForm }) => (
+        {({ validateForm, submitForm }) => (
           //{(props: FormikProps<ClaimantInput>) => (
           <Form>
             {currentPage.render()}
             <div className={homeStyles.pagination}>
               {previousPageLink()}
-              {nextPageLink(submitForm)}
+              {nextPageLink(validateForm, submitForm)}
             </div>
           </Form>
         )}
       </Formik>
       {submitClaim.isSuccess ? (
+        // TODO probably want to hide the "Progress saved" after a few seconds so
+        // not to confuse users with "which progress" from one page to the next.
         <div className="usa-alert usa-alert--success">
           <div className="usa-alert__body">
             <h4 className="usa-alert__heading">Success status</h4>
-            {submitClaim.data.status === 201 ? (
+            {claimCompleted() ? (
               <p className="usa-alert__text">
                 {t("sampleForm.claimSuccess")} <code>{whoami.claim_id}</code>
               </p>
             ) : (
-              <p className="usa-alert__text">Ready for next page</p>
+              <p className="usa-alert__text">Progress saved</p>
             )}
           </div>
         </div>

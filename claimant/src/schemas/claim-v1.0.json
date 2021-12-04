@@ -5,9 +5,9 @@
   "description": "Unemployment Insurance claimant application form schema",
   "type": "object",
   "additionalProperties": false,
-  "$defs": {
+  "definitions": {
     "person_name": {
-      "$id": "/schemas/person_name",
+      "$id": "/definitions/person_name",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -18,20 +18,20 @@
       "required": ["first_name", "last_name"]
     },
     "address": {
-      "$id": "/schemas/address",
+      "$id": "/definitions/address",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
         "address1": { "type": "string" },
         "address2": { "type": "string" },
         "city": { "type": "string" },
-        "state": { "$ref": "/schemas/state" },
+        "state": { "type": "string", "$ref": "/definitions/state" },
         "zipcode": { "type": "string" }
       },
       "required": ["address1", "city", "state", "zipcode"]
     },
     "citizenship": {
-      "$id": "/schemas/citizenship",
+      "$id": "/definitions/citizenship",
       "type": "object",
       "properties": {
         "alien_registration_number": {
@@ -54,7 +54,7 @@
       }
     },
     "state": {
-      "$id": "/schemas/state",
+      "$id": "/definitions/state",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "string",
       "enum": [
@@ -120,32 +120,28 @@
       ]
     }
   },
-  "required": [
-    "id",
-    "claimant_id",
-    "identity_provider",
-    "swa_code",
-    "birthdate",
-    "ssn",
-    "claimant_name"
-  ],
+  "required": ["birthdate", "ssn", "claimant_name"],
   "properties": {
     "id": {
       "description": "Unique identifier for the Claim",
       "type": "string",
-      "format": "uuid"
+      "format": "uuid",
+      "required_for_swa": true
     },
     "claimant_id": {
       "description": "Identifier for the Claimant. Unique to the Identity Provider used.",
-      "type": "string"
+      "type": "string",
+      "required_for_swa": true
     },
     "identity_provider": {
       "description": "Name of the Identity Provider used to authenticate the Claimant",
-      "type": "string"
+      "type": "string",
+      "required_for_swa": true
     },
     "swa_code": {
       "description": "2-letter code identifying the State Workforce Agency",
-      "type": "string"
+      "type": "string",
+      "required_for_swa": true
     },
     "validated_at": {
       "description": "Datetime of the last time the Claim was validated against this schema",
@@ -162,7 +158,7 @@
     },
     "claimant_name": {
       "description": "Claimant's name",
-      "$ref": "/schemas/person_name"
+      "$ref": "#/definitions/person_name"
     },
     "birthdate": {
       "description": "Date of birth",
@@ -220,7 +216,7 @@
     "worked_in_other_states": {
       "description": "Required per 20 CFR 616",
       "type": "array",
-      "items": { "$ref": "/schemas/state" },
+      "items": { "$ref": "#/definitions/state" },
       "TODO_required_for_swa": true
     },
     "currently_disabled_unable_to_work": {
@@ -231,11 +227,11 @@
     "mailing_address": {
       "description": "",
       "TODO_required_for_swa": true,
-      "$ref": "/schemas/address"
+      "$ref": "#/definitions/address"
     },
     "us_citizenship": {
       "description": "",
-      "$ref": "/schemas/citizenship",
+      "$ref": "#/definitions/citizenship",
       "TODO_required_for_swa": true
     },
     "email": {

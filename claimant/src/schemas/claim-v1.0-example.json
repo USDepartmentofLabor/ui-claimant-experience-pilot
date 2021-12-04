@@ -1,0 +1,18 @@
+{
+  "id": "a72549aa-2e4a-488c-ae2f-70db539d7c8d",
+  "claimant_id": "random-claimaint-string",
+  "identity_provider": "test",
+  "swa_code": "XX",
+  "birthdate": "2000-01-01",
+  "ssn": "900-00-1234",
+  "claimant_name": {
+    "first_name": "first",
+    "last_name": "last"
+  },
+  "mailing_address": {
+    "address1": "123 Any St",
+    "city": "Somewhere",
+    "state": "KS",
+    "zipcode": "00000"
+  }
+}

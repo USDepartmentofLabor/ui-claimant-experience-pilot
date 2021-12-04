@@ -55,7 +55,6 @@ COPY scripts/*sh ./scripts/
 COPY manage.py .
 COPY start-server.sh .
 COPY home ./home
-COPY schemas ./schemas
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
 COPY api ./api
@@ -66,6 +65,8 @@ COPY certs ./certs
 COPY --from=reactapps /app/claimant/build /app/claimant/build
 # copy USWDS static assets for Django to consume
 COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
+# copy schemas to serve as static assets
+COPY --from=reactapps /app/claimant/src/schemas /app/schemas
 
 ARG APPLICATION_VERSION=""
 ARG APPLICATION_TIMESTAMP=""

@@ -442,7 +442,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 8)
+        self.assertEqual(len(cv.errors), 4)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)

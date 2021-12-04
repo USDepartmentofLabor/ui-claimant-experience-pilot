@@ -15,11 +15,24 @@ const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
 
+const myPII: WhoAmI = {
+  claim_id: "123",
+  claimant_id: "321",
+  form_id: "15",
+  first_name: "Hermione",
+  last_name: "Granger",
+  birthdate: "2000-01-01",
+  ssn: "555-55-5555",
+  email: "test@example.com",
+  phone: "555-555-5555",
+  swa_code: "MD",
+};
+
 describe("the Home page", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
-      data: {},
+      data: myPII,
       isLoading: false,
       error: null,
       isError: false,
@@ -87,19 +100,6 @@ describe("the ClaimForm", () => {
       data: { status: 201 },
     }));
   });
-
-  const myPII: WhoAmI = {
-    claim_id: "123",
-    claimant_id: "321",
-    form_id: "15",
-    first_name: "Hermione",
-    last_name: "Granger",
-    birthdate: "12/22/2000",
-    ssn: "555-55-5555",
-    email: "test@example.com",
-    phone: "555-555-5555",
-    swa_code: "MD",
-  };
 
   const queryClient = new QueryClient();
   const wrappedClaimForm = (

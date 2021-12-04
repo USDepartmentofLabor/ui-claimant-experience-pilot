@@ -1,5 +1,15 @@
 import { useTranslation } from "react-i18next";
 import TextField from "../../components/form/fields/TextField";
+import { ClaimSchemaFields } from "../../common/YupBuilder";
+
+// the schema fields that appear on this page
+// only worry about top-level objects
+export const PersonalInformationFields: ClaimSchemaFields[] = [
+  "claimant_name",
+  "email",
+  "birthdate",
+  "ssn",
+];
 
 export const PersonalInformation = () => {
   const { t } = useTranslation("home");
