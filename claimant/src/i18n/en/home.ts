@@ -20,6 +20,10 @@ const home = {
     required: "This field is required",
     notEmail: "This is not a valid email",
   },
+  pagination: {
+    next: "Next",
+    previous: "Previous",
+  },
 };
 
 export default home;

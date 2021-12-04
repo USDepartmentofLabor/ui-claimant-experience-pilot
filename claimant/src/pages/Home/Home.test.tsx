@@ -1,12 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import HomePage, { ClaimForm } from "./Home";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ClaimForm } from "./Home";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
-
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}));
+import { MemoryRouter, BrowserRouter } from "react-router-dom";
+import App from "../../App";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../../i18n";
 
 jest.mock("../../queries/whoami");
 const mockedUseWhoAmI = useWhoAmI as jest.Mock;
@@ -33,24 +34,39 @@ describe("the Home page", () => {
   });
   const queryClient = new QueryClient();
   const Page = (
-    <QueryClientProvider client={queryClient}>
-      <HomePage />
-    </QueryClientProvider>
+    <MemoryRouter initialEntries={["/claim/personal-information"]}>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </I18nextProvider>
+    </MemoryRouter>
   );
   it("renders without error", () => {
     render(Page);
-    expect(screen.getByRole("heading")).toHaveTextContent("welcome");
+    expect(screen.getByRole("heading")).toHaveTextContent("Welcome");
+  });
+  it("navigates between pages", async () => {
+    render(Page);
+    const nextLink = screen.getByText("Next", { exact: false });
+    await waitFor(() => {
+      userEvent.click(nextLink);
+    });
+    expect(screen.getByText("Test Claim")).toBeInTheDocument();
+    const backLink = screen.getByText("Previous", { exact: false });
+    userEvent.click(backLink);
+    expect(screen.getByText("First Name")).toBeInTheDocument();
   });
 });
 
 describe("the ClaimForm", () => {
   beforeEach(() => {
     jest.spyOn(console, "error");
-    console.error.mockImplementation(jest.fn());
+    (console.error as jest.Mock).mockImplementation(jest.fn());
   });
 
   afterEach(() => {
-    console.error.mockRestore();
+    (console.error as jest.Mock).mockRestore();
   });
 
   const mockMutateAsync = jest.fn();
@@ -87,9 +103,11 @@ describe("the ClaimForm", () => {
 
   const queryClient = new QueryClient();
   const wrappedClaimForm = (
-    <QueryClientProvider client={queryClient}>
-      <ClaimForm />
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ClaimForm page="submit" />
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 
   it("renders without error", async () => {
@@ -104,12 +122,10 @@ describe("the ClaimForm", () => {
       isIdle: true,
     });
 
-    const form = render(wrappedClaimForm);
+    render(wrappedClaimForm);
 
     expect(useWhoAmI).toHaveBeenCalled();
-    expect(form.getByRole("button")).toHaveTextContent(
-      "sampleForm.claimButton"
-    );
+    expect(screen.getByText("Test Claim")).toBeInTheDocument();
   });
 
   it("shows the loader when loading", () => {
@@ -128,7 +144,7 @@ describe("the ClaimForm", () => {
 
     expect(() => render(wrappedClaimForm)).toThrow("Error getting your PII");
     expect(console.error).toHaveBeenCalled();
-    expect(console.error.mock.calls[0][0]).toContain(
+    expect((console.error as jest.Mock).mock.calls[0][0]).toContain(
       "Error: Uncaught { message: 'Error getting your PII' }"
     );
   });

@@ -17,6 +17,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=claimant_name\\.last_name]").type("Smith");
     // clear first to replace the whoami.email value
     cy.get("[name=email]").clear().type("dave@example.com");
+    cy.get("button").contains("Next").click();
     cy.get("[data-testid='button']").contains("Test Claim").click();
     cy.contains("Ready for next page").should("be.visible");
   });
@@ -27,6 +28,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=claimant_name\\.first_name]").type("Dave");
     cy.get("[name=claimant_name\\.last_name]").type("Dave");
     cy.get("[name=email]").clear().type("dave@example.com");
+    cy.get("button").contains("Next").click();
     cy.get("[name=is_complete]").check({ force: true });
     cy.get("[data-testid='button']").contains("Test Claim").click();
     cy.contains("Claim submitted").should("be.visible");
@@ -35,7 +37,10 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   it("shows error if any required field is missing", () => {
     cy.login();
     cy.visit("/claimant/");
+    cy.get("[name=claimant_name\\.first_name]").clear();
+    cy.get("button").contains("Next").click();
     cy.get("[data-testid='button']").contains("Test Claim").click();
+    cy.get("a").contains("Previous").click();
     cy.contains("This field is required").should("be.visible");
   });
 });

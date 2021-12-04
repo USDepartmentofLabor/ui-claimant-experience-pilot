@@ -1,8 +1,5 @@
 import { useQueryClient } from "react-query";
 import { Formik, Form } from "formik";
-import { FormGroup, Button } from "@trussworks/react-uswds";
-import TextField from "../../components/form/fields/TextField";
-import CheckboxField from "../../components/form/fields/CheckboxField";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
@@ -10,16 +7,22 @@ import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
 import PageLoader from "../../common/PageLoader";
+import { useParams, useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import homeStyles from "./Home.module.scss";
+import { Button } from "@trussworks/react-uswds";
+import { getPages } from "../PageDefinition";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
+  const { page } = useParams();
 
   return (
     <main>
       <h1>{t("welcome")}</h1>
       <p className="usa-intro">{t("intro")}</p>
       <RequestErrorBoundary>
-        <ClaimForm />
+        <ClaimForm page={page} />
       </RequestErrorBoundary>
     </main>
   );
@@ -40,11 +43,45 @@ const initialValues: { [key: string]: string | boolean | any } = {
   phone: "",
 };
 
-export const ClaimForm = () => {
+export const ClaimForm = ({ page }: { page: string | undefined }) => {
   const { data: whoami, error, isLoading } = useWhoAmI();
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
   const { t } = useTranslation("home");
+  const navigate = useNavigate();
+
+  const pages = getPages({ submitClaim });
+
+  const currentPageIndex = pages.findIndex((p) => p.path === page);
+
+  if (currentPageIndex === -1) {
+    throw new Error("Page not found");
+  }
+
+  const currentPage = pages[currentPageIndex];
+
+  const previousPageLink = () =>
+    pages[currentPageIndex - 1] && (
+      <Link
+        to={`/claim/${pages[currentPageIndex - 1].path}`}
+        className="usa-button"
+      >
+        &laquo; {t("pagination.previous")}
+      </Link>
+    );
+
+  const nextPageLink = (submitForm: () => Promise<void>) =>
+    pages[currentPageIndex + 1] && (
+      <Button
+        type="submit"
+        onClick={() => {
+          submitForm();
+          navigate(`/claim/${pages[currentPageIndex + 1].path}`);
+        }}
+      >
+        {t("pagination.next")} &raquo;
+      </Button>
+    );
 
   // Yup validation schema for this page ONLY.
   // Yup supports its own i18n but it seems redundant?
@@ -73,8 +110,8 @@ export const ClaimForm = () => {
     return <PageLoader />;
   }
 
-  if (error || submitClaim.error || !whoami) {
-    throw error || submitClaim.error;
+  if (error || !whoami) {
+    throw error;
   }
 
   return (
@@ -103,52 +140,14 @@ export const ClaimForm = () => {
           }
         }}
       >
-        {() => (
+        {({ submitForm }) => (
           //{(props: FormikProps<ClaimantInput>) => (
           <Form>
-            <TextField
-              name="claimant_name.first_name"
-              label={t("label.first_name")}
-              type="text"
-              id="claimant_name.first_name"
-            />
-            <TextField
-              name="claimant_name.last_name"
-              label={t("label.last_name")}
-              type="text"
-              id="claimant_name.last_name"
-            />
-            <TextField
-              name="email"
-              label={t("label.email")}
-              type="email"
-              id="email"
-            />
-            <TextField
-              name="birthdate"
-              label={t("label.birthdate")}
-              type="text"
-              id="birthdate"
-            />
-            <TextField name="ssn" label={t("label.ssn")} type="text" id="ssn" />
-            <CheckboxField
-              id="is_complete"
-              name="is_complete"
-              label={t("label.is_complete")}
-              labelDescription={t("label.is_complete_description")}
-              tile
-            />
-            <FormGroup>
-              <Button
-                type="submit"
-                disabled={
-                  submitClaim.isLoading ||
-                  (submitClaim.isSuccess && submitClaim.data.status === 201)
-                }
-              >
-                {t("sampleForm.claimButton")}
-              </Button>
-            </FormGroup>
+            {currentPage.render()}
+            <div className={homeStyles.pagination}>
+              {previousPageLink()}
+              {nextPageLink(submitForm)}
+            </div>
           </Form>
         )}
       </Formik>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Routes, Route, NavLink, Link } from "react-router-dom";
+import { Routes, Route, NavLink, Link, Navigate } from "react-router-dom";
 
 import { ReactQueryDevtools } from "react-query/devtools";
 
@@ -23,6 +23,7 @@ import { useLogout } from "./queries/logout";
 // These classes are imported globally and can be used on every page
 import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
+import { FormPath } from "./pages/PageDefinition";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -36,6 +37,8 @@ function App() {
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
   };
+
+  const initialFormPath: FormPath = "/claim/personal-information";
 
   const navItems = [
     <NavLink
@@ -89,7 +92,11 @@ function App() {
           <AuthContainer>
             <Routes>
               <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
-              <Route path={HOME_PAGE} element={<HomePage />} />
+              <Route path={`/claim/:page/*`} element={<HomePage />} />
+              <Route
+                path={`${HOME_PAGE}`}
+                element={<Navigate replace to={initialFormPath} />}
+              />
             </Routes>
           </AuthContainer>
         </GridContainer>
