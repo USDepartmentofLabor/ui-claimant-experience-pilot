@@ -40,6 +40,11 @@ def idp(request):
     )
 
 
+def logout(request):
+    request.session.flush()
+    return redirect("/")
+
+
 def test(request):  # pragma: no cover
     request.session.set_test_cookie()
     this_session = session_as_dict(request)

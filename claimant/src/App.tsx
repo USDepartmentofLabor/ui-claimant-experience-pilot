@@ -11,6 +11,7 @@ import {
   NavMenuButton,
   PrimaryNav,
   GridContainer,
+  Link as ExtLink,
 } from "@trussworks/react-uswds";
 
 import { Routes as ROUTES } from "./routes";
@@ -19,7 +20,6 @@ import HomePage from "./pages/Home/Home";
 import { AuthContainer } from "./common/AuthContainer";
 import { useTranslation } from "react-i18next";
 
-import { useLogout } from "./queries/logout";
 // These classes are imported globally and can be used on every page
 import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
@@ -29,10 +29,8 @@ function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { HOME_PAGE, WHOAMI_PAGE } = ROUTES;
   const { t } = useTranslation("common");
-  const logout = useLogout();
-  const handleLogout = () => {
-    logout.mutate();
-  };
+  const baseUrl = process.env.REACT_APP_BASE_URL || "";
+  const logoutUrl = `${baseUrl}/logout/`;
 
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
@@ -82,9 +80,7 @@ function App() {
             mobileExpanded={mobileNavOpen}
           />
         </div>
-        <button className="usa-button--inverse" onClick={handleLogout}>
-          {t("logout")}
-        </button>
+        <ExtLink href={logoutUrl}>{t("logout")}</ExtLink>
       </Header>
 
       <section className="usa-section">
