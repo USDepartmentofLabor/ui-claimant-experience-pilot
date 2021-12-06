@@ -205,7 +205,7 @@ This will create or update a `.po` file.
 The `.po` files must be compiled into binary `.mo` files. To see your `.po` file changes locally, inside the container run:
 
 ```
-make build translations
+make build-translations
 ```
 
 This step is performed automatically during container build. You need to run it only during active local development

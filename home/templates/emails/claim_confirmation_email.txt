@@ -1,0 +1,13 @@
+{% load i18n %}
+{% blocktranslate with name=swa.name %}
+Please do not reply to this email.
+Thanks for submitting your claim for unemployment insurance benefits.
+Your claim has been forwarded to {{ name }}. All questions about your
+claim should be directed to: {% endblocktranslate %}
+{% if swa.claimant_url %}
+{{ swa.claimant_url }}{% else %} {% blocktranslate with name=swa.name %}{{ name }}'s workforce agency{% endblocktranslate %} {% endif %}
+{% blocktranslate %}
+Your Claim ID is {{ claim_id }}
+
+Thank you.
+{% endblocktranslate %}

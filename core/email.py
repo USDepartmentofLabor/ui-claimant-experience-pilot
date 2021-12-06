@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.template.loader import render_to_string
 from celery import shared_task
 import logging
 
@@ -44,8 +45,11 @@ class InitialClaimConfirmationEmail(object):
         self.email_address = email_address
 
     def send_later(self):
-        # TODO pass in claim and claim.swa to the template to create the body
+        email_body = render_to_string(
+            "emails/claim_confirmation_email.txt",
+            {"swa": self.claim.swa, "claim_id": self.claim.uuid},
+        )
         email = Email(
-            to=self.email_address, subject="Your UI Claim receipt", body="placeholder"
+            to=self.email_address, subject="Your UI Claim receipt", body=email_body
         )
         return email.send_later()
