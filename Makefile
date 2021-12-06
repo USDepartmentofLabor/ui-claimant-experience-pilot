@@ -162,9 +162,6 @@ secret: ## Generate string for SECRET_KEY or REDIS_SECRET_KEY env variable
 x509-certs: ## Generate x509 public/private certs for registrying with Identity Provider
 	scripts/gen-x509-certs.sh
 
-rsa-keys: ## Generate RSA public/private key pair
-	scripts/gen-rsa-keys.sh $(PREFIX)
-
 ec-keys: ## Generate ECDSA public/private key pair
 	scripts/gen-ec-keys.sh $(PREFIX)
 
