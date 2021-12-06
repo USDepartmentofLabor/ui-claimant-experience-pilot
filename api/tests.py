@@ -206,6 +206,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
         )
         self.assertTrue(claim.is_completed())
+        self.assertEqual(
+            claim.events.filter(category=Claim.EventCategories.STORED).count(), 1
+        )
+        self.assertEqual(
+            claim.events.filter(category=Claim.EventCategories.SUBMITTED).count(), 1
+        )
 
         # this requires celery task to run to completion async,
         # so wait a little
@@ -332,7 +338,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
 class ClaimApiTestCase(TestCase, SessionVerifier):
     def create_api_claim_request(self, body):
         request = RequestFactory().post(
-            "/api/claim", content_type="application/json", data=body
+            "/api/claim/", content_type="application/json", data=body
         )
         request.session = self.client.session
         claim_request = ClaimRequest(request)

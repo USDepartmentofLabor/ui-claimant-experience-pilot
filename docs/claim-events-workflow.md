@@ -7,13 +7,14 @@ are listed here (e.g. `CONFIRMATION_EMAIL` and `FETCHED`).
 
 ## SUBMITTED
 
-After a `STARTED` Event exists, each time a subsequent `POST` is made to the `/api/claim` endpoint, create a `SUBMITTED` Event.
+Each time a subsequent `POST` is made to the `/api/claim/` endpoint, create a `SUBMITTED` Event.
 Generally, `SUBMITTED` events reflect the "save and continue" pattern on the frontend.
 
 ## STORED
 
-Whenever a Claim is written to S3, create a `STORED` Event. Unless the submitted Claim data is invalid (e.g. fails to conform
-with the schema) then we expect to see `SUBMITTED` and `STORED` Events in very close temporal proximity.
+Whenever a Claim is written to S3, create a `STORED` Event. We expect to see `SUBMITTED` and `STORED` Events in very close temporal proximity.
+If we don't, there is something amiss with our S3 storage pattern (misconfiguration, network latency, etc) that might suggest we need
+to change our approach.
 
 ## COMPLETED
 

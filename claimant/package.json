@@ -14,6 +14,7 @@
     "formik": "^2.2.9",
     "i18next": "^21.5.0",
     "i18next-browser-languagedetector": "^6.1.2",
+    "istanbul-lib-coverage": "^3.2.0",
     "json-schema-yup-transformer": "^1.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -62,7 +63,7 @@
     "cypress:run": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome",
     "cypress:run:dev": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome --config-file cypress-dev.json",
     "coverage": "yarn test --coverage --watchAll=false",
-    "test:coverage": "yarn coverage && yarn cypress:run",
+    "test:coverage": "yarn coverage && yarn cypress:run && npx nyc report",
     "pretest:coverage": "rm -rf .nyc_output",
     "posttest:coverage": "yarn report:combined && node src/coverageCheck.js",
     "mkdir:reports": "mkdir reports || true",
@@ -71,8 +72,8 @@
     "precombine:reports": "yarn copy:reports && mkdir .nyc_output || true",
     "combine:reports": "npx nyc merge reports && mv coverage.json .nyc_output/out.json",
     "prereport:combined": "yarn combine:reports",
-    "report:combined": "mkdir coverage-all || true && npx nyc report --reporter lcov --reporter text --reporter json-summary --report-dir coverage-all",
-    "test:ci": "yarn coverage && yarn cypress:run",
+    "report:combined": "mkdir coverage-all || true && npx nyc report --reporter html --reporter lcov --reporter text --reporter json-summary --report-dir coverage-all",
+    "test:ci": "yarn coverage && yarn cypress:run && npx nyc report",
     "pretest:ci": "rm -rf .nyc_output",
     "posttest:ci": "yarn report:ci && node src/coverageCheck.js",
     "precopy:ci": "yarn mkdir:reports",
@@ -103,6 +104,7 @@
     ]
   },
   "nyc": {
+    "cache": false,
     "report-dir": "coverage-cypress",
     "exclude": [
       "**/node_modules/**",

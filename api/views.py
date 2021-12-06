@@ -113,6 +113,9 @@ def claim(request):
         claim_request.payload["validated_at"] = timezone.now().isoformat()
         claim_request.payload["$schema"] = claim_validator.schema_url
 
+    # log we received the claim
+    claim_request.claim.events.create(category=Claim.EventCategories.SUBMITTED)
+
     # now that we have a Claim, stash its info in session
     request.session["whoami"]["claim_id"] = claim_request.payload["id"]
     request.session["claim"] = claim_request.payload
@@ -175,10 +178,9 @@ def save_partial_claim(claim_request):
     claim = claim_request.claim
     try:
         # TODO depending on performance, we might want to move this to an async task
-        with transaction.atomic():
-            cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
-            if not cw.write():
-                raise Exception("Failed to write partial claim")
+        cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
+        if not cw.write():
+            raise Exception("Failed to write partial claim")
         logger.debug("🚀 wrote partial claim")
         return JsonResponse(
             {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=202

@@ -40,6 +40,9 @@ class Claim(TimeStampedModel):
         Event, content_type_field="model_name", object_id_field="model_id"
     )
 
+    def create_stored_event(self):
+        return self.events.create(category=Claim.EventCategories.STORED)
+
     def payload_path(self):
         if self.is_completed():
             return self.completed_payload_path()

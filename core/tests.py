@@ -91,6 +91,9 @@ class CoreClaimStorageTestCase(TestCase):
 
         cw = ClaimWriter(claim, "test payload")
         self.assertTrue(cw.write())
+        self.assertEqual(
+            claim.events.filter(category=Claim.EventCategories.STORED).count(), 1
+        )
 
         cr = ClaimReader(claim)
         bucket_asset = cr.read()
@@ -99,6 +102,9 @@ class CoreClaimStorageTestCase(TestCase):
         # explicit path declaration
         cw = ClaimWriter(claim, "test path", "path/to/my/object")
         self.assertTrue(cw.write())
+        self.assertEqual(
+            claim.events.filter(category=Claim.EventCategories.STORED).count(), 2
+        )
 
         cr = ClaimReader(claim, "path/to/my/object")
         bucket_asset = cr.read()

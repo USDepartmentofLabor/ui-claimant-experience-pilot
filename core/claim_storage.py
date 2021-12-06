@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 import logging
 import os
 from django.conf import settings
+from django.db import transaction
 
 
 logger = logging.getLogger(__name__)
@@ -62,8 +63,9 @@ class ClaimWriter(object):
 
     def write(self):
         try:
-            self.claim_store.write(self.path, self.payload)
-            # TODO mark claim event as written
+            with transaction.atomic():
+                self.claim_store.write(self.path, self.payload)
+                self.claim.create_stored_event()
         except ClientError as e:
             logger.exception(e)
             return False
