@@ -55,9 +55,9 @@ describe("the Home page", () => {
       </I18nextProvider>
     </MemoryRouter>
   );
-  it("renders without error", () => {
+  it("renders without error", async () => {
     render(Page);
-    expect(screen.getByRole("heading")).toHaveTextContent("Welcome");
+    expect(await screen.findByRole("heading")).toHaveTextContent("Welcome");
   });
   it("navigates between pages", async () => {
     render(Page);

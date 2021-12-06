@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
 import { Routes, Route, NavLink, Link, Navigate } from "react-router-dom";
 
@@ -15,15 +15,18 @@ import {
 } from "@trussworks/react-uswds";
 
 import { Routes as ROUTES } from "./routes";
-import WhoAmIPage from "./pages/Whoami/Whoami";
-import HomePage from "./pages/Home/Home";
+
+const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
+const HomePage = lazy(() => import("./pages/Home/Home"));
+
 import { AuthContainer } from "./common/AuthContainer";
 import { useTranslation } from "react-i18next";
 
 // These classes are imported globally and can be used on every page
 import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
-import { FormPath } from "./pages/PageDefinition";
+import { pages } from "./pages/PageDefinition";
+import PageLoader from "./common/PageLoader";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -35,8 +38,6 @@ function App() {
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
   };
-
-  const initialFormPath: FormPath = "/claim/personal-information";
 
   const navItems = [
     <NavLink
@@ -86,14 +87,16 @@ function App() {
       <section className="usa-section">
         <GridContainer>
           <AuthContainer>
-            <Routes>
-              <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
-              <Route path={`/claim/:page/*`} element={<HomePage />} />
-              <Route
-                path={`${HOME_PAGE}`}
-                element={<Navigate replace to={initialFormPath} />}
-              />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
+                <Route path={`/claim/:page/*`} element={<HomePage />} />
+                <Route
+                  path={`${HOME_PAGE}`}
+                  element={<Navigate replace to={`/claim/${pages[0].path}`} />}
+                />
+              </Routes>
+            </Suspense>
           </AuthContainer>
         </GridContainer>
       </section>

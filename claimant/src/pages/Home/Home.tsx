@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form, FormikErrors } from "formik";
+import { Formik, Form } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import homeStyles from "./Home.module.scss";
 import { Button } from "@trussworks/react-uswds";
-import { getPages } from "../PageDefinition";
+import { pages } from "../PageDefinition";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
@@ -53,15 +53,13 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
   const { t } = useTranslation("home");
   const navigate = useNavigate();
 
-  const pages = getPages({ submitClaim });
-
   const currentPageIndex = pages.findIndex((p) => p.path === page);
 
   if (currentPageIndex === -1) {
     throw new Error("Page not found");
   }
 
-  const currentPage = pages[currentPageIndex];
+  const { fields, Component: CurrentPage } = pages[currentPageIndex];
 
   const previousPageLink = () =>
     !claimCompleted() &&
@@ -74,28 +72,18 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
       </Link>
     );
 
-  const nextPageLink = (
-    validateForm: () => Promise<FormikErrors<FormValues>>,
-    submitForm: () => Promise<void>
-  ) =>
-    !claimCompleted() &&
-    pages[currentPageIndex + 1] && (
-      <Button
-        type="submit"
-        onClick={() => {
-          validateForm().then((errors) => {
-            if (Object.keys(errors).length === 0) {
-              submitForm();
-              navigate(`/claim/${pages[currentPageIndex + 1].path}`);
-            }
-          });
-        }}
-      >
-        {t("pagination.next")} &raquo;
+  const nextPageLink = () =>
+    !claimCompleted() && (
+      <Button disabled={submitClaim.isLoading} type="submit">
+        {pages[currentPageIndex + 1] ? (
+          <>{t("pagination.next")} &raquo;</>
+        ) : (
+          t("sampleForm.claimButton")
+        )}
       </Button>
     );
 
-  const validationSchema = YupBuilder("claim-v1.0", currentPage.fields);
+  const validationSchema = YupBuilder("claim-v1.0", fields);
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
@@ -126,6 +114,10 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values) => {
+          if (pages[currentPageIndex + 1]) {
+            navigate(`/claim/${pages[currentPageIndex + 1].path}`);
+          }
+
           if (!whoami) {
             return;
           }
@@ -146,13 +138,13 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
           }
         }}
       >
-        {({ validateForm, submitForm }) => (
+        {() => (
           //{(props: FormikProps<ClaimantInput>) => (
           <Form>
-            {currentPage.render()}
+            <CurrentPage />
             <div className={homeStyles.pagination}>
               {previousPageLink()}
-              {nextPageLink(validateForm, submitForm)}
+              {nextPageLink()}
             </div>
           </Form>
         )}
