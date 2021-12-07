@@ -89,3 +89,11 @@ class ClaimReader(object):
         except ClientError as e:
             logger.exception(e)
             return False
+
+    def exists(self):
+        try:
+            return "Body" in self.claim_store.read(self.path)
+        except ClientError:
+            # no logging since we only care about binary true/false
+            # and it's "normal" to return false
+            return False

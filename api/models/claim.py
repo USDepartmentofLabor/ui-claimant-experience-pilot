@@ -90,18 +90,33 @@ class Claim(TimeStampedModel):
             to_delete = []
             for cr in [completed_artifact, partial_artifact]:
                 logger.debug("🚀 read {}".format(cr.path))
-                if cr.read():
+                if cr.exists():
                     to_delete.append(cr.path)
             if len(to_delete) > 0:
                 resp = ClaimStore().delete(to_delete)
             else:
                 resp = {"Deleted": []}
+
+            if not resp:
+                return FAILURE
+
             logger.debug("🚀 resp: {}".format(resp))
+
+            if "Errors" in resp:
+                logger.error(resp["Errors"])
+
+            if "Deleted" not in resp:
+                return FAILURE
+
+            if len(to_delete) != len(resp["Deleted"]):
+                return FAILURE
+
             # only create Event if something actually happened
-            if resp and len(resp["Deleted"]) > 0:
+            if len(resp["Deleted"]) > 0:
                 self.events.create(
                     category=Claim.EventCategories.DELETED,
                     description=json_encode({"deleted": resp["Deleted"]}),
                 )
                 return SUCCESS
-            return NOOP if resp else FAILURE
+            # we get here if there was nothing to delete
+            return NOOP

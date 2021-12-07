@@ -3,12 +3,21 @@ from django.test import TransactionTestCase, TestCase
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 from api.models import SWA, IdentityProvider, Claimant, Claim
+from api.models.claim import SUCCESS, FAILURE
 import datetime
 from datetime import timedelta
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
 from jwcrypto.common import json_decode
+import boto3
+from botocore.stub import Stubber
+from core.claim_storage import ClaimWriter
+from unittest.mock import patch
+from core.test_utils import (
+    create_s3_bucket,
+    delete_s3_bucket,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -219,3 +228,92 @@ class ApiModelsTestCase(TransactionTestCase):
         # our enum is not enforced, so exercise the error case
         unknown_event = claim.events.create(category=0)
         self.assertEqual(unknown_event.get_category_display(), "Unknown")
+
+
+class ApiModelClaimArtifactsTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+
+    def test_claim_delete_artifacts(self):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        ks_swa, _ = create_swa()
+        claim = Claim(swa=ks_swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cw = ClaimWriter(claim, "test")
+        cw.write()
+        logger.debug("🚀 wrote claim")
+
+        # failure to read an artifact that we know does not exist (the partial claim) does NOT
+        # populate the error logs
+        # unittest.assertNoLogs only exists at Python >= 3.10 so we cannot use it here.
+        with self.assertRaises(AssertionError) as context:
+            with self.assertLogs(level="ERROR") as cm:
+                resp = claim.delete_artifacts()
+                self.assertEqual(resp, SUCCESS)
+            self.assertIn(
+                "no logs of level ERROR or higher triggered on root",
+                str(context.exception),
+            )
+
+        # if boto3 is unable to delete the same number of objects we expect,
+        # the error is logged and we return failure
+        with patch("core.claim_storage.ClaimReader.exists") as mock_reader_exists:
+            mock_reader_exists.return_value = True
+            with patch("core.claim_storage.ClaimStore.bucket") as mock_boto3_bucket:
+                bucket = boto3.resource("s3").Bucket("no-such-bucket")
+                stubber = Stubber(bucket.meta.client)
+                delete_objects_response = {
+                    "Deleted": [],
+                    "Errors": [
+                        {"Key": "bad thing"},
+                    ],
+                }
+                stubber.add_response("delete_objects", delete_objects_response)
+                stubber.activate()
+                mock_boto3_bucket.return_value = bucket
+
+                with self.assertLogs(level="ERROR") as cm:
+                    resp = claim.delete_artifacts()
+                    self.assertIn(
+                        "ERROR:api.models.claim:[{'Key': 'bad thing'}]", cm.output[0]
+                    )
+                    self.assertEqual(resp, FAILURE)
+
+            with patch("core.claim_storage.ClaimStore.bucket") as mock_boto3_bucket:
+                bucket = boto3.resource("s3").Bucket("no-such-bucket")
+                stubber = Stubber(bucket.meta.client)
+                delete_objects_response = {
+                    # no Deleted key at all
+                    "Errors": [
+                        {"Key": "bad thing"},
+                    ]
+                }
+                stubber.add_response("delete_objects", delete_objects_response)
+                stubber.activate()
+                mock_boto3_bucket.return_value = bucket
+
+                with self.assertLogs(level="ERROR") as cm:
+                    resp = claim.delete_artifacts()
+                    self.assertIn(
+                        "ERROR:api.models.claim:[{'Key': 'bad thing'}]", cm.output[0]
+                    )
+                    self.assertEqual(resp, FAILURE)
+
+        # if we have some unknown failure, return it
+        with patch("core.claim_storage.ClaimReader.exists") as mock_reader_exists:
+            mock_reader_exists.return_value = True
+            with patch(
+                "core.claim_storage.ClaimStore.delete"
+            ) as mocked_claimstore_delete:
+                mocked_claimstore_delete.return_value = False
+                resp = claim.delete_artifacts()
+                self.assertEqual(resp, FAILURE)
