@@ -2,8 +2,10 @@
 from django.test import Client, RequestFactory, TestCase
 from django.core import mail
 from django.utils import timezone
+from django.conf import settings
 from unittest.mock import patch
 import boto3
+from jwcrypto.common import json_decode
 from botocore.stub import Stubber
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
@@ -423,6 +425,18 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
 
 
 class ClaimValidatorTestCase(TestCase):
+    def test_example_claim_instance(self):
+        example = settings.BASE_DIR / "schemas" / "claim-v1.0-example.json"
+        with open(example) as f:
+            json_str = f.read()
+        example_claim = json_decode(json_str)
+        cv = ClaimValidator(example_claim)
+        logger.debug("errors={}".format(cv.errors_as_dict()))
+        self.assertTrue(cv.valid)
+        ccv = CompletedClaimValidator(example_claim)
+        logger.debug("errors={}".format(ccv.errors_as_dict()))
+        self.assertTrue(ccv.valid)
+
     def base_claim(self):
         return {
             "id": str(uuid.uuid4()),
@@ -495,7 +509,11 @@ class ClaimValidatorTestCase(TestCase):
         )
 
         citizen_claim = self.base_claim() | {
-            "us_citizenship": {"is_citizen": False, "alien_registration_number": "abc"}
+            "us_citizenship": {
+                "is_citizen": False,
+                "alien_registration_number": "abc",
+                "alien_registration_type": "resident",
+            }
         }
         cv = ClaimValidator(citizen_claim)
         self.assertTrue(cv.valid)

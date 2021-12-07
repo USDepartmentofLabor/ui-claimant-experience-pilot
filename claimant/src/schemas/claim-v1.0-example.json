@@ -1,18 +1,70 @@
 {
   "id": "a72549aa-2e4a-488c-ae2f-70db539d7c8d",
-  "claimant_id": "random-claimaint-string",
+  "claimant_id": "opaque-claimaint-string",
   "identity_provider": "test",
   "swa_code": "XX",
   "birthdate": "2000-01-01",
   "ssn": "900-00-1234",
   "claimant_name": {
-    "first_name": "first",
-    "last_name": "last"
+    "first_name": "Joan",
+    "last_name": "Jett",
+    "middle_name": "Rockstar",
+    "suffix": "Jr."
   },
   "mailing_address": {
     "address1": "123 Any St",
     "city": "Somewhere",
     "state": "KS",
     "zipcode": "00000"
+  },
+  "residence_address": {
+    "address1": "456 Main Ave",
+    "address2": "Apartment 789",
+    "city": "Elsewhere",
+    "state": "MO",
+    "zipcode": "00000-1234"
+  },
+  "sex": "Female",
+  "race": ["Black or African American"],
+  "ethnicity": ["Not Hispanic or Latino"],
+  "education_level": "unknown",
+  "primary_wage_earner": true,
+  "preferred_language": "English",
+  "dependency_allowance": false,
+  "federal_income_tax_withheld": true,
+  "currently_disabled_unable_to_work": false,
+  "worked_in_other_states": ["MN", "KS", "MO"],
+  "us_citizenship": {
+    "is_citizen": false,
+    "alien_registration_type": "Permanent Resident",
+    "alien_registration_number": "A-000-000-000",
+    "alien_registration_exp_date": "2030-01-01",
+    "work_authorization_from_date": "2022-01-01",
+    "work_authorization_to_date": "2023-12-31",
+    "country_of_origin": "Namibia",
+    "authorized_to_work": true,
+    "document_types": ["Form I-766"],
+    "alien_registration_name": {
+      "first_name": "Joan",
+      "last_name": "Jett",
+      "middle_name": "Musician",
+      "suffix": "Jr."
+    }
+  },
+  "phone": ["555-555-1234"],
+  "ready_willing_able_to_work": true,
+  "registered_with_vocational_rehab": false,
+  "student_fulltime_in_last_18_months": false,
+  "active_military_in_last_18_months": false,
+  "employed_in_last_18_months": true,
+  "currently_reside_in_us": true,
+  "federal_employment_in_last_18_months": false,
+  "refused_any_job_since_last_worked": false,
+  "occupation": {
+    "job_title": "nurse",
+    "job_description": "ER nurse",
+    "bls_description": "29-0000  Healthcare Practitioners and Technical Occupations",
+    "bls_code": "29-1141",
+    "bls_title": "Registered Nurses"
   }
 }

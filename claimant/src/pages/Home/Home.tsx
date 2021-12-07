@@ -43,7 +43,7 @@ const initialValues: FormValues = {
   email: "",
   birthdate: "",
   ssn: "",
-  phone: "",
+  phone: [""],
 };
 
 export const ClaimForm = ({ page }: { page: string | undefined }) => {
