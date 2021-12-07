@@ -2,6 +2,7 @@
 import json
 import hashlib
 from api.models import Claimant, IdentityProvider
+from api.whoami import WhoAmI
 
 
 def session_as_dict(request):
@@ -27,7 +28,7 @@ def register_local_login(request):
         # ok to ignore return value
         Claimant.objects.get_or_create(idp_user_xid=xid, idp=local_identity_provider())
         whoami["claimant_id"] = xid
-    return whoami
+    return WhoAmI(**whoami)
 
 
 def hash_idp_user_xid(user_xid):

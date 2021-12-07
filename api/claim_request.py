@@ -2,6 +2,7 @@
 # turn a HTTPRequest into a valid Claim
 from django.http import JsonResponse
 from .models import SWA, Claim, Claimant
+from .whoami import WhoAmI
 import json
 
 
@@ -16,7 +17,7 @@ class ClaimRequest(object):
     def __init__(self, request):
         self.response = None
         self.error = None
-        self.whoami = request.session.get("whoami")
+        self.whoami = WhoAmI(**request.session.get("whoami"))
         self.payload = json.loads(request.body.decode("utf-8"))
         self.__build_request()
         self.is_complete = "is_complete" in self.payload and self.payload["is_complete"]

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from api.models import Claimant
 import logging
 
 logger = logging.getLogger("home.tests")
@@ -20,7 +21,8 @@ class HomeTestCase(TestCase):
         self.assertEquals(self.client.session["redirect_to"], "http://example.com/")
         self.assertEquals(self.client.session["swa"], "XX")
         response = self.client.post(
-            "/login/", {"first_name": "Some", "last_name": "Body"}
+            "/login/",
+            {"email": "some@example.com", "first_name": "Some", "last_name": "Body"},
         )
         self.assertRedirects(
             response,
@@ -28,10 +30,30 @@ class HomeTestCase(TestCase):
             status_code=302,
             fetch_redirect_response=False,
         )
+        claimant = Claimant.objects.last()
         self.assertEquals(
-            self.client.session["whoami"], {"first_name": "Some", "last_name": "Body"}
+            self.client.session["whoami"],
+            {
+                "claimant_id": claimant.idp_user_xid,
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+            },
         )
 
         # GET or POST only
         response = self.client.head("/login/")
         self.assertEquals(response.status_code, 405)
+
+    def test_logout_page(self):
+        self.client.post(
+            "/login/",
+            {"email": "some@example.com", "first_name": "Some", "last_name": "Body"},
+        )
+        response = self.client.get("/logout/")
+        self.assertRedirects(
+            response,
+            "/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )

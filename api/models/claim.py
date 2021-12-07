@@ -9,6 +9,13 @@ import uuid
 from django.db import transaction
 from jwcrypto.common import json_encode
 import logging
+from core.claim_encryption import (
+    AsymmetricClaimEncryptor,
+    SymmetricClaimEncryptor,
+    SymmetricClaimDecryptor,
+    symmetric_encryption_key,
+)
+from core.claim_storage import ClaimReader, ClaimStore, ClaimWriter
 
 
 logger = logging.getLogger(__name__)
@@ -82,8 +89,6 @@ class Claim(TimeStampedModel):
         )
 
     def delete_artifacts(self):
-        from core.claim_storage import ClaimReader, ClaimStore
-
         completed_artifact = ClaimReader(self, path=self.completed_payload_path())
         partial_artifact = ClaimReader(self, path=self.partial_payload_path())
         with transaction.atomic():
@@ -120,3 +125,48 @@ class Claim(TimeStampedModel):
                 return SUCCESS
             # we get here if there was nothing to delete
             return NOOP
+
+    def write_partial(self, validated_payload):
+        sym_encryptor = SymmetricClaimEncryptor(
+            validated_payload, symmetric_encryption_key()
+        )
+        packaged_claim = sym_encryptor.packaged_claim()
+        packaged_payload = packaged_claim.as_json()
+        try:
+            # TODO depending on performance, we might want to move this to an async task
+            cw = ClaimWriter(self, packaged_payload, path=self.partial_payload_path())
+            if not cw.write():
+                raise Exception("Failed to write partial claim")
+            logger.debug("🚀 wrote partial claim")
+            return True
+        except Exception as error:
+            logger.exception(error)
+            return False
+
+    def write_completed(self, validated_payload):
+        asym_encryptor = AsymmetricClaimEncryptor(
+            validated_payload, self.swa.public_key_as_jwk()
+        )
+        packaged_claim = asym_encryptor.packaged_claim()
+        packaged_payload = packaged_claim.as_json()
+        try:
+            with transaction.atomic():
+                self.events.create(category=Claim.EventCategories.COMPLETED)
+                cw = ClaimWriter(
+                    self, packaged_payload, path=self.completed_payload_path()
+                )
+                if not cw.write():
+                    raise Exception("Failed to write completed claim")
+            logger.debug("🚀 wrote completed claim")
+            return True
+        except Exception as error:
+            logger.exception(error)
+            return False
+
+    def read_partial(self):
+        claim_reader = ClaimReader(self, path=self.partial_payload_path())
+        if not claim_reader.exists():
+            return False
+        packaged_claim_str = claim_reader.read()
+        cd = SymmetricClaimDecryptor(packaged_claim_str, symmetric_encryption_key())
+        return cd.decrypt()

@@ -1,7 +1,6 @@
 type WhoAmI = {
   claim_id?: string;
   claimant_id: string;
-  form_id: string;
   first_name: string;
   last_name: string;
   birthdate: string;

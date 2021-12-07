@@ -38,7 +38,6 @@ describe("component WhoAmI", () => {
   const myPII: WhoAmI = {
     claim_id: "123",
     claimant_id: "321",
-    form_id: "15",
     first_name: "Hermione",
     last_name: "Granger",
     birthdate: "12/22/2000",
@@ -79,13 +78,12 @@ describe("component WhoAmI", () => {
     render(whoAmI);
     const list = screen.getByRole("list");
     const { getAllByRole } = within(list);
-    expect(list.childElementCount).toBe(9);
+    expect(list.childElementCount).toBe(8);
 
     const items = getAllByRole("listitem");
     const piiItems = items.map((item) => item.textContent);
     expect(piiItems).toMatchInlineSnapshot(`
       Array [
-        "info.formId",
         "info.firstName",
         "info.lastName",
         "info.dob",

@@ -245,8 +245,9 @@ class CoreClaimEncryptionTestCase(TestCase):
         self.assertEqual(decrypted_claim, claim)
 
 
-class EmailTestCase(TestCase, CeleryTestCase):
+class EmailTestCase(CeleryTestCase):
     def setUp(self):
+        super().setUp()
         # Empty the test outbox
         mail.outbox = []
 

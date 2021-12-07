@@ -28,6 +28,8 @@ from core.claim_encryption import (
     symmetric_encryption_key,
 )
 from core.claim_storage import ClaimReader
+from .claim_finder import ClaimFinder
+from .whoami import WhoAmI
 
 
 logger = logging.getLogger("api.tests")
@@ -38,13 +40,14 @@ class SessionVerifier:
         client = client if client else self.client
         session = client.session
         session["verified"] = True
-        session["whoami"] = {"hello": "world", "email": "someone@example.com"}
+        session["whoami"] = {"email": "someone@example.com"}
         session.save()
         return session
 
 
 class ApiTestCase(CeleryTestCase, SessionVerifier):
     def setUp(self):
+        super().setUp()
         # Empty the test outbox
         mail.outbox = []
 
@@ -58,18 +61,22 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         super().tearDownClass()
         delete_s3_bucket()
 
-    def csrf_client(self):
+    def csrf_client(self, claimant=None, swa=None):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
         c = Client(enforce_csrf_checks=True)
         self.verify_session(c)
+        if swa and claimant:
+            session = c.session
+            session["swa"] = swa.code
+            session["whoami"]["claimant_id"] = claimant.idp_user_xid
+            session.save()
         return c
 
     def test_whoami(self):
         self.verify_session()
         response = self.client.get("/api/whoami/")
         whoami = response.json()
-        self.assertEqual(whoami["hello"], "world")
-        self.assertIsInstance(whoami["form_id"], str)
+        self.assertEqual(whoami["email"], "someone@example.com")
         # only GET allowed
         response = self.client.post("/api/whoami/")
         self.assertEqual(response.status_code, 405)
@@ -104,7 +111,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
     def test_claim_without_csrf(self):
         csrf_client = self.csrf_client()
         response = csrf_client.post(
-            "/api/claim/", content_type="application/json", data={}
+            "/api/completed-claim/", content_type="application/json", data={}
         )
         self.assertEqual(response.status_code, 403)
 
@@ -114,7 +121,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         claimant = create_claimant(idp)
         csrf_client = self.csrf_client()
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
-        url = "/api/claim/"
+        url = "/api/completed-claim/"
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
@@ -150,7 +157,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         claimant = create_claimant(idp)
         csrf_client = self.csrf_client()
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
-        url = "/api/claim/"
+        url = "/api/partial-claim/"
         payload = {
             "claimant_name": {"first_name": "foo", "last_name": "bar"},
             "claimant_id": claimant.idp_user_xid,
@@ -180,13 +187,20 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
 
-    def test_claim_with_csrf(self):
+    def test_completed_claim_with_csrf(self):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client()
+        csrf_client = self.csrf_client(claimant)
         csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
-        url = "/api/claim/"
+        url = "/api/completed-claim/"
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+
+        # GET completed claim (we don't have one yet)
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 404)
+
+        # POST to create
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
@@ -198,7 +212,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             },
             "is_complete": True,
         }
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
@@ -221,8 +234,18 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, "Your UI Claim receipt")
 
-        # only POST allowed
-        response = csrf_client.get(url)
+        # GET completed claim we have made
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        claim_response = response.json()
+        self.assertEqual(claim_response["id"], str(claim.uuid))
+        self.assertEqual(claim_response["status"], None)
+        self.assertEqual(len(claim_response["events"]), 3)
+
+        # only GET or POST allowed
+        response = csrf_client.put(
+            url, content_type="application/json", data={}, **headers
+        )
         self.assertEqual(response.status_code, 405)
 
         # missing param returns error
@@ -236,8 +259,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
             "birthdate": "1234",
+            "is_complete": True,
         }
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=invalid_payload, **headers
         )
@@ -268,7 +291,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "ssn": "900-00-1234",
             "is_complete": True,
         }
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=invalid_payload, **headers
         )
@@ -277,6 +299,119 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertIn(
             "'claimant_name' is a required property", response.json()["errors"]
         )
+
+        # does not try to be complete
+        invalid_payload = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+            "is_complete": False,
+        }
+        response = csrf_client.post(
+            url, content_type="application/json", data=invalid_payload, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["error"],
+            "is_complete payload false/missing at completed-claim endpoint",
+        )
+
+    def test_partial_claim_with_csrf(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa)
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/partial-claim/"
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+
+        # does a partial claim already exist?
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 404)
+
+        # GET claim with no saved artifact
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 404)
+
+        # success
+        payload = {
+            "claimant_name": {"first_name": "foo", "last_name": "bar"},
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "birthdate": "2000-01-01",
+            "ssn": "900-00-1234",
+        }
+        response = csrf_client.post(
+            url, content_type="application/json", data=payload, **headers
+        )
+        self.assertEqual(claimant.claim_set.count(), 2)
+        claim = claimant.claim_set.order_by(
+            "created_at"
+        ).last()  # not the one we started with
+        self.assertEqual(response.status_code, 202)
+        self.assertEqual(
+            response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
+        )
+
+        # GET partial claim
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        response_payload = response.json()
+        self.assertEqual(response_payload["id"], str(claim.uuid))
+        self.assertTrue(response_payload["identity_provider"])
+
+        # GET partial claim, uncached
+        session = csrf_client.session
+        del session["partial_claim"]
+        session.save()
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        response_payload = response.json()
+        self.assertEqual(response_payload["id"], str(claim.uuid))
+        self.assertTrue(response_payload["identity_provider"])
+
+        # only GET or POST allowed
+        response = csrf_client.put(
+            url, content_type="application/json", data={}, **headers
+        )
+        self.assertEqual(response.status_code, 405)
+
+        # missing param returns error
+        response = csrf_client.post(
+            url, content_type="application/json", data={}, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # signal is_complete not isn't
+        payload_that_lies = {
+            "swa_code": swa.code,
+            "claimant_id": claimant.idp_user_xid,
+            "is_complete": True,
+        }
+        response = csrf_client.post(
+            url, content_type="application/json", data=payload_that_lies, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["error"],
+            "is_complete payload sent to partial-claim endpoint",
+        )
+
+        invalid_payload = {
+            "claimant_name": {"first_name": "foo", "last_name": "bar"},
+            "claimant_id": claimant.idp_user_xid,
+            "birthdate": "1234",
+            "swa_code": swa.code,
+        }
+        response = csrf_client.post(
+            url, content_type="application/json", data=invalid_payload, **headers
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("'1234' is not a 'date'", response.json()["errors"])
 
         # failure to write partial claim returns error
         payload_with_trouble = {
@@ -333,7 +468,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             content_type="application/json",
             **headers,
         )
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         self.assertFalse(self.client.session.exists(session_key))
 
 
@@ -345,6 +480,67 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         request.session = self.client.session
         claim_request = ClaimRequest(request)
         return claim_request
+
+    def test_claim_finder(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claimant2 = Claimant(idp_user_xid="otheridp id", idp=idp)
+        claimant2.save()
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant.idp_user_xid,
+                swa_code=swa.code,
+            )
+        )
+        self.assertEqual(claim, finder.find())
+
+        finder = ClaimFinder(WhoAmI(email="foo@example.com", claim_id=claim.uuid))
+        self.assertEqual(claim, finder.find())
+
+        # error conditions
+        finder = ClaimFinder(WhoAmI(email="foo@example.com"))
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(
+            WhoAmI(email="foo@example.com", claimant_id=claimant.idp_user_xid)
+        )
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(
+            WhoAmI(email="foo@example.com", claimant_id="nonesuch", swa_code=swa.code)
+        )
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(WhoAmI(email="foo@example.com", swa_code=swa.code))
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant.idp_user_xid,
+                swa_code="nonesuch",
+            )
+        )
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant2.idp_user_xid,
+                swa_code=swa.code,
+            )
+        )
+        self.assertFalse(finder.find())
+
+        finder = ClaimFinder(
+            WhoAmI(email="foo@example.com", claim_id=str(uuid.uuid4()))
+        )
+        self.assertFalse(finder.find())
 
     def test_claim_request(self):
         idp = create_idp()

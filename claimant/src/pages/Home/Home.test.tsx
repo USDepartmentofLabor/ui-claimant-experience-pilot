@@ -18,7 +18,6 @@ const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
 const myPII: WhoAmI = {
   claim_id: "123",
   claimant_id: "321",
-  form_id: "15",
   first_name: "Hermione",
   last_name: "Granger",
   birthdate: "2000-01-01",

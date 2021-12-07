@@ -7,7 +7,8 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("whoami/", views.whoami, name="whoami"),
-    path("claim/", views.claim, name="claim"),
+    path("partial-claim/", views.partial_claim, name="partial-claim"),
+    path("completed-claim/", views.completed_claim, name="completed-claim"),
     path("logout/", views.logout, name="logout"),
 ]
 

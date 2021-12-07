@@ -18,7 +18,6 @@ export const WhoAmI = () => {
 
   return (
     <ul className="usa-list">
-      <li>{t("info.formId", { formId: whoami.form_id })}</li>
       <li>{t("info.firstName", { firstName: whoami.first_name })}</li>
       <li>{t("info.lastName", { lastName: whoami.last_name })}</li>
       <li>{t("info.dob", { dob: whoami.birthdate })}</li>

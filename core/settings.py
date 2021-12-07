@@ -76,7 +76,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("core")
-if os.environ.get("COLOR_LOGGING", "false").lower() == "true":
+if os.environ.get("COLOR_LOGGING", "false").lower() == "true":  # pragma: no cover
     LOGGING_CONFIG = None  # This empties out Django's logging config
     LOGGING = {
         "version": 1,

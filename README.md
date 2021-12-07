@@ -41,6 +41,7 @@ Bootstrap your environment for the first time:
 (.venv) % make services-setup
 (.venv) % make container-build
 (.venv) % make services-start
+(.venv) % ln -s claimant/src/schemas schemas
 ```
 
 To start a Docker container interactively and run the Django web server, run the following commands:

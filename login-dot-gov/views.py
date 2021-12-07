@@ -8,6 +8,7 @@ from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider
 from django.conf import settings
+from api.whoami import WhoAmI
 
 logger = logging.getLogger("logindotgov")
 
@@ -106,16 +107,16 @@ def result(request):
 
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
-    # TODO standardize on a WhoAmI class structure for serializing all IdPs attributes.
-    request.session["whoami"] = {
-        "first_name": userinfo["given_name"],
-        "last_name": userinfo["family_name"],
-        "birthdate": userinfo["birthdate"],
-        "ssn": userinfo["social_security_number"],
-        "email": userinfo["email"],
-        "phone": userinfo["phone"],
-        "claimant_id": idp_user_xid,
-    }
+    whoami = WhoAmI(
+        first_name=userinfo["given_name"],
+        last_name=userinfo["family_name"],
+        birthdate=userinfo["birthdate"],
+        ssn=userinfo["social_security_number"],
+        email=userinfo["email"],
+        phone=userinfo["phone"],
+        claimant_id=idp_user_xid,
+    )
+    request.session["whoami"] = whoami.as_dict()
 
     redirect_to = "/logindotgov/explain"
     if "redirect_to" in request.session:
