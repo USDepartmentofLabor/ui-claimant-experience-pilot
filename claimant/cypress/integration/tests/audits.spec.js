@@ -26,8 +26,8 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
     const thresholds = {
       performance: 50,
       accessibility: 100,
-      "first-contentful-paint": 5000,
-      "largest-contentful-paint": 7000,
+      "first-contentful-paint": 10000,
+      "largest-contentful-paint": 10000,
       "cumulative-layout-shift": 0.1,
       "total-blocking-time": 500,
     };
