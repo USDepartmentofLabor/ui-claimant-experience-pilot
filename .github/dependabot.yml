@@ -14,3 +14,7 @@ updates:
       day: "monday"
       time: "12:00"
       timezone: "America/New_York"
+    ignore:
+      # The USWDS version should be managed manually
+      # and coordinated with the ReactUSWDS version.
+      - dependency-name: "uswds"

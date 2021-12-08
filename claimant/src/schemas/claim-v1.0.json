@@ -205,6 +205,11 @@
       "description": "Claimant's name",
       "$ref": "#/definitions/person_name"
     },
+    "alternate_names": {
+      "description": "Other names used by the claimant in the last 18 months",
+      "type": "array",
+      "items": { "$ref": "#/definitions/person_name" }
+    },
     "birthdate": {
       "description": "Date of birth",
       "type": "string",

@@ -9,6 +9,7 @@ certs/
 coverage.xml
 static/
 *.mo
+.DS_Store
 
 # IDE configurations
 .idea

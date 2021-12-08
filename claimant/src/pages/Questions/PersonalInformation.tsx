@@ -6,6 +6,7 @@ import { ClaimSchemaFields } from "../../common/YupBuilder";
 // only worry about top-level objects
 export const PersonalInformationFields: ClaimSchemaFields[] = [
   "claimant_name",
+  "alternate_names",
   "email",
   "birthdate",
   "ssn",
