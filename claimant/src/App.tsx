@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, Suspense } from "react";
 
 import { Routes, Route, NavLink, Link, Navigate } from "react-router-dom";
 
@@ -16,8 +16,8 @@ import {
 
 import { Routes as ROUTES } from "./routes";
 
-const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
-const HomePage = lazy(() => import("./pages/Home/Home"));
+import WhoAmIPage from "./pages/Whoami/Whoami";
+import HomePage from "./pages/Home/Home";
 
 import { AuthContainer } from "./common/AuthContainer";
 import { useTranslation } from "react-i18next";

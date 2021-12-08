@@ -42,7 +42,7 @@ module.exports = (on, config) => {
     // See https://github.com/GoogleChrome/lighthouse/blob/master/docs/understanding-results.md#lighthouse-result-object-lhr
     lighthouse: lighthouse((results) => {
       const lh = results.lhr;
-      if (console) {
+      if (console && process.env.REACT_APP_LIGHTHOUSE_DEBUG) {
         console.log(
           `--- Lighthouse ${lh.lighthouseVersion} at ${lh.fetchTime} ---`
         );

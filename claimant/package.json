@@ -14,7 +14,6 @@
     "formik": "^2.2.9",
     "i18next": "^21.5.0",
     "i18next-browser-languagedetector": "^6.1.2",
-    "istanbul-lib-coverage": "^3.2.0",
     "json-schema-yup-transformer": "^1.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -60,6 +59,7 @@
   },
   "proxy": "https://sandbox.ui.dol.gov:4430",
   "scripts": {
+    "test:clean": "rm -rf .nyc_output coverage* reports",
     "cypress:run": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome",
     "cypress:run:dev": "rm -rf .nyc_output && ./node_modules/.bin/cypress run --headless --browser chrome --config-file cypress-dev.json",
     "coverage": "yarn test --coverage --watchAll=false",
@@ -68,7 +68,7 @@
     "posttest:coverage": "yarn report:combined && node src/coverageCheck.js",
     "mkdir:reports": "mkdir reports || true",
     "precopy:reports": "yarn mkdir:reports",
-    "copy:reports": "cp coverage-cypress/coverage-final.json reports/aa-from-cypress.json && cp coverage/coverage-final.json reports/zz-from-jest.json",
+    "copy:reports": "cp coverage-cypress/coverage-final.json reports/from-cypress.json && cp coverage/coverage-final.json reports/from-jest.json",
     "precombine:reports": "yarn copy:reports && mkdir .nyc_output || true",
     "combine:reports": "npx nyc merge reports && mv coverage.json .nyc_output/out.json",
     "prereport:combined": "yarn combine:reports",
@@ -77,7 +77,7 @@
     "pretest:ci": "rm -rf .nyc_output",
     "posttest:ci": "yarn report:ci && node src/coverageCheck.js",
     "precopy:ci": "yarn mkdir:reports",
-    "copy:ci": "cp coverage-cypress/coverage-final.json reports/aa-from-cypress.json && cp coverage/coverage-final.json reports/zz-from-jest.json",
+    "copy:ci": "cp coverage-cypress/coverage-final.json reports/from-cypress.json && cp coverage/coverage-final.json reports/from-jest.json",
     "precombine:ci": "yarn copy:ci && mkdir .nyc_output || true",
     "combine:ci": "npx nyc merge reports && mv coverage.json .nyc_output/out.json",
     "prereport:ci": "yarn combine:ci",
@@ -104,14 +104,20 @@
     ]
   },
   "nyc": {
-    "cache": false,
+    "all": true,
     "report-dir": "coverage-cypress",
     "exclude": [
+      "*.js",
+      "build/",
+      "coverage*",
+      "cypress",
+      "**/*test.*",
+      "**/*stories*",
       "**/node_modules/**",
       "**/coverageCheck.js",
       "**/setupProxy.tsx",
-      "**/react-app-env.d.ts",
-      "**/types.d.ts"
+      "**/setupTests.ts",
+      "**/*.d.ts"
     ]
   },
   "browserslist": {

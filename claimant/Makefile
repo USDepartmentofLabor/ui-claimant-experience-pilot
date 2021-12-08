@@ -53,6 +53,9 @@ test: test-unit ## Run all unit tests
 ci-tests: ## Run CI tests
 	yarn test:ci
 
+test-clean: ## Clean up all the coverage artifacts
+	yarn test:clean
+
 test-coverage: ## Run all tests and display coverage
 	yarn test:coverage
 
