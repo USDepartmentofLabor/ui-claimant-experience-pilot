@@ -144,6 +144,22 @@ To remove a Claim from the queue, indicating that the SWA now owns it:
 {"status": "ok"}
 ```
 
+## Claim details
+
+To get the details about a specific claim, use its id (UUID):
+
+```sh
+% curl -X GET https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
+{
+  "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
+  "created_at": "2021-11-05T16:54:15-0500",
+  "updated_at": "2021-11-05T16:54:15-0500",
+  "claimant_id": "1d0a0ccc77d551f806d0e99740c1d9607c5f1da1",
+  "events": [ ], // history of the Claim
+  "status": "established",
+}
+```
+
 ## Updating Claim status
 
 When a Claim is processed within the SWA system of record, and the SWA wants to update the Claim's status
@@ -169,19 +185,11 @@ the record history of the Claim, only what the Claimant submitted (sensitive PII
 ## Uploading a Claimant 1099-G Form
 
 To upload a completed 1099-G Form file via the API, you need the `claimant_id` value from the Claim. The `claimant_id` is
-included in the original encrypted `claim` payload. You can also retrieve it (along with other Claim metadata) via the API:
+included in the original encrypted `claim` payload. See the [Claim details](#claim-details) section.
+
+To upload the 1099-G:
 
 ```sh
-% curl -X GET https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
-{
-  "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
-  "created_at": "2021-11-05T16:54:15-0500",
-  "updated_at": "2021-11-05T16:54:15-0500",
-  "claimant_id": "1d0a0ccc77d551f806d0e99740c1d9607c5f1da1",
-  "events": [ ], // history of the Claim
-  "status": "established",
-}
-
 % FORM=`base64 < path/to/1099G-file.pdf` \
   curl -X POST https://ui.dol.gov/swa/v1/claimant/1d0a0ccc77d551f806d0e99740c1d9607c5f1da1/1099G \
        --data "{\"file\":\"$FORM\", \"year\":\"2022\", \"type\":\"PDF\"}"
