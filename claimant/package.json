@@ -46,7 +46,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.27.1",
     "http-proxy-middleware": "^2.0.1",
-    "msw": "^0.35.0",
+    "msw": "^0.36.3",
     "pa11y": "^6.1.0",
     "prettier": "2.4.1",
     "retire": "^3.0.3",
