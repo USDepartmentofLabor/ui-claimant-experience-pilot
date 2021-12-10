@@ -150,6 +150,9 @@ container-rm: ## Remove the Django app container with DOCKER_CONTAINER_ID
 container-clean: ## Remove the Django app container image
 	docker image rm $(DOCKER_IMG)
 
+container-build-clean: ## Build ignoring all Docker layers (--no-cache)
+	docker build --no-cache -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
+
 container-setup-react-tests: ## Create local artifacts required for running Cypress tests
 	docker exec -it $(DOCKER_CONTAINER_ID) ./setup-cypress-tests.sh
 

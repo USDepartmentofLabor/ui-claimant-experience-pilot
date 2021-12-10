@@ -6,23 +6,34 @@ WORKDIR /app
 
 RUN apt-get update -y && apt-get install --no-install-recommends -y make
 
-COPY claimant/Makefile ./claimant/
 COPY claimant/package.json ./claimant/
 COPY claimant/yarn.lock ./claimant/
 COPY claimant/tsconfig.json ./claimant/
-COPY claimant/.eslintrc.yml ./claimant/
 # each RUN gets cached based on the COPY ahead of it, so cache the node_modules/
 # unless yarn.lock has changed.
 WORKDIR /app/claimant
-RUN make deps
+# we want only those js libs listed in "dependencies" in package.json
 ENV NODE_ENV=production
+# use yarn install instead of "make deps" so we can wait to COPY the Makefile
+# after this RUN, saving ourselves a re-build of the node_modules layer when our Makefile changes.
+RUN yarn install
 
 WORKDIR /app
+COPY claimant/Makefile ./claimant/
 COPY claimant/public/ ./claimant/public/
 COPY claimant/src/ ./claimant/src/
+COPY claimant/.eslintrc.yml ./claimant/
 WORKDIR /app/claimant
 ARG ENV_NAME=""
-RUN make docker-build
+# delete all those files needed only for local development and testing.
+# we do not run tests or storybook in the container, and we do not install
+# their devDependencies (see above)
+RUN find src -name '*test.ts*' -delete && \
+    find src -name '*stories.ts*' -delete && \
+    rm src/setupTests.ts && \
+    rm src/setupProxy.tsx && \
+    rm src/*.js && \
+    make docker-build
 
 ##########################################
 # Django

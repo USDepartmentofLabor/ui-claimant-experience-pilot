@@ -13,7 +13,9 @@ endif
 build: ## Build the app
 	yarn build
 
-instrumented-build: ## Build the app for CI (includes Cypress instrumentation for coverage)
+instrumented-build: ## Build the app for CI (includes Cypress instrumentation for coverage) (run inside Docker container)
+	# some coverage libs are listed as devDependency but we need in the container
+	yarn add @cypress/instrument-cra nyc-config-tsx
 	yarn build:instrumented
 
 dev-run: node_modules ## Run the app
