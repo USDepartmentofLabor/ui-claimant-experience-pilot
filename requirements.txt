@@ -1,7 +1,7 @@
 boto3==1.20.22
 celery==5.2.1
 colorlog==6.6.0
-Django==3.2.9
+Django==3.2.10
 django-cors-headers==3.10.1
 django-environ==0.8.1
 git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
