@@ -48,7 +48,7 @@
     "msw": "^0.36.3",
     "nyc-config-tsx": "^0.1.0",
     "pa11y": "^6.1.0",
-    "prettier": "2.4.1",
+    "prettier": "2.5.1",
     "react-test-renderer": "^17.0.2",
     "retire": "^3.0.3",
     "sass": "1.26.3",
