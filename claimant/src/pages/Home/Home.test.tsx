@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ClaimForm } from "./Home";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -59,15 +59,20 @@ describe("the Home page", () => {
     expect(await screen.findByRole("heading")).toHaveTextContent("Welcome");
   });
   it("navigates between pages", async () => {
-    render(Page);
-    const nextLink = screen.getByText("Next", { exact: false });
-    await waitFor(() => {
+    const result = render(Page);
+    const nextLink = result.getByText("Next", { exact: false });
+    await act(async () => {
+      userEvent.type(result.getByLabelText("First Name"), myPII.first_name);
+      userEvent.type(result.getByLabelText("Last Name"), myPII.last_name);
+      userEvent.click(result.getByRole("radio", { name: "No" }));
+    });
+    await act(async () => {
       userEvent.click(nextLink);
     });
-    expect(screen.getByText("Test Claim")).toBeInTheDocument();
-    const backLink = screen.getByText("Previous", { exact: false });
+    expect(result.getByText("Test Claim")).toBeInTheDocument();
+    const backLink = result.getByText("Previous", { exact: false });
     userEvent.click(backLink);
-    expect(screen.getByText("First Name")).toBeInTheDocument();
+    expect(result.getByText("First Name")).toBeInTheDocument();
   });
 });
 

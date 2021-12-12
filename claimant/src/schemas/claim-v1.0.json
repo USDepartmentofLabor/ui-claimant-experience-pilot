@@ -206,7 +206,7 @@
       "$ref": "#/definitions/person_name"
     },
     "alternate_names": {
-      "description": "Other names used by the claimant in the last 18 months",
+      "description": "Alternate names used by the claimant in the last 18 months",
       "type": "array",
       "items": { "$ref": "#/definitions/person_name" }
     },

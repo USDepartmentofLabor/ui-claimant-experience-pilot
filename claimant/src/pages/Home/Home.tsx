@@ -5,12 +5,14 @@ import { useSubmitClaim } from "../../queries/claim";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useTranslation } from "react-i18next";
 import YupBuilder from "../../common/YupBuilder";
+import * as yup from "yup";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import homeStyles from "./Home.module.scss";
 import { Button } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinition";
+import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
@@ -39,7 +41,9 @@ interface FormValues {
 // be persisted somewhere and restored on later visits.
 const initialValues: FormValues = {
   is_complete: false,
-  claimant_name: { first_name: "", last_name: "" },
+  claimant_name: { first_name: "", middle_name: "", last_name: "" },
+  claimant_has_alternate_names: undefined,
+  alternate_names: [],
   email: "",
   birthdate: "",
   ssn: "",
@@ -59,7 +63,11 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
     throw new Error("Page not found");
   }
 
-  const { fields, Component: CurrentPage } = pages[currentPageIndex];
+  const {
+    schemaFields,
+    Component: CurrentPage,
+    additionalValidations,
+  } = pages[currentPageIndex];
 
   const previousPageLink = () =>
     !claimCompleted() &&
@@ -83,7 +91,11 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
       </Button>
     );
 
-  const validationSchema = YupBuilder("claim-v1.0", fields);
+  const jsonValidationSchema = YupBuilder("claim-v1.0", schemaFields);
+  const validationSchema =
+    additionalValidations && jsonValidationSchema
+      ? yup.object().shape(additionalValidations).concat(jsonValidationSchema)
+      : jsonValidationSchema;
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
@@ -121,8 +133,16 @@ export const ClaimForm = ({ page }: { page: string | undefined }) => {
           if (!whoami) {
             return;
           }
+
+          //Only send the Formik values that map to values in the JSON Schema
+          const schemaValues = Object.keys(values)
+            .filter((key) => Object.keys(claim_v1_0.properties).includes(key))
+            .reduce(
+              (res, key) => Object.assign(res, { [key]: values[key] }),
+              {}
+            );
           const claim: Claim = {
-            ...values,
+            ...schemaValues,
             swa_code: whoami.swa_code,
             claimant_id: whoami.claimant_id,
           };

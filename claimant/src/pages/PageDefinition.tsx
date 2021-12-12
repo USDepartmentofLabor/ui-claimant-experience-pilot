@@ -1,18 +1,32 @@
 import {
+  PERSONAL_INFORMATION_ADDITIONAL_VALIDATIONS,
   PersonalInformation,
-  PersonalInformationFields,
+  PERSONAL_INFORMATION_SCHEMA_FIELDS,
 } from "./Questions/PersonalInformation";
 import { Submit, SubmitFields } from "./Questions/Submit";
+import { ClaimSchemaFields } from "../common/YupBuilder";
+import { FC } from "react";
+import { ObjectShape } from "yup/lib/object";
 
-export const pages = [
+interface IPage {
+  path: string;
+  schemaFields: ClaimSchemaFields[];
+  additionalValidations?: ObjectShape;
+  Component: FC;
+}
+
+export const pages: ReadonlyArray<IPage> = [
   {
     path: "personal-information",
-    fields: PersonalInformationFields,
+    schemaFields: PERSONAL_INFORMATION_SCHEMA_FIELDS,
+    additionalValidations: {
+      ...PERSONAL_INFORMATION_ADDITIONAL_VALIDATIONS,
+    },
     Component: PersonalInformation,
   },
   {
     path: "submit",
-    fields: SubmitFields,
+    schemaFields: SubmitFields,
     Component: Submit,
   },
 ] as const;
