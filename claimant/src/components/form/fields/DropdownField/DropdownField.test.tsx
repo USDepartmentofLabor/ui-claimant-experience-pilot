@@ -73,6 +73,4 @@ describe("dropdownField component", () => {
       expect(getByLabelText("dropdownField")).toBeDisabled();
     });
   });
-
-  afterEach(jest.resetAllMocks);
 });
