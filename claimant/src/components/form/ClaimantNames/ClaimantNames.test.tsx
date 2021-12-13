@@ -1,7 +1,8 @@
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { Formik } from "formik";
 
 import { ClaimantNames } from "./ClaimantNames";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -21,26 +22,75 @@ describe("ClaimantNames component", () => {
         middle_name: "",
         last_name: "",
       },
-      [alternateNames]: [
-        {
-          first_name: "",
-          middle_name: "",
-          last_name: "",
-        },
-      ],
+      [alternateNames]: [],
     };
 
-    const { getAllByLabelText } = render(
+    const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={() => undefined}>
         <ClaimantNames />
       </Formik>
     );
 
-    const [claimantFirstNameField, claimantOtherFirstNameField] =
+    const claimantFirstNameField = getByLabelText("label.first_name");
+    const claimantMiddleNameField = getByLabelText("label.middle_name");
+    const claimantLastNameField = getByLabelText("label.last_name");
+
+    expect(claimantFirstNameField).toHaveValue("");
+    expect(claimantFirstNameField).toHaveAttribute(
+      "id",
+      `${claimantName}.first_name`
+    );
+    expect(claimantFirstNameField).toHaveAttribute(
+      "name",
+      `${claimantName}.first_name`
+    );
+
+    expect(claimantMiddleNameField).toHaveValue("");
+    expect(claimantMiddleNameField).toHaveAttribute(
+      "id",
+      `${claimantName}.middle_name`
+    );
+    expect(claimantMiddleNameField).toHaveAttribute(
+      "name",
+      `${claimantName}.middle_name`
+    );
+
+    expect(claimantLastNameField).toHaveValue("");
+    expect(claimantLastNameField).toHaveAttribute(
+      "id",
+      `${claimantName}.last_name`
+    );
+    expect(claimantLastNameField).toHaveAttribute(
+      "name",
+      `${claimantName}.last_name`
+    );
+  });
+
+  it("renders toggles alternate_names on via radio button control", async () => {
+    const claimantName = "claimant_name";
+    const alternateNames = "alternate_names";
+    const initialValues = {
+      [claimantName]: {
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+      },
+      [alternateNames]: [],
+    };
+
+    const { getByRole, getAllByLabelText } = render(
+      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <ClaimantNames />
+      </Formik>
+    );
+
+    await act(async () => userEvent.click(getByRole("radio", { name: "Yes" })));
+
+    const [claimantFirstNameField, claimantAlternateFirstNameField] =
       getAllByLabelText("label.first_name");
-    const [claimantMiddleNameField, claimantOtherMiddleNameField] =
+    const [claimantMiddleNameField, claimantAlternateMiddleNameField] =
       getAllByLabelText("label.middle_name");
-    const [claimantLastNameField, claimantOtherLastNameField] =
+    const [claimantLastNameField, claimantAlternateLastNameField] =
       getAllByLabelText("label.last_name");
 
     expect(claimantFirstNameField).toHaveValue("");
@@ -73,32 +123,32 @@ describe("ClaimantNames component", () => {
       `${claimantName}.last_name`
     );
 
-    expect(claimantOtherFirstNameField).toHaveValue("");
-    expect(claimantOtherFirstNameField).toHaveAttribute(
+    expect(claimantAlternateFirstNameField).toHaveValue("");
+    expect(claimantAlternateFirstNameField).toHaveAttribute(
       "id",
       `${alternateNames}.0.first_name`
     );
-    expect(claimantOtherFirstNameField).toHaveAttribute(
+    expect(claimantAlternateFirstNameField).toHaveAttribute(
       "name",
       `${alternateNames}.0.first_name`
     );
 
-    expect(claimantOtherMiddleNameField).toHaveValue("");
-    expect(claimantOtherMiddleNameField).toHaveAttribute(
+    expect(claimantAlternateMiddleNameField).toHaveValue("");
+    expect(claimantAlternateMiddleNameField).toHaveAttribute(
       "id",
       `${alternateNames}.0.middle_name`
     );
-    expect(claimantOtherMiddleNameField).toHaveAttribute(
+    expect(claimantAlternateMiddleNameField).toHaveAttribute(
       "name",
       `${alternateNames}.0.middle_name`
     );
 
-    expect(claimantOtherLastNameField).toHaveValue("");
-    expect(claimantOtherLastNameField).toHaveAttribute(
+    expect(claimantAlternateLastNameField).toHaveValue("");
+    expect(claimantAlternateLastNameField).toHaveAttribute(
       "id",
       `${alternateNames}.0.last_name`
     );
-    expect(claimantOtherLastNameField).toHaveAttribute(
+    expect(claimantAlternateLastNameField).toHaveAttribute(
       "name",
       `${alternateNames}.0.last_name`
     );

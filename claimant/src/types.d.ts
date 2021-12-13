@@ -21,8 +21,15 @@ type PersonName = {
   last_name: string;
 };
 
-type ClaimantInput = {
+type YesNo = "yes" | "no";
+
+type ClaimantNamesType = {
   claimant_name?: PersonName;
+  claimant_has_alternate_names?: YesNo;
+  alternate_names?: PersonName[];
+};
+
+type ClaimantInput = ClaimantNamesType & {
   birthdate?: string;
   ssn?: string;
   email?: string;
@@ -34,4 +41,9 @@ type Claim = ClaimantInput & {
   id?: string;
   swa_code: string;
   claimant_id: string;
+};
+
+type FormValues = {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  [key: string]: string | boolean | any;
 };

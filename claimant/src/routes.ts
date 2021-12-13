@@ -2,7 +2,7 @@ const Routes = {
   BASE_ROUTE: "/claimant",
   HOME_PAGE: "/",
   WHOAMI_PAGE: "/whoami",
-  FORMS_PAGE: "/forms",
+  CLAIM_FORM_PAGE: "/claim/:page/*",
   ICONS_PAGE: "/icons",
 };
 

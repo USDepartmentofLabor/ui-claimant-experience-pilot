@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 
 import { Routes, Route, NavLink, Link, Navigate } from "react-router-dom";
 
@@ -16,8 +16,10 @@ import {
 
 import { Routes as ROUTES } from "./routes";
 
-import WhoAmIPage from "./pages/Whoami/Whoami";
-import HomePage from "./pages/Home/Home";
+const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
+// when we have routing, use this.
+// const HomePage = lazy(() => import("./pages/Home/Home"));
+const ClaimFormPage = lazy(() => import("./pages/ClaimForm/ClaimForm"));
 
 import { AuthContainer } from "./common/AuthContainer";
 import { useTranslation } from "react-i18next";
@@ -30,7 +32,7 @@ import PageLoader from "./common/PageLoader";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { HOME_PAGE, WHOAMI_PAGE } = ROUTES;
+  const { HOME_PAGE, CLAIM_FORM_PAGE, WHOAMI_PAGE } = ROUTES;
   const { t } = useTranslation("common");
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
   const logoutUrl = `${baseUrl}/logout/`;
@@ -56,6 +58,9 @@ function App() {
     >
       Who am I
     </NavLink>,
+    <ExtLink key="logoutlink" href={logoutUrl}>
+      {t("logout")}
+    </ExtLink>,
   ];
 
   return (
@@ -81,7 +86,6 @@ function App() {
             mobileExpanded={mobileNavOpen}
           />
         </div>
-        <ExtLink href={logoutUrl}>{t("logout")}</ExtLink>
       </Header>
 
       <section className="usa-section">
@@ -90,11 +94,12 @@ function App() {
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
-                <Route path={`/claim/:page/*`} element={<HomePage />} />
+                <Route path={CLAIM_FORM_PAGE} element={<ClaimFormPage />} />
                 <Route
                   path={`${HOME_PAGE}`}
                   element={<Navigate replace to={`/claim/${pages[0].path}`} />}
                 />
+                {/* TODO replace with HomePage once that has content */}
               </Routes>
             </Suspense>
           </AuthContainer>
