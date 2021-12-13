@@ -42,3 +42,8 @@ type Claim = ClaimantInput & {
   swa_code: string;
   claimant_id: string;
 };
+
+type FormValues = {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  [key: string]: string | boolean | any;
+};
