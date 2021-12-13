@@ -51,7 +51,13 @@
       "suffix": "Jr."
     }
   },
-  "phone": ["555-555-1234"],
+  "phones": [
+    {
+      "number": "555-555-1234",
+      "type": "mobile",
+      "sms": true
+    }
+  ],
   "ready_willing_able_to_work": true,
   "registered_with_vocational_rehab": false,
   "student_fulltime_in_last_18_months": false,
@@ -66,5 +72,36 @@
     "bls_description": "29-0000  Healthcare Practitioners and Technical Occupations",
     "bls_code": "29-1141",
     "bls_title": "Registered Nurses"
-  }
+  },
+  "employers": [
+    {
+      "name": "ACME Stuff",
+      "days_employed": 123,
+      "first_work_date": "2020-02-02",
+      "last_work_date": "2020-11-30",
+      "recall_date": "2020-12-13",
+      "fein": "00-1234567",
+      "address": {
+        "address1": "999 Acme Way",
+        "address2": "Suite 888",
+        "city": "Elsewhere",
+        "state": "KS",
+        "zipcode": "11111-9999"
+      },
+      "work_site_address": {
+        "address1": "888 Sun Ave",
+        "city": "Elsewhere",
+        "state": "KS",
+        "zipcode": "11111-8888"
+      },
+      "phones": [
+        {
+          "number": "555-555-1234",
+          "sms": false
+        }
+      ],
+      "separation_reason": "Layed off",
+      "separation_comment": "they ran out of money"
+    }
+  ]
 }

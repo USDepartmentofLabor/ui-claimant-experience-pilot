@@ -95,8 +95,15 @@ repos:
       - id: check-jsonschema
         name: "Check UI schemas"
         language: python
-        files: ^schemas
+        files: ^claimant/src/schemas
         args: ["--schemafile", "https://json-schema.org/draft/2020-12/schema"]
+      - id: check-jsonschema
+        name: "Check Claim example"
+        entry: check-jsonschema
+        # use the CLI command because otherwise it tries to resolve our schema to real URLs
+        language: system
+        args: ["--schemafile", "claimant/src/schemas/claim-v1.0.json"]
+        files: ^claimant/src/schemas/claim-v1.0-example.json
 
   - repo: local
     hooks:
