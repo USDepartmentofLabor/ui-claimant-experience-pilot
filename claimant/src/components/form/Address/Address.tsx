@@ -44,10 +44,12 @@ export const Address = ({ basename, states }: IAddressProps) => {
           options={states}
         />
         <TextField
+          // TODO pass medium
           name={`${basename}.zipcode`}
           label={t("label.zipcode")}
           type="text"
           id={`${basename}.zipcode`}
+          // TODO pattern="[\d]{5}(-[\d]{4})?"
         />
       </div>
     </>

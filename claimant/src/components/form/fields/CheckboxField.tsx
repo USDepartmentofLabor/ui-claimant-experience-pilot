@@ -6,7 +6,7 @@ interface ICheckboxFieldProps {
   id: string;
   name: string;
   label: React.ReactNode;
-  labelDescription: React.ReactNode;
+  labelDescription?: React.ReactNode;
   tile?: boolean;
 }
 
