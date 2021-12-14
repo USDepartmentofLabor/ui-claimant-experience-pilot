@@ -23,7 +23,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.11",
     "@cypress/instrument-cra": "^1.4.0",
-    "@storybook/addon-actions": "^6.4.0",
+    "@storybook/addon-actions": "^6.4.9",
     "@storybook/addon-essentials": "^6.3.12",
     "@storybook/addon-links": "^6.4.0",
     "@storybook/node-logger": "^6.3.12",
