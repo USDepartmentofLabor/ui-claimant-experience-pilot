@@ -1,10 +1,7 @@
 import { useTranslation } from "react-i18next";
-import TextField from "../../components/form/fields/TextField";
 import { ClaimSchemaFields } from "../../common/YupBuilder";
-import DropdownField from "../../components/form/fields/DropdownField";
-import FieldGroup from "../../components/form/FieldGroup";
-import CheckboxField from "../../components/form/fields/CheckboxField";
 import Address from "../../components/form/Address/Address";
+import { RadioField } from "../../components/form/fields/RadioField/RadioField";
 
 // the schema fields that appear on this page
 // only worry about top-level objects
@@ -27,6 +24,14 @@ export const ContactInformation = () => {
           //placeholder
           { id: "AR", label: "Arkansas" },
           { id: "NJ", label: "New Jersey" },
+        ]}
+      />
+      <RadioField
+        id="mailing_address_different"
+        name={t("label.mailing_address_different")}
+        options={[
+          { value: "yes", label: "Yes" },
+          { value: "no", label: "No" },
         ]}
       />
     </>

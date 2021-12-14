@@ -21,6 +21,8 @@ const home = {
     city: "City",
     state: "State",
     zipcode: "ZIP Code",
+    mailing_address_different:
+      "Is your mailing address different from your residence address?",
   },
   validation: {
     required: "This field is required",
