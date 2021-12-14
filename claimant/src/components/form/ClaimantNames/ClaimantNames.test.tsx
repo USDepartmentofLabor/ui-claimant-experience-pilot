@@ -84,7 +84,7 @@ describe("ClaimantNames component", () => {
       </Formik>
     );
 
-    await act(async () => userEvent.click(getByRole("radio", { name: "Yes" })));
+    await act(async () => userEvent.click(getByRole("radio", { name: "yes" })));
 
     const [claimantFirstNameField, claimantAlternateFirstNameField] =
       getAllByLabelText("label.first_name");

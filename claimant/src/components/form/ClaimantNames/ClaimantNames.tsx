@@ -5,7 +5,7 @@ import * as yup from "yup";
 import { t } from "i18next";
 
 import { Name } from "../Name/Name";
-import { RadioField } from "../fields/RadioField/RadioField";
+import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 
 export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaFields[] = [
   "claimant_name",
@@ -37,13 +37,9 @@ export const ClaimantNames = () => {
       </Fieldset>
       <br />
       <Fieldset legend="In the past 18 months, have you worked under a name different from above?">
-        <RadioField
+        <YesNoRadio
           id="claimant_has_alternate_names"
           name="claimant_has_alternate_names"
-          options={[
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
-          ]}
         />
       </Fieldset>
       <br />
