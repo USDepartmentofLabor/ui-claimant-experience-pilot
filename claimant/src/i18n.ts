@@ -15,7 +15,7 @@ i18n
   .init({
     lng: "en",
     fallbackLng: "en",
-    ns: ["common", "home", "whoami"],
+    ns: ["contact", "common", "home", "whoami"],
     defaultNS,
     resources,
   });
