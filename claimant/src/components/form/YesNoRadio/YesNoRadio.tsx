@@ -1,6 +1,7 @@
 import { ChangeEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 
+import styles from "./YesNoRadio.module.scss";
 import { RadioField } from "../fields/RadioField/RadioField";
 
 interface IYesNoRadioProps {
@@ -25,7 +26,7 @@ export const YesNoRadio = ({
         { label: t("no"), value: "no" },
       ]}
       onChange={onChange}
-      className="margin-right-7 display-inline-block"
+      className={styles.inline}
       {...inputProps}
     />
   );

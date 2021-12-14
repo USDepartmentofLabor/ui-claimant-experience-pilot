@@ -31,9 +31,9 @@ describe("YesNoRadio Component", () => {
     const no = getByLabelText("no");
 
     expect(yes).not.toBeChecked();
-    expect(yes.parentElement).toHaveClass("display-inline-block");
+    expect(yes.parentElement).toHaveClass("inline");
     expect(no).not.toBeChecked();
-    expect(no.parentElement).toHaveClass("display-inline-block");
+    expect(no.parentElement).toHaveClass("inline");
   });
 
   it("Only Yes or No may be selected at a time", async () => {
