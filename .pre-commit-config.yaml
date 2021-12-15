@@ -97,13 +97,16 @@ repos:
         language: python
         files: ^claimant/src/schemas
         args: ["--schemafile", "https://json-schema.org/draft/2020-12/schema"]
-      - id: check-jsonschema
+
+  - repo: local
+    hooks:
+      - id: make-schema-check
         name: "Check Claim example"
-        entry: check-jsonschema
-        # use the CLI command because otherwise it tries to resolve our schema to real URLs
+        entry: make
         language: system
-        args: ["--schemafile", "claimant/src/schemas/claim-v1.0.json"]
-        files: ^claimant/src/schemas/claim-v1.0-example.json
+        args: ["schema-check"]
+        always_run: true
+        pass_filenames: false
 
   - repo: local
     hooks:

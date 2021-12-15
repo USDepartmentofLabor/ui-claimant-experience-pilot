@@ -1,6 +1,7 @@
 import convertToYup, { Config } from "json-schema-yup-transformer";
 import { JSONSchema7 } from "json-schema";
 import claim_v1_0 from "../schemas/claim-v1.0.json";
+import * as jref from "json-ref-lite";
 
 export type ClaimSchemaFields = keyof typeof claim_v1_0.properties;
 
@@ -29,6 +30,13 @@ const schemaConfigs: SchemaConfig = {
   },
 };
 
+type SchemaProperty = {
+  required_for_swa?: boolean;
+  type?: string;
+  $ref?: string;
+  description?: string;
+};
+
 const YupBuilder = (
   file: string,
   fieldSlice: string[] | undefined = undefined
@@ -45,7 +53,16 @@ const YupBuilder = (
       }
     });
   }
-  return convertToYup(schema, config);
+  // any properties left in the schema that are marked required_for_swa
+  // should be added to the top-level required attribute to trigger validation
+  Object.keys(schema.properties).forEach((prop) => {
+    const propDef = schema.properties[prop] as SchemaProperty;
+    if (propDef.required_for_swa) {
+      schema.required?.push(prop);
+    }
+  });
+  const derefSchema = jref.resolve(schema);
+  return convertToYup(derefSchema as JSONSchema7, config);
 };
 
 export default YupBuilder;

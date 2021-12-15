@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form, FormikProps } from "formik";
+import { Formik, Form } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useSubmitClaim } from "../../queries/claim";
@@ -119,9 +119,9 @@ export const ClaimForm = () => {
           }
         }}
       >
-        {(props: FormikProps<ClaimantInput>) => {
-          // ToDo remove this before merge
-          console.log(props.errors);
+        {(errors) => {
+          console.log({ errors });
+          //{(props: FormikProps<ClaimantInput>) => (
           return (
             <Form>
               <CurrentPage />

@@ -16,13 +16,6 @@ const home = {
     email: "Email",
     birthdate: "Birthdate",
     ssn: "Social Security Number",
-    address1: "Address 1",
-    address2: "Address 2",
-    city: "City",
-    state: "State",
-    zipcode: "ZIP Code",
-    mailing_address_different:
-      "Is your mailing address different from your residence address?",
   },
   validation: {
     required: "This field is required",

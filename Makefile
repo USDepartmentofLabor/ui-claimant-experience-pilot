@@ -120,7 +120,7 @@ celery-status: ## Display status of celery worker(s) (inside the container)
 	celery -A core status
 
 dev-deps: ## Install local development environment dependencies
-	pip install pre-commit black bandit safety check-jsonschema
+	pip install pre-commit black bandit safety jsonref jsonschema
 
 dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
@@ -270,6 +270,9 @@ security: ## Run all security scans
 
 diff-test: ## Fails if there are any local changes, using git diff
 	@changed_files=`git diff --name-only`; if [ "$$changed_files" != "" ]; then echo "Local changes exist:\n$$changed_files" && exit 1; fi
+
+schema-check: ## Validate the example Claim against its JSON Schema
+	python scripts/check-json-schema.py claimant/src/schemas/claim-v1.0.json claimant/src/schemas/claim-v1.0-example.json
 
 default: help
 

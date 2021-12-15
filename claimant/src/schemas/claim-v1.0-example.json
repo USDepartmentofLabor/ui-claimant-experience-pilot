@@ -5,6 +5,7 @@
   "swa_code": "XX",
   "birthdate": "2000-01-01",
   "ssn": "900-00-1234",
+  "email": "someone@example.com",
   "claimant_name": {
     "first_name": "Joan",
     "last_name": "Jett",
