@@ -1,20 +1,37 @@
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField";
 import DropdownField from "../fields/DropdownField/DropdownField";
-// import FieldGroup from "../FieldGroup/FieldGroup";
+import states from "../../../schemas/states.json";
 
-type StateType = {
-  id: string;
-  label: string;
-};
+type StateAbbrev = keyof typeof states;
 
 interface IAddressProps {
   basename: string;
-  states: StateType[];
+  stateSlice?: StateAbbrev[];
 }
 
-export const Address = ({ basename, states }: IAddressProps) => {
+interface IStates {
+  [key: string]: string;
+}
+
+const statesByAbbrev: IStates = states;
+const stateOptions: StateType[] = Object.keys(statesByAbbrev).map((abbrev) => {
+  return { id: abbrev, label: statesByAbbrev[abbrev] };
+});
+stateOptions.unshift({ id: "", label: "-- Select one --" });
+
+export const Address = ({
+  basename,
+  stateSlice = undefined,
+}: IAddressProps) => {
   const { t } = useTranslation("home"); // TODO
+
+  let stateDropdownOptions: StateType[] = stateOptions;
+  if (stateSlice) {
+    stateDropdownOptions = stateOptions.filter(
+      (opt) => !stateSlice.includes(opt.id as StateAbbrev)
+    );
+  }
 
   return (
     <>
@@ -41,7 +58,7 @@ export const Address = ({ basename, states }: IAddressProps) => {
           name={`${basename}.state`}
           label={t("label.state")}
           id={`${basename}.state`}
-          options={states}
+          options={stateDropdownOptions}
         />
         <TextField
           // TODO pass medium
