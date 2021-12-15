@@ -1,6 +1,7 @@
 import convertToYup, { Config } from "json-schema-yup-transformer";
 import { JSONSchema7 } from "json-schema";
 import claim_v1_0 from "../schemas/claim-v1.0.json";
+import * as jref from "json-ref-lite";
 
 export type ClaimSchemaFields = keyof typeof claim_v1_0.properties;
 
@@ -45,7 +46,8 @@ const YupBuilder = (
       }
     });
   }
-  return convertToYup(schema, config);
+  const derefSchema = jref.resolve(schema);
+  return convertToYup(derefSchema as JSONSchema7, config);
 };
 
 export default YupBuilder;

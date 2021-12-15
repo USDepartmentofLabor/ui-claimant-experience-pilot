@@ -9,6 +9,7 @@
     "person_name": {
       "$id": "/definitions/person_name",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/person_name",
       "type": "object",
       "properties": {
         "first_name": { "type": "string" },
@@ -21,6 +22,7 @@
     "phone": {
       "$id": "/definitions/phone",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/phone",
       "type": "object",
       "properties": {
         "number": { "type": "string" },
@@ -32,12 +34,13 @@
     "address": {
       "$id": "/definitions/address",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/address",
       "type": "object",
       "properties": {
         "address1": { "type": "string" },
         "address2": { "type": "string" },
         "city": { "type": "string" },
-        "state": { "type": "string", "$ref": "/definitions/state" },
+        "state": { "type": "string", "$ref": "#/definitions/state" },
         "zipcode": { "type": "string" }
       },
       "required": ["address1", "city", "state", "zipcode"]
@@ -45,6 +48,7 @@
     "occupation": {
       "$id": "/definitions/occupation",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/occupation",
       "type": "object",
       "properties": {
         "job_title": { "type": "string" },
@@ -57,6 +61,7 @@
     "employer": {
       "$id": "/definitions/employer",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/employer",
       "type": "object",
       "properties": {
         "name": { "type": "string" },
@@ -65,11 +70,11 @@
         "last_work_date": { "type": "string", "format": "date" },
         "recall_date": { "type": "string", "format": "date" },
         "fein": { "type": "string", "pattern": "^[0-9]{2}-[0-9]{7}$" },
-        "address": { "$ref": "/definitions/address" },
-        "work_site_address": { "$ref": "/definitions/address" },
+        "address": { "$ref": "#/definitions/address" },
+        "work_site_address": { "$ref": "#/definitions/address" },
         "phones": {
           "type": "array",
-          "items": { "$ref": "/definitions/phone" }
+          "items": { "$ref": "#/definitions/phone" }
         },
         "separation_reason": { "type": "string" },
         "separation_comment": { "type": "string" }
@@ -85,6 +90,8 @@
     },
     "citizenship": {
       "$id": "/definitions/citizenship",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/citizenship",
       "type": "object",
       "properties": {
         "alien_registration_type": {
@@ -119,7 +126,7 @@
           "format": "date"
         },
         "alien_registration_name": {
-          "$ref": "/definitions/person_name"
+          "$ref": "#/definitions/person_name"
         }
       },
       "required": ["is_citizen"],
@@ -141,6 +148,7 @@
     "state": {
       "$id": "/definitions/state",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/state",
       "type": "string",
       "enum": [
         "AK",
