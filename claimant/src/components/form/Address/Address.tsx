@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField";
 import DropdownField from "../fields/DropdownField/DropdownField";
-// import FieldGroup from "../FieldGroup/FieldGroup";
 
 type StateType = {
   id: string;

@@ -7,6 +7,7 @@ django-environ==0.8.1
 git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
 gunicorn==20.1.0
 hiredis==2.0.0
+jsonref==0.2
 jsonschema[format]==4.2.1
 jwcrypto==1.0
 git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu-fernet-serializers
