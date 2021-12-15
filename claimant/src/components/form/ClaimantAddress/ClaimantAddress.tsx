@@ -15,8 +15,8 @@ export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
 
 type ClaimantAddressValues = {
   LOCAL_mailing_address_different?: boolean;
-  residence_address: AddressType;
-  mailing_address: AddressType;
+  residence_address: Address;
+  mailing_address: Address;
 };
 
 export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
@@ -25,7 +25,7 @@ export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
     .required(translate("validation.required")),
 };
 
-const ADDRESS_SKELETON: AddressType = {
+const ADDRESS_SKELETON: Address = {
   address1: "",
   address2: "",
   city: "",
@@ -42,7 +42,7 @@ export const ClaimantAddress = () => {
 
   const { values } = useFormikContext<ClaimantAddressValues>();
   const statesByAbbrev: IStates = states;
-  const stateOptions: StateType[] = Object.keys(statesByAbbrev).map(
+  const stateOptions: USState[] = Object.keys(statesByAbbrev).map(
     (abbrev, idx) => {
       return { id: abbrev, label: statesByAbbrev[abbrev] };
     }

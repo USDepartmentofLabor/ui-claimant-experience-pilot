@@ -21,7 +21,7 @@ type PersonName = {
   last_name: string;
 };
 
-type AddressType = {
+type Address = {
   address1: string;
   address2?: string;
   city: string;
@@ -29,13 +29,13 @@ type AddressType = {
   zipcode: string;
 };
 
-type PhoneType = {
+type PhoneInfo = {
   number: string;
   sms: boolean;
   type: string;
 };
 
-type StateType = {
+type USState = {
   id: string;
   label: string;
 };
