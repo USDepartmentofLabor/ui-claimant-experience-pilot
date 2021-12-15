@@ -1,6 +1,6 @@
 import { useField } from "formik";
-import { Radio, FormGroup, ErrorMessage, Label } from "@trussworks/react-uswds";
-import React, { ChangeEvent, ChangeEventHandler, ReactNode } from "react";
+import { Radio, FormGroup, ErrorMessage } from "@trussworks/react-uswds";
+import { ChangeEvent, ChangeEventHandler, ReactNode } from "react";
 
 interface IRadioOption {
   label: ReactNode;
@@ -10,9 +10,6 @@ interface IRadioOption {
 interface IRadioFieldProps {
   id: string;
   name: string;
-  label: string;
-  labelClassName?: string;
-  labelHint?: string;
   options: IRadioOption[];
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
@@ -22,9 +19,6 @@ export const RadioField = ({
   name,
   options,
   onChange,
-  label,
-  labelClassName,
-  labelHint,
   ...inputProps
 }: IRadioFieldProps & JSX.IntrinsicElements["input"]) => {
   const [fieldProps, metaProps] = useField(name);
@@ -39,14 +33,6 @@ export const RadioField = ({
 
   return (
     <FormGroup error={showError}>
-      <Label
-        className={labelClassName}
-        hint={labelHint}
-        error={showError}
-        htmlFor={id || name}
-      >
-        {label}
-      </Label>
       {options.map((option, index) => (
         <Radio
           {...fieldProps}

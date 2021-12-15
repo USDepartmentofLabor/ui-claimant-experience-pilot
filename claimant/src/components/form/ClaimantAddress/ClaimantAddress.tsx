@@ -15,7 +15,7 @@ export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
 ];
 
 type ClaimantAddressValues = {
-  LOCAL_mailing_address_different?: string;
+  LOCAL_mailing_address_different?: boolean;
   residence_address: Address;
   mailing_address: Address;
 };
