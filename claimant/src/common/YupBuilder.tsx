@@ -30,6 +30,13 @@ const schemaConfigs: SchemaConfig = {
   },
 };
 
+type SchemaProperty = {
+  required_for_swa?: boolean;
+  type?: string;
+  $ref?: string;
+  description?: string;
+};
+
 const YupBuilder = (
   file: string,
   fieldSlice: string[] | undefined = undefined
@@ -46,6 +53,14 @@ const YupBuilder = (
       }
     });
   }
+  // any properties left in the schema that are marked required_for_swa
+  // should be added to the top-level required attribute to trigger validation
+  Object.keys(schema.properties).forEach((prop) => {
+    const propDef = schema.properties[prop] as SchemaProperty;
+    if (propDef.required_for_swa) {
+      schema.required?.push(prop);
+    }
+  });
   const derefSchema = jref.resolve(schema);
   return convertToYup(derefSchema as JSONSchema7, config);
 };
