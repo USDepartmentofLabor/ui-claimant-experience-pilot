@@ -7,6 +7,7 @@ import * as yup from "yup";
 import Address from "../Address/Address";
 import { CheckboxField } from "../fields/CheckboxField";
 import states from "../../../schemas/states.json";
+import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 
 export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
   "residence_address",
@@ -52,11 +53,12 @@ export const ClaimantAddress = () => {
       <Fieldset legend={t("label.primary_address")}>
         <Address basename="residence_address" states={stateOptions} />
       </Fieldset>
-      <CheckboxField
-        id="LOCAL_mailing_address_different"
-        name="LOCAL_mailing_address_different"
-        label={t("label.mailing_address_different")}
-      />
+      <Fieldset legend={t("label.mailing_address_different")}>
+        <YesNoRadio
+          id="LOCAL_mailing_address_different"
+          name="LOCAL_mailing_address_different"
+        />
+      </Fieldset>
       {values.LOCAL_mailing_address_different && (
         <Fieldset legend={t("label.mailing_address")}>
           <Address basename="mailing_address" states={stateOptions} />

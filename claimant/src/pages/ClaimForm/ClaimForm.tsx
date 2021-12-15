@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikProps } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useSubmitClaim } from "../../queries/claim";
@@ -119,16 +119,19 @@ export const ClaimForm = () => {
           }
         }}
       >
-        {() => (
-          //{(props: FormikProps<ClaimantInput>) => (
-          <Form>
-            <CurrentPage />
-            <div className={claimFormStyles.pagination}>
-              {previousPageLink()}
-              {nextPageLink()}
-            </div>
-          </Form>
-        )}
+        {(props: FormikProps<ClaimantInput>) => {
+          // ToDo remove this before merge
+          console.log(props.errors);
+          return (
+            <Form>
+              <CurrentPage />
+              <div className={claimFormStyles.pagination}>
+                {previousPageLink()}
+                {nextPageLink()}
+              </div>
+            </Form>
+          );
+        }}
       </Formik>
       {submitClaim.isSuccess ? (
         // TODO probably want to hide the "Progress saved" after a few seconds so
