@@ -15,7 +15,7 @@ export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
 ];
 
 type ClaimantAddressValues = {
-  LOCAL_mailing_address_different?: boolean;
+  LOCAL_mailing_address_different?: string;
   residence_address: Address;
   mailing_address: Address;
 };
@@ -41,7 +41,7 @@ interface IStates {
 export const ClaimantAddress = () => {
   const { t } = useTranslation("contact");
 
-  const { values } = useFormikContext<ClaimantAddressValues>();
+  const { values, setFieldValue } = useFormikContext<ClaimantAddressValues>();
   const statesByAbbrev: IStates = states;
   const stateOptions: USState[] = Object.keys(statesByAbbrev).map((abbrev) => {
     return { id: abbrev, label: statesByAbbrev[abbrev] };
@@ -53,13 +53,17 @@ export const ClaimantAddress = () => {
       <Fieldset legend={t("label.primary_address")}>
         <Address basename="residence_address" states={stateOptions} />
       </Fieldset>
-      <Fieldset legend={t("label.mailing_address_different")}>
-        <YesNoRadio
-          id="LOCAL_mailing_address_different"
-          name="LOCAL_mailing_address_different"
-        />
-      </Fieldset>
-      {values.LOCAL_mailing_address_different && (
+      <YesNoRadio
+        id="LOCAL_mailing_address_different"
+        name="LOCAL_mailing_address_different"
+        label={t("label.mailing_address_different")}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          if (e.target.value === "no") {
+            setFieldValue("mailing_address", values.residence_address);
+          }
+        }}
+      />
+      {values.LOCAL_mailing_address_different === "yes" && (
         <Fieldset legend={t("label.mailing_address")}>
           <Address basename="mailing_address" states={stateOptions} />
         </Fieldset>

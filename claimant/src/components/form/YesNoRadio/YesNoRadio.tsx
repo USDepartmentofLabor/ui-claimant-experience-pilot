@@ -7,6 +7,7 @@ import { RadioField } from "../fields/RadioField/RadioField";
 interface IYesNoRadioProps {
   id: string;
   name: string;
+  label: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -14,6 +15,7 @@ export const YesNoRadio = ({
   id,
   name,
   onChange,
+  label,
   ...inputProps
 }: IYesNoRadioProps & JSX.IntrinsicElements["input"]) => {
   const { t } = useTranslation("common");
@@ -21,6 +23,7 @@ export const YesNoRadio = ({
     <RadioField
       id={id}
       name={name}
+      label={label}
       options={[
         { label: t("yes"), value: "yes" },
         { label: t("no"), value: "no" },

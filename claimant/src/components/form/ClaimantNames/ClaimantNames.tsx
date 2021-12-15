@@ -38,12 +38,11 @@ export const ClaimantNames = () => {
         <Name id="claimant_name" name="claimant_name" />
       </Fieldset>
       <br />
-      <Fieldset legend="In the past 18 months, have you worked under a name different from above?">
-        <YesNoRadio
-          id="claimant_has_alternate_names"
-          name="claimant_has_alternate_names"
-        />
-      </Fieldset>
+      <YesNoRadio
+        id="claimant_has_alternate_names"
+        name="claimant_has_alternate_names"
+        label="In the past 18 months, have you worked under a name different from above?"
+      />
       <br />
       {values.claimant_has_alternate_names === "yes" && (
         <Fieldset legend="Alternate Name">
