@@ -1,5 +1,3 @@
-import { useTranslation } from "react-i18next";
-import TextField from "../../components/form/fields/TextField";
 import { ClaimSchemaFields } from "../../common/YupBuilder";
 import {
   ClaimantNames,
@@ -25,8 +23,6 @@ export const PERSONAL_INFORMATION_ADDITIONAL_VALIDATIONS = {
 };
 
 export const PersonalInformation = () => {
-  const { t } = useTranslation("home");
-
   return (
     <>
       <ClaimantNames />
