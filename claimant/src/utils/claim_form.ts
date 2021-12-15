@@ -15,7 +15,7 @@ const CLAIM_FORM_SKELETON: FormValues = {
   claimant_name: { first_name: "", middle_name: "", last_name: "" },
   claimant_has_alternate_names: undefined,
   alternate_names: [],
-  LOCAL_mailing_address_different: false,
+  LOCAL_mailing_address_same: false,
   residence_address: ADDRESS_SKELETON,
   mailing_address: ADDRESS_SKELETON,
 } as const;

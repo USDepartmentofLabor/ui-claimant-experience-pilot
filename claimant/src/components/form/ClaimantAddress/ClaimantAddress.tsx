@@ -15,13 +15,13 @@ export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
 ];
 
 type ClaimantAddressValues = {
-  LOCAL_mailing_address_different: boolean;
+  LOCAL_mailing_address_same: boolean;
   residence_address: AddressType;
   mailing_address: AddressType;
 };
 
 export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
-  LOCAL_mailing_address_different: yup
+  LOCAL_mailing_address_same: yup
     .string()
     .required(i18next.t("validation.required")),
 };
@@ -29,21 +29,15 @@ export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
 export const ClaimantAddress = () => {
   const { t } = useTranslation("contact");
 
-  const { values, setFieldValue } = useFormikContext<ClaimantAddressValues>();
+  const { values } = useFormikContext<ClaimantAddressValues>();
 
   useEffect(() => {
-    if (values.LOCAL_mailing_address_different) {
-      values.mailing_address = ADDRESS_SKELETON;
+    if (values.LOCAL_mailing_address_same) {
+      values.mailing_address = values.residence_address;
     } else {
-      values.mailing_address = values.residence_address;
+      values.mailing_address = ADDRESS_SKELETON;
     }
-  }, [values.LOCAL_mailing_address_different]);
-
-  useEffect(() => {
-    if (!values.LOCAL_mailing_address_different) {
-      values.mailing_address = values.residence_address;
-    }
-  }, [values.residence_address]);
+  }, [values.LOCAL_mailing_address_same]);
 
   return (
     <>
@@ -51,11 +45,11 @@ export const ClaimantAddress = () => {
         <Address basename="residence_address" />
       </Fieldset>
       <CheckboxField
-        id="LOCAL_mailing_address_different"
-        name="LOCAL_mailing_address_different"
-        label={t("label.mailing_address_different")}
+        id="LOCAL_mailing_address_same"
+        name="LOCAL_mailing_address_same"
+        label={t("label.mailing_address_same")}
       />
-      {values.LOCAL_mailing_address_different && (
+      {!values.LOCAL_mailing_address_same && (
         <Fieldset legend={t("label.mailing_address")}>
           <Address basename="mailing_address" />
         </Fieldset>
