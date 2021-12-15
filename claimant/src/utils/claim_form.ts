@@ -1,3 +1,12 @@
+// skeleton shapes with which to initialize form fields
+export const ADDRESS_SKELETON: AddressType = {
+  address1: "",
+  address2: "",
+  city: "",
+  state: "",
+  zipcode: "",
+};
+
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
@@ -6,9 +15,9 @@ const CLAIM_FORM_SKELETON: FormValues = {
   claimant_name: { first_name: "", middle_name: "", last_name: "" },
   claimant_has_alternate_names: undefined,
   alternate_names: [],
-  email: "",
-  birthdate: "",
-  ssn: "",
+  LOCAL_mailing_address_different: false,
+  residence_address: ADDRESS_SKELETON,
+  mailing_address: ADDRESS_SKELETON,
 } as const;
 
 export const initializeClaimFormWithWhoAmI = (whoami: WhoAmI) => {

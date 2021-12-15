@@ -119,16 +119,19 @@ export const ClaimForm = () => {
           }
         }}
       >
-        {() => (
+        {(errors) => {
+          console.log({ errors });
           //{(props: FormikProps<ClaimantInput>) => (
-          <Form>
-            <CurrentPage />
-            <div className={claimFormStyles.pagination}>
-              {previousPageLink()}
-              {nextPageLink()}
-            </div>
-          </Form>
-        )}
+          return (
+            <Form>
+              <CurrentPage />
+              <div className={claimFormStyles.pagination}>
+                {previousPageLink()}
+                {nextPageLink()}
+              </div>
+            </Form>
+          );
+        }}
       </Formik>
       {submitClaim.isSuccess ? (
         // TODO probably want to hide the "Progress saved" after a few seconds so

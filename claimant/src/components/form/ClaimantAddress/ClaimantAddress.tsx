@@ -7,6 +7,7 @@ import { ClaimSchemaFields } from "../../../common/YupBuilder";
 import * as yup from "yup";
 import Address from "../Address/Address";
 import { CheckboxField } from "../fields/CheckboxField";
+import { ADDRESS_SKELETON } from "../../../utils/claim_form";
 import states from "../../../schemas/states.json";
 
 export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
@@ -15,23 +16,15 @@ export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
 ];
 
 type ClaimantAddressValues = {
-  LOCAL_mailing_address_different?: boolean;
-  residence_address: Address;
-  mailing_address: Address;
+  LOCAL_mailing_address_different: boolean;
+  residence_address: AddressType;
+  mailing_address: AddressType;
 };
 
 export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
   LOCAL_mailing_address_different: yup
     .string()
     .required(i18next.t("validation.required")),
-};
-
-const ADDRESS_SKELETON: Address = {
-  address1: "",
-  address2: "",
-  city: "",
-  state: "",
-  zipcode: "",
 };
 
 interface IStates {
@@ -46,13 +39,23 @@ export const ClaimantAddress = () => {
   useEffect(() => {
     if (values.LOCAL_mailing_address_different) {
       values.mailing_address = ADDRESS_SKELETON;
+    } else {
+      values.mailing_address = values.residence_address;
     }
   }, [values.LOCAL_mailing_address_different]);
 
+  useEffect(() => {
+    if (!values.LOCAL_mailing_address_different) {
+      values.mailing_address = values.residence_address;
+    }
+  }, [values.residence_address]);
+
   const statesByAbbrev: IStates = states;
-  const stateOptions: USState[] = Object.keys(statesByAbbrev).map((abbrev) => {
-    return { id: abbrev, label: statesByAbbrev[abbrev] };
-  });
+  const stateOptions: StateType[] = Object.keys(statesByAbbrev).map(
+    (abbrev) => {
+      return { id: abbrev, label: statesByAbbrev[abbrev] };
+    }
+  );
   stateOptions.unshift({ id: "", label: "-- Select one --" });
 
   return (
