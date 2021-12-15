@@ -23,6 +23,11 @@ type PersonName = {
 
 type YesNo = "yes" | "no";
 
+type StateType = {
+  id: string;
+  label: string;
+};
+
 type ClaimantNamesType = {
   claimant_name?: PersonName;
   claimant_has_alternate_names?: YesNo;
