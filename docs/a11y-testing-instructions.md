@@ -18,7 +18,7 @@ The code submitter, code reviewer, and design reviewer should go through each of
   - If focus can be moved to a part of the content, it can also be moved away
   - navigate using tab, tab+shift, arrow keys, and enter
 
-- [ ] Check the VoiceOver **rotary menu** (instructions):
+- [ ] Check the VoiceOver **rotary menu** ([instructions](https://github.com/trussworks/accessibility/blob/master/README.md#how-to-use-the-rotor-menu)):
 
   For each of the following rotor lists, use the keyboard to go through the list and check that focus moves to that element.
 
@@ -35,7 +35,7 @@ The code submitter, code reviewer, and design reviewer should go through each of
 
     Check that all the intended links on the page are displayed in this menu with the right link label.
 
-- [ ] Use **VoiceOver screen reader** (with Safari) to walk through the interface changes and ensure it acts as expected (content is announced)
+- [ ] Use **[VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) screen reader** (with Safari) to walk through the interface changes and ensure it acts as expected (content is announced)
 
 - [ ] Open one of these three **a11y browser tools** to check for errors or issues: WAVE, axe (free version is sufficient, for Chrome only), or ANDI (this is the one used by gov (DHS Trusted Testers)
 

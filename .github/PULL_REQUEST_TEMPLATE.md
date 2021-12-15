@@ -1,6 +1,6 @@
 # ETA ARPA UIP-000
 
-[Acceptance flow diagram](../docs/development-acceptance-flow.drawio.svg)
+[Acceptance flow diagram](https://github.com/USDOLEnterprise/ARPAUI/blob/main/docs/development-acceptance-flow.drawio.svg)
 
 <!--
     If applicable, insert the Jira story number in the markdown header above.
@@ -39,7 +39,7 @@
 
 - [ ] Met the acceptance criteria, or will meet them in a subsequent PR
 - [ ] Created/modified automated tests
-- User-facing changes ([detailed instructions)](../docs/a11y-testing-instructions.md):
+- User-facing changes ([detailed instructions)](https://github.com/USDOLEnterprise/ARPAUI/blob/main/docs/a11y-testing-instructions.md):
   - [ ] Checked responsiveness in mobile, tablet, and desktop
   - [ ] Checked keyboard navigability
   - [ ] Tested with [VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) in Safari
@@ -56,7 +56,7 @@
 - [ ] Checked that all code is adequately covered by tests
 - [ ] Made it clear which comments need to be addressed before this work is merged
 - [ ] Considered marking this as accepted even if there are small changes needed
-- User-facing changes ([detailed instructions)](../docs/a11y-testing-instructions.md):
+- User-facing changes ([detailed instructions)](https://github.com/USDOLEnterprise/ARPAUI/blob/main/docs/a11y-testing-instructions.md):
   - [ ] Checked responsiveness in mobile, tablet, and desktop
   - [ ] Checked keyboard navigability
   - [ ] Tested with [VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) in Safari
@@ -70,7 +70,7 @@
 - [ ] Checked different states (empty, one, some, error)
 - [ ] Checked for landmarks, page heading structure, and links
 - [ ] Tried to break the intended flow
-- a11y checks ([detailed instructions)](../docs/a11y-testing-instructions.md):
+- a11y checks ([detailed instructions)](https://github.com/USDOLEnterprise/ARPAUI/blob/main/docs/a11y-testing-instructions.md):
   - [ ] Checked responsiveness in mobile, tablet, and desktop
   - [ ] Checked keyboard navigability
   - [ ] Tested with [VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) in Safari

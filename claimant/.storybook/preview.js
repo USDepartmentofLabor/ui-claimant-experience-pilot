@@ -1,4 +1,5 @@
 import "../src/styles.scss";
+import "@trussworks/react-uswds/lib/index.css";
 import "../src/i18n";
 
 export const parameters = {
