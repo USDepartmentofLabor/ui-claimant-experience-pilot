@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { t as translate } from "i18next";
+import i18next from "i18next";
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { ClaimSchemaFields } from "../../../common/YupBuilder";
@@ -22,7 +22,7 @@ type ClaimantAddressValues = {
 export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
   LOCAL_mailing_address_different: yup
     .string()
-    .required(translate("validation.required")),
+    .required(i18next.t("validation.required")),
 };
 
 const ADDRESS_SKELETON: Address = {
@@ -42,11 +42,9 @@ export const ClaimantAddress = () => {
 
   const { values } = useFormikContext<ClaimantAddressValues>();
   const statesByAbbrev: IStates = states;
-  const stateOptions: USState[] = Object.keys(statesByAbbrev).map(
-    (abbrev, idx) => {
-      return { id: abbrev, label: statesByAbbrev[abbrev] };
-    }
-  );
+  const stateOptions: USState[] = Object.keys(statesByAbbrev).map((abbrev) => {
+    return { id: abbrev, label: statesByAbbrev[abbrev] };
+  });
   stateOptions.unshift({ id: "", label: "-- Select one --" });
 
   return (
