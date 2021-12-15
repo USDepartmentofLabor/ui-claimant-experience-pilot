@@ -34,6 +34,20 @@ from .whoami import WhoAmI
 
 logger = logging.getLogger("api.tests")
 
+MAILING_ADDRESS = {
+    "address1": "456 Any St",
+    "city": "Somewhere",
+    "state": "KS",
+    "zipcode": "00000",
+}
+
+RESIDENCE_ADDRESS = {
+    "address1": "123 Any St",
+    "city": "Somewhere",
+    "state": "KS",
+    "zipcode": "00000",
+}
+
 
 class SessionVerifier:
     def verify_session(self, client=None):
@@ -127,11 +141,14 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "email": "someone@example.com",
             "is_complete": True,
             "claimant_name": {
                 "first_name": "Ima",
                 "last_name": "Claimant",
             },
+            "mailing_address": MAILING_ADDRESS,
+            "residence_address": RESIDENCE_ADDRESS,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -164,6 +181,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "email": "someone@example.com",
+            "mailing_address": MAILING_ADDRESS,
+            "residence_address": RESIDENCE_ADDRESS,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -206,11 +226,14 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "email": "someone@example.com",
             "claimant_name": {
                 "first_name": "Ima",
                 "last_name": "Claimant",
             },
             "is_complete": True,
+            "residence_address": RESIDENCE_ADDRESS,
+            "mailing_address": MAILING_ADDRESS,
         }
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
@@ -344,6 +367,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "residence_address": RESIDENCE_ADDRESS,
+            "mailing_address": MAILING_ADDRESS,
         }
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
@@ -420,6 +445,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "swa_code": swa.code,
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "email": "someone@example.com",
+            "mailing_address": MAILING_ADDRESS,
+            "residence_address": RESIDENCE_ADDRESS,
         }
         with patch("core.claim_storage.ClaimStore.s3_client") as mocked_client:
             client = boto3.client("s3")
@@ -641,13 +669,10 @@ class ClaimValidatorTestCase(TestCase):
             "swa_code": "XX",
             "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
+            "email": "foo@example.com",
             "claimant_name": {"first_name": "first", "last_name": "last"},
-            "mailing_address": {
-                "address1": "123 Any St",
-                "city": "Somewhere",
-                "state": "KS",
-                "zipcode": "00000",
-            },
+            "residence_address": RESIDENCE_ADDRESS,
+            "mailing_address": MAILING_ADDRESS,
         }
 
     def test_claim_validator(self):
@@ -658,11 +683,10 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 4)
+        self.assertEqual(len(cv.errors), 3)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)
-        self.assertIn("'ssn' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
         logger.debug("errors={}".format(error_dict))
 
@@ -742,9 +766,12 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 7)
+        self.assertEqual(len(cv.errors), 10)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'ssn' is a required property", error_dict)
+        self.assertIn("'email' is a required property", error_dict)
+        self.assertIn("'residence_address' is a required property", error_dict)
+        self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
