@@ -120,7 +120,7 @@ celery-status: ## Display status of celery worker(s) (inside the container)
 	celery -A core status
 
 dev-deps: ## Install local development environment dependencies
-	pip install pre-commit black bandit safety jsonref jsonschema
+	pip install pre-commit black bandit safety jsonschema git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
 
 dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
