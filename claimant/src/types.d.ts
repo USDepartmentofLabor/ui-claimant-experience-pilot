@@ -42,19 +42,30 @@ type StateType = {
 
 type YesNo = "yes" | "no";
 
+type StateType = {
+  value: string;
+  label: string;
+};
+
 type ClaimantNamesType = {
   claimant_name?: PersonName;
   claimant_has_alternate_names?: YesNo;
   alternate_names?: PersonName[];
 };
 
-type ClaimantInput = ClaimantNamesType & {
-  birthdate?: string;
-  ssn?: string;
-  email?: string;
-  phone?: string | null;
-  is_complete?: boolean;
+type DemographicInfoType = {
+  race?: string[];
+  ethnicity?: string[];
 };
+
+type ClaimantInput = ClaimantNamesType &
+  DemographicInfoType & {
+    birthdate?: string;
+    ssn?: string;
+    email?: string;
+    phone?: string | null;
+    is_complete?: boolean;
+  };
 
 type Claim = ClaimantInput & {
   id?: string;

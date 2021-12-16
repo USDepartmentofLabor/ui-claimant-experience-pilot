@@ -17,22 +17,22 @@ interface IStates {
 
 const statesByAbbrev: IStates = states;
 const stateOptions: StateType[] = Object.keys(statesByAbbrev).map((abbrev) => {
-  return { id: abbrev, label: statesByAbbrev[abbrev] };
+  return { value: abbrev, label: statesByAbbrev[abbrev] };
 });
-stateOptions.unshift({ id: "", label: "-- Select one --" });
 
 export const Address = ({
   basename,
   stateSlice = undefined,
 }: IAddressProps) => {
-  const { t } = useTranslation("contact"); // TODO make this a prop name
+  const { t } = useTranslation("common"); // TODO make this a prop name
 
   let stateDropdownOptions: StateType[] = stateOptions;
   if (stateSlice) {
     stateDropdownOptions = stateOptions.filter(
-      (opt) => !stateSlice.includes(opt.id as StateAbbrev)
+      (opt) => !stateSlice.includes(opt.value as StateAbbrev)
     );
   }
+  stateDropdownOptions.unshift({ value: "", label: t("label.select_one") });
 
   return (
     <FormGroup>

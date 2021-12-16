@@ -5,6 +5,7 @@ import { Checkbox } from "@trussworks/react-uswds";
 interface ICheckboxFieldProps {
   id: string;
   name: string;
+  value?: string;
   label: React.ReactNode;
   labelDescription?: React.ReactNode;
   tile?: boolean;
@@ -20,7 +21,10 @@ interface ICheckboxFieldProps {
  * ReactUSWDS components directly.
  */
 
-export const CheckboxField = ({ name, ...inputProps }: ICheckboxFieldProps) => {
+export const CheckboxField = ({
+  name,
+  ...inputProps
+}: ICheckboxFieldProps & JSX.IntrinsicElements["input"]) => {
   const [fieldProps] = useField({ name, type: "checkbox" });
 
   /* eslint-disable-next-line react/jsx-props-no-spreading */

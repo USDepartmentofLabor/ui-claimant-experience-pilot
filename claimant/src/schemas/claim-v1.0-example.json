@@ -25,7 +25,7 @@
     "state": "MO",
     "zipcode": "00000-1234"
   },
-  "sex": "Female",
+  "sex": "female",
   "race": ["Black or African American"],
   "ethnicity": ["Not Hispanic or Latino"],
   "education_level": "unknown",

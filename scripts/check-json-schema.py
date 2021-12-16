@@ -25,4 +25,5 @@ errors = []
 for err in validator.iter_errors(instance=instance):
     errors.append(err)
 
+pprint.pprint(schema)
 pprint.pprint(errors)

@@ -38,7 +38,7 @@ const TextField = ({
   labelHint,
   type,
   ...inputProps
-}: ITextFieldProps) => {
+}: ITextFieldProps & JSX.IntrinsicElements["input"]) => {
   const [fieldProps, metaProps] = useField({ name, type });
   const showError = metaProps.touched && !!metaProps.error;
 

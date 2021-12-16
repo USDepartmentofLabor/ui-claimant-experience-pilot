@@ -1,13 +1,13 @@
 import home from "./home";
 import common from "./common";
 import whoami from "./whoami";
-import contact from "./contact";
+import claimForm from "./claimForm";
 
 const en = {
-  contact,
   home,
   common,
   whoami,
+  claimForm,
 };
 
 export default en;

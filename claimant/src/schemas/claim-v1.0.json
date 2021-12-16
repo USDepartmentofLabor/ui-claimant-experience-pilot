@@ -40,7 +40,7 @@
         "address1": { "type": "string" },
         "address2": { "type": "string" },
         "city": { "type": "string" },
-        "state": { "type": "string", "$ref": "#/definitions/state" },
+        "state": { "$ref": "#/definitions/state" },
         "zipcode": { "type": "string" }
       },
       "required": ["address1", "city", "state", "zipcode"]
@@ -267,7 +267,7 @@
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
-      "enum": ["Male", "Female"]
+      "enum": ["male", "female"]
     },
     "race": {
       "description": "",
