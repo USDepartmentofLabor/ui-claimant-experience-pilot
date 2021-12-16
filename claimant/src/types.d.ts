@@ -35,11 +35,6 @@ type PhoneType = {
   type: string;
 };
 
-type StateType = {
-  id: string;
-  label: string;
-};
-
 type YesNo = "yes" | "no";
 
 type StateType = {
