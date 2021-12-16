@@ -2,9 +2,9 @@ import { useQueryClient } from "react-query";
 import { Formik, Form } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
-import { useSubmitClaim } from "../../queries/claim";
+import { useGetCompletedClaim, useSubmitClaim } from "../../queries/claim";
 import { initializeClaimFormWithWhoAmI } from "../../utils/claim_form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import YupBuilder from "../../common/YupBuilder";
 import * as yup from "yup";
 import PageLoader from "../../common/PageLoader";
@@ -15,6 +15,10 @@ import { Button } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinition";
 import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
+const BYPASS_COMPLETED_CHECK =
+  process.env.NODE_ENV === "development" &&
+  process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
+
 // ClaimForm == /claimant/claim/
 export const ClaimForm = () => {
   const { data: whoami, error, isLoading } = useWhoAmI();
@@ -23,6 +27,9 @@ export const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
   const navigate = useNavigate();
+
+  const { data: completedClaim, isLoading: isClaimStatusLoading } =
+    useGetCompletedClaim();
 
   const currentPageIndex = pages.findIndex((p) => p.path === page);
 
@@ -68,12 +75,30 @@ export const ClaimForm = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
   };
 
-  if (isLoading) {
+  if (isLoading || isClaimStatusLoading) {
     return <PageLoader />;
   }
 
   if (error || !whoami) {
     throw error;
+  }
+
+  if (!BYPASS_COMPLETED_CHECK && completedClaim?.status === 200) {
+    return (
+      <Trans
+        t={t}
+        i18nKey="claimAlreadySubmitted"
+        values={{
+          swaName: whoami.swa_name,
+          swaClaimantUrl: whoami.swa_claimant_url,
+        }}
+        components={[
+          <a href={whoami.swa_claimant_url} key={whoami.swa_code}>
+            {whoami.swa_claimant_url}
+          </a>,
+        ]}
+      />
+    );
   }
 
   const initialValues: FormValues = initializeClaimFormWithWhoAmI(whoami);

@@ -1,3 +1,4 @@
+import faker from "faker";
 /* eslint-disable no-undef */
 
 context("Initial Claim form", { scrollBehavior: false }, () => {
@@ -11,7 +12,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   });
 
   it("saves partial claim", () => {
-    cy.login();
+    cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").type("Dave");
     cy.get("[name=claimant_name\\.last_name]").type("Smith");
@@ -28,7 +29,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   });
 
   it("saves completed claim", () => {
-    cy.login();
+    cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").type("Dave");
     cy.get("[name=claimant_name\\.last_name]").type("Smith");
@@ -42,10 +43,15 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=is_complete]").check({ force: true });
     cy.get("[data-testid='button']").contains("Test Claim").click();
     cy.contains("Claim submitted").should("be.visible");
+    // Should no longer allow the claim form to be accessed
+    cy.visit("/claimant/");
+    cy.contains("Sorry, you have a Claim currently being processed").should(
+      "be.visible"
+    );
   });
 
   it("shows error if any required field is missing", () => {
-    cy.login();
+    cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").clear();
     cy.get("button")

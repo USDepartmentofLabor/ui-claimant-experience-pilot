@@ -50,6 +50,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         super().setUp()
         # Empty the test outbox
         mail.outbox = []
+        create_swa(
+            is_active=True,
+            code="XX",
+            name="SomeState",
+            claimant_url="https://somestate.gov",
+        )
 
     @classmethod
     def setUpClass(cls):
@@ -89,6 +95,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         response = self.client.get("/api/whoami/")
         whoami = response.json()
         self.assertEqual(whoami["swa_code"], "XX")
+        self.assertEqual(whoami["swa_name"], "SomeState")
+        self.assertEqual(whoami["swa_claimant_url"], "https://somestate.gov")
 
     def test_whoami_unverified(self):
         response = self.client.get("/api/whoami/")

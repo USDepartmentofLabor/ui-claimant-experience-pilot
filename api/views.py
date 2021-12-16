@@ -7,6 +7,8 @@ import django.middleware.csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+
+from api.models.swa import SWA
 from .decorators import verified_claimant_session
 from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
@@ -46,8 +48,13 @@ def whoami(request):
     or still requires IdP AAL2 login.
     """
     whoami = WhoAmI(**request.session.get("whoami"))
-    if "swa" in request.session and not whoami.swa_code:
+    if "swa" in request.session and not (
+        whoami.swa_code and whoami.swa_name and whoami.swa_claimant_url
+    ):
         whoami.swa_code = request.session["swa"]
+        swa = SWA.objects.get(code=whoami.swa_code)
+        whoami.swa_name = swa.name
+        whoami.swa_claimant_url = swa.claimant_url
     # set csrftoken cookie
     django.middleware.csrf.get_token(request)
 

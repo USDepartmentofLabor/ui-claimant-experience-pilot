@@ -25,6 +25,10 @@ export const WhoAmI = () => {
       <li>{t("info.ssn", { ssn: whoami.ssn })}</li>
       <li>{t("info.phone", { phone: whoami.phone })}</li>
       <li>{t("info.SWA", { SWA: whoami.swa_code })}</li>
+      <li>{t("info.SWAName", { SWAName: whoami.swa_name })}</li>
+      <li>
+        {t("info.SWAClaimantUrl", { SWAClaimantUrl: whoami.swa_claimant_url })}
+      </li>
       <li>{t("info.claim", { claim: whoami.claim_id })}</li>
     </ul>
   );

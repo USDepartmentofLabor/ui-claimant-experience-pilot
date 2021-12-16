@@ -9,6 +9,8 @@ const whoami = {
     ssn: "SSN: {{ssn}}",
     phone: "Phone: {{phone}}",
     SWA: "SWA: {{SWA}}",
+    SWAName: "SWA Name: {{SWAName}}",
+    SWAClaimantUrl: "SWA Claimant Url: {{- SWAClaimantUrl}}",
     claim: "Claim: {{claim}}",
   },
 };

@@ -30,6 +30,9 @@ const home = {
     next: "Next",
     previous: "Previous",
   },
+  claimAlreadySubmitted:
+    "Sorry, you have a Claim currently being processed by {{ swaName }}. " +
+    "Please contact them at <0>{{- swaClaimantUrl }}</0> to resolve your open claim.",
 };
 
 export default home;

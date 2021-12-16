@@ -9,15 +9,16 @@ def create_idp():
     return idp
 
 
-def create_swa(is_active=False, code="KS"):
+def create_swa(is_active=False, code="KS", name=None, claimant_url=None):
     private_key_jwk, public_key_jwk = generate_keypair()
 
     # ad astra per aspera (the KS state motto)
     swa = SWA(
         code=code,
-        name=f"{code} state name",
+        name=name or f"{code} state name",
         public_key=public_key_jwk.export_to_pem().decode("utf-8"),
         public_key_fingerprint=public_key_jwk.thumbprint(),
+        claimant_url=claimant_url or "https://some.fake.url",
     )
     if is_active:
         swa.status = SWA.StatusOptions.ACTIVE
