@@ -3,17 +3,19 @@ import { render } from "@testing-library/react";
 import { Formik } from "formik";
 import DropdownField from "./DropdownField";
 
+const noop = () => undefined;
+
 describe("dropdownField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByText, getByLabelText } = render(
-      <Formik>
+      <Formik onSubmit={noop}>
         <DropdownField
           name="dropdownField"
           label="dropdownField"
           id="dropdownField"
           options={[
-            { label: "label1", id: "id1" },
-            { label: "label2", id: "id2" },
+            { label: "label1", value: "value1" },
+            { label: "label2", value: "value2" },
           ]}
         />
       </Formik>
@@ -33,37 +35,37 @@ describe("dropdownField component", () => {
   describe("uses initial values", () => {
     it("uses the initial value that is passed", () => {
       const initialValues = {
-        dropdownField: "id2",
+        dropdownField: "value2",
       };
 
       const { getByLabelText } = render(
-        <Formik initialValues={initialValues}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <DropdownField
             name="dropdownField"
             label="dropdownField"
             id="dropdownField"
             options={[
-              { label: "label1", id: "id1" },
-              { label: "label2", id: "id2" },
+              { label: "label1", value: "value1" },
+              { label: "label2", value: "value2" },
             ]}
           />
         </Formik>
       );
-      expect(getByLabelText("dropdownField")).toHaveValue("id2");
+      expect(getByLabelText("dropdownField")).toHaveValue("value2");
     });
   });
 
   describe("disabled", () => {
     it("disables the dropdown when it is disabled", () => {
       const { getByLabelText } = render(
-        <Formik>
+        <Formik onSubmit={noop}>
           <DropdownField
             name="dropdownField"
             label="dropdownField"
             id="dropdownField"
             options={[
-              { label: "label1", id: "id1" },
-              { label: "label2", id: "id2" },
+              { label: "label1", value: "value1" },
+              { label: "label2", value: "value2" },
             ]}
             disabled
           />

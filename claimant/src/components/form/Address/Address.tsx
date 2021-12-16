@@ -17,7 +17,7 @@ interface IStates {
 
 const statesByAbbrev: IStates = states;
 const stateOptions: StateType[] = Object.keys(statesByAbbrev).map((abbrev) => {
-  return { id: abbrev, label: statesByAbbrev[abbrev] };
+  return { value: abbrev, label: statesByAbbrev[abbrev] };
 });
 
 export const Address = ({
@@ -29,10 +29,10 @@ export const Address = ({
   let stateDropdownOptions: StateType[] = stateOptions;
   if (stateSlice) {
     stateDropdownOptions = stateOptions.filter(
-      (opt) => !stateSlice.includes(opt.id as StateAbbrev)
+      (opt) => !stateSlice.includes(opt.value as StateAbbrev)
     );
   }
-  stateDropdownOptions.unshift({ id: "", label: t("label.select_one") });
+  stateDropdownOptions.unshift({ value: "", label: t("label.select_one") });
 
   return (
     <FormGroup>

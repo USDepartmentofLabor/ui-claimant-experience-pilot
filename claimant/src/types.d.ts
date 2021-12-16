@@ -24,7 +24,7 @@ type PersonName = {
 type YesNo = "yes" | "no";
 
 type StateType = {
-  id: string;
+  value: string;
   label: string;
 };
 
@@ -34,13 +34,19 @@ type ClaimantNamesType = {
   alternate_names?: PersonName[];
 };
 
-type ClaimantInput = ClaimantNamesType & {
-  birthdate?: string;
-  ssn?: string;
-  email?: string;
-  phone?: string | null;
-  is_complete?: boolean;
+type DemographicInfoType = {
+  race?: string[];
+  ethnicity?: string[];
 };
+
+type ClaimantInput = ClaimantNamesType &
+  DemographicInfoType & {
+    birthdate?: string;
+    ssn?: string;
+    email?: string;
+    phone?: string | null;
+    is_complete?: boolean;
+  };
 
 type Claim = ClaimantInput & {
   id?: string;

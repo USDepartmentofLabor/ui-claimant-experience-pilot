@@ -266,7 +266,7 @@
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
-      "enum": ["Male", "Female"]
+      "enum": ["male", "female"]
     },
     "race": {
       "description": "",
