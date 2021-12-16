@@ -8,8 +8,8 @@ import {
 } from "@trussworks/react-uswds";
 
 type DropdownOption = {
-  id: string;
   label: string;
+  value: string;
 };
 
 interface IDropdownFieldProps {
@@ -40,7 +40,7 @@ const DropdownField = ({
   labelHint,
   options,
   ...inputProps
-}: IDropdownFieldProps) => {
+}: IDropdownFieldProps & JSX.IntrinsicElements["select"]) => {
   const [fieldProps, metaProps] = useField({ name });
   const showError = metaProps.touched && !!metaProps.error;
 
@@ -58,8 +58,8 @@ const DropdownField = ({
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Dropdown id={id} {...fieldProps} {...inputProps}>
         {options &&
-          options.map(({ id, label }) => (
-            <option key={id} value={id}>
+          options.map(({ label, value }, index) => (
+            <option key={`${index}_${label}_${value}`} value={value}>
               {label}
             </option>
           ))}

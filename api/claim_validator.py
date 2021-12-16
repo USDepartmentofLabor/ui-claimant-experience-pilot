@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from jsonschema.validators import validator_for
 from jsonschema import FormatChecker
-from jwcrypto.common import json_decode
 from django.conf import settings
+import jsonref
 
 CLAIM_V1 = "claim-v1.0"
 DEFAULT_SCHEMA = CLAIM_V1
@@ -19,7 +19,7 @@ class ClaimValidator(object):
         schema_path = settings.BASE_DIR / "schemas" / f"{schema_name}.json"
         with open(schema_path) as f:
             json_str = f.read()
-        return json_decode(json_str)
+        return jsonref.loads(json_str)
 
     def validate(self):
         self.validator = validator_for(self.schema)(
