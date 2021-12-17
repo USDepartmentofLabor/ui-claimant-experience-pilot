@@ -1,6 +1,6 @@
 import { Fieldset } from "@trussworks/react-uswds";
-import TextField from "../fields/TextField";
-import CheckboxField from "../fields/CheckboxField";
+import TextField from "../fields/TextField/TextField";
+import CheckboxField from "../fields/CheckboxField/CheckboxField";
 import { RadioField } from "../fields/RadioField/RadioField";
 import DropdownField from "../fields/DropdownField/DropdownField";
 import { Normalize, useTranslation } from "react-i18next";

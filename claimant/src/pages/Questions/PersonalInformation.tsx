@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import TextField from "../../components/form/fields/TextField";
+import TextField from "../../components/form/fields/TextField/TextField";
 import { ClaimSchemaFields } from "../../common/YupBuilder";
 import {
   ClaimantNames,

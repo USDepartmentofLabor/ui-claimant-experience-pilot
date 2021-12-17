@@ -2,15 +2,6 @@ import React from "react";
 import { useField } from "formik";
 import { Checkbox } from "@trussworks/react-uswds";
 
-interface ICheckboxFieldProps {
-  id: string;
-  name: string;
-  value?: string;
-  label: React.ReactNode;
-  labelDescription?: React.ReactNode;
-  tile?: boolean;
-}
-
 /**
  * This component renders a checkbox
  *
@@ -21,14 +12,13 @@ interface ICheckboxFieldProps {
  * ReactUSWDS components directly.
  */
 
-export const CheckboxField = ({
-  name,
-  ...inputProps
-}: ICheckboxFieldProps & JSX.IntrinsicElements["input"]) => {
-  const [fieldProps] = useField({ name, type: "checkbox" });
+export const CheckboxField = (
+  checkboxProps: React.ComponentProps<typeof Checkbox>
+) => {
+  const [fieldProps] = useField({ name: checkboxProps.name, type: "checkbox" });
 
   /* eslint-disable-next-line react/jsx-props-no-spreading */
-  return <Checkbox {...fieldProps} {...inputProps} />;
+  return <Checkbox {...fieldProps} {...checkboxProps} />;
 };
 
 export default CheckboxField;

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import CheckboxField from "../../components/form/fields/CheckboxField";
+import CheckboxField from "../../components/form/fields/CheckboxField/CheckboxField";
 import { ClaimSchemaFields } from "../../common/YupBuilder";
 
 export const SubmitFields: ClaimSchemaFields[] = ["is_complete"];

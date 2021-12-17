@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import TextField from "../fields/TextField";
+import TextField from "../fields/TextField/TextField";
 import DropdownField from "../fields/DropdownField/DropdownField";
 import states from "../../../schemas/states.json";
 import { FormGroup } from "@trussworks/react-uswds";

@@ -7,13 +7,12 @@ import {
   ErrorMessage,
 } from "@trussworks/react-uswds";
 
-interface ITextFieldProps {
-  id: string;
-  name: string;
+type TextInputProps = React.ComponentProps<typeof TextInput>;
+
+interface ITextFieldProps extends TextInputProps {
   label: React.ReactNode;
   labelClassName?: string;
   labelHint?: string;
-  type: "number" | "email" | "password" | "search" | "tel" | "text" | "url";
 }
 
 // TODO consider from https://github.com/transcom/mymove/tree/master/src/components/Hint
@@ -30,16 +29,16 @@ interface ITextFieldProps {
  * ReactUSWDS components directly.
  */
 
-const TextField = ({
-  name,
-  id,
+export const TextField = ({
   label,
   labelClassName,
   labelHint,
-  type,
-  ...inputProps
-}: ITextFieldProps & JSX.IntrinsicElements["input"]) => {
-  const [fieldProps, metaProps] = useField({ name, type });
+  ...textInputProps
+}: ITextFieldProps) => {
+  const [fieldProps, metaProps] = useField({
+    name: textInputProps.name,
+    type: textInputProps.type,
+  });
   const showError = metaProps.touched && !!metaProps.error;
 
   return (
@@ -48,13 +47,13 @@ const TextField = ({
         className={labelClassName}
         hint={labelHint}
         error={showError}
-        htmlFor={id || name}
+        htmlFor={textInputProps.id || textInputProps.name}
       >
         {label}
       </Label>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <TextInput id={id} type={type} {...fieldProps} {...inputProps} />
+      <TextInput {...fieldProps} {...textInputProps} />
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
     </FormGroup>
