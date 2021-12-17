@@ -262,7 +262,7 @@
       "description": "Date of birth",
       "type": "string",
       "format": "date",
-      "required_for_swa": true
+      "TODO_required_for_swa": true
     },
     "sex": {
       "description": "Required for SWA-level eligibility checks",
@@ -294,7 +294,7 @@
       "description": "Required per 20 CFR 603.3",
       "type": "string",
       "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$",
-      "required_for_swa": true
+      "TODO_required_for_swa": true
     },
     "currently_reside_in_us": {
       "description": "Required per 20 CFR Appendix A to Part 625",
@@ -352,7 +352,7 @@
       "type": "string",
       "format": "email",
       "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them",
-      "required_for_swa": true
+      "TODO_required_for_swa": true
     },
     "education_level": {
       "description": "",
