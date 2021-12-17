@@ -56,7 +56,7 @@ const DropdownField = ({
       </Label>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <Dropdown id={id} {...fieldProps} {...inputProps}>
+      <Dropdown id={id} data-testid={id} {...fieldProps} {...inputProps}>
         {options &&
           options.map(({ label, value }, index) => (
             <option key={`${index}_${label}_${value}`} value={value}>

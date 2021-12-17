@@ -1,7 +1,7 @@
 import faker from "faker";
 /* eslint-disable no-undef */
 
-context("Initial Claim form", { scrollBehavior: false }, () => {
+context("Initial Claim form", { scrollBehavior: "center" }, () => {
   it("requires login", () => {
     if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
       // always pass since we cannot redirect to a different port (4430)
@@ -15,8 +15,15 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
-    // clear first to replace the whoami.email value
-    cy.get("[name=email]").clear().type("dave@example.com");
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
     cy.click_next();
     cy.click_final_submit();
     cy.contains("Progress saved").should("be.visible");
@@ -26,7 +33,15 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
-    cy.get("[name=email]").clear().type("dave@example.com");
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
     cy.click_next();
     cy.click_is_complete();
     cy.click_final_submit();

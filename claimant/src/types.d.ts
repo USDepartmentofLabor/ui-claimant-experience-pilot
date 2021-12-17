@@ -23,6 +23,20 @@ type PersonName = {
   last_name: string;
 };
 
+type AddressType = {
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  zipcode: string;
+};
+
+type PhoneType = {
+  number: string;
+  sms: boolean;
+  type: string;
+};
+
 type YesNo = "yes" | "no";
 
 type StateType = {

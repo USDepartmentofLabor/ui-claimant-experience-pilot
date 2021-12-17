@@ -103,3 +103,27 @@ Cypress.Commands.add("complete_claimant_names", (claimant) => {
     cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
   }
 });
+
+Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
+  cy.get("[name=residence_address\\.address1]").type(
+    addresses.residence_address.address1
+  );
+  cy.get("[name=residence_address\\.address2]").type(
+    addresses.residence_address.address2
+  );
+  cy.get("[name=residence_address\\.city]").type(
+    addresses.residence_address.city
+  );
+  cy.get("[name=residence_address\\.state]").select(
+    addresses.residence_address.state
+  );
+  cy.get("[name=residence_address\\.zipcode]").type(
+    addresses.residence_address.zipcode,
+    { force: true }
+  );
+  if (!addresses.mailing_address) {
+    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
+  } else {
+    // TODO
+  }
+});

@@ -2,7 +2,7 @@ import { Fieldset } from "@trussworks/react-uswds";
 import { FieldArray, useFormikContext } from "formik";
 import { ClaimSchemaFields } from "../../../common/YupBuilder";
 import * as yup from "yup";
-import { t } from "i18next";
+import i18next from "i18next";
 
 import { Name } from "../Name/Name";
 import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
@@ -19,7 +19,9 @@ type ClaimantNamesValues = {
 };
 
 export const CLAIMANT_NAMES_ADDITIONAL_VALIDATIONS = {
-  claimant_has_alternate_names: yup.string().required(t("validation.required")),
+  claimant_has_alternate_names: yup
+    .string()
+    .required(i18next.t("validation.required")),
 };
 
 const BLANK_PERSON_NAME: PersonName = {
