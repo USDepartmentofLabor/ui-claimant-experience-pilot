@@ -14,45 +14,37 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
   it("saves partial claim", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
-    cy.get("[name=claimant_name\\.first_name]").type("Dave");
-    cy.get("[name=claimant_name\\.last_name]").type("Smith");
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
-    cy.get("[name=residence_address\\.address1]").type("1 Street");
-    cy.get("[name=residence_address\\.address2]").type("Apartment 12345");
-    cy.get("[name=residence_address\\.city]").type("City");
-    cy.get("[name=residence_address\\.state]").select("CA");
-    cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
-    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
-
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
-    cy.get("[data-testid='button']").contains("Test Claim").click();
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
+    cy.click_next();
+    cy.click_final_submit();
     cy.contains("Progress saved").should("be.visible");
   });
 
   it("saves completed claim", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
-    cy.get("[name=claimant_name\\.first_name]").type("Dave");
-    cy.get("[name=claimant_name\\.last_name]").type("Smith");
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
-    cy.get("[name=residence_address\\.address1]").type("1 Street");
-    cy.get("[name=residence_address\\.address2]").type("Apartment 12345");
-    cy.get("[name=residence_address\\.city]").type("City");
-    cy.get("[name=residence_address\\.state]").select("CA");
-    cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
-    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
-
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
-    cy.get("[name=is_complete]").check({ force: true });
-    cy.get("[data-testid='button']").contains("Test Claim").click();
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
+    cy.click_next();
+    cy.click_is_complete();
+    cy.click_final_submit();
     cy.contains("Claim submitted").should("be.visible");
     // Should no longer allow the claim form to be accessed
     cy.visit("/claimant/");
@@ -65,11 +57,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").clear();
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
+    cy.click_next();
     cy.contains("is required").should("be.visible");
   });
 });

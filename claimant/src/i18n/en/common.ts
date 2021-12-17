@@ -3,14 +3,14 @@ const common = {
   logout: "Log out",
   yes: "Yes",
   no: "No",
-  label: {
-    select_one: "-- Select one --",
-    address1: "Address 1",
-    address2: "Address 2",
-    city: "City",
-    state: "State",
-    zipcode: "ZIP Code",
+  address: {
+    address1: { label: "Address 1" },
+    address2: { label: "Address 2" },
+    city: { label: "City" },
+    state: { label: "State" },
+    zipcode: { label: "ZIP Code" },
   },
+  select_one: "-- Select one --",
 };
 
 export default common;

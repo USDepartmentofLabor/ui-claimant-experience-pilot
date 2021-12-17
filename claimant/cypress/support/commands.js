@@ -76,3 +76,54 @@ Cypress.Commands.add("mock_login", () => {
 Cypress.Commands.overwrite("log", (subject, message) =>
   cy.task("log", message)
 );
+
+Cypress.Commands.add("click_next", () => {
+  cy.get("button")
+    .contains("Next")
+    .scrollIntoView()
+    .should("be.visible")
+    .click();
+});
+
+Cypress.Commands.add("click_final_submit", () => {
+  cy.get("[data-testid='button']").contains("Test Claim").click();
+});
+
+Cypress.Commands.add("click_is_complete", () => {
+  cy.get("[name=is_complete]").check({ force: true });
+});
+
+Cypress.Commands.add("complete_claimant_names", (claimant) => {
+  cy.get("[name=claimant_name\\.first_name]").type(claimant.first_name);
+  cy.get("[name=claimant_name\\.last_name]").type(claimant.last_name);
+  if (claimant.alternate_names) {
+    cy.get("input[id=claimant_has_alternate_names\\.yes").parent().click();
+    // TODO handle alternate_names
+  } else {
+    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
+  }
+});
+
+Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
+  cy.get("[name=residence_address\\.address1]").type(
+    addresses.residence_address.address1
+  );
+  cy.get("[name=residence_address\\.address2]").type(
+    addresses.residence_address.address2
+  );
+  cy.get("[name=residence_address\\.city]").type(
+    addresses.residence_address.city
+  );
+  cy.get("[name=residence_address\\.state]").select(
+    addresses.residence_address.state
+  );
+  cy.get("[name=residence_address\\.zipcode]").type(
+    addresses.residence_address.zipcode,
+    { force: true }
+  );
+  if (!addresses.residence_address.mailing_address) {
+    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
+  } else {
+    // TODO
+  }
+});

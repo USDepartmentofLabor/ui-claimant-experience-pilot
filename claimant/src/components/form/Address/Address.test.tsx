@@ -31,10 +31,10 @@ describe("Address component", () => {
       </Formik>
     );
 
-    const address1Field = getByLabelText("label.address1");
-    const address2Field = getByLabelText("label.address2");
-    const cityField = getByLabelText("label.city");
-    const stateField = getByLabelText("label.state");
+    const address1Field = getByLabelText("address.address1.label");
+    const address2Field = getByLabelText("address.address2.label");
+    const cityField = getByLabelText("address.city.label");
+    const stateField = getByLabelText("address.state.label");
 
     expect(address1Field).toHaveValue("");
     expect(address1Field).toHaveAttribute("id", `${basename}.address1`);
@@ -71,14 +71,52 @@ describe("Address component", () => {
       </Formik>
     );
 
-    const address1Field = getByLabelText("label.address1");
-    const address2Field = getByLabelText("label.address2");
-    const cityField = getByLabelText("label.city");
-    const stateField = getByLabelText("label.state");
+    const address1Field = getByLabelText("address.address1.label");
+    const address2Field = getByLabelText("address.address2.label");
+    const cityField = getByLabelText("address.city.label");
+    const stateField = getByLabelText("address.state.label");
 
     expect(address1Field).toHaveValue("123 Main");
     expect(address2Field).toHaveValue("Suite 345");
     expect(cityField).toHaveValue("Somewhere");
     expect(stateField).toHaveValue("TX");
+  });
+
+  it("renders custom labels", () => {
+    const basename = "claimant";
+    const initialValues = {
+      claimant: {
+        address1: "123 Main",
+        address2: "Suite 345",
+        city: "Somewhere",
+        state: "TX",
+        zipcode: "12345",
+      },
+    };
+    const myLabels = {
+      address1: "first line",
+      address2: "second line",
+      city: "my city",
+      state: "your state",
+      zipcode: "POSTAL",
+    };
+
+    const { getByLabelText } = render(
+      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <Address basename={basename} labels={myLabels} />
+      </Formik>
+    );
+
+    const address1Field = getByLabelText("first line");
+    const address2Field = getByLabelText("second line");
+    const cityField = getByLabelText("my city");
+    const stateField = getByLabelText("your state");
+    const zipcodeField = getByLabelText("POSTAL");
+
+    expect(address1Field).toHaveValue("123 Main");
+    expect(address2Field).toHaveValue("Suite 345");
+    expect(cityField).toHaveValue("Somewhere");
+    expect(stateField).toHaveValue("TX");
+    expect(zipcodeField).toHaveValue("12345");
   });
 });

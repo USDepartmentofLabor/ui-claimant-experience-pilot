@@ -1,4 +1,4 @@
-import TextField from "../fields/TextField";
+import TextField from "../fields/TextField/TextField";
 import { useTranslation } from "react-i18next";
 
 interface INameProps {
