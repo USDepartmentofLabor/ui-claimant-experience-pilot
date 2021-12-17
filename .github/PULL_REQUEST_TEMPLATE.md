@@ -61,7 +61,7 @@
   - [ ] Checked keyboard navigability
   - [ ] Tested with [VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) in Safari
   - [ ] Checked VO's [rotor menu](https://github.com/trussworks/accessibility/blob/master/README.md#how-to-use-the-rotor-menu) for landmarks, page heading structure and links
-  - [ ] Used a browser a11y tool to check for issues (WAVE, axe, or ANDI)
+  - [ ] Used a browser a11y tool to check for issues (WAVE, axe, ANDI or Accessibilty tab for storybook)
 
 ### As a designer reviewer, I have
 

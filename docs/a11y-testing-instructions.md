@@ -35,9 +35,14 @@ The code submitter, code reviewer, and design reviewer should go through each of
 
     Check that all the intended links on the page are displayed in this menu with the right link label.
 
-- [ ] Use **[VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) screen reader** (with Safari) to walk through the interface changes and ensure it acts as expected (content is announced)
+- [ ] Use **[VoiceOver](https://dequeuniversity.com/screenreaders/voiceover-keyboard-shortcuts) screen reader** (with Safari) to walk through the interface changes
 
-- [ ] Open one of these three **a11y browser tools** to check for errors or issues: WAVE, axe (free version is sufficient, for Chrome only), or ANDI (this is the one used by gov (DHS Trusted Testers)
+  - Listen to make sure context makes sense semantically
+  - Make sure actions (like buttons) have enough verbal context to understand what they do
+  - Check that transitions make sense and focus goes where expected (ex. new page)
+  - Ensure users are brought to errors so they know what is wrong
+
+- [ ] Open one of these three **a11y browser tools** to check for errors or issues: [WAVE](https://wave.webaim.org/), [axe](https://www.deque.com/axe/devtools/) (free version is sufficient, for Chrome only), or [ANDI](https://www.ssa.gov/accessibility/andi/help/install.html#install) (this is the one used by gov (DHS Trusted Testers). For storybook-only components, use the accessibility tab in Storybook.
 
 ## After completion of each epic:
 
