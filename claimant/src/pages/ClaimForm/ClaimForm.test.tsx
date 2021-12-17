@@ -31,12 +31,6 @@ const myPII: WhoAmI = {
   swa_code: "MD",
   swa_name: "Maryland",
   swa_claimant_url: "https://some-test-url.gov",
-  residence_address: {
-    address1: "address1",
-    city: "city",
-    state: "CA",
-    zipcode: "00000",
-  },
 };
 
 describe("the ClaimForm page", () => {
@@ -102,19 +96,13 @@ describe("the ClaimForm page", () => {
       userEvent.click(result.getByRole("radio", { name: "No" }));
       userEvent.type(
         result.getByTestId("residence_address.address1"),
-        myPII.residence_address.address1
+        "address1"
       );
-      userEvent.type(
-        result.getByTestId("residence_address.city"),
-        myPII.residence_address.city
-      );
+      userEvent.type(result.getByTestId("residence_address.city"), "city");
       userEvent.selectOptions(result.getByTestId("residence_address.state"), [
-        myPII.residence_address.state,
+        "CA",
       ]);
-      userEvent.type(
-        result.getByTestId("residence_address.zipcode"),
-        myPII.residence_address.zipcode
-      );
+      userEvent.type(result.getByTestId("residence_address.zipcode"), "00000");
       userEvent.click(result.getByTestId("LOCAL_mailing_address_same"));
     });
 
