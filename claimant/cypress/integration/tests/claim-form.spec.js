@@ -1,7 +1,7 @@
 import faker from "faker";
 /* eslint-disable no-undef */
 
-context("Initial Claim form", { scrollBehavior: false }, () => {
+context("Initial Claim form", { scrollBehavior: "center" }, () => {
   it("requires login", () => {
     if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
       // always pass since we cannot redirect to a different port (4430)
@@ -22,7 +22,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=residence_address\\.city]").type("City");
     cy.get("[name=residence_address\\.state]").select("CA");
     cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
-    cy.get("[name=LOCAL_mailing_address_same]").check();
+    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
 
     cy.get("button")
       .contains("Next")
@@ -44,7 +44,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=residence_address\\.city]").type("City");
     cy.get("[name=residence_address\\.state]").select("CA");
     cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
-    cy.get("[name=LOCAL_mailing_address_same]").check();
+    cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
 
     cy.get("button")
       .contains("Next")
