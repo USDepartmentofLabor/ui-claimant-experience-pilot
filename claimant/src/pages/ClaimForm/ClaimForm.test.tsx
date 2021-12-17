@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ClaimFormPage, { ClaimForm } from "./ClaimForm";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -90,19 +90,33 @@ describe("the ClaimForm page", () => {
   it("navigates between pages", async () => {
     const result = render(Page);
     const nextLink = result.getByText("Next", { exact: false });
+    // /personal-information
+    const moreClaimantNames = result.getByRole("radio", { name: "No" });
+    expect(moreClaimantNames).not.toBeChecked();
     await act(async () => {
       userEvent.type(result.getByLabelText("First Name"), myPII.first_name);
       userEvent.type(result.getByLabelText("Last Name"), myPII.last_name);
-      userEvent.click(result.getByRole("radio", { name: "No" }));
-      userEvent.type(
-        result.getByTestId("residence_address.address1"),
-        "address1"
-      );
-      userEvent.type(result.getByTestId("residence_address.city"), "city");
-      userEvent.selectOptions(result.getByTestId("residence_address.state"), [
-        "CA",
-      ]);
-      userEvent.type(result.getByTestId("residence_address.zipcode"), "00000");
+      userEvent.click(moreClaimantNames);
+    });
+    expect(moreClaimantNames).toBeChecked();
+
+    const residenceAddress = result.getByRole("group", {
+      name: "What is your primary address?",
+    });
+    const residenceAddress1 =
+      within(residenceAddress).getByLabelText("Address 1");
+    const residenceAddress2 =
+      within(residenceAddress).getByLabelText("Address 2");
+    const residenceCity = within(residenceAddress).getByLabelText("City");
+    const residenceState = within(residenceAddress).getByLabelText("State");
+    const residenceZIPCode =
+      within(residenceAddress).getByLabelText("ZIP Code");
+    await act(async () => {
+      userEvent.type(residenceAddress1, "address1");
+      userEvent.type(residenceAddress2, "address2");
+      userEvent.type(residenceCity, "city");
+      userEvent.selectOptions(residenceState, ["CA"]);
+      userEvent.type(residenceZIPCode, "00000");
       userEvent.click(result.getByTestId("LOCAL_mailing_address_same"));
     });
 

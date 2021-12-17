@@ -145,7 +145,8 @@ export const ClaimForm = () => {
         }}
       >
         {(errors) => {
-          console.log({ errors });
+          // TODO leaving this here for now to help us all understand schema validation problems.
+          console.warn({ errors });
           //{(props: FormikProps<ClaimantInput>) => (
           return (
             <Form>
