@@ -121,7 +121,7 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
     addresses.residence_address.zipcode,
     { force: true }
   );
-  if (!addresses.residence_address.mailing_address) {
+  if (!addresses.mailing_address) {
     cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
   } else {
     // TODO
