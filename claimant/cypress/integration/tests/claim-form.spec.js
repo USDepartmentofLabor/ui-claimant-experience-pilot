@@ -21,7 +21,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=residence_address\\.address2]").type("Apartment 12345");
     cy.get("[name=residence_address\\.city]").type("City");
     cy.get("[name=residence_address\\.state]").select("CA");
-    cy.get("[name=residence_address\\.zipcode]").type("00000");
+    cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
     cy.get("[name=LOCAL_mailing_address_same]").check();
 
     cy.get("button")
@@ -43,7 +43,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=residence_address\\.address2]").type("Apartment 12345");
     cy.get("[name=residence_address\\.city]").type("City");
     cy.get("[name=residence_address\\.state]").select("CA");
-    cy.get("[name=residence_address\\.zipcode]").type("00000");
+    cy.get("[name=residence_address\\.zipcode]").type("00000", { force: true });
     cy.get("[name=LOCAL_mailing_address_same]").check();
 
     cy.get("button")
