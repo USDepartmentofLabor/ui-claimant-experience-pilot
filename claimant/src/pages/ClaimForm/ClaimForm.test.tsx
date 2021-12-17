@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import ClaimFormPage, { ClaimForm } from "./ClaimForm";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
-import { useSubmitClaim } from "../../queries/claim";
+import { useGetCompletedClaim, useSubmitClaim } from "../../queries/claim";
 import { initializeClaimFormWithWhoAmI } from "../../utils/claim_form";
 import { Route, Routes, MemoryRouter } from "react-router-dom";
 import { Routes as ROUTES } from "../../routes";
@@ -17,6 +17,7 @@ const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 
 jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
+const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 
 const myPII: WhoAmI = {
   claim_id: "123",
@@ -28,6 +29,8 @@ const myPII: WhoAmI = {
   email: "test@example.com",
   phone: "555-555-5555",
   swa_code: "MD",
+  swa_name: "Maryland",
+  swa_claimant_url: "https://some-test-url.gov",
   residence_address: {
     address1: "address1",
     city: "city",
@@ -52,6 +55,14 @@ describe("the ClaimForm page", () => {
       isError: false,
       mutateAsync: jest.fn(),
       data: { status: 201 },
+    }));
+
+    mockedUseGetCompletedClaim.mockImplementation(() => ({
+      data: {},
+      isLoading: false,
+      error: null,
+      isError: true,
+      isSuccess: false,
     }));
   });
   const queryClient = new QueryClient();
@@ -144,6 +155,14 @@ describe("the ClaimForm", () => {
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
     }));
+
+    mockedUseGetCompletedClaim.mockImplementation(() => ({
+      data: {},
+      isLoading: false,
+      error: null,
+      isError: true,
+      isSuccess: false,
+    }));
   });
 
   const queryClient = new QueryClient();
@@ -212,5 +231,56 @@ describe("the ClaimForm", () => {
     expect(screen.queryByRole("heading", { level: 4 })).toHaveTextContent(
       "Success status"
     );
+  });
+});
+
+describe("Already Submitted", () => {
+  const mockMutateAsync = jest.fn();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockedUseWhoAmI.mockImplementation(() => ({
+      data: myPII,
+      isLoading: false,
+      error: null,
+      isError: false,
+    }));
+
+    mockedUseSubmitClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      mutateAsync: mockMutateAsync,
+      data: { status: 201 },
+    }));
+
+    mockedUseGetCompletedClaim.mockImplementation(() => ({
+      data: { status: 200 },
+      isLoading: false,
+      error: null,
+      isError: false,
+      isSuccess: true,
+    }));
+  });
+
+  const queryClient = new QueryClient();
+  const wrappedClaimForm = (
+    <MemoryRouter initialEntries={["/claim/personal-information"]}>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <Routes>
+            <Route path={CLAIM_FORM_PAGE} element={<ClaimForm />} />
+          </Routes>
+        </QueryClientProvider>
+      </I18nextProvider>
+    </MemoryRouter>
+  );
+
+  it("informs user that claim has been submitted", async () => {
+    render(wrappedClaimForm);
+    const warning = await screen.findByText(
+      "Sorry, you have a Claim currently being processed",
+      { exact: false }
+    );
+    expect(warning).toBeInTheDocument();
   });
 });

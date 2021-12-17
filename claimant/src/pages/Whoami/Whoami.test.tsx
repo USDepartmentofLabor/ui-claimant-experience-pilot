@@ -45,6 +45,8 @@ describe("component WhoAmI", () => {
     email: "test@example.com",
     phone: "555-555-5555",
     swa_code: "MD",
+    swa_name: "Maryland",
+    swa_claimant_url: "https://some-test-url.gov",
   };
 
   beforeEach(() => {
@@ -78,7 +80,7 @@ describe("component WhoAmI", () => {
     render(whoAmI);
     const list = screen.getByRole("list");
     const { getAllByRole } = within(list);
-    expect(list.childElementCount).toBe(8);
+    expect(list.childElementCount).toBe(10);
 
     const items = getAllByRole("listitem");
     const piiItems = items.map((item) => item.textContent);
@@ -91,6 +93,8 @@ describe("component WhoAmI", () => {
         "info.ssn",
         "info.phone",
         "info.SWA",
+        "info.SWAName",
+        "info.SWAClaimantUrl",
         "info.claim",
       ]
     `);
