@@ -54,7 +54,13 @@ const TextField = ({
       </Label>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <TextInput id={id} type={type} {...fieldProps} {...inputProps} />
+      <TextInput
+        id={id}
+        type={type}
+        data-testid={id}
+        {...fieldProps}
+        {...inputProps}
+      />
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
     </FormGroup>

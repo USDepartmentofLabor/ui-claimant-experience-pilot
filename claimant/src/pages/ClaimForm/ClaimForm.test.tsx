@@ -28,6 +28,12 @@ const myPII: WhoAmI = {
   email: "test@example.com",
   phone: "555-555-5555",
   swa_code: "MD",
+  residence_address: {
+    address1: "address1",
+    city: "city",
+    state: "CA",
+    zipcode: "00000",
+  },
 };
 
 describe("the ClaimForm page", () => {
@@ -83,7 +89,24 @@ describe("the ClaimForm page", () => {
       userEvent.type(result.getByLabelText("First Name"), myPII.first_name);
       userEvent.type(result.getByLabelText("Last Name"), myPII.last_name);
       userEvent.click(result.getByRole("radio", { name: "No" }));
+      userEvent.type(
+        result.getByTestId("residence_address.address1"),
+        myPII.residence_address.address1
+      );
+      userEvent.type(
+        result.getByTestId("residence_address.city"),
+        myPII.residence_address.city
+      );
+      userEvent.selectOptions(result.getByTestId("residence_address.state"), [
+        myPII.residence_address.state,
+      ]);
+      userEvent.type(
+        result.getByTestId("residence_address.zipcode"),
+        myPII.residence_address.zipcode
+      );
+      userEvent.click(result.getByTestId("LOCAL_mailing_address_same"));
     });
+
     await act(async () => {
       userEvent.click(nextLink);
     });

@@ -8,6 +8,7 @@ type WhoAmI = {
   email: string;
   phone: string;
   swa_code: string;
+  residence_address: AddressType;
 };
 
 type ClaimResponse = {
