@@ -17,8 +17,13 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.get("[name=claimant_name\\.first_name]").type("Dave");
     cy.get("[name=claimant_name\\.last_name]").type("Smith");
     cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
-    // clear first to replace the whoami.email value
-    cy.get("[name=email]").clear().type("dave@example.com");
+    cy.get("[name=residence_address\\.address1]").type("1 Street");
+    cy.get("[name=residence_address\\.address2]").type("Apartment 12345");
+    cy.get("[name=residence_address\\.city]").type("City");
+    cy.get("[name=residence_address\\.state]").select("CA");
+    cy.get("[name=residence_address\\.zipcode]").type("00000");
+    cy.get("[name=LOCAL_mailing_address_same]").check();
+
     cy.get("button")
       .contains("Next")
       .scrollIntoView()
