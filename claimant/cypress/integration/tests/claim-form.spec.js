@@ -14,34 +14,22 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
   it("saves partial claim", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
-    cy.get("[name=claimant_name\\.first_name]").type("Dave");
-    cy.get("[name=claimant_name\\.last_name]").type("Smith");
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     // clear first to replace the whoami.email value
     cy.get("[name=email]").clear().type("dave@example.com");
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
-    cy.get("[data-testid='button']").contains("Test Claim").click();
+    cy.click_next();
+    cy.click_final_submit();
     cy.contains("Progress saved").should("be.visible");
   });
 
   it("saves completed claim", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
-    cy.get("[name=claimant_name\\.first_name]").type("Dave");
-    cy.get("[name=claimant_name\\.last_name]").type("Smith");
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.get("[name=email]").clear().type("dave@example.com");
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
-    cy.get("[name=is_complete]").check({ force: true });
-    cy.get("[data-testid='button']").contains("Test Claim").click();
+    cy.click_next();
+    cy.click_is_complete();
+    cy.click_final_submit();
     cy.contains("Claim submitted").should("be.visible");
     // Should no longer allow the claim form to be accessed
     cy.visit("/claimant/");
@@ -54,11 +42,7 @@ context("Initial Claim form", { scrollBehavior: false }, () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").clear();
-    cy.get("button")
-      .contains("Next")
-      .scrollIntoView()
-      .should("be.visible")
-      .click();
+    cy.click_next();
     cy.contains("is required").should("be.visible");
   });
 });
