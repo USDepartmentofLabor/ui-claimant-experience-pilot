@@ -45,7 +45,9 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
       (opt) => !stateSlice.includes(opt.value as StateAbbrev)
     );
   }
-  stateDropdownOptions.unshift({ value: "", label: t("select_one") });
+  if (stateDropdownOptions[0].value !== "") {
+    stateDropdownOptions.unshift({ value: "", label: t("select_one") });
+  }
 
   return (
     <FormGroup>
