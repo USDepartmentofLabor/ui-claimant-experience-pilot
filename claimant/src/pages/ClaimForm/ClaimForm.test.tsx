@@ -38,14 +38,14 @@ describe("the ClaimForm page", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
       isSuccess: true,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: jest.fn(),
       data: { status: 201 },
@@ -53,7 +53,7 @@ describe("the ClaimForm page", () => {
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: {},
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: true,
       isSuccess: false,
@@ -146,13 +146,13 @@ describe("the ClaimForm", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
@@ -160,7 +160,7 @@ describe("the ClaimForm", () => {
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: {},
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: true,
       isSuccess: false,
@@ -183,7 +183,7 @@ describe("the ClaimForm", () => {
   it("renders without error", async () => {
     mockedUseWhoAmI.mockReturnValueOnce({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     });
@@ -200,7 +200,7 @@ describe("the ClaimForm", () => {
 
   it("shows the loader when loading", () => {
     mockedUseWhoAmI.mockReturnValueOnce({
-      isLoading: true,
+      isFetched: false,
     });
     render(wrappedClaimForm);
     expect(screen.queryByTestId("page-loading")).toBeInTheDocument();
@@ -209,6 +209,7 @@ describe("the ClaimForm", () => {
 
   it("throws an error if there is an error returned", () => {
     mockedUseWhoAmI.mockReturnValue({
+      isFetched: true,
       error: { message: "Error getting your PII" },
     });
 
@@ -224,6 +225,7 @@ describe("the ClaimForm", () => {
       data: myPII,
       isError: false,
       error: null,
+      isFetched: true,
     });
     mockedUseSubmitClaim.mockReturnValueOnce({
       isSuccess: true,
@@ -243,13 +245,13 @@ describe("Already Submitted", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
@@ -257,7 +259,7 @@ describe("Already Submitted", () => {
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: { status: 200 },
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
       isSuccess: true,

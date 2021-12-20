@@ -21,20 +21,28 @@ const BYPASS_COMPLETED_CHECK =
 
 // ClaimForm == /claimant/claim/
 export const ClaimForm = () => {
-  const { data: whoami, error, isLoading } = useWhoAmI();
+  const { data: whoami, error, isFetched: whoamiIsFetched } = useWhoAmI();
   const { page } = useParams();
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
   const navigate = useNavigate();
 
-  const { data: completedClaim, isLoading: isClaimStatusLoading } =
+  const { data: completedClaim, isFetched: completedClaimIsFetched } =
     useGetCompletedClaim();
 
   const currentPageIndex = pages.findIndex((p) => p.path === page);
 
+  if (!whoamiIsFetched || !completedClaimIsFetched) {
+    return <PageLoader />;
+  }
+
   if (currentPageIndex === -1) {
     throw new Error("Page not found");
+  }
+
+  if (error || !whoami) {
+    throw error;
   }
 
   const {
@@ -74,14 +82,6 @@ export const ClaimForm = () => {
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
   };
-
-  if (isLoading || isClaimStatusLoading) {
-    return <PageLoader />;
-  }
-
-  if (error || !whoami) {
-    throw error;
-  }
 
   if (!BYPASS_COMPLETED_CHECK && completedClaim?.status === 200) {
     return (
