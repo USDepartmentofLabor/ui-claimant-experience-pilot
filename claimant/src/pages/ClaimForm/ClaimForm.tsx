@@ -2,8 +2,15 @@ import { useQueryClient } from "react-query";
 import { Formik, Form } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
-import { useGetCompletedClaim, useSubmitClaim } from "../../queries/claim";
-import { initializeClaimFormWithWhoAmI } from "../../utils/claim_form";
+import {
+  useSubmitClaim,
+  useGetPartialClaim,
+  useGetCompletedClaim,
+} from "../../queries/claim";
+import {
+  initializeClaimFormWithWhoAmI,
+  mergeClaimFormValues,
+} from "../../utils/claim_form";
 import { Trans, useTranslation } from "react-i18next";
 import YupBuilder from "../../common/YupBuilder";
 import * as yup from "yup";
@@ -15,6 +22,9 @@ import { Button } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinition";
 import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
+const BYPASS_PARTIAL_RESTORE =
+  process.env.NODE_ENV === "development" &&
+  process.env.REACT_APP_BYPASS_PARTIAL_CLAIM_RESTORE === "true";
 const BYPASS_COMPLETED_CHECK =
   process.env.NODE_ENV === "development" &&
   process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
@@ -30,6 +40,12 @@ export const ClaimForm = () => {
 
   const { data: completedClaim, isFetched: completedClaimIsFetched } =
     useGetCompletedClaim();
+
+  const {
+    data: partialClaim,
+    error: partialClaimError,
+    isLoading: partialClaimIsLoading,
+  } = useGetPartialClaim();
 
   const currentPageIndex = pages.findIndex((p) => p.path === page);
 
@@ -101,7 +117,27 @@ export const ClaimForm = () => {
     );
   }
 
-  const initialValues: FormValues = initializeClaimFormWithWhoAmI(whoami);
+  if (partialClaimIsLoading) {
+    return <PageLoader />;
+  }
+
+  if (partialClaimError) {
+    throw partialClaimError;
+  }
+
+  let initialValues: FormValues = {};
+
+  if (BYPASS_PARTIAL_RESTORE) {
+    initialValues = initializeClaimFormWithWhoAmI(whoami);
+  } else {
+    initialValues = mergeClaimFormValues(
+      initializeClaimFormWithWhoAmI(whoami),
+      /* we know partialClaim is defined at this point */
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      partialClaim!
+    );
+  }
+
   if (!Object.keys(initialValues)) {
     throw new Error("no initialValues");
   }

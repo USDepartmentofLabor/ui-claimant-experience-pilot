@@ -12,9 +12,18 @@ type WhoAmI = {
   swa_claimant_url: string;
 };
 
-type ClaimResponse = {
+type FormValues = {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  [key: string]: string | boolean | any;
+};
+
+type ApiResponse = {
   status: string;
-  claim_id: string;
+  error?: string;
+};
+
+type ClaimResponse = ApiResponse & {
+  claim_id?: string;
 };
 
 type PersonName = {

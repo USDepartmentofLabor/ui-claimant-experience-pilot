@@ -1,10 +1,18 @@
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import isEqual from "lodash/isEqual";
 import ClaimFormPage, { ClaimForm } from "./ClaimForm";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
-import { useGetCompletedClaim, useSubmitClaim } from "../../queries/claim";
-import { initializeClaimFormWithWhoAmI } from "../../utils/claim_form";
+import {
+  useGetCompletedClaim,
+  useGetPartialClaim,
+  useSubmitClaim,
+} from "../../queries/claim";
+import {
+  initializeClaimFormWithWhoAmI,
+  mergeClaimFormValues,
+} from "../../utils/claim_form";
 import { Route, Routes, MemoryRouter } from "react-router-dom";
 import { Routes as ROUTES } from "../../routes";
 import { I18nextProvider } from "react-i18next";
@@ -17,6 +25,7 @@ const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 
 jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
+const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 
 const myPII: WhoAmI = {
@@ -49,6 +58,14 @@ describe("the ClaimForm page", () => {
       isError: false,
       mutateAsync: jest.fn(),
       data: { status: 201 },
+    }));
+
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
     }));
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({
@@ -85,6 +102,36 @@ describe("the ClaimForm page", () => {
       middle_name: "",
       last_name: myPII.last_name,
     });
+  });
+
+  it("merges form values with restored partial claim", async () => {
+    const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      myPII
+    );
+    const restoredClaim = {
+      alternate_names: [{ first_name: "F", last_name: "L" }],
+      residence_address: {
+        address1: "123 Main St",
+        city: "Anywhere",
+        state: "KS",
+        zipcode: "12345",
+      },
+      mailing_address: {
+        address1: "123 Main St",
+        city: "Anywhere",
+        state: "KS",
+        zipcode: "12345",
+      },
+    };
+    expect(
+      isEqual(restoredClaim.residence_address, restoredClaim.mailing_address)
+    ).toBe(true);
+    const mergedValues = await mergeClaimFormValues(
+      initialValues,
+      restoredClaim
+    );
+    expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
+    expect(mergedValues.claimant_has_alternate_names).toEqual("yes");
   });
 
   it("navigates between pages", async () => {
@@ -243,6 +290,14 @@ describe("the ClaimForm", () => {
       data: { status: 201 },
     }));
 
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
+    }));
+
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: {},
       isFetched: true,
@@ -340,6 +395,14 @@ describe("Already Submitted", () => {
       isError: false,
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
+    }));
+
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
     }));
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({

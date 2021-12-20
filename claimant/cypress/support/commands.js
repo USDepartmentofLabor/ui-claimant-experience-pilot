@@ -37,6 +37,14 @@ Cypress.Commands.add("login", (email) => {
   }
 });
 
+Cypress.Commands.add("logout", () => {
+  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+    cy.clearCookies();
+  } else {
+    cy.contains("Log out").click();
+  }
+});
+
 Cypress.Commands.add("real_login", (email) => {
   cy.visit("https://sandbox.ui.dol.gov:4430/login/?swa=XX");
   cy.get("#email")
@@ -71,6 +79,12 @@ Cypress.Commands.add("mock_login", () => {
       birthdate: "2000-01-01",
     });
   }).as("api-whoami");
+  cy.intercept("GET", "/api/partial-claim/", (req) => {
+    req.reply({ statusCode: 404, body: { status: "error" } });
+  }).as("api-partial-claim");
+  cy.intercept("GET", "/api/completed-claim/", (req) => {
+    req.reply({ statusCode: 404, body: { status: "error" } });
+  }).as("api-partial-claim");
 });
 
 Cypress.Commands.overwrite("log", (subject, message) =>

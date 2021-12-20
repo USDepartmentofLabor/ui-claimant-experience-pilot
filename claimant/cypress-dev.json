@@ -5,6 +5,7 @@
       "url": "https://sandbox.ui.dol.gov:3000/claimant/__coverage__"
     }
   },
+  "blockHosts": ["*google-analytics.com", "*googletagmanager.com"],
   "integrationFolder": "cypress/integration/tests",
   "ignoreTestFiles": "**/examples/*.spec.js",
   "screenshotOnRunFailure": false,
