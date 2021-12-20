@@ -127,3 +127,11 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
     // TODO
   }
 });
+
+Cypress.Commands.add("complete_demographic_information", () => {
+  cy.get("input[id=sex\\.female").parent().click();
+  cy.get("input[id=ethnicity\\.not_hispanic").parent().click();
+  cy.get("input[id=race\\.asian").parent().click();
+  cy.get("input[id=race\\.hawaiian_or_pacific_islander").parent().click();
+  cy.get("[name=education_level]").select("bachelors");
+});

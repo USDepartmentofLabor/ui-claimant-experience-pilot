@@ -1,10 +1,11 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
-import { Fieldset } from "@trussworks/react-uswds";
 
-import { DemographicInfo } from "./DemographicInfo";
-import * as yup from "yup";
-import { useTranslation } from "react-i18next";
+import {
+  DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS,
+  DemographicInfo,
+} from "./DemographicInfo";
+import YupBuilder from "../../../common/YupBuilder";
 
 export default {
   title: "Components/Form/Demographic Info",
@@ -14,22 +15,17 @@ export default {
 const noop = () => undefined;
 
 const Template: ComponentStory<typeof DemographicInfo> = () => {
-  const { t } = useTranslation("claimForm");
-  const validationSchema = yup.object().shape({
-    sex: yup.string().required(t("sex.errors.required")),
-    ethnicity: yup.string().required(t("ethnicity.errors.required")),
-    race: yup.string().required(t("race.errors.required")),
-    educationLevel: yup
-      .string()
-      .required(t("education_level.errors.required"))
-      .not(["none_selected"], t("education_level.errors.required")),
-  });
+  const validationSchema = YupBuilder(
+    "claim-v1.0",
+    DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS
+  );
+
   const initialValues = {
-    dob: new Date(2001, 11, 21).toDateString(),
+    birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,
     ethnicity: undefined,
     race: [],
-    educationLevel: "none_selected",
+    education_level: undefined,
   };
 
   return (
@@ -39,9 +35,7 @@ const Template: ComponentStory<typeof DemographicInfo> = () => {
       onSubmit={noop}
     >
       <Form>
-        <Fieldset>
-          <DemographicInfo />
-        </Fieldset>
+        <DemographicInfo />
       </Form>
     </Formik>
   );

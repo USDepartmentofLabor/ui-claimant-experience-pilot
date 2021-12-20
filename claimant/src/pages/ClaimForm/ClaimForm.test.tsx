@@ -88,45 +88,130 @@ describe("the ClaimForm page", () => {
   });
 
   it("navigates between pages", async () => {
-    const result = render(Page);
-    const nextLink = result.getByText("Next", { exact: false });
-    // /personal-information
-    const moreClaimantNames = result.getByRole("radio", { name: "No" });
-    expect(moreClaimantNames).not.toBeChecked();
-    await act(async () => {
-      userEvent.type(result.getByLabelText("First Name"), myPII.first_name);
-      userEvent.type(result.getByLabelText("Last Name"), myPII.last_name);
-      userEvent.click(moreClaimantNames);
-    });
-    expect(moreClaimantNames).toBeChecked();
+    const { queryByText, getByText, getByLabelText, getByRole, getByTestId } =
+      render(Page);
 
-    const residenceAddress = result.getByRole("group", {
-      name: "What is your primary address?",
-    });
-    const residenceAddress1 =
-      within(residenceAddress).getByLabelText("Address 1");
-    const residenceAddress2 =
-      within(residenceAddress).getByLabelText("Address 2");
-    const residenceCity = within(residenceAddress).getByLabelText("City");
-    const residenceState = within(residenceAddress).getByLabelText("State");
-    const residenceZIPCode =
-      within(residenceAddress).getByLabelText("ZIP Code");
+    const getPersonalInformationFields = () => {
+      const residenceAddressGroup = getByRole("group", {
+        name: "What is your primary address?",
+      });
+
+      return {
+        firstName: getByLabelText("First Name"),
+        lastName: getByLabelText("Last Name"),
+        noAdditionalClaimantNames: getByRole("radio", { name: "No" }),
+        residenceAddress1: within(residenceAddressGroup).getByLabelText(
+          "Address 1"
+        ),
+        residenceAddress2: within(residenceAddressGroup).getByLabelText(
+          "Address 2"
+        ),
+        residenceCity: within(residenceAddressGroup).getByLabelText("City"),
+        residenceState: within(residenceAddressGroup).getByLabelText("State"),
+        residenceZIPCode: within(residenceAddressGroup).getByLabelText(
+          "ZIP Code"
+        ),
+        mailingAddressIsSame: getByTestId("LOCAL_mailing_address_same"),
+        nextLink: getByText("Next", { exact: false }),
+      };
+    };
+
+    const {
+      firstName,
+      lastName,
+      noAdditionalClaimantNames,
+      residenceAddress1,
+      residenceAddress2,
+      residenceCity,
+      residenceState,
+      residenceZIPCode,
+      mailingAddressIsSame,
+      nextLink,
+    } = getPersonalInformationFields();
+
+    // Fill out personal-information
     await act(async () => {
+      userEvent.type(firstName, myPII.first_name);
+      userEvent.type(lastName, myPII.last_name);
+      userEvent.click(noAdditionalClaimantNames);
       userEvent.type(residenceAddress1, "address1");
       userEvent.type(residenceAddress2, "address2");
       userEvent.type(residenceCity, "city");
       userEvent.selectOptions(residenceState, ["CA"]);
       userEvent.type(residenceZIPCode, "00000");
-      userEvent.click(result.getByTestId("LOCAL_mailing_address_same"));
+      userEvent.click(mailingAddressIsSame);
+    });
+    expect(noAdditionalClaimantNames).toBeChecked();
+
+    await act(async () => {
+      userEvent.click(nextLink);
+    });
+
+    const getDemographicInformationFields = () => ({
+      female: getByRole("radio", { name: "Female" }),
+      hispanic: getByRole("radio", { name: "Yes" }),
+      white: getByLabelText("White"),
+      educationLevelDropdown: getByLabelText(
+        "How many years of education have you finished?"
+      ),
+      backButton: getByText("Previous", { exact: false }),
+      nextButton: getByText("Next", { exact: false }),
+    });
+
+    const { backButton: backToPersonalInformation } =
+      getDemographicInformationFields();
+
+    await act(async () => {
+      userEvent.click(backToPersonalInformation);
     });
 
     await act(async () => {
       userEvent.click(nextLink);
     });
-    expect(result.getByText("Test Claim")).toBeInTheDocument();
-    const backLink = result.getByText("Previous", { exact: false });
-    userEvent.click(backLink);
-    expect(result.getByText("First Name")).toBeInTheDocument();
+
+    const {
+      female,
+      hispanic,
+      white,
+      educationLevelDropdown,
+      nextButton: goToSubmitClaim,
+    } = getDemographicInformationFields();
+
+    // Fill out demographic-information
+    await act(async () => {
+      await userEvent.click(female);
+      await userEvent.click(hispanic);
+      await userEvent.click(white);
+      await userEvent.selectOptions(educationLevelDropdown, "grade_12");
+      userEvent.click(goToSubmitClaim);
+    });
+
+    const getSubmitClaimFields = () => ({
+      submitButton: queryByText("Test Claim"),
+      backButton: getByText("Previous", { exact: false }),
+    });
+
+    const { submitButton, backButton: backToDemographicInfo } =
+      getSubmitClaimFields();
+
+    expect(submitButton).toBeInTheDocument();
+
+    await act(async () => {
+      userEvent.click(backToDemographicInfo);
+    });
+
+    const {
+      female: femaleRevisited,
+      hispanic: hispanicRevisited,
+      white: whiteRevisited,
+      backButton: gotBackToPersonalInformationAgain,
+      nextButton: goToSubmitClaimAgain,
+    } = getDemographicInformationFields();
+    expect(femaleRevisited).toBeInTheDocument();
+    expect(hispanicRevisited).toBeInTheDocument();
+    expect(whiteRevisited).toBeInTheDocument();
+    expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
+    expect(goToSubmitClaimAgain).toBeInTheDocument();
   });
 });
 

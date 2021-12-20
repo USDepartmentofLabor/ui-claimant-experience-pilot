@@ -1,5 +1,5 @@
 const claimForm = {
-  dob: {
+  birthdate: {
     label: "Date of birth",
   },
   sex: {
@@ -39,7 +39,6 @@ const claimForm = {
   education_level: {
     label: "How many years of education have you finished?",
     options: {
-      none_selected: "", //TODO: "Please select on option..." or similar?
       none: "No schooling completed",
       nursery: "Nursery school",
       grades_1_to_11: "Grades 1 through 11",

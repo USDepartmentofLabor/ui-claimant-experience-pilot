@@ -147,7 +147,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
-            "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
             "email": "someone@example.com",
             "is_complete": True,
@@ -157,6 +156,11 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             },
             "mailing_address": MAILING_ADDRESS,
             "residence_address": RESIDENCE_ADDRESS,
+            "birthdate": "2000-01-01",
+            "sex": "female",
+            "ethnicity": "opt_out",
+            "race": ["american_indian_or_alaskan"],
+            "education_level": "some_college",
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -232,7 +236,6 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
-            "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
             "email": "someone@example.com",
             "claimant_name": {
@@ -242,6 +245,11 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "is_complete": True,
             "residence_address": RESIDENCE_ADDRESS,
             "mailing_address": MAILING_ADDRESS,
+            "birthdate": "2000-01-01",
+            "sex": "female",
+            "ethnicity": "opt_out",
+            "race": ["american_indian_or_alaskan"],
+            "education_level": "some_college",
         }
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
@@ -675,12 +683,16 @@ class ClaimValidatorTestCase(TestCase):
             "claimant_id": "random-claimaint-string",
             "identity_provider": "test",
             "swa_code": "XX",
-            "birthdate": "2000-01-01",
             "ssn": "900-00-1234",
             "email": "foo@example.com",
             "claimant_name": {"first_name": "first", "last_name": "last"},
             "residence_address": RESIDENCE_ADDRESS,
             "mailing_address": MAILING_ADDRESS,
+            "birthdate": "2000-01-01",
+            "sex": "female",
+            "ethnicity": "opt_out",
+            "race": ["american_indian_or_alaskan"],
+            "education_level": "some_college",
         }
 
     def test_claim_validator(self):
@@ -774,7 +786,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 8)
+        self.assertEqual(len(cv.errors), 12)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)

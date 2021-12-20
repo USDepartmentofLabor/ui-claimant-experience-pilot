@@ -45,9 +45,6 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
       (opt) => !stateSlice.includes(opt.value as StateAbbrev)
     );
   }
-  if (stateDropdownOptions[0].value !== "") {
-    stateDropdownOptions.unshift({ value: "", label: t("select_one") });
-  }
 
   return (
     <FormGroup>
@@ -73,7 +70,11 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         name={`${basename}.state`}
         label={labels ? labels.state : defaultLabels.state}
         id={`${basename}.state`}
-        options={stateDropdownOptions}
+        startEmpty
+        options={stateDropdownOptions.map((state) => ({
+          value: state.value,
+          label: state.label,
+        }))}
       />
       <TextField
         // TODO pass medium

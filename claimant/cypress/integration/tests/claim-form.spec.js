@@ -25,7 +25,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
-    cy.click_final_submit();
+    cy.complete_demographic_information();
+    cy.click_next();
     cy.contains("Progress saved").should("be.visible");
   });
 
@@ -42,6 +43,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "00000",
       },
     });
+    cy.click_next();
+    cy.complete_demographic_information();
     cy.click_next();
     cy.click_is_complete();
     cy.click_final_submit();
