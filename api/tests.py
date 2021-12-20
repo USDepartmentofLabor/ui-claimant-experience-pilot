@@ -443,8 +443,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         response = csrf_client.post(
             url, content_type="application/json", data=invalid_payload, **headers
         )
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("'1234' is not a 'date'", response.json()["errors"])
+        self.assertEqual(response.status_code, 202)
+        self.assertIn("'1234' is not a 'date'", response.json()["validation_errors"])
 
         # failure to write partial claim returns error
         payload_with_trouble = {
