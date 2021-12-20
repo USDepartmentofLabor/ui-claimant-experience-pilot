@@ -10,6 +10,7 @@ coverage.xml
 static/
 *.mo
 .DS_Store
+/schemas
 
 # IDE configurations
 .idea

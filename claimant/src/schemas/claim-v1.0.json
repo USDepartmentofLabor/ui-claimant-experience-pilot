@@ -262,24 +262,24 @@
       "description": "Date of birth",
       "type": "string",
       "format": "date",
-      "TODO_required_for_swa": true
+      "required_for_swa": true
     },
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
-      "enum": ["male", "female"]
+      "enum": ["male", "female"],
+      "required_for_swa": true
     },
     "race": {
       "description": "",
       "type": "array",
       "items": { "type": "string" },
-      "TODO_required_for_swa": true
+      "required_for_swa": true
     },
     "ethnicity": {
       "description": "",
-      "type": "array",
-      "items": { "type": "string" },
-      "TODO_required_for_swa": true
+      "type": "string",
+      "required_for_swa": true
     },
     "phones": {
       "description": "",
@@ -358,7 +358,7 @@
       "description": "",
       "type": "string",
       "comment": "TODO This may need to be an enum",
-      "TODO_required_for_swa": true
+      "required_for_swa": true
     },
     "occupation": {
       "description": "https://www.bls.gov/oes/current/oes_stru.htm",

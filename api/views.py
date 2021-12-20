@@ -134,7 +134,8 @@ def POST_partial_claim(request):
 
     claim_validator = ClaimValidator(claim_request.payload)
     if not claim_validator.valid:
-        return invalid_claim_response(claim_validator)
+        # we allow the save regardless because it may be (e.g.) a partial address
+        pass
     else:
         # mark our payload with validation info
         claim_request.payload["validated_at"] = timezone.now().isoformat()
@@ -149,9 +150,10 @@ def POST_partial_claim(request):
 
     # save the partial (incomplete) claim
     if claim_request.claim.write_partial(claim_request.payload):
-        return JsonResponse(
-            {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=202
-        )
+        body = {"status": "accepted", "claim_id": claim_request.payload["id"]}
+        if not claim_validator.valid:
+            body["validation_errors"] = claim_validator.errors_as_dict()
+        return JsonResponse(body, status=202)
     else:
         return JsonResponse(
             {"status": "error", "error": "unable to save claim"}, status=500

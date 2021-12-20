@@ -1,10 +1,18 @@
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import isEqual from "lodash/isEqual";
 import ClaimFormPage, { ClaimForm } from "./ClaimForm";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
-import { useGetCompletedClaim, useSubmitClaim } from "../../queries/claim";
-import { initializeClaimFormWithWhoAmI } from "../../utils/claim_form";
+import {
+  useGetCompletedClaim,
+  useGetPartialClaim,
+  useSubmitClaim,
+} from "../../queries/claim";
+import {
+  initializeClaimFormWithWhoAmI,
+  mergeClaimFormValues,
+} from "../../utils/claim_form";
 import { Route, Routes, MemoryRouter } from "react-router-dom";
 import { Routes as ROUTES } from "../../routes";
 import { I18nextProvider } from "react-i18next";
@@ -17,6 +25,7 @@ const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 
 jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
+const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 
 const myPII: WhoAmI = {
@@ -38,22 +47,30 @@ describe("the ClaimForm page", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
       isSuccess: true,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: jest.fn(),
       data: { status: 201 },
     }));
 
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
+    }));
+
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: {},
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: true,
       isSuccess: false,
@@ -87,46 +104,161 @@ describe("the ClaimForm page", () => {
     });
   });
 
-  it("navigates between pages", async () => {
-    const result = render(Page);
-    const nextLink = result.getByText("Next", { exact: false });
-    // /personal-information
-    const moreClaimantNames = result.getByRole("radio", { name: "No" });
-    expect(moreClaimantNames).not.toBeChecked();
-    await act(async () => {
-      userEvent.type(result.getByLabelText("First Name"), myPII.first_name);
-      userEvent.type(result.getByLabelText("Last Name"), myPII.last_name);
-      userEvent.click(moreClaimantNames);
-    });
-    expect(moreClaimantNames).toBeChecked();
+  it("merges form values with restored partial claim", async () => {
+    const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      myPII
+    );
+    const restoredClaim = {
+      alternate_names: [{ first_name: "F", last_name: "L" }],
+      residence_address: {
+        address1: "123 Main St",
+        city: "Anywhere",
+        state: "KS",
+        zipcode: "12345",
+      },
+      mailing_address: {
+        address1: "123 Main St",
+        city: "Anywhere",
+        state: "KS",
+        zipcode: "12345",
+      },
+    };
+    expect(
+      isEqual(restoredClaim.residence_address, restoredClaim.mailing_address)
+    ).toBe(true);
+    const mergedValues = await mergeClaimFormValues(
+      initialValues,
+      restoredClaim
+    );
+    expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
+    expect(mergedValues.claimant_has_alternate_names).toEqual("yes");
+  });
 
-    const residenceAddress = result.getByRole("group", {
-      name: "What is your primary address?",
-    });
-    const residenceAddress1 =
-      within(residenceAddress).getByLabelText("Address 1");
-    const residenceAddress2 =
-      within(residenceAddress).getByLabelText("Address 2");
-    const residenceCity = within(residenceAddress).getByLabelText("City");
-    const residenceState = within(residenceAddress).getByLabelText("State");
-    const residenceZIPCode =
-      within(residenceAddress).getByLabelText("ZIP Code");
+  it("navigates between pages", async () => {
+    const { queryByText, getByText, getByLabelText, getByRole, getByTestId } =
+      render(Page);
+
+    const getPersonalInformationFields = () => {
+      const residenceAddressGroup = getByRole("group", {
+        name: "What is your primary address?",
+      });
+
+      return {
+        firstName: getByLabelText("First Name"),
+        lastName: getByLabelText("Last Name"),
+        noAdditionalClaimantNames: getByRole("radio", { name: "No" }),
+        residenceAddress1: within(residenceAddressGroup).getByLabelText(
+          "Address 1"
+        ),
+        residenceAddress2: within(residenceAddressGroup).getByLabelText(
+          "Address 2"
+        ),
+        residenceCity: within(residenceAddressGroup).getByLabelText("City"),
+        residenceState: within(residenceAddressGroup).getByLabelText("State"),
+        residenceZIPCode: within(residenceAddressGroup).getByLabelText(
+          "ZIP Code"
+        ),
+        mailingAddressIsSame: getByTestId("LOCAL_mailing_address_same"),
+        nextLink: getByText("Next", { exact: false }),
+      };
+    };
+
+    const {
+      firstName,
+      lastName,
+      noAdditionalClaimantNames,
+      residenceAddress1,
+      residenceAddress2,
+      residenceCity,
+      residenceState,
+      residenceZIPCode,
+      mailingAddressIsSame,
+      nextLink,
+    } = getPersonalInformationFields();
+
+    // Fill out personal-information
     await act(async () => {
+      userEvent.type(firstName, myPII.first_name);
+      userEvent.type(lastName, myPII.last_name);
+      userEvent.click(noAdditionalClaimantNames);
       userEvent.type(residenceAddress1, "address1");
       userEvent.type(residenceAddress2, "address2");
       userEvent.type(residenceCity, "city");
       userEvent.selectOptions(residenceState, ["CA"]);
       userEvent.type(residenceZIPCode, "00000");
-      userEvent.click(result.getByTestId("LOCAL_mailing_address_same"));
+      userEvent.click(mailingAddressIsSame);
+    });
+    expect(noAdditionalClaimantNames).toBeChecked();
+
+    await act(async () => {
+      userEvent.click(nextLink);
+    });
+
+    const getDemographicInformationFields = () => ({
+      female: getByRole("radio", { name: "Female" }),
+      hispanic: getByRole("radio", { name: "Yes" }),
+      white: getByLabelText("White"),
+      educationLevelDropdown: getByLabelText(
+        "How many years of education have you finished?"
+      ),
+      backButton: getByText("Previous", { exact: false }),
+      nextButton: getByText("Next", { exact: false }),
+    });
+
+    const { backButton: backToPersonalInformation } =
+      getDemographicInformationFields();
+
+    await act(async () => {
+      userEvent.click(backToPersonalInformation);
     });
 
     await act(async () => {
       userEvent.click(nextLink);
     });
-    expect(result.getByText("Test Claim")).toBeInTheDocument();
-    const backLink = result.getByText("Previous", { exact: false });
-    userEvent.click(backLink);
-    expect(result.getByText("First Name")).toBeInTheDocument();
+
+    const {
+      female,
+      hispanic,
+      white,
+      educationLevelDropdown,
+      nextButton: goToSubmitClaim,
+    } = getDemographicInformationFields();
+
+    // Fill out demographic-information
+    await act(async () => {
+      await userEvent.click(female);
+      await userEvent.click(hispanic);
+      await userEvent.click(white);
+      await userEvent.selectOptions(educationLevelDropdown, "grade_12");
+      userEvent.click(goToSubmitClaim);
+    });
+
+    const getSubmitClaimFields = () => ({
+      submitButton: queryByText("Test Claim"),
+      backButton: getByText("Previous", { exact: false }),
+    });
+
+    const { submitButton, backButton: backToDemographicInfo } =
+      getSubmitClaimFields();
+
+    expect(submitButton).toBeInTheDocument();
+
+    await act(async () => {
+      userEvent.click(backToDemographicInfo);
+    });
+
+    const {
+      female: femaleRevisited,
+      hispanic: hispanicRevisited,
+      white: whiteRevisited,
+      backButton: gotBackToPersonalInformationAgain,
+      nextButton: goToSubmitClaimAgain,
+    } = getDemographicInformationFields();
+    expect(femaleRevisited).toBeInTheDocument();
+    expect(hispanicRevisited).toBeInTheDocument();
+    expect(whiteRevisited).toBeInTheDocument();
+    expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
+    expect(goToSubmitClaimAgain).toBeInTheDocument();
   });
 });
 
@@ -146,21 +278,29 @@ describe("the ClaimForm", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
     }));
 
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
+    }));
+
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: {},
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: true,
       isSuccess: false,
@@ -183,7 +323,7 @@ describe("the ClaimForm", () => {
   it("renders without error", async () => {
     mockedUseWhoAmI.mockReturnValueOnce({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     });
@@ -200,7 +340,7 @@ describe("the ClaimForm", () => {
 
   it("shows the loader when loading", () => {
     mockedUseWhoAmI.mockReturnValueOnce({
-      isLoading: true,
+      isFetched: false,
     });
     render(wrappedClaimForm);
     expect(screen.queryByTestId("page-loading")).toBeInTheDocument();
@@ -209,6 +349,7 @@ describe("the ClaimForm", () => {
 
   it("throws an error if there is an error returned", () => {
     mockedUseWhoAmI.mockReturnValue({
+      isFetched: true,
       error: { message: "Error getting your PII" },
     });
 
@@ -224,6 +365,7 @@ describe("the ClaimForm", () => {
       data: myPII,
       isError: false,
       error: null,
+      isFetched: true,
     });
     mockedUseSubmitClaim.mockReturnValueOnce({
       isSuccess: true,
@@ -243,21 +385,29 @@ describe("Already Submitted", () => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
       data: myPII,
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
     }));
 
     mockedUseSubmitClaim.mockImplementation(() => ({
-      isLoading: false,
+      isFetched: true,
       isError: false,
       mutateAsync: mockMutateAsync,
       data: { status: 201 },
     }));
 
+    mockedUseGetPartialClaim.mockImplementation(() => ({
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      data: {},
+    }));
+
     mockedUseGetCompletedClaim.mockImplementation(() => ({
       data: { status: 200 },
-      isLoading: false,
+      isFetched: true,
       error: null,
       isError: false,
       isSuccess: true,

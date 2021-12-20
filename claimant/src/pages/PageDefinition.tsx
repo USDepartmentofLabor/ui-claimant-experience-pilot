@@ -7,6 +7,10 @@ import { Submit, SubmitFields } from "./Questions/Submit";
 import { ClaimSchemaFields } from "../common/YupBuilder";
 import { FC } from "react";
 import { ObjectShape } from "yup/lib/object";
+import {
+  DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS,
+  DemographicInfo,
+} from "../components/form/DemographicInfo/DemographicInfo";
 
 interface IPage {
   path: string;
@@ -23,6 +27,11 @@ export const pages: ReadonlyArray<IPage> = [
       ...PERSONAL_INFORMATION_ADDITIONAL_VALIDATIONS,
     },
     Component: PersonalInformation,
+  },
+  {
+    path: "demographic-information",
+    schemaFields: DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS,
+    Component: DemographicInfo,
   },
   {
     path: "submit",

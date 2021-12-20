@@ -6,11 +6,14 @@ import {
   Dropdown,
   ErrorMessage,
 } from "@trussworks/react-uswds";
+import { useTranslation } from "react-i18next";
 
 type DropdownOption = {
   label: string;
   value: string;
 };
+
+const EMPTY_OPTION_VALUE = "";
 
 interface IDropdownFieldProps {
   id: string;
@@ -19,8 +22,8 @@ interface IDropdownFieldProps {
   labelClassName?: string;
   labelHint?: string;
   options: DropdownOption[];
+  startEmpty?: boolean;
 }
-
 /**
  * This component renders a ReactUSWDS Dropdown component inside of a FormGroup,
  * with a Label and ErrorMessage.
@@ -39,10 +42,16 @@ const DropdownField = ({
   labelClassName,
   labelHint,
   options,
+  startEmpty,
   ...inputProps
 }: IDropdownFieldProps & JSX.IntrinsicElements["select"]) => {
+  const { t } = useTranslation("common");
   const [fieldProps, metaProps] = useField({ name });
   const showError = metaProps.touched && !!metaProps.error;
+
+  if (startEmpty && options[0].value !== EMPTY_OPTION_VALUE) {
+    options.unshift({ value: EMPTY_OPTION_VALUE, label: t("select_one") });
+  }
 
   return (
     <FormGroup error={showError}>

@@ -1,3 +1,5 @@
+import isEqual from "lodash/isEqual";
+
 // skeleton shapes with which to initialize form fields
 export const ADDRESS_SKELETON: AddressType = {
   address1: "",
@@ -15,6 +17,13 @@ const CLAIM_FORM_SKELETON: FormValues = {
   claimant_name: { first_name: "", middle_name: "", last_name: "" },
   claimant_has_alternate_names: undefined,
   alternate_names: [],
+  email: "",
+  ssn: "",
+  birthdate: "",
+  race: [],
+  sex: undefined,
+  ethnicity: undefined,
+  education_level: undefined,
   LOCAL_mailing_address_same: false,
   residence_address: ADDRESS_SKELETON,
   mailing_address: ADDRESS_SKELETON,
@@ -31,4 +40,33 @@ export const initializeClaimFormWithWhoAmI = (whoami: WhoAmI) => {
     }
   }
   return initialValues;
+};
+
+export const mergeClaimFormValues = (
+  initialValues: FormValues,
+  partialClaim: FormValues
+) => {
+  // first, merge the objects
+  const mergedValues = { ...initialValues, ...partialClaim };
+
+  // second, set any of the frontend-only flow control fields to their logical starting values
+  // based on what we see. This is because initialValues and partialClaim both likely
+  // originated with server-side responses.
+  if (partialClaim.alternate_names) {
+    if (mergedValues.alternate_names?.length > 0) {
+      mergedValues.claimant_has_alternate_names = "yes";
+    } else {
+      mergedValues.claimant_has_alternate_names = "no";
+    }
+  }
+  if (
+    mergedValues.residence_address.address1 &&
+    isEqual(mergedValues.residence_address, mergedValues.mailing_address)
+  ) {
+    mergedValues.LOCAL_mailing_address_same = true;
+  } else {
+    mergedValues.LOCAL_mailing_address_same = false;
+  }
+
+  return mergedValues;
 };

@@ -16,11 +16,11 @@ jest.mock("react-i18next", () => ({
 
 describe("DemographicInfo component", () => {
   const initialValues = {
-    dob: new Date(2001, 11, 21).toDateString(),
+    birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,
     race: [],
     ethnicity: undefined,
-    educationLevel: "none_selected",
+    education_level: undefined,
   };
 
   it("renders properly", () => {
@@ -30,8 +30,8 @@ describe("DemographicInfo component", () => {
       </Formik>
     );
 
-    const dobField = getByLabelText("dob.label");
-    expect(dobField).toHaveValue(initialValues.dob);
+    const birthdateField = getByLabelText("birthdate.label");
+    expect(birthdateField).toHaveValue(initialValues.birthdate);
 
     Object.keys(claimForm.sex.options).map((option) => {
       const sexRadio = screen.getByRole("radio", {
@@ -153,7 +153,7 @@ describe("DemographicInfo component", () => {
       const educationLevelDropdown = screen.getByLabelText(
         "education_level.label"
       );
-      expect(educationLevelDropdown).toHaveValue("none_selected");
+      expect(educationLevelDropdown).toHaveValue("");
 
       await act(async () => {
         await userEvent.click(educationLevelDropdown);

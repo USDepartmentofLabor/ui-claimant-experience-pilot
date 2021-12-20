@@ -25,8 +25,31 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
-    cy.click_final_submit();
+    cy.complete_demographic_information();
+    cy.click_next();
     cy.contains("Progress saved").should("be.visible");
+  });
+
+  it("restores partial claim", () => {
+    const email = faker.internet.exampleEmail();
+    cy.login(email);
+    cy.visit("/claimant/");
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
+    cy.click_next();
+    cy.logout();
+
+    cy.login(email);
+    cy.visit("/claimant/");
+    cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
   it("saves completed claim", () => {
@@ -42,6 +65,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "00000",
       },
     });
+    cy.click_next();
+    cy.complete_demographic_information();
     cy.click_next();
     cy.click_is_complete();
     cy.click_final_submit();

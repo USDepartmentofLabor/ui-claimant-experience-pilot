@@ -26,8 +26,8 @@
     "zipcode": "00000-1234"
   },
   "sex": "female",
-  "race": ["Black or African American"],
-  "ethnicity": ["Not Hispanic or Latino"],
+  "race": ["black", "asian"],
+  "ethnicity": "not_hispanic",
   "education_level": "unknown",
   "primary_wage_earner": true,
   "preferred_language": "English",
