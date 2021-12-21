@@ -1,10 +1,10 @@
 import { act, render } from "@testing-library/react";
 import { Formik } from "formik";
 import { screen } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 
 import { DemographicInfo } from "./DemographicInfo";
 import claimForm from "../../../i18n/en/claimForm";
-import userEvent from "@testing-library/user-event";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {

@@ -1,14 +1,14 @@
-import { ErrorMessage, Fieldset, FormGroup } from "@trussworks/react-uswds";
-import TextField from "../fields/TextField/TextField";
-import CheckboxField from "../fields/CheckboxField/CheckboxField";
+import { Fieldset } from "@trussworks/react-uswds";
+import { Normalize, useTranslation } from "react-i18next";
+
+import claimForm from "../../../i18n/en/claimForm";
+import { TextField } from "../fields/TextField/TextField";
 import { RadioField } from "../fields/RadioField/RadioField";
 import DropdownField from "../fields/DropdownField/DropdownField";
-import { Normalize, useTranslation } from "react-i18next";
-import { useFormikContext } from "formik";
-import claimForm from "../../../i18n/en/claimForm";
+import { CheckboxGroupField } from "../fields/CheckboxGroupField/CheckboxGroupField";
+import { ClaimSchemaFields } from "../../../common/YupBuilder";
 
 import formStyles from "../form.module.scss";
-import { ClaimSchemaFields } from "../../../common/YupBuilder";
 
 export const DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS: ClaimSchemaFields[] = [
   "birthdate",
@@ -67,10 +67,7 @@ const educationLevelOptions: EducationLevelOption[] = Object.keys(
 }));
 
 export const DemographicInfo = () => {
-  const { values, touched, errors } = useFormikContext<Claim>();
   const { t } = useTranslation("claimForm");
-
-  const showRaceError = touched.race && !!errors.race;
 
   return (
     <>
@@ -108,19 +105,14 @@ export const DemographicInfo = () => {
         />
       </Fieldset>
       <Fieldset legend={t("race.label")} className={formStyles.field}>
-        <FormGroup error={showRaceError}>
-          {raceOptions.map((raceOption, index) => (
-            <CheckboxField
-              key={`race.${index}.${raceOption.value}`}
-              id={`race.${raceOption.value}`}
-              name="race"
-              value={raceOption.value}
-              label={t(`race.options.${raceOption.translationKey}`)}
-              checked={values.race?.includes(raceOption.value)}
-            />
-          ))}
-        </FormGroup>
-        {showRaceError && <ErrorMessage>{errors.race}</ErrorMessage>}
+        <CheckboxGroupField
+          id="race"
+          name="race"
+          options={raceOptions.map((raceOption) => ({
+            label: t(`race.options.${raceOption.translationKey}`),
+            value: raceOption.value,
+          }))}
+        />
       </Fieldset>
       <DropdownField
         id="education_level"
