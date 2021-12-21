@@ -1,0 +1,7 @@
+<label class="usa-label" for="swa_code">State</label>
+<select name="swa_code" class="usa-select">
+  <option disabled selected value>--</option>
+  {% for swa in swas %}
+  <option value="{{swa.code}}">{{swa.name}}</option>
+  {% endfor %}
+</select>
