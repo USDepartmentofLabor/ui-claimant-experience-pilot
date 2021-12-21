@@ -10,6 +10,14 @@ const common = {
     state: { label: "State" },
     zipcode: { label: "ZIP Code" },
   },
+  phone: {
+    number: "Phone number",
+    type: "Type",
+    sms: "Send me text (SMS) notifications",
+    mobile: "Mobile",
+    home: "Home",
+    work: "Work",
+  },
   select_one: "-- Select one --",
 };
 
