@@ -147,6 +147,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "csp.middleware.CSPMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
 ]
@@ -289,6 +290,10 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Content-Security-Policy configuration
+CSP_DEFAULT_SRC = None
+CSP_FRAME_ANCESTORS = ["'none'"]
 
 # CORS Cross-Origin Configuration
 # https://github.com/adamchainz/django-cors-headers
