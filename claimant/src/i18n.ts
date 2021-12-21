@@ -9,14 +9,14 @@ export const resources = {
   en,
 } as const;
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    lng: "en",
-    fallbackLng: "en",
-    ns: ["common", "home", "whoami", "claimantForm"],
-    defaultNS,
-    resources,
-  });
+const namespaces = ["common", "home", "whoami", "claimForm"] as const;
+
+i18n.use(LanguageDetector).use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
+  ns: namespaces,
+  defaultNS,
+  resources,
+});
+
 export default i18n;

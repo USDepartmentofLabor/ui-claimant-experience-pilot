@@ -4,6 +4,14 @@ import {
   PERSONAL_INFORMATION_SCHEMA_FIELDS,
 } from "./Questions/PersonalInformation";
 import { Submit, SubmitFields } from "./Questions/Submit";
+import {
+  Employer,
+  EmployerFields,
+  EmployerRepeatable,
+  EmployerNextSegment,
+  EmployerPreviousSegment,
+  EMPLOYER_ADDITIONAL_VALIDATIONS,
+} from "./Questions/Employer";
 import { ClaimSchemaFields } from "../common/YupBuilder";
 import { FC } from "react";
 import { ObjectShape } from "yup/lib/object";
@@ -16,7 +24,10 @@ interface IPage {
   path: string;
   schemaFields: ClaimSchemaFields[];
   additionalValidations?: ObjectShape;
-  Component: FC;
+  Component: FC<PageProps>;
+  repeatable?(currentSegment: string | undefined, values: FormValues): boolean;
+  nextSegment?(currentSegment: string | undefined): string | false;
+  previousSegment?(currentSegment: string | undefined): string | false;
 }
 
 export const pages: ReadonlyArray<IPage> = [
@@ -32,6 +43,17 @@ export const pages: ReadonlyArray<IPage> = [
     path: "demographic-information",
     schemaFields: DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS,
     Component: DemographicInfo,
+  },
+  {
+    path: "employer",
+    schemaFields: EmployerFields,
+    Component: Employer,
+    additionalValidations: {
+      ...EMPLOYER_ADDITIONAL_VALIDATIONS,
+    },
+    repeatable: EmployerRepeatable,
+    nextSegment: EmployerNextSegment,
+    previousSegment: EmployerPreviousSegment,
   },
   {
     path: "submit",

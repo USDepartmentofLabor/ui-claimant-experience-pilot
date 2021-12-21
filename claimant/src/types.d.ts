@@ -64,8 +64,30 @@ type DemographicInfoType = {
   ethnicity?: string[];
 };
 
+type EmployerType = {
+  name: string;
+  days_employed?: number;
+  LOCAL_still_working: YesNo | undefined;
+  LOCAL_same_address: YesNo | undefined;
+  LOCAL_same_phone: YesNo | undefined;
+  first_work_date: string;
+  last_work_date?: string;
+  recall_date?: string;
+  fein?: string;
+  address: AddressType;
+  work_site_address?: AddressType;
+  phones: PhoneType[];
+  separation_reason: string;
+  separation_comment: string;
+};
+
+type EmployersType = {
+  employers?: EmployerType[];
+};
+
 type ClaimantInput = ClaimantNamesType &
-  DemographicInfoType & {
+  DemographicInfoType &
+  EmployersType & {
     birthdate?: string;
     ssn?: string;
     email?: string;
@@ -77,6 +99,10 @@ type Claim = ClaimantInput & {
   id?: string;
   swa_code: string;
   claimant_id: string;
+};
+
+type PageProps = {
+  segment: string | undefined;
 };
 
 type FormValues = {

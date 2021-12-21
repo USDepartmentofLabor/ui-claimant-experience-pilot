@@ -18,7 +18,7 @@ import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import claimFormStyles from "./ClaimForm.module.scss";
-import { Button } from "@trussworks/react-uswds";
+import { Button, ErrorMessage, FormGroup } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinition";
 import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
@@ -31,11 +31,12 @@ const BYPASS_COMPLETED_CHECK =
 
 // ClaimForm == /claimant/claim/
 export const ClaimForm = () => {
+  const { page, segment } = useParams();
   const { data: whoami, error, isFetched: whoamiIsFetched } = useWhoAmI();
-  const { page } = useParams();
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
+  const { t: commonT } = useTranslation("common");
   const navigate = useNavigate();
 
   const { data: completedClaim, isFetched: completedClaimIsFetched } =
@@ -65,15 +66,42 @@ export const ClaimForm = () => {
     schemaFields,
     Component: CurrentPage,
     additionalValidations,
+    repeatable,
+    nextSegment,
+    previousSegment,
   } = pages[currentPageIndex];
+
+  const navigateToNextPage = (values: FormValues) => {
+    let nextPage;
+    if (repeatable) {
+      if (repeatable(segment, values) && nextSegment) {
+        nextPage = `/claim/${pages[currentPageIndex].path}/${nextSegment(
+          segment
+        )}/`;
+      }
+    }
+    if (!nextPage && pages[currentPageIndex + 1]) {
+      nextPage = `/claim/${pages[currentPageIndex + 1].path}`;
+    }
+    if (nextPage) {
+      navigate(nextPage);
+    }
+  };
+
+  const previousPageUrl = () => {
+    if (repeatable && previousSegment) {
+      const previousPage = previousSegment(segment);
+      if (previousPage) {
+        return `/claim/${pages[currentPageIndex].path}/${previousPage}/`;
+      }
+    }
+    return `/claim/${pages[currentPageIndex - 1].path}`;
+  };
 
   const previousPageLink = () =>
     !claimCompleted() &&
     pages[currentPageIndex - 1] && (
-      <Link
-        to={`/claim/${pages[currentPageIndex - 1].path}`}
-        className="usa-button"
-      >
+      <Link to={previousPageUrl()} className="usa-button">
         &laquo; {t("pagination.previous")}
       </Link>
     );
@@ -142,21 +170,25 @@ export const ClaimForm = () => {
     throw new Error("no initialValues");
   }
 
+  const currentPageProps: PageProps = {
+    segment,
+  };
+
   return (
     <div data-testid="claim-submission">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values: FormValues) => {
-          if (pages[currentPageIndex + 1]) {
-            navigate(`/claim/${pages[currentPageIndex + 1].path}`);
-          }
+          navigateToNextPage(values);
 
           if (!whoami) {
             return;
           }
 
           //Only send the Formik values that map to values in the JSON Schema
+          // TODO recurse for employers and other arrays
+          // TODO filter out anything starting with LOCAL_
           const schemaValues = Object.keys(values)
             .filter((key) => Object.keys(claim_v1_0.properties).includes(key))
             .reduce(
@@ -181,15 +213,23 @@ export const ClaimForm = () => {
         }}
       >
         {(errors) => {
-          // TODO leaving this here for now to help us all understand schema validation problems.
-          console.warn({ errors });
+          const currentPageErrors =
+            errors && Object.keys(errors.errors).length ? true : false;
+          if (errors && Object.keys(errors.errors).length) {
+            console.log({ errors: errors.errors });
+          }
           //{(props: FormikProps<ClaimantInput>) => (
           return (
             <Form>
-              <CurrentPage />
+              <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
-                {previousPageLink()}
-                {nextPageLink()}
+                <FormGroup error={currentPageErrors}>
+                  {previousPageLink()}
+                  {nextPageLink()}
+                </FormGroup>
+                {currentPageErrors && (
+                  <ErrorMessage>{commonT("form_errors")}</ErrorMessage>
+                )}
               </div>
             </Form>
           );

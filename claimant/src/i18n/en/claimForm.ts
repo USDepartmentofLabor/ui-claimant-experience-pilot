@@ -1,3 +1,5 @@
+// IMPORTANT that the key names and nested structure is consistent with our claim schema
+// so that YupBuilder can accurately pull out the 'errors' messages.
 const claimForm = {
   birthdate: {
     label: "Date of birth",
@@ -56,6 +58,65 @@ const claimForm = {
     },
     errors: {
       required: "At least one education level must be selected",
+    },
+  },
+  employers: {
+    heading: "Your most recent employer:",
+    errors: {
+      required: "This field is required",
+    },
+    address: {
+      address1: { label: "Employer address line 1" },
+      address2: { label: "Employer address line 2" },
+      city: { label: "City" },
+      state: { label: "State" },
+      zipcode: { label: "ZIP code" },
+    },
+    name: {
+      label: "Employer name",
+    },
+    more_employers: {
+      label:
+        "Have you worked for any other employers in the last 18 months (including part-time, seasonal, and self-employment)?",
+    },
+    first_work_date: {
+      label: "Start date for this employer:",
+    },
+    last_work_date: {
+      label: "Last day of work for this employer:",
+    },
+    still_working: {
+      label: "Are you still working for this employer?",
+    },
+    same_phone: {
+      label: "Is this the phone number of the location where you worked?",
+    },
+    phones: {
+      number: {
+        label: "Employer phone number",
+        errors: {
+          required: "Employer phone number is a required field",
+        },
+      },
+    },
+    alt_employer_phone: "Work site phone number",
+    same_address: {
+      label:
+        "Did you work at the physical location you listed for your employer?",
+    },
+    work_site_address: {
+      heading: "Your work site address:",
+      address1: { label: "Employer address line 1" },
+      address2: { label: "Employer address line 2" },
+      city: { label: "City" },
+      state: { label: "State" },
+      zipcode: { label: "ZIP code" },
+    },
+    no_different_phone: "No, it was a different phone number",
+    no_different_address: "No, I worked at a different location",
+    fein: {
+      label: "FEIN, or Federal Employer Identification Number (optional)",
+      hint: "You can usually find your employer's FEIN on your W2 or other tax documents your employer provides.",
     },
   },
 };

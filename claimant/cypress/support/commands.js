@@ -99,6 +99,85 @@ Cypress.Commands.add("click_next", () => {
     .click();
 });
 
+Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
+  cy.get(`[name=employers\\[${idx}\\]\\.name`)
+    .should("be.visible")
+    .type(employer.name);
+  if (employer.last_work_date) {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_still_working\\.no`)
+      .parent()
+      .should("be.visible")
+      .click();
+    cy.get(`input[id=employers\\[${idx}\\]\\.last_work_date`)
+      .should("be.visible")
+      .type(employer.last_work_date);
+  } else {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_still_working\\.yes`)
+      .parent()
+      .should("be.visible")
+      .click();
+  }
+  cy.get(`input[id=employers\\[${idx}\\]\\.first_work_date`)
+    .should("be.visible")
+    .clear()
+    .type(employer.first_work_date);
+  cy.get(`[name=employers\\[${idx}\\]\\.address\\.address1`)
+    .should("be.visible")
+    .type(employer.address.address1);
+  cy.get(`[name=employers\\[${idx}\\]\\.address\\.address2`)
+    .should("be.visible")
+    .type(employer.address.address2);
+  cy.get(`[name=employers\\[${idx}\\]\\.address\\.city`)
+    .should("be.visible")
+    .type(employer.address.city);
+  cy.get(`[name=employers\\[${idx}\\]\\.address\\.state`)
+    .should("be.visible")
+    .select(employer.address.state);
+  cy.get(`[name=employers\\[${idx}\\]\\.address\\.zipcode`)
+    .should("be.visible")
+    .type(employer.address.zipcode);
+  if (employer.work_site_address) {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_same_address\\.no`)
+      .parent()
+      .should("be.visible")
+      .click();
+    // TODO
+  } else {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_same_address\\.yes`)
+      .parent()
+      .should("be.visible")
+      .click();
+  }
+  cy.get(`[name=employers\\[${idx}\\]\\.phones\\[0\\]\\.number`)
+    .should("be.visible")
+    .type(employer.phones[0].number);
+  if (employer.phones.length > 1) {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_same_phone\\.no`)
+      .parent()
+      .should("be.visible")
+      .click();
+    cy.get(`[name=employers\\[${idx}\\]\\.phones\\[1\\]\\.number`)
+      .should("be.visible")
+      .type(employer.phones[1].number);
+  } else {
+    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_same_phone\\.yes`)
+      .parent()
+      .should("be.visible")
+      .click();
+  }
+  if (employer.fein) {
+    cy.get(`[name=employers\\[${idx}\\]\\.fein`)
+      .should("be.visible")
+      .type(employer.fein);
+  }
+});
+
+Cypress.Commands.add("click_more_employers", (bool, idx = "0") => {
+  cy.get(`input[id=LOCAL_more_employers\\[${idx}\\]\\.${bool}]`)
+    .parent()
+    .click();
+});
+
 Cypress.Commands.add("click_final_submit", () => {
   cy.get("[data-testid='button']").contains("Test Claim").click();
 });

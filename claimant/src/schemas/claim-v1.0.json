@@ -35,7 +35,7 @@
       "$id": "/definitions/address",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$anchor": "#/definitions/address",
-      "type": "object",
+      "type": ["object", "null"],
       "properties": {
         "address1": { "type": "string" },
         "address2": { "type": "string" },
@@ -79,14 +79,7 @@
         "separation_reason": { "type": "string" },
         "separation_comment": { "type": "string" }
       },
-      "required": [
-        "name",
-        "address",
-        "first_work_date",
-        "last_work_date",
-        "phones",
-        "separation_reason"
-      ]
+      "required": ["name", "address", "first_work_date", "phones"]
     },
     "citizenship": {
       "$id": "/definitions/citizenship",

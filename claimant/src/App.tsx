@@ -32,7 +32,8 @@ import PageLoader from "./common/PageLoader";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { HOME_PAGE, CLAIM_FORM_PAGE, WHOAMI_PAGE } = ROUTES;
+  const { HOME_PAGE, CLAIM_FORM_PAGE, CLAIM_FORM_PAGE_SEGMENT, WHOAMI_PAGE } =
+    ROUTES;
   const { t } = useTranslation("common");
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
   const logoutUrl = `${baseUrl}/logout/`;
@@ -94,12 +95,16 @@ function App() {
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
+                <Route
+                  path={CLAIM_FORM_PAGE_SEGMENT}
+                  element={<ClaimFormPage />}
+                />
                 <Route path={CLAIM_FORM_PAGE} element={<ClaimFormPage />} />
+                {/* TODO for now, redirect all to /claim/ -- future replace with HomePage once that has content */}
                 <Route
                   path={`${HOME_PAGE}`}
                   element={<Navigate replace to={`/claim/${pages[0].path}`} />}
                 />
-                {/* TODO replace with HomePage once that has content */}
               </Routes>
             </Suspense>
           </AuthContainer>

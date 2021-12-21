@@ -6,6 +6,7 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@trussworks/react-uswds": "^2.4.1",
     "axios": "0.24.0",
+    "dayjs": "^1.10.7",
     "formik": "^2.2.9",
     "i18next": "^21.6.0",
     "i18next-browser-languagedetector": "^6.1.2",
@@ -67,7 +68,7 @@
   "scripts": {
     "test:clean": "rm -rf .nyc_output coverage* reports",
     "nyc:clean": "rm -rf .nyc_output",
-    "cypress:reconcile": "node src/reconcileCypressCoverage.js",
+    "cypress:reconcile": "node src/reconcileCypressCoverage.js && cp coverage-cypress/coverage-final.json .nyc_output/out.json",
     "cypress:run": "yarn nyc:clean && ./node_modules/.bin/cypress run --headless --browser chrome",
     "cypress:run:dev": "yarn nyc:clean && ./node_modules/.bin/cypress run --headless --browser chrome --config-file cypress-dev.json",
     "coverage": "yarn test --coverage --watchAll=false",
