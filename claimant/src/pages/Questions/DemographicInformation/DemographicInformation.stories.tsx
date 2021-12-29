@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
 
-import { schemaFields, DemographicInformation } from "./DemographicInformation";
+import {
+  DemographicInformation,
+  DemographicInformationPage,
+} from "./DemographicInformation";
 import YupBuilder from "../../../common/YupBuilder";
 
 export default {
@@ -12,7 +15,10 @@ export default {
 const noop = () => undefined;
 
 const Template: ComponentStory<typeof DemographicInformation> = () => {
-  const validationSchema = YupBuilder("claim-v1.0", schemaFields);
+  const validationSchema = YupBuilder(
+    "claim-v1.0",
+    DemographicInformationPage.schemaFields
+  );
 
   const initialValues = {
     birthdate: new Date(2001, 11, 21).toDateString(),
