@@ -10,6 +10,7 @@ import {
   useSubmitClaim,
 } from "../../queries/claim";
 import {
+  getInitialValuesFromPageDefinitions,
   initializeClaimFormWithWhoAmI,
   mergeClaimFormValues,
 } from "../../utils/claim_form";
@@ -17,6 +18,7 @@ import { Route, Routes, MemoryRouter } from "react-router-dom";
 import { Routes as ROUTES } from "../../routes";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
+import { pages } from "../PageDefinitions";
 
 const { CLAIM_FORM_PAGE } = ROUTES;
 
@@ -95,6 +97,7 @@ describe("the ClaimForm page", () => {
 
   it("initializes form values", async () => {
     const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      getInitialValuesFromPageDefinitions(pages),
       myPII
     );
     expect(initialValues.claimant_name).toEqual({
@@ -106,6 +109,7 @@ describe("the ClaimForm page", () => {
 
   it("merges form values with restored partial claim", async () => {
     const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      getInitialValuesFromPageDefinitions(pages),
       myPII
     );
     const restoredClaim = {
@@ -253,10 +257,10 @@ describe("the ClaimForm page", () => {
       backButton: getByText("Previous", { exact: false }),
     });
 
-    const { backButton: backToDemographicInfo } = getSubmitClaimFields();
+    const { backButton: backToDemographicInformation } = getSubmitClaimFields();
 
     await act(async () => {
-      userEvent.click(backToDemographicInfo);
+      userEvent.click(backToDemographicInformation);
     });
 
     const {

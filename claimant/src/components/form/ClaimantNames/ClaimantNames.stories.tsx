@@ -7,7 +7,7 @@ import {
 } from "./ClaimantNames";
 import YupBuilder from "../../../common/YupBuilder";
 import * as yup from "yup";
-import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation";
+import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation/PersonalInformation";
 
 export default {
   title: "Components/Form/Claimant Names",

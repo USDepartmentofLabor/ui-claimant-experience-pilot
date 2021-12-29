@@ -2,15 +2,16 @@ import { Fieldset } from "@trussworks/react-uswds";
 import { Normalize, useTranslation } from "react-i18next";
 
 import claimForm from "../../../i18n/en/claimForm";
-import { TextField } from "../fields/TextField/TextField";
-import { RadioField } from "../fields/RadioField/RadioField";
-import DropdownField from "../fields/DropdownField/DropdownField";
-import { CheckboxGroupField } from "../fields/CheckboxGroupField/CheckboxGroupField";
-import { ClaimSchemaFields } from "../../../common/YupBuilder";
+import { TextField } from "../../../components/form/fields/TextField/TextField";
+import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
+import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
+import { CheckboxGroupField } from "../../../components/form/fields/CheckboxGroupField/CheckboxGroupField";
+import { ClaimSchemaField } from "../../../common/YupBuilder";
 
-import formStyles from "../form.module.scss";
+import formStyles from "../../../components/form/form.module.scss";
+import { IPageDefinition } from "../../PageDefinitions";
 
-export const DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS: ClaimSchemaFields[] = [
+const schemaFields: ClaimSchemaField[] = [
   "birthdate",
   "sex",
   "race",
@@ -66,7 +67,7 @@ const educationLevelOptions: EducationLevelOption[] = Object.keys(
   translationKey: option as Normalize<typeof claimForm.education_level.options>,
 }));
 
-export const DemographicInfo = () => {
+export const DemographicInformation = () => {
   const { t } = useTranslation("claimForm");
 
   return (
@@ -126,4 +127,17 @@ export const DemographicInfo = () => {
       />
     </>
   );
+};
+
+export const DemographicInformationPage: IPageDefinition = {
+  path: "demographic-information",
+  schemaFields: schemaFields,
+  initialValues: {
+    birthdate: "",
+    sex: undefined,
+    ethnicity: undefined,
+    race: [],
+    education_level: undefined,
+  },
+  Component: DemographicInformation,
 };

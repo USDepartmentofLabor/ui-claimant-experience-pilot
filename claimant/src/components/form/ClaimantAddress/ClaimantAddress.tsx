@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import i18next from "i18next";
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
-import { ClaimSchemaFields } from "../../../common/YupBuilder";
+import { ClaimSchemaField } from "../../../common/YupBuilder";
 import * as yup from "yup";
 import Address from "../Address/Address";
 import { CheckboxField } from "../fields/CheckboxField/CheckboxField";
 import { ADDRESS_SKELETON } from "../../../utils/claim_form";
 
-export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaFields[] = [
+export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaField[] = [
   "residence_address",
   "mailing_address",
 ];

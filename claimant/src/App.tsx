@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
 // These classes are imported globally and can be used on every page
 import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
-import { pages } from "./pages/PageDefinition";
+import { pages } from "./pages/PageDefinitions";
 import PageLoader from "./common/PageLoader";
 
 function App() {

@@ -8,6 +8,7 @@ import {
   useGetCompletedClaim,
 } from "../../queries/claim";
 import {
+  getInitialValuesFromPageDefinitions,
   initializeClaimFormWithWhoAmI,
   mergeClaimFormValues,
 } from "../../utils/claim_form";
@@ -19,7 +20,7 @@ import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import claimFormStyles from "./ClaimForm.module.scss";
 import { Button, ErrorMessage, FormGroup } from "@trussworks/react-uswds";
-import { pages } from "../PageDefinition";
+import { pages } from "../PageDefinitions";
 import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
 const BYPASS_PARTIAL_RESTORE =
@@ -153,13 +154,13 @@ export const ClaimForm = () => {
     throw partialClaimError;
   }
 
-  let initialValues: FormValues = {};
+  let initialValues: FormValues = getInitialValuesFromPageDefinitions(pages);
 
   if (BYPASS_PARTIAL_RESTORE) {
-    initialValues = initializeClaimFormWithWhoAmI(whoami);
+    initialValues = initializeClaimFormWithWhoAmI(initialValues, whoami);
   } else {
     initialValues = mergeClaimFormValues(
-      initializeClaimFormWithWhoAmI(whoami),
+      initializeClaimFormWithWhoAmI(initialValues, whoami),
       /* we know partialClaim is defined at this point */
       /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
       partialClaim!

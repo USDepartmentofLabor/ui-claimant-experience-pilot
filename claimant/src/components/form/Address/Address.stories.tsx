@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
 
 import YupBuilder from "../../../common/YupBuilder";
-import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation";
+import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation/PersonalInformation";
 import Address from "./Address";
 
 export default {

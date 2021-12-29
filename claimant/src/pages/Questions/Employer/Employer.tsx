@@ -5,16 +5,17 @@ import {
   FormGroup,
   Button,
 } from "@trussworks/react-uswds";
-import { Employer as EmployerProfile } from "../../components/form/Employer/Employer";
-import { YesNoRadio } from "../../components/form/YesNoRadio/YesNoRadio";
-import { ClaimSchemaFields } from "../../common/YupBuilder";
+import { Employer as EmployerProfile } from "../../../components/form/Employer/Employer";
+import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
+import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { useFormikContext } from "formik";
 import * as yup from "yup";
 import i18next from "i18next";
+import { IPageDefinition } from "../../PageDefinitions";
 
-export const EmployerFields: ClaimSchemaFields[] = ["employers"];
+const schemaFields: ClaimSchemaField[] = ["employers"];
 
-export const EMPLOYER_ADDITIONAL_VALIDATIONS = {
+const additionalValidations = {
   LOCAL_more_employers: yup
     .array()
     .of(yup.string())
@@ -33,15 +34,7 @@ export const EMPLOYER_ADDITIONAL_VALIDATIONS = {
     ),
 };
 
-interface IEmployerFields {
-  employers: EmployerType[];
-  LOCAL_more_employers: string[];
-}
-
-export const EmployerRepeatable = (
-  currentSegment: string | undefined,
-  values: FormValues
-) => {
+const repeatable = (currentSegment: string | undefined, values: FormValues) => {
   if (!values["LOCAL_more_employers"]) {
     return false;
   }
@@ -51,12 +44,12 @@ export const EmployerRepeatable = (
     : values.LOCAL_more_employers[currentSegmentIdx] === "yes";
 };
 
-export const EmployerNextSegment = (currentSegment: string | undefined) => {
+const nextSegment = (currentSegment: string | undefined) => {
   const currentSegmentIdx = parseInt(currentSegment || "0");
   return currentSegment === undefined ? "1" : currentSegmentIdx + 1 + "";
 };
 
-export const EmployerPreviousSegment = (currentSegment: string | undefined) => {
+const previousSegment = (currentSegment: string | undefined) => {
   const currentSegmentIdx = parseInt(currentSegment || "0");
   if (currentSegmentIdx - 1 < 0) {
     return false;
@@ -68,14 +61,14 @@ export const EmployerPreviousSegment = (currentSegment: string | undefined) => {
 export const Employer = (props: PageProps) => {
   const { t } = useTranslation("claimForm");
   const { values, touched, errors, setValues } =
-    useFormikContext<IEmployerFields>();
+    useFormikContext<ClaimantInput>();
   const segment = props.segment || "0";
   const showMoreEmployersError =
     touched.LOCAL_more_employers && !!errors.LOCAL_more_employers;
 
   const removeEmployer = (idx: number) => {
-    const employers = values.employers.filter((_, i) => i !== idx);
-    const LOCAL_more_employers = values.LOCAL_more_employers.filter(
+    const employers = values.employers?.filter((_, i) => i !== idx);
+    const LOCAL_more_employers = values.LOCAL_more_employers?.filter(
       (_, i) => i !== idx
     );
     setValues((form) => ({
@@ -114,4 +107,18 @@ export const Employer = (props: PageProps) => {
       </Fieldset>
     </>
   );
+};
+
+export const EmployerPage: IPageDefinition = {
+  path: "employer",
+  schemaFields: schemaFields,
+  initialValues: {
+    employers: [],
+    LOCAL_more_employers: [],
+  },
+  additionalValidations: additionalValidations,
+  Component: Employer,
+  repeatable: repeatable,
+  nextSegment: nextSegment,
+  previousSegment: previousSegment,
 };

@@ -1,4 +1,5 @@
 import isEqual from "lodash/isEqual";
+import { IPageDefinition } from "../pages/PageDefinitions";
 
 // skeleton shapes with which to initialize form fields
 export const ADDRESS_SKELETON: AddressType = {
@@ -25,35 +26,36 @@ export const EMPLOYER_SKELETON: EmployerType = {
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
 const CLAIM_FORM_SKELETON: FormValues = {
-  is_complete: false,
-  claimant_name: { first_name: "", middle_name: "", last_name: "" },
-  claimant_has_alternate_names: undefined,
-  alternate_names: [],
   email: "",
   ssn: "",
-  birthdate: "",
-  race: [],
-  sex: undefined,
-  ethnicity: undefined,
-  education_level: undefined,
-  LOCAL_mailing_address_same: false,
-  residence_address: ADDRESS_SKELETON,
-  mailing_address: ADDRESS_SKELETON,
-  LOCAL_more_employers: [],
-  employers: [],
-} as const;
+};
 
-export const initializeClaimFormWithWhoAmI = (whoami: WhoAmI) => {
-  const initialValues: FormValues = { ...CLAIM_FORM_SKELETON };
-  // console.error("before", { whoami, initialValues });
+export const getInitialValuesFromPageDefinitions = (
+  pages: ReadonlyArray<IPageDefinition>
+) =>
+  pages
+    .flatMap((page) => page.initialValues)
+    .reduce((previousValue, currentValue) => ({
+      ...previousValue,
+      ...currentValue,
+    }));
+
+export const initializeClaimFormWithWhoAmI = (
+  emptyInitialValues: FormValues,
+  whoami: WhoAmI
+) => {
+  const initializedValues: FormValues = {
+    ...CLAIM_FORM_SKELETON, // TODO: CLAIM_FORM_SKELETON should be removed entirely when email and ssn are incorporated into a component
+    ...emptyInitialValues, //   At that point, we can use emptyInitialValues directly
+  };
   for (const [key, value] of Object.entries(whoami)) {
     if (key === "first_name" || key === "last_name") {
-      initialValues.claimant_name[key] = value;
-    } else if (value && key in initialValues && !initialValues[key]) {
-      initialValues[key] = value;
+      initializedValues.claimant_name[key] = value;
+    } else if (value && key in initializedValues && !initializedValues[key]) {
+      initializedValues[key] = value;
     }
   }
-  return initialValues;
+  return initializedValues;
 };
 
 export const mergeClaimFormValues = (
