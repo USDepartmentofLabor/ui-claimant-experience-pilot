@@ -17,10 +17,10 @@ const claimForm = {
   race: {
     label: "What races do you identify with?",
     options: {
-      hawaiian_or_pacific_islander: "Native Hawaiian or Other Pacific Islander",
-      asian: "Asian",
       american_indian_or_alaskan: "American Indian or Alaska Native",
+      asian: "Asian",
       black: "Black or African American",
+      hawaiian_or_pacific_islander: "Native Hawaiian or Other Pacific Islander",
       white: "White",
     },
     errors: {
