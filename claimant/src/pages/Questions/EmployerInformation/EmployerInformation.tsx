@@ -15,7 +15,7 @@ import { IPageDefinition } from "../../PageDefinitions";
 
 const schemaFields: ClaimSchemaField[] = ["employers"];
 
-const additionalValidations = {
+export const additionalValidations = {
   LOCAL_more_employers: yup
     .array()
     .of(yup.string())
