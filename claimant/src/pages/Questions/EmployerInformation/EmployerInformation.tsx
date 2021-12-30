@@ -5,7 +5,7 @@ import {
   FormGroup,
   Button,
 } from "@trussworks/react-uswds";
-import { Employer as EmployerProfile } from "../../../components/form/Employer/Employer";
+import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { useFormikContext } from "formik";
@@ -58,7 +58,7 @@ const previousSegment = (currentSegment: string | undefined) => {
   }
 };
 
-export const Employer = (props: PageProps) => {
+export const EmployerInformation = (props: PageProps) => {
   const { t } = useTranslation("claimForm");
   const { values, touched, errors, setValues } =
     useFormikContext<ClaimantInput>();
@@ -109,15 +109,15 @@ export const Employer = (props: PageProps) => {
   );
 };
 
-export const EmployerPage: IPageDefinition = {
-  path: "employer",
+export const EmployerInformationPage: IPageDefinition = {
+  path: "employer-information",
   schemaFields: schemaFields,
   initialValues: {
     employers: [],
     LOCAL_more_employers: [],
   },
   additionalValidations: additionalValidations,
-  Component: Employer,
+  Component: EmployerInformation,
   repeatable: repeatable,
   nextSegment: nextSegment,
   previousSegment: previousSegment,

@@ -1,6 +1,6 @@
 import { render, within } from "@testing-library/react";
 import { Formik } from "formik";
-import { Employer } from "./Employer";
+import { EmployerInformation } from "./EmployerInformation";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -10,11 +10,11 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-describe("Employer Page", () => {
+describe("EmployerInformation Page", () => {
   it("renders properly", () => {
     const { getByRole } = render(
       <Formik initialValues={{ employers: [] }} onSubmit={() => undefined}>
-        <Employer segment={undefined} />
+        <EmployerInformation segment={undefined} />
       </Formik>
     );
 

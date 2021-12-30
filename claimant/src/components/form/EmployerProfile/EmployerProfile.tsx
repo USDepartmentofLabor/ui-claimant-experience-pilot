@@ -19,7 +19,7 @@ const formatUserInputDate = (initialValue?: string): string | undefined => {
     : initialValue; // preserve undefined to show validations later
 };
 
-interface IEmployerProps {
+interface IEmployerProfileProps {
   segment: string;
 }
 
@@ -30,7 +30,7 @@ const local_validations = {
   LOCAL_same_address: yup.string().required(i18next.t("validation.required")),
 };
 
-export const Employer = ({ segment }: IEmployerProps) => {
+export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
   const { values, errors, touched, setFieldValue } =
     useFormikContext<ClaimantInput>();
