@@ -9,15 +9,7 @@ import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 import { DatePicker } from "../fields/DatePicker/DatePicker";
 import Address from "../Address/Address";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
-
-import dayjs from "dayjs";
-
-const formatUserInputDate = (initialValue?: string): string | undefined => {
-  const dayjsValue = dayjs(initialValue);
-  return initialValue && dayjsValue.isValid()
-    ? dayjsValue.format("YYYY-MM-DD")
-    : initialValue; // preserve undefined to show validations later
-};
+import { formatUserInputDate } from "../../../utils/format";
 
 interface IEmployerProfileProps {
   segment: string;
@@ -32,8 +24,7 @@ const local_validations = {
 
 export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
-  const { values, errors, touched, setFieldValue } =
-    useFormikContext<ClaimantInput>();
+  const { values, errors, setFieldValue } = useFormikContext<ClaimantInput>();
 
   const segmentIdx = parseInt(segment);
   const segmentExists = !!values.employers?.[segmentIdx];
@@ -67,7 +58,7 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
   console.log({
     values,
     employer,
-    touched,
+    // touched,
     errors,
     employerErrors,
     local_validations,
