@@ -291,6 +291,10 @@ TEMPLATES = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Note: In Django 4, SecurityMiddleware no longer sets the X-XSS-Protection header
+# https://docs.djangoproject.com/en/4.0/releases/4.0/#securitymiddleware-no-longer-sets-the-x-xss-protection-header
+SECURE_BROWSER_XSS_FILTER = True
+
 # Content-Security-Policy configuration
 CSP_DEFAULT_SRC = None
 CSP_FRAME_ANCESTORS = ["'none'"]
