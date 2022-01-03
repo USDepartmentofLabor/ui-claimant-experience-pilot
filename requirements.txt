@@ -17,6 +17,6 @@ mysqlclient==2.1.0
 pyjwt==2.3.0
 redis==4.1.0
 request-id-django-log==0.2.0
-requests==2.26.0
+requests==2.27.0
 rfc3339-validator==0.1.4
 whitenoise==5.3.0
