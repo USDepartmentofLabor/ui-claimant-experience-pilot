@@ -28,13 +28,13 @@ describe("Phone number component", () => {
       </Formik>
     );
 
-    const numberField = getByLabelText("phone.number.label");
-    const typeField = getByLabelText("phone.type.label");
-    const smsCheckbox = getByLabelText("phone.sms.label");
+    const numberField = getByLabelText("phone.number");
+    const typeField = getByLabelText("phone.type");
+    const smsCheckbox = getByLabelText("phone.sms");
 
     expect(numberField).toHaveValue("");
-    expect(numberField).toHaveAttribute("id", `${basename}.phone`);
-    expect(numberField).toHaveAttribute("name", `${basename}.phone`);
+    expect(numberField).toHaveAttribute("id", `${basename}.number`);
+    expect(numberField).toHaveAttribute("name", `${basename}.number`);
 
     expect(typeField).toHaveValue("");
     expect(typeField).toHaveAttribute("id", `${basename}.type`);
