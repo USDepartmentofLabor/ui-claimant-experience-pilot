@@ -15,10 +15,10 @@ describe("Phone number component", () => {
   it("renders inputs for phone number", () => {
     const basename = "test-phone";
     const initialValues = {
-      basename: {
+      [basename]: {
         number: "",
         type: "",
-        sms: "false",
+        sms: true,
       },
     };
 
@@ -28,9 +28,9 @@ describe("Phone number component", () => {
       </Formik>
     );
 
-    const numberField = getByLabelText("phone.number");
-    const typeField = getByLabelText("phone.type");
-    const smsCheckbox = getByLabelText("phone.sms");
+    const numberField = getByLabelText("phone.number.label");
+    const typeField = getByLabelText("phone.type.label");
+    const smsCheckbox = getByLabelText("phone.sms.label");
 
     expect(numberField).toHaveValue("");
     expect(numberField).toHaveAttribute("id", `${basename}.number`);

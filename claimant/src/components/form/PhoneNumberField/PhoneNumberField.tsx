@@ -23,6 +23,7 @@ export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
         id={`${id}.type`}
         name={`${name}.type`}
         label={t("phone.type.label")}
+        startEmpty
         options={[
           { value: "mobile", label: t("phone.mobile") },
           { value: "home", label: t("phone.home") },
