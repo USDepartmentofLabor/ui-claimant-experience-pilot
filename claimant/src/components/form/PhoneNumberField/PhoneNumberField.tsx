@@ -16,13 +16,13 @@ export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
       <TextField
         id={`${id}.number`}
         name={`${name}.number`}
-        label={t("phone.number")}
+        label={t("phone.number.label")}
         type="text"
       />
       <DropdownField
         id={`${id}.type`}
         name={`${name}.type`}
-        label={t("phone.type")}
+        label={t("phone.type.label")}
         options={[
           { value: "mobile", label: t("phone.mobile") },
           { value: "home", label: t("phone.home") },
@@ -32,7 +32,7 @@ export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
       <CheckboxField
         id={`${id}.sms`}
         name={`${name}.sms`}
-        label={t("phone.sms")}
+        label={t("phone.sms.label")}
       />
     </>
   );

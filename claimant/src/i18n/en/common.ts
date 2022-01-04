@@ -11,9 +11,15 @@ const common = {
     zipcode: { label: "ZIP Code" },
   },
   phone: {
-    number: "Phone number",
-    type: "Type",
-    sms: "Send me text (SMS) notifications",
+    number: {
+      label: "Phone number",
+    },
+    type: {
+      label: "Type",
+    },
+    sms: {
+      label: "Send me text (SMS) notifications",
+    },
     mobile: "Mobile",
     home: "Home",
     work: "Work",
