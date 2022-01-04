@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
+from django.views.decorators.cache import never_cache
 import logging
 import time
 from home.views import base_url
@@ -13,6 +14,7 @@ logger = logging.getLogger("core")
 
 
 # for testing 500 handling
+@never_cache
 def raise_error(request):
     raise Exception("Something went wrong")
 
@@ -21,6 +23,7 @@ def claimant(request):
     return render(None, "build/index.html", {"base_url": base_url(request)})
 
 
+@never_cache
 def live(request):
     try:
         db_start = time.time()

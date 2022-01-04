@@ -1,8 +1,8 @@
 import { act, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Formik } from "formik";
 
 import { RadioField } from "./RadioField";
-import userEvent from "@testing-library/user-event";
 
 const noop = () => undefined;
 

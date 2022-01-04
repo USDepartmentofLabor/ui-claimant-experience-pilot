@@ -12,10 +12,10 @@
       "$anchor": "#/definitions/person_name",
       "type": "object",
       "properties": {
-        "first_name": { "type": "string" },
-        "last_name": { "type": "string" },
-        "middle_name": { "type": "string" },
-        "suffix": { "type": "string" }
+        "first_name": { "type": "string", "maxLength": 36 },
+        "last_name": { "type": "string", "maxLength": 36 },
+        "middle_name": { "type": "string", "maxLength": 36 },
+        "suffix": { "type": "string", "maxLength": 36 }
       },
       "required": ["first_name", "last_name"]
     },
@@ -25,7 +25,7 @@
       "$anchor": "#/definitions/phone",
       "type": "object",
       "properties": {
-        "number": { "type": "string" },
+        "number": { "type": "string", "maxLength": 32 },
         "type": { "type": "string" },
         "sms": { "type": "boolean" }
       },
@@ -35,13 +35,13 @@
       "$id": "/definitions/address",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$anchor": "#/definitions/address",
-      "type": "object",
+      "type": ["object", "null"],
       "properties": {
-        "address1": { "type": "string" },
-        "address2": { "type": "string" },
-        "city": { "type": "string" },
+        "address1": { "type": "string", "maxLength": 64 },
+        "address2": { "type": "string", "maxLength": 64 },
+        "city": { "type": "string", "maxLength": 64 },
         "state": { "$ref": "#/definitions/state" },
-        "zipcode": { "type": "string" }
+        "zipcode": { "type": "string", "maxLength": 12 }
       },
       "required": ["address1", "city", "state", "zipcode"]
     },
@@ -51,11 +51,11 @@
       "$anchor": "#/definitions/occupation",
       "type": "object",
       "properties": {
-        "job_title": { "type": "string" },
-        "job_description": { "type": "string" },
-        "bls_description": { "type": "string" },
-        "bls_code": { "type": "string" },
-        "bls_title": { "type": "string" }
+        "job_title": { "type": "string", "maxLength": 255 },
+        "job_description": { "type": "string", "maxLength": 1024 },
+        "bls_description": { "type": "string", "maxLength": 255 },
+        "bls_code": { "type": "string", "maxLength": 255 },
+        "bls_title": { "type": "string", "maxLength": 255 }
       }
     },
     "employer": {
@@ -64,7 +64,7 @@
       "$anchor": "#/definitions/employer",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
+        "name": { "type": "string", "maxLength": 255 },
         "days_employed": { "type": "integer" },
         "first_work_date": { "type": "string", "format": "date" },
         "last_work_date": { "type": "string", "format": "date" },
@@ -76,17 +76,10 @@
           "type": "array",
           "items": { "$ref": "#/definitions/phone" }
         },
-        "separation_reason": { "type": "string" },
-        "separation_comment": { "type": "string" }
+        "separation_reason": { "type": "string", "maxLength": 255 },
+        "separation_comment": { "type": "string", "maxLength": 1024 }
       },
-      "required": [
-        "name",
-        "address",
-        "first_work_date",
-        "last_work_date",
-        "phones",
-        "separation_reason"
-      ]
+      "required": ["name", "address", "first_work_date", "phones"]
     },
     "citizenship": {
       "$id": "/definitions/citizenship",
@@ -95,10 +88,12 @@
       "type": "object",
       "properties": {
         "alien_registration_type": {
-          "type": "string"
+          "type": "string",
+          "enum": ["permanent_resident", "temporary_legal_worker"]
         },
         "alien_registration_number": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{3}$"
         },
         "is_citizen": {
           "type": "boolean"
@@ -107,7 +102,8 @@
           "type": "boolean"
         },
         "country_of_origin": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 64
         },
         "document_types": {
           "type": "array",
@@ -142,6 +138,43 @@
           "is_citizen",
           "alien_registration_number",
           "alien_registration_type"
+        ]
+      }
+    },
+    "union_membership": {
+      "$id": "/definitions/union_membership",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "union_member": {
+          "type": "boolean"
+        },
+        "union_name": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "union_local_number": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "required_to_seek_work_through_hiring_hall": {
+          "type": "boolean"
+        }
+      },
+      "required": ["union_member"],
+      "if": {
+        "properties": {
+          "union_member": {
+            "enum": [true]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "union_member",
+          "union_name",
+          "union_local_number",
+          "required_to_seek_work_through_hiring_hall"
         ]
       }
     },
@@ -273,12 +306,22 @@
     "race": {
       "description": "",
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string",
+        "enum": [
+          "american_indian_or_alaskan",
+          "asian",
+          "black",
+          "hawaiian_or_pacific_islander",
+          "white"
+        ]
+      },
       "required_for_swa": true
     },
     "ethnicity": {
       "description": "",
       "type": "string",
+      "enum": ["opt_out", "hispanic", "not_hispanic"],
       "required_for_swa": true
     },
     "phones": {
@@ -288,7 +331,8 @@
     },
     "preferred_language": {
       "description": "",
-      "type": "string"
+      "type": "string",
+      "maxLength": 64
     },
     "ssn": {
       "description": "Required per 20 CFR 603.3",
@@ -347,17 +391,36 @@
       "$ref": "#/definitions/citizenship",
       "TODO_required_for_swa": true
     },
+    "union": {
+      "$ref": "#/definitions/union_membership",
+      "TODO_required_for_swa": true
+    },
     "email": {
       "description": "",
       "type": "string",
       "format": "email",
+      "maxLength": 128,
       "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them",
       "TODO_required_for_swa": true
     },
     "education_level": {
       "description": "",
       "type": "string",
-      "comment": "TODO This may need to be an enum",
+      "enum": [
+        "none",
+        "nursery",
+        "grades_1_to_11",
+        "grade_12",
+        "high_school_grad",
+        "ged",
+        "some_college",
+        "one_year_college_plus",
+        "associates",
+        "bachelors",
+        "masters",
+        "professional",
+        "doctorate"
+      ],
       "required_for_swa": true
     },
     "occupation": {
@@ -386,6 +449,11 @@
       "TODO_required_for_swa": true
     },
     "primary_wage_earner": {
+      "description": "",
+      "type": "boolean",
+      "TODO_required_for_swa": true
+    },
+    "interpreter_required": {
       "description": "",
       "type": "boolean",
       "TODO_required_for_swa": true

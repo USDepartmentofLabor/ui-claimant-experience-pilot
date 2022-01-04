@@ -1,10 +1,10 @@
 import { act, render } from "@testing-library/react";
 import { Formik } from "formik";
 import { screen } from "@testing-library/dom";
-
-import { DemographicInfo } from "./DemographicInfo";
-import claimForm from "../../../i18n/en/claimForm";
 import userEvent from "@testing-library/user-event";
+
+import { DemographicInformation } from "./DemographicInformation";
+import claimForm from "../../../i18n/en/claimForm";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -14,7 +14,7 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-describe("DemographicInfo component", () => {
+describe("DemographicInformation component", () => {
   const initialValues = {
     birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,
@@ -26,7 +26,7 @@ describe("DemographicInfo component", () => {
   it("renders properly", () => {
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={() => undefined}>
-        <DemographicInfo />
+        <DemographicInformation />
       </Formik>
     );
 
@@ -64,7 +64,7 @@ describe("DemographicInfo component", () => {
     it("Can check one radio button at a time", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={() => undefined}>
-          <DemographicInfo />
+          <DemographicInformation />
         </Formik>
       );
       const radio1 = screen.getByLabelText("sex.options.female");
@@ -86,7 +86,7 @@ describe("DemographicInfo component", () => {
     it("Allows selection of multiple races", async () => {
       const { getByLabelText } = render(
         <Formik initialValues={initialValues} onSubmit={() => undefined}>
-          <DemographicInfo />
+          <DemographicInformation />
         </Formik>
       );
 
@@ -123,7 +123,7 @@ describe("DemographicInfo component", () => {
     it("Allows selection of ethnicity", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={() => undefined}>
-          <DemographicInfo />
+          <DemographicInformation />
         </Formik>
       );
 
@@ -146,7 +146,7 @@ describe("DemographicInfo component", () => {
     it("Allows selection of an education level", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={() => undefined}>
-          <DemographicInfo />
+          <DemographicInformation />
         </Formik>
       );
 

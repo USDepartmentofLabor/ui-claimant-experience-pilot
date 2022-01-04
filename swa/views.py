@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 from home.views import base_url
@@ -13,11 +14,13 @@ import uuid
 logger = logging.getLogger(__name__)
 
 
+@never_cache
 def index(request):
     return HttpResponse("hello world")
 
 
 @require_http_methods(["GET"])
+@never_cache
 def GET_v1_claims(request):
     queue = Paginator(request.user.claim_queue().all(), 10)
     page = request.GET.get("page", "1")
@@ -53,6 +56,7 @@ and request payload, route further to specific method.
 
 
 @require_http_methods(["GET", "DELETE", "PATCH"])
+@never_cache
 def v1_act_on_claim(request, claim_uuid):
     try:
         uuid.UUID(claim_uuid)

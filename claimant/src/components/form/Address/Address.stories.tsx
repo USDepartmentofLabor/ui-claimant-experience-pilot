@@ -1,9 +1,9 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
+import * as yup from "yup";
 
-import YupBuilder from "../../../common/YupBuilder";
-import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation";
 import Address from "./Address";
+import { useTranslation } from "react-i18next";
 
 export default {
   title: "Components/Form/Address",
@@ -12,14 +12,21 @@ export default {
 
 const noop = () => undefined;
 
-const Template: ComponentStory<typeof Address> = () => {
-  const jsonSchemaValidationSchema = YupBuilder(
-    "claim-v1.0",
-    PERSONAL_INFORMATION_SCHEMA_FIELDS
-  );
+const Template: ComponentStory<typeof Address> = (args) => {
+  const { t } = useTranslation("home");
+
+  const validationSchema = yup.object().shape({
+    [args.basename]: yup.object().shape({
+      address1: yup.string().required(t("validation.required")),
+      address2: yup.string().optional(),
+      city: yup.string().required(t("validation.required")),
+      state: yup.string().required(t("validation.required")),
+      zipcode: yup.string().required(t("validation.required")),
+    }),
+  });
 
   const initialValues = {
-    test_address: {
+    [args.basename]: {
       address1: "",
       address2: "",
       city: "",
@@ -31,14 +38,17 @@ const Template: ComponentStory<typeof Address> = () => {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={jsonSchemaValidationSchema}
+      validationSchema={validationSchema}
       onSubmit={noop}
     >
       <Form>
-        <Address basename="residence_address" />
+        <Address basename={args.basename} />
       </Form>
     </Formik>
   );
 };
 
 export const Default = Template.bind({});
+Default.args = {
+  basename: "address",
+};

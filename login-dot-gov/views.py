@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import redirect
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.cache import never_cache
 import logging
 import secrets
 import os
@@ -29,6 +30,7 @@ def logindotgov_client():
     return client
 
 
+@never_cache
 def explain(request):
     if not settings.DEBUG:
         return JsonResponse({"error": "DEBUG is off"}, status=401)
@@ -37,6 +39,7 @@ def explain(request):
     return JsonResponse(this_session)
 
 
+@never_cache
 def index(request):
     # if we already have a verified session, redirect to frontend app
     if request.session.get("verified"):
@@ -67,6 +70,7 @@ def index(request):
 
 
 # OIDC OP redirects here after auth attempt
+@never_cache
 def result(request):
     client = logindotgov_client()
     try:

@@ -1,4 +1,4 @@
-import React from "react";
+import { ReactNode } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
@@ -7,16 +7,19 @@ import {
   DatePicker as USWDSDatePicker,
 } from "@trussworks/react-uswds";
 
-interface IDatePickerProps {
+type DatePickerProps = React.ComponentProps<typeof USWDSDatePicker>;
+
+interface IDatePickerProps extends DatePickerProps {
   id: string;
   name: string;
-  label: React.ReactNode;
+  label: ReactNode;
 }
 
 export const DatePicker = ({
   id,
   name,
   label,
+  onChange,
   ...inputProps
 }: IDatePickerProps) => {
   const [fieldProps, metaProps] = useField(name);
@@ -32,9 +35,11 @@ export const DatePicker = ({
       </div>
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <USWDSDatePicker
-        id={id}
-        aria-describedby={`${id}-label ${id}-hint`}
         {...fieldProps}
+        id={id}
+        name={name}
+        aria-describedby={`${id}-label ${id}-hint`}
+        onChange={onChange}
         {...inputProps}
       />
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}

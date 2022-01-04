@@ -147,6 +147,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "csp.middleware.CSPMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
 ]
@@ -289,6 +290,14 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Note: In Django 4, SecurityMiddleware no longer sets the X-XSS-Protection header
+# https://docs.djangoproject.com/en/4.0/releases/4.0/#securitymiddleware-no-longer-sets-the-x-xss-protection-header
+SECURE_BROWSER_XSS_FILTER = True
+
+# Content-Security-Policy configuration
+CSP_DEFAULT_SRC = None
+CSP_FRAME_ANCESTORS = ["'none'"]
 
 # CORS Cross-Origin Configuration
 # https://github.com/adamchainz/django-cors-headers

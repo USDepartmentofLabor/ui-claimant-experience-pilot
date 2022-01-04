@@ -36,7 +36,7 @@ export const RadioField = ({
       {options.map((option, index) => (
         <Radio
           {...fieldProps}
-          key={`${name}.${index}`}
+          key={`${id}.${index}.${option.value}`}
           id={`${id}.${option.value}`}
           name={name}
           label={option.label}

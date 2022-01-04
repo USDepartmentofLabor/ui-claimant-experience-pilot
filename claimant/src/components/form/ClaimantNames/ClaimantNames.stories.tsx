@@ -3,11 +3,11 @@ import { Form, Formik } from "formik";
 
 import {
   CLAIMANT_NAMES_ADDITIONAL_VALIDATIONS,
+  CLAIMANT_NAMES_SCHEMA_FIELDS,
   ClaimantNames,
 } from "./ClaimantNames";
 import YupBuilder from "../../../common/YupBuilder";
 import * as yup from "yup";
-import { PERSONAL_INFORMATION_SCHEMA_FIELDS } from "../../../pages/Questions/PersonalInformation";
 
 export default {
   title: "Components/Form/Claimant Names",
@@ -23,7 +23,7 @@ const Template: ComponentStory<typeof ClaimantNames> = () => {
 
   const jsonSchemaValidationSchema = YupBuilder(
     "claim-v1.0",
-    PERSONAL_INFORMATION_SCHEMA_FIELDS
+    CLAIMANT_NAMES_SCHEMA_FIELDS
   );
 
   const validationSchema = jsonSchemaValidationSchema

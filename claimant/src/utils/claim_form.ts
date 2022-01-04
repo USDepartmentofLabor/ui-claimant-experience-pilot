@@ -1,4 +1,5 @@
 import isEqual from "lodash/isEqual";
+import { IPageDefinition } from "../pages/PageDefinitions";
 
 // skeleton shapes with which to initialize form fields
 export const ADDRESS_SKELETON: AddressType = {
@@ -9,37 +10,52 @@ export const ADDRESS_SKELETON: AddressType = {
   zipcode: "",
 };
 
+export const EMPLOYER_SKELETON: EmployerType = {
+  name: "",
+  LOCAL_still_working: undefined,
+  LOCAL_same_address: undefined,
+  LOCAL_same_phone: undefined,
+  first_work_date: "",
+  address: { address1: "", city: "", state: "", zipcode: "" },
+  phones: [],
+  separation_reason: "",
+  separation_comment: "",
+};
+
 // The _entire_ claimant data, even if rendering a subset.
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
 const CLAIM_FORM_SKELETON: FormValues = {
-  is_complete: false,
-  claimant_name: { first_name: "", middle_name: "", last_name: "" },
-  claimant_has_alternate_names: undefined,
-  alternate_names: [],
   email: "",
   ssn: "",
-  birthdate: "",
-  race: [],
-  sex: undefined,
-  ethnicity: undefined,
-  education_level: undefined,
-  LOCAL_mailing_address_same: false,
-  residence_address: ADDRESS_SKELETON,
-  mailing_address: ADDRESS_SKELETON,
-} as const;
+};
 
-export const initializeClaimFormWithWhoAmI = (whoami: WhoAmI) => {
-  const initialValues: FormValues = { ...CLAIM_FORM_SKELETON };
-  // console.error("before", { whoami, initialValues });
+export const getInitialValuesFromPageDefinitions = (
+  pages: ReadonlyArray<IPageDefinition>
+) =>
+  pages
+    .flatMap((page) => page.initialValues)
+    .reduce((previousValue, currentValue) => ({
+      ...previousValue,
+      ...currentValue,
+    }));
+
+export const initializeClaimFormWithWhoAmI = (
+  emptyInitialValues: FormValues,
+  whoami: WhoAmI
+) => {
+  const initializedValues: FormValues = {
+    ...CLAIM_FORM_SKELETON, // TODO: CLAIM_FORM_SKELETON should be removed entirely when email and ssn are incorporated into a component
+    ...emptyInitialValues, //   At that point, we can use emptyInitialValues directly
+  };
   for (const [key, value] of Object.entries(whoami)) {
     if (key === "first_name" || key === "last_name") {
-      initialValues.claimant_name[key] = value;
-    } else if (value && key in initialValues && !initialValues[key]) {
-      initialValues[key] = value;
+      initializedValues.claimant_name[key] = value;
+    } else if (value && key in initializedValues && !initializedValues[key]) {
+      initializedValues[key] = value;
     }
   }
-  return initialValues;
+  return initializedValues;
 };
 
 export const mergeClaimFormValues = (
@@ -66,6 +82,27 @@ export const mergeClaimFormValues = (
     mergedValues.LOCAL_mailing_address_same = true;
   } else {
     mergedValues.LOCAL_mailing_address_same = false;
+  }
+  if (mergedValues.employers) {
+    mergedValues.LOCAL_more_employers = [];
+    mergedValues.employers.forEach((employer: EmployerType, idx: number) => {
+      if (employer.last_work_date) {
+        employer.LOCAL_still_working = "no";
+      }
+      if (employer.work_site_address) {
+        employer.LOCAL_same_address = "no";
+      }
+      if (employer.phones && employer.phones.length > 1) {
+        employer.LOCAL_same_phone = "no";
+      }
+      if (mergedValues.employers.length > idx + 1) {
+        mergedValues.LOCAL_more_employers.push("yes");
+      }
+    });
+    // only assume "no" for last if we have more than one already
+    if (mergedValues.LOCAL_more_employers.length) {
+      mergedValues.LOCAL_more_employers.push("no");
+    }
   }
 
   return mergedValues;

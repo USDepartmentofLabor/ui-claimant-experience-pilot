@@ -14,7 +14,7 @@ type WhoAmI = {
 
 type FormValues = {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  [key: string]: string | boolean | any;
+  [key: string]: any;
 };
 
 type ApiResponse = {
@@ -59,14 +59,46 @@ type ClaimantNamesType = {
   alternate_names?: PersonName[];
 };
 
-type DemographicInfoType = {
-  race?: string[];
-  ethnicity?: string[];
+type ClaimantAddressType = {
+  residence_address?: AddressType;
+  mailing_address?: AddressType;
 };
 
-type ClaimantInput = ClaimantNamesType &
-  DemographicInfoType & {
-    birthdate?: string;
+type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;
+
+type DemographicInformationType = {
+  birthdate?: string;
+  sex?: string;
+  ethnicity?: string[];
+  race?: string[];
+  education_level?: string;
+};
+
+type EmployerType = {
+  name: string;
+  days_employed?: number;
+  LOCAL_still_working: YesNo | undefined;
+  LOCAL_same_address: YesNo | undefined;
+  LOCAL_same_phone: YesNo | undefined;
+  first_work_date: string;
+  last_work_date?: string;
+  recall_date?: string;
+  fein?: string;
+  address: AddressType;
+  work_site_address?: AddressType;
+  phones: PhoneType[];
+  separation_reason: string;
+  separation_comment: string;
+};
+
+type EmployersType = {
+  employers?: EmployerType[];
+  LOCAL_more_employers?: YesNo[];
+};
+
+type ClaimantInput = PersonalInformationType &
+  DemographicInformationType &
+  EmployersType & {
     ssn?: string;
     email?: string;
     phone?: string | null;
@@ -79,7 +111,6 @@ type Claim = ClaimantInput & {
   claimant_id: string;
 };
 
-type FormValues = {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  [key: string]: string | boolean | any;
+type PageProps = {
+  segment: string | undefined;
 };

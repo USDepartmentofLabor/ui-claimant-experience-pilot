@@ -751,15 +751,18 @@ class ClaimValidatorTestCase(TestCase):
         citizen_claim = self.base_claim() | {
             "us_citizenship": {
                 "is_citizen": False,
-                "alien_registration_number": "abc",
-                "alien_registration_type": "resident",
+                "alien_registration_number": "111-111-111",
+                "alien_registration_type": "permanent_resident",
             }
         }
         cv = ClaimValidator(citizen_claim)
         self.assertTrue(cv.valid)
 
         citizen_claim = self.base_claim() | {
-            "us_citizenship": {"is_citizen": True, "alien_registration_number": "abc"}
+            "us_citizenship": {
+                "is_citizen": True,
+                "alien_registration_number": "111-111-111",
+            }
         }
         # schema is valid but non-sensical
         cv = ClaimValidator(citizen_claim)
@@ -774,6 +777,30 @@ class ClaimValidatorTestCase(TestCase):
             "'alien_registration_number' is a required property",
             list(error_dict.keys()),
         )
+
+        # union membership
+        union_claim = self.base_claim() | {"union": {"union_member": False}}
+        cv = ClaimValidator(union_claim)
+        self.assertTrue(cv.valid)
+        union_claim = self.base_claim() | {"union": {"union_member": True}}
+        cv = ClaimValidator(union_claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        logger.debug("errors={}".format(error_dict))
+        self.assertIn(
+            "'union_name' is a required property",
+            list(error_dict.keys()),
+        )
+        union_claim = self.base_claim() | {
+            "union": {
+                "union_member": True,
+                "union_name": "foo",
+                "union_local_number": "1234",
+                "required_to_seek_work_through_hiring_hall": False,
+            }
+        }
+        cv = ClaimValidator(union_claim)
+        self.assertTrue(cv.valid)
 
     def test_completed_claim_validator(self):
         claim = self.base_claim() | {

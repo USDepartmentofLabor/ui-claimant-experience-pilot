@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import JsonResponse
+from django.views.decorators.cache import never_cache
 import logging
 import os
 from django.conf import settings
@@ -24,6 +25,7 @@ logger = logging.getLogger("api")
 
 @require_http_methods(["POST"])
 @csrf_exempt
+@never_cache
 def login(request):
     """testing only"""
     whoami = register_local_login(request)
@@ -32,6 +34,7 @@ def login(request):
 
 @require_http_methods(["POST"])
 @verified_claimant_session
+@never_cache
 def logout(request):
     """testing only"""
     request.session.flush()
@@ -40,6 +43,7 @@ def logout(request):
 
 @require_http_methods(["GET"])
 @verified_claimant_session
+@never_cache
 def whoami(request):
     """
     returns JSON payload about the user with the current session.
@@ -64,6 +68,7 @@ def whoami(request):
 
 
 @require_http_methods(["GET"])
+@never_cache
 def index(request):
     """Root endpoint for the /api/ space. Returns metadata about the API itself."""
     return JsonResponse(
@@ -80,6 +85,7 @@ def index(request):
 
 @require_http_methods(["GET", "POST"])
 @verified_claimant_session
+@never_cache
 def partial_claim(request):
     """GET or POST a partial claim. This method routes according to HTTP method."""
     if request.method == "GET":
@@ -92,6 +98,7 @@ def partial_claim(request):
 
 @require_http_methods(["GET", "POST"])
 @verified_claimant_session
+@never_cache
 def completed_claim(request):
     """GET or POST a completed claim. This method routes according to HTTP method."""
     if request.method == "GET":

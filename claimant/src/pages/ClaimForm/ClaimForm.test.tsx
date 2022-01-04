@@ -10,6 +10,7 @@ import {
   useSubmitClaim,
 } from "../../queries/claim";
 import {
+  getInitialValuesFromPageDefinitions,
   initializeClaimFormWithWhoAmI,
   mergeClaimFormValues,
 } from "../../utils/claim_form";
@@ -17,6 +18,7 @@ import { Route, Routes, MemoryRouter } from "react-router-dom";
 import { Routes as ROUTES } from "../../routes";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
+import { pages } from "../PageDefinitions";
 
 const { CLAIM_FORM_PAGE } = ROUTES;
 
@@ -95,6 +97,7 @@ describe("the ClaimForm page", () => {
 
   it("initializes form values", async () => {
     const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      getInitialValuesFromPageDefinitions(pages),
       myPII
     );
     expect(initialValues.claimant_name).toEqual({
@@ -106,6 +109,7 @@ describe("the ClaimForm page", () => {
 
   it("merges form values with restored partial claim", async () => {
     const initialValues: FormValues = await initializeClaimFormWithWhoAmI(
+      getInitialValuesFromPageDefinitions(pages),
       myPII
     );
     const restoredClaim = {
@@ -122,6 +126,23 @@ describe("the ClaimForm page", () => {
         state: "KS",
         zipcode: "12345",
       },
+      employers: [
+        {
+          name: "ACME 0",
+          last_work_date: "2020-12-12",
+          phones: [{ number: "555-555-5555" }, { number: "555-555-1234" }],
+          work_site_address: {
+            address1: "123 Elsewhere",
+            city: "Somewhere",
+            state: "KS",
+            zipcode: "12345",
+          },
+        },
+        {
+          name: "ACME 1",
+          phones: [{ number: "555-555-5555" }],
+        },
+      ],
     };
     expect(
       isEqual(restoredClaim.residence_address, restoredClaim.mailing_address)
@@ -132,11 +153,15 @@ describe("the ClaimForm page", () => {
     );
     expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
     expect(mergedValues.claimant_has_alternate_names).toEqual("yes");
+    expect(mergedValues.employers[0].LOCAL_same_address).toEqual("no");
+    expect(mergedValues.employers[1].LOCAL_same_address).toEqual(undefined);
+    expect(mergedValues.employers[0].LOCAL_same_phone).toEqual("no");
+    expect(mergedValues.employers[1].LOCAL_same_phone).toEqual(undefined);
+    expect(mergedValues.LOCAL_more_employers).toEqual(["yes", "no"]);
   });
 
-  it("navigates between pages", async () => {
-    const { queryByText, getByText, getByLabelText, getByRole, getByTestId } =
-      render(Page);
+  it("navigates between first 2 pages", async () => {
+    const { getByText, getByLabelText, getByRole, getByTestId } = render(Page);
 
     const getPersonalInformationFields = () => {
       const residenceAddressGroup = getByRole("group", {
@@ -216,13 +241,8 @@ describe("the ClaimForm page", () => {
       userEvent.click(nextLink);
     });
 
-    const {
-      female,
-      hispanic,
-      white,
-      educationLevelDropdown,
-      nextButton: goToSubmitClaim,
-    } = getDemographicInformationFields();
+    const { female, hispanic, white, educationLevelDropdown, nextButton } =
+      getDemographicInformationFields();
 
     // Fill out demographic-information
     await act(async () => {
@@ -230,21 +250,17 @@ describe("the ClaimForm page", () => {
       await userEvent.click(hispanic);
       await userEvent.click(white);
       await userEvent.selectOptions(educationLevelDropdown, "grade_12");
-      userEvent.click(goToSubmitClaim);
+      userEvent.click(nextButton);
     });
 
     const getSubmitClaimFields = () => ({
-      submitButton: queryByText("Test Claim"),
       backButton: getByText("Previous", { exact: false }),
     });
 
-    const { submitButton, backButton: backToDemographicInfo } =
-      getSubmitClaimFields();
-
-    expect(submitButton).toBeInTheDocument();
+    const { backButton: backToDemographicInformation } = getSubmitClaimFields();
 
     await act(async () => {
-      userEvent.click(backToDemographicInfo);
+      userEvent.click(backToDemographicInformation);
     });
 
     const {

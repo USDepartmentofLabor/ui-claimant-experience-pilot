@@ -71,10 +71,7 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         label={labels ? labels.state : defaultLabels.state}
         id={`${basename}.state`}
         startEmpty
-        options={stateDropdownOptions.map((state) => ({
-          value: state.value,
-          label: state.label,
-        }))}
+        options={stateDropdownOptions}
       />
       <TextField
         // TODO pass medium

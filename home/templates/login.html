@@ -19,28 +19,13 @@
             >).
           </p>
 
-          <label class="usa-label" for="swa_code">State</label>
-          <select name="swa_code" class="usa-select">
-            <option disabled selected value>--</option>
-            {% for swa in swas %}
-            <option value="{{swa.code}}">{{swa.name}}</option>
-            {% endfor %}
-          </select>
+          <!-- prettier-ignore -->
+          {% include "uswds/_swa_options.html" with swas=swas %}
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="first_name" label="First Name" %}
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" %}
 
-          <label class="usa-label" for="first_name">First Name</label>
-          <input
-            class="usa-input"
-            type="text"
-            id="first_name"
-            name="first_name"
-          />
-          <label class="usa-label" for="last_name">Last Name</label>
-          <input
-            class="usa-input"
-            type="text"
-            id="last_name"
-            name="last_name"
-          />
           <label class="usa-label" for="email">
             Email
             <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
@@ -52,17 +37,13 @@
             name="email"
             required
           />
-          <label class="usa-label" for="birthdate">Birthdate</label>
-          <input
-            class="usa-input"
-            type="text"
-            id="birthdate"
-            name="birthdate"
-          />
-          <label class="usa-label" for="ssn">SSN</label>
-          <input class="usa-input" type="text" id="ssn" name="ssn" />
-          <label class="usa-label" for="phone">Phone</label>
-          <input class="usa-input" type="text" id="phone" name="phone" />
+
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate" %}
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="ssn" label="SSN" %}
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="phone" label="Phone" %}
 
           <div>
             <button class="usa-button" type="submit" data-testid="loginbutton">

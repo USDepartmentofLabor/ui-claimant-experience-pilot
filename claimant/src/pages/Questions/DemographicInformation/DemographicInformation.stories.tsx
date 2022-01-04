@@ -2,22 +2,22 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
 
 import {
-  DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS,
-  DemographicInfo,
-} from "./DemographicInfo";
+  DemographicInformation,
+  DemographicInformationPage,
+} from "./DemographicInformation";
 import YupBuilder from "../../../common/YupBuilder";
 
 export default {
   title: "Components/Form/Demographic Info",
-  component: DemographicInfo,
-} as ComponentMeta<typeof DemographicInfo>;
+  component: DemographicInformation,
+} as ComponentMeta<typeof DemographicInformation>;
 
 const noop = () => undefined;
 
-const Template: ComponentStory<typeof DemographicInfo> = () => {
+const Template: ComponentStory<typeof DemographicInformation> = () => {
   const validationSchema = YupBuilder(
     "claim-v1.0",
-    DEMOGRAPHIC_INFORMATION_SCHEMA_FIELDS
+    DemographicInformationPage.schemaFields
   );
 
   const initialValues = {
@@ -35,7 +35,7 @@ const Template: ComponentStory<typeof DemographicInfo> = () => {
       onSubmit={noop}
     >
       <Form>
-        <DemographicInfo />
+        <DemographicInformation />
       </Form>
     </Formik>
   );
