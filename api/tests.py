@@ -281,6 +281,25 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(claim_response["status"], None)
         self.assertEqual(len(claim_response["events"]), 3)
 
+        # if we have another claim that is newer and completed, but resolved, ignore it.
+        logger.debug("🚀 ignore resolved claim")
+        # re-use the current session but  modify it to remove any cached claim id.
+        current_session = csrf_client.session
+        current_session["whoami"]["swa_code"] = swa.code
+        current_session["whoami"]["claimant_id"] = claimant.idp_user_xid
+        del current_session["whoami"]["claim_id"]
+        current_session.save()
+
+        completed_claim_uuid = str(claim.uuid)
+        resolved_claim = Claim(claimant=claimant, swa=swa)
+        resolved_claim.save()
+        resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        claim_response = response.json()
+        self.assertEqual(claim_response["id"], completed_claim_uuid)
+
         # only GET or POST allowed
         response = csrf_client.put(
             url, content_type="application/json", data={}, **headers
@@ -533,6 +552,7 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         claimant2.save()
         claim = Claim(claimant=claimant, swa=swa)
         claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
 
         finder = ClaimFinder(
             WhoAmI(
@@ -585,6 +605,21 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
             WhoAmI(email="foo@example.com", claim_id=str(uuid.uuid4()))
         )
         self.assertFalse(finder.find())
+
+        # multiple completed claims will ignore any resolved even if newer
+        claim2 = Claim(claimant=claimant, swa=swa)
+        claim2.save()
+        claim2.events.create(category=Claim.EventCategories.COMPLETED)
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant.idp_user_xid,
+                swa_code=swa.code,
+            )
+        )
+        self.assertEqual(claim2, finder.find())
+        claim2.events.create(category=Claim.EventCategories.RESOLVED)
+        self.assertEqual(claim, finder.find())
 
     def test_claim_request(self):
         idp = create_idp()

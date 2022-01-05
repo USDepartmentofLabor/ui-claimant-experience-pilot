@@ -43,6 +43,7 @@ class SWA(TimeStampedModel):
             .exclude(
                 events__category__in=[
                     Claim.EventCategories.FETCHED,
+                    Claim.EventCategories.RESOLVED,
                     Claim.EventCategories.DELETED,
                 ]
             )

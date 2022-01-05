@@ -246,6 +246,60 @@ class SwaTestCase(TestCase):
         resp = self.client.get("/swa/", HTTP_AUTHORIZATION=format_jwt(header_token))
         self.assertEqual(resp.status_code, 401)
 
+    def test_client_PATCH_v1_claim_resolved(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa(True)
+        claimant = create_claimant(idp)
+        claim = Claim(claimant=claimant, swa=swa)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+
+        # success
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"resolved": "my reason"},
+        )
+        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(claim.is_resolved())
+
+        # no reason
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"resolved": None},
+        )
+        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(claim.is_resolved())
+
+        # error saving
+        with patch("api.models.Claim.objects") as mocked_objects:
+            mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
+            mocked_claim.swa = swa
+            mocked_claim.events.create.side_effect = Exception("db error!")
+            mocked_objects.get.return_value = mocked_claim
+            header_token = generate_auth_token(private_key_jwk, swa.code)
+            with self.assertLogs(level="DEBUG") as cm:
+                response = self.client.patch(
+                    f"/swa/v1/claims/{claim.uuid}/",
+                    content_type="application/json",
+                    HTTP_AUTHORIZATION=format_jwt(header_token),
+                    data={"resolved": "my reason"},
+                )
+                self.assertEqual(
+                    response.json(),
+                    {"status": "error", "error": "failed to save change"},
+                )
+                self.assertEqual(response.status_code, 500)
+                # the -2 means our logging exception is the 2nd to last in the list
+                self.assertIn("ERROR:swa.views:db error!", cm.output[-2])
+
     def test_client_DELETE_v1_claim(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa(True)
@@ -350,6 +404,20 @@ class SwaTestCase(TestCase):
             content_type="application/json",
             HTTP_AUTHORIZATION=format_jwt(header_token),
             data={},
+        )
+        self.assertEqual(
+            response.json(),
+            {"status": "error", "error": "only one value expected in payload"},
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # unknown action
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.patch(
+            f"/swa/v1/claims/{claim.uuid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={"foo": "bar"},
         )
         self.assertEqual(
             response.json(), {"status": "error", "error": "unknown action"}

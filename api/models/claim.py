@@ -30,7 +30,7 @@ class Claim(TimeStampedModel):
         db_table = "claims"
 
     class EventCategories(models.IntegerChoices):
-        REUSE_ME = 1
+        RESOLVED = 1
         SUBMITTED = 2
         COMPLETED = 3
         FETCHED = 4
@@ -76,6 +76,9 @@ class Claim(TimeStampedModel):
 
     def is_completed(self):
         return self.events.filter(category=Claim.EventCategories.COMPLETED).count() > 0
+
+    def is_resolved(self):
+        return self.events.filter(category=Claim.EventCategories.RESOLVED).count() > 0
 
     def is_deleted(self):
         return self.events.filter(category=Claim.EventCategories.DELETED).count() > 0

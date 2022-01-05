@@ -31,6 +31,11 @@ When a SWA wants to remove a Claim from its queue of to-be-processed Claims, it 
 The `FETCHED` Event indicates that the SWA has taken ownership of the Claim. Claims with `COMPLETED` and `FETCHED` Events should
 not be returned as part of the SWA Claim queue.
 
+## RESOLVED
+
+When a SWA has reached the final state of a Claim in its system of record, it should mark the Claim as `RESOLVED` in the USDOL system.
+The `description` of the `RESOLVED` event is an optional string supplied by the SWA that should describe the reason for the resolution.
+
 ## DELETED
 
 When a SWA wants us to destroy the encrypted sensitive Claim data we have stored, then can send a `DELETE` HTTP request via our API.

@@ -35,6 +35,12 @@ class ClaimFinder(object):
         # revisit once we have multiple claims per claimant.
         return (
             Claim.objects.filter(swa=swa, claimant=claimant)
+            .exclude(
+                events__category__in=[
+                    Claim.EventCategories.FETCHED,
+                    Claim.EventCategories.RESOLVED,
+                ]
+            )
             .order_by("created_at")
             .last()
         )
