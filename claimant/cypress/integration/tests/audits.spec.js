@@ -29,7 +29,7 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
       "first-contentful-paint": 10000,
       "largest-contentful-paint": 10000,
       "cumulative-layout-shift": 0.1,
-      "total-blocking-time": 500,
+      "total-blocking-time": 1000,
     };
     const options = {};
     const config = {
