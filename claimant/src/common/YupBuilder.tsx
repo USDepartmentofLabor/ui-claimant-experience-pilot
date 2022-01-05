@@ -58,7 +58,9 @@ const YupBuilder = (
   Object.keys(schema.properties).forEach((prop) => {
     const propDef = schema.properties[prop] as SchemaProperty;
     if (propDef.required_for_swa) {
-      schema.required?.push(prop);
+      if (schema.required && !schema.required.includes(prop)) {
+        schema.required.push(prop);
+      }
     }
   });
   const derefSchema = jref.resolve(schema);

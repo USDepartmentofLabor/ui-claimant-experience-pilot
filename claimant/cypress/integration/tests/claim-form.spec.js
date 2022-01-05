@@ -105,4 +105,16 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_next();
     cy.contains("is required").should("be.visible");
   });
+
+  it("shows error if any field exceeds max length", () => {
+    cy.login(faker.internet.exampleEmail());
+    cy.visit("/claimant/");
+    cy.get("[name=claimant_name\\.first_name]")
+      .clear()
+      .type("1234567890".repeat(4))
+      .blur();
+    cy.contains("cannot exceed a maximum of 36 characters").should(
+      "be.visible"
+    );
+  });
 });

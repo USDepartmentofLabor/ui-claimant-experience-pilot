@@ -22,22 +22,29 @@ type ClaimantAddressValues = {
 
 export const CLAIMANT_ADDRESS_ADDITIONAL_VALIDATIONS = {
   LOCAL_mailing_address_same: yup
-    .string()
+    .boolean()
+    .default(false)
     .required(i18next.t("validation.required")),
 };
 
 export const ClaimantAddress = () => {
   const { t } = useTranslation("contact");
 
-  const { values } = useFormikContext<ClaimantAddressValues>();
+  const { values, setFieldValue } = useFormikContext<ClaimantAddressValues>();
 
+  // Reset mailing_address if unchecked
   useEffect(() => {
-    if (values.LOCAL_mailing_address_same) {
-      values.mailing_address = values.residence_address;
-    } else {
-      values.mailing_address = ADDRESS_SKELETON;
+    if (!values.LOCAL_mailing_address_same) {
+      setFieldValue("mailing_address", { ...ADDRESS_SKELETON });
     }
   }, [values.LOCAL_mailing_address_same]);
+
+  // Keep mailing_address synchronized if checked
+  useEffect(() => {
+    if (values.LOCAL_mailing_address_same) {
+      setFieldValue("mailing_address", { ...values.residence_address });
+    }
+  }, [values.LOCAL_mailing_address_same, values.residence_address]);
 
   return (
     <>
