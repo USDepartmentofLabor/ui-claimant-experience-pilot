@@ -30,6 +30,7 @@ from core.claim_encryption import (
 from core.claim_storage import ClaimReader
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI
+from .claim_cleaner import ClaimCleaner
 
 
 logger = logging.getLogger("api.tests")
@@ -161,6 +162,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "LOCAL_mailing_address_same": False,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -196,6 +198,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "email": "someone@example.com",
             "mailing_address": MAILING_ADDRESS,
             "residence_address": RESIDENCE_ADDRESS,
+            "LOCAL_mailing_address_same": False,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -218,6 +221,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
+        self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
 
     def test_completed_claim_with_csrf(self):
         idp = create_idp()
@@ -706,10 +710,10 @@ class ClaimValidatorTestCase(TestCase):
             json_str = f.read()
         example_claim = json_decode(json_str)
         cv = ClaimValidator(example_claim)
-        logger.debug("errors={}".format(cv.errors_as_dict()))
+        logger.debug("🚀 partial errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
-        ccv = CompletedClaimValidator(example_claim)
-        logger.debug("errors={}".format(ccv.errors_as_dict()))
+        ccv = CompletedClaimValidator(ClaimCleaner(example_claim).cleaned())
+        logger.debug("🚀 complete errors={}".format(ccv.errors_as_dict()))
         self.assertTrue(ccv.valid)
 
     def base_claim(self):
@@ -728,6 +732,35 @@ class ClaimValidatorTestCase(TestCase):
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "employers": [
+                {
+                    "name": "ACME Stuff",
+                    "days_employed": 123,
+                    "LOCAL_still_working": "no",
+                    "first_work_date": "2020-02-02",
+                    "last_work_date": "2020-11-30",
+                    "recall_date": "2020-12-13",
+                    "fein": "00-1234567",
+                    "address": {
+                        "address1": "999 Acme Way",
+                        "address2": "Suite 888",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-9999",
+                    },
+                    "LOCAL_same_address": "no",
+                    "work_site_address": {
+                        "address1": "888 Sun Ave",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-8888",
+                    },
+                    "LOCAL_same_phone": "yes",
+                    "phones": [{"number": "555-555-1234", "sms": False}],
+                    "separation_reason": "Layed off",
+                    "separation_comment": "they ran out of money",
+                }
+            ],
         }
 
     def test_claim_validator(self):
@@ -842,6 +875,7 @@ class ClaimValidatorTestCase(TestCase):
             "validated_at": timezone.now().isoformat(),
         }
         cv = CompletedClaimValidator(claim)
+        logger.debug("🚀 LOCAL_")
         logger.debug(cv.errors_as_dict())
         self.assertTrue(cv.valid)
 

@@ -14,7 +14,6 @@ import {
 } from "../../utils/claim_form";
 import { Trans, useTranslation } from "react-i18next";
 import YupBuilder from "../../common/YupBuilder";
-import * as yup from "yup";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -66,7 +65,6 @@ export const ClaimForm = () => {
   const {
     schemaFields,
     Component: CurrentPage,
-    additionalValidations,
     repeatable,
     nextSegment,
     previousSegment,
@@ -118,11 +116,7 @@ export const ClaimForm = () => {
       </Button>
     );
 
-  const jsonValidationSchema = YupBuilder("claim-v1.0", schemaFields);
-  const validationSchema =
-    additionalValidations && jsonValidationSchema
-      ? yup.object().shape(additionalValidations).concat(jsonValidationSchema)
-      : jsonValidationSchema;
+  const validationSchema = YupBuilder("claim-v1.0", schemaFields);
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;

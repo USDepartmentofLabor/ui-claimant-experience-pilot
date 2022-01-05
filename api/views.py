@@ -14,6 +14,7 @@ from .decorators import verified_claimant_session
 from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator, CompletedClaimValidator
+from .claim_cleaner import ClaimCleaner
 from .models import Claim
 from .whoami import WhoAmI
 from core.email import InitialClaimConfirmationEmail
@@ -210,6 +211,7 @@ def POST_completed_claim(request):
         )
 
     # validate with complete schema
+    claim_request.payload = ClaimCleaner(claim_request.payload).cleaned()
     claim_validator = CompletedClaimValidator(claim_request.payload)
     if not claim_validator.valid:
         return invalid_claim_response(claim_validator)

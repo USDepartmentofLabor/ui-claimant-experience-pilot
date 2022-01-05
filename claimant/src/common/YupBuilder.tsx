@@ -31,10 +31,11 @@ const schemaConfigs: SchemaConfig = {
 };
 
 type SchemaProperty = {
-  required_for_swa?: boolean;
-  type?: string;
-  $ref?: string;
   description?: string;
+  $ref?: string;
+  type?: string;
+  required_for_complete?: boolean;
+  required_for_partial?: boolean;
 };
 
 const YupBuilder = (
@@ -53,11 +54,12 @@ const YupBuilder = (
       }
     });
   }
-  // any properties left in the schema that are marked required_for_swa
-  // should be added to the top-level required attribute to trigger validation
+  // any properties left in the schema that are marked required for partial or
+  // complete submission should be added to the top-level required attribute to
+  // trigger validation
   Object.keys(schema.properties).forEach((prop) => {
     const propDef = schema.properties[prop] as SchemaProperty;
-    if (propDef.required_for_swa) {
+    if (propDef.required_for_complete || propDef.required_for_partial) {
       if (schema.required && !schema.required.includes(prop)) {
         schema.required.push(prop);
       }

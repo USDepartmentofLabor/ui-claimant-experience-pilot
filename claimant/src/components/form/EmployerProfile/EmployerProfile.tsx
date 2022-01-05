@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import { ErrorMessage, FormGroup, Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
-import * as yup from "yup";
-import i18next from "i18next";
 import TextField from "../fields/TextField/TextField";
 import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 import { DatePicker } from "../fields/DatePicker/DatePicker";
@@ -14,13 +12,6 @@ import { formatUserInputDate } from "../../../utils/format";
 interface IEmployerProfileProps {
   segment: string;
 }
-
-// TODO how to implement these per employer when our schema-fed yup validation
-// operated on an array (employers=[])
-const local_validations = {
-  LOCAL_same_phone: yup.string().required(i18next.t("validation.required")),
-  LOCAL_same_address: yup.string().required(i18next.t("validation.required")),
-};
 
 export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
@@ -61,7 +52,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
     // touched,
     errors,
     employerErrors,
-    local_validations,
     // touchedEmployer,
   });
 

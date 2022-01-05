@@ -192,10 +192,12 @@ Cypress.Commands.add("complete_claimant_names", (claimant) => {
   cy.get("[name=claimant_name\\.first_name]").type(claimant.first_name);
   cy.get("[name=claimant_name\\.last_name]").type(claimant.last_name);
   if (claimant.alternate_names) {
-    cy.get("input[id=claimant_has_alternate_names\\.yes").parent().click();
+    cy.get("input[id=LOCAL_claimant_has_alternate_names\\.yes")
+      .parent()
+      .click();
     // TODO handle alternate_names
   } else {
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
+    cy.get("input[id=LOCAL_claimant_has_alternate_names\\.no").parent().click();
   }
 });
 
