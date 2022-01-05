@@ -4,6 +4,7 @@ import * as yup from "yup";
 import userEvent from "@testing-library/user-event";
 
 import { Name } from "./Name";
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -25,7 +26,7 @@ describe("Name component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <Name id={claimantName} name={claimantName} />
       </Formik>
     );
@@ -67,7 +68,7 @@ describe("Name component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <Name id={claimantName} name={claimantName} />
       </Formik>
     );
@@ -103,7 +104,7 @@ describe("Name component", () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={() => undefined}
+        onSubmit={noop}
       >
         <Name id={claimantName} name={claimantName} />
       </Formik>

@@ -3,12 +3,12 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
 import YupBuilder from "../../../common/YupBuilder";
 import { EmployerInformationPage } from "../../../pages/Questions/EmployerInformation/EmployerInformation";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Employer Profile",
   component: EmployerProfile,
 } as ComponentMeta<typeof EmployerProfile>;
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof EmployerProfile> = () => {
   const validationSchema = YupBuilder(

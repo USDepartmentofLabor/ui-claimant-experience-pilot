@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 
 import { DemographicInformation } from "./DemographicInformation";
 import claimForm from "../../../i18n/en/claimForm";
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -25,7 +26,7 @@ describe("DemographicInformation component", () => {
 
   it("renders properly", () => {
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <DemographicInformation />
       </Formik>
     );
@@ -63,7 +64,7 @@ describe("DemographicInformation component", () => {
   describe("sex", () => {
     it("Can check one radio button at a time", async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <DemographicInformation />
         </Formik>
       );
@@ -85,7 +86,7 @@ describe("DemographicInformation component", () => {
   describe("race", () => {
     it("Allows selection of multiple races", async () => {
       const { getByLabelText } = render(
-        <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <DemographicInformation />
         </Formik>
       );
@@ -122,7 +123,7 @@ describe("DemographicInformation component", () => {
   describe("ethnicity", () => {
     it("Allows selection of ethnicity", async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <DemographicInformation />
         </Formik>
       );
@@ -145,7 +146,7 @@ describe("DemographicInformation component", () => {
   describe("education level", () => {
     it("Allows selection of an education level", async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={() => undefined}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <DemographicInformation />
         </Formik>
       );

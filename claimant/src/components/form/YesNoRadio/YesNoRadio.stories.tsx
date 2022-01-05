@@ -3,8 +3,7 @@ import { Form, Formik } from "formik";
 import { Fieldset } from "@trussworks/react-uswds";
 
 import { YesNoRadio } from "./YesNoRadio";
-
-const noop = () => undefined;
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Yes-No Radio",

@@ -3,8 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { Formik } from "formik";
 
 import { CheckboxGroupField } from "./CheckboxGroupField";
-
-const noop = () => undefined;
+import { noop } from "../../../../testUtils/noop";
 
 const checkboxOptions = [
   {

@@ -6,13 +6,12 @@ import {
   DemographicInformationPage,
 } from "./DemographicInformation";
 import YupBuilder from "../../../common/YupBuilder";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Demographic Info",
   component: DemographicInformation,
 } as ComponentMeta<typeof DemographicInformation>;
-
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof DemographicInformation> = () => {
   const validationSchema = YupBuilder(

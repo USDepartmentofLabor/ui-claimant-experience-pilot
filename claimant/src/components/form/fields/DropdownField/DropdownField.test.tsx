@@ -2,8 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { Formik } from "formik";
 import DropdownField from "./DropdownField";
-
-const noop = () => undefined;
+import { noop } from "../../../../testUtils/noop";
 
 describe("dropdownField component", () => {
   it("renders the elements that make up a field", () => {

@@ -3,8 +3,7 @@ import { act, render } from "@testing-library/react";
 
 import { YesNoRadio } from "./YesNoRadio";
 import userEvent from "@testing-library/user-event";
-
-const noop = () => undefined;
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
