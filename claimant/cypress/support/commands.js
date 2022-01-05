@@ -60,6 +60,7 @@ Cypress.Commands.add("post_login", (email) => {
     email: email || "someone@example.com",
     ssn: "900-00-1234",
     birthdate: "2000-01-01",
+    IAL: "2",
     swa_code: "XX",
   });
 });
@@ -76,6 +77,7 @@ Cypress.Commands.add("mock_login", () => {
       swa_claimant_url: "https://some-state.fake.url/",
       claimant_id: "the-claimant-id",
       ssn: "900-00-1234",
+      IAL: "2",
       birthdate: "2000-01-01",
     });
   }).as("api-whoami");

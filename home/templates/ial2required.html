@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block content %} {% load i18n %}
+<main role="main">
+  <section class="grid-container usa-section">
+    <div class="grid-row grid-gap">
+      <div class="tablet:grid-col-4">
+        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
+          {% translate "Apply and verify later" %}
+        </h2>
+      </div>
+      <div class="tablet:grid-col-8 usa-prose">
+        <p>
+          <!-- prettier-ignore -->
+          {% translate "If you could not reach IAL2, you can proceed with the form and try again later." %}
+        </p>
+        <p>
+          <a href="{{ base_url }}/{{ idp_path }}/?ial=1"
+            >{% translate "Click here to apply" %}</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

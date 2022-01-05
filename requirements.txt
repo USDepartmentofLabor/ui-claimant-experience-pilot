@@ -12,7 +12,7 @@ git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
 jsonschema[format]==4.3.3
 jwcrypto==1.0
 git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu-fernet-serializers
-git+https://github.com/trussworks/logindotgov-oidc-py.git@ec548a7#egg=logindotgov-oidc
+git+https://github.com/trussworks/logindotgov-oidc-py.git@ff98d3b#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0
 redis==4.1.0

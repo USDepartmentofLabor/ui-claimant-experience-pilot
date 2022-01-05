@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 import logging
 import secrets
 import os
-from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2
+from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider
 from django.conf import settings
@@ -39,6 +39,16 @@ def explain(request):
     return JsonResponse(this_session)
 
 
+# if for any reason the claimant could not reach IAL2, they are redirected here.
+@never_cache
+def ial2required(request):
+    # if we already have a verified session, redirect to frontend app
+    if request.session.get("verified"):
+        return redirect("/")
+
+    return redirect("/ial2required/?idp=logindotgov")
+
+
 @never_cache
 def index(request):
     # if we already have a verified session, redirect to frontend app
@@ -49,17 +59,29 @@ def index(request):
     if "swa" in request.GET:
         request.session["swa"] = request.GET["swa"]
 
+    ial = 2
+    if "ial" in request.GET and int(request.GET["ial"]) == 1:
+        ial = 1
+    request.session["IAL"] = ial
+
     # otherwise, initiate login.gov session
     # create our session with a "state" we can use to track IdP response.
     state = secrets.token_hex(11)
     nonce = secrets.token_hex(11)
     client = logindotgov_client()
+    if ial == 2:
+        scopes = settings.LOGIN_DOT_GOV_SCOPES
+        acrs = IAL2
+    else:
+        scopes = ["openid", "email"]  # the most we can get
+        acrs = IAL1
+
     login_url = client.build_authorization_url(
         state=state,
         nonce=nonce,
         redirect_uri=settings.LOGIN_DOT_GOV_REDIRECT_URI,
-        acrs=IAL2,
-        scopes=settings.LOGIN_DOT_GOV_SCOPES,
+        acrs=acrs,
+        scopes=scopes,
     )
 
     logger.debug("redirect {}".format(login_url))
@@ -72,6 +94,9 @@ def index(request):
 # OIDC OP redirects here after auth attempt
 @never_cache
 def result(request):
+    if "IAL" not in request.session:
+        return redirect("/")
+
     client = logindotgov_client()
     try:
         auth_code, auth_state = client.validate_code_and_state(request.GET)
@@ -101,8 +126,6 @@ def result(request):
 
     userinfo = client.get_userinfo(tokens["access_token"])
 
-    # logger.debug("userinfo={}".format(pprint.pformat(userinfo)))
-
     logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
     idp_user_xid = hash_idp_user_xid(userinfo["sub"])
     claimant, _ = Claimant.objects.get_or_create(
@@ -112,12 +135,13 @@ def result(request):
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
     whoami = WhoAmI(
-        first_name=userinfo["given_name"],
-        last_name=userinfo["family_name"],
-        birthdate=userinfo["birthdate"],
-        ssn=userinfo["social_security_number"],
+        IAL=request.session["IAL"],
+        first_name=userinfo.get("given_name", ""),
+        last_name=userinfo.get("family_name", ""),
+        birthdate=userinfo.get("birthdate", ""),
+        ssn=userinfo.get("social_security_number", ""),
         email=userinfo["email"],
-        phone=userinfo["phone"],
+        phone=userinfo.get("phone", ""),
         claimant_id=idp_user_xid,
     )
     request.session["whoami"] = whoami.as_dict()
