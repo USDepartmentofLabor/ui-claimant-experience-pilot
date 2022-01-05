@@ -264,7 +264,7 @@ smtp-server: ## Starts the debugging SMTP server
 	python -m smtpd -n -c DebuggingServer 0.0.0.0:1025
 
 security: ## Run all security scans
-	bandit -x ./.venv -r .
+	bandit -x ./.venv,./$(REACT_APP) -r .
 	safety check
 	cd $(REACT_APP) && make security
 
