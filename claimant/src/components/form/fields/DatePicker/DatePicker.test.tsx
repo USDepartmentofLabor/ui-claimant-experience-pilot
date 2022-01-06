@@ -2,8 +2,7 @@ import React from "react";
 import { Formik } from "formik";
 import { render } from "@testing-library/react";
 import { DatePicker } from "./DatePicker";
-
-const noop = () => undefined;
+import { noop } from "../../../../testUtils/noop";
 
 describe("DatePicker", () => {
   it("renders", () => {

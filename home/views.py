@@ -45,6 +45,18 @@ def logout(request):
     return redirect("/")
 
 
+def ial2required(request):
+    return render(
+        None,
+        "ial2required.html",
+        {
+            "base_url": base_url(request),
+            "swas": active_swas_ordered_by_name(),
+            "idp_path": request.GET.get("idp", "logindotgov"),
+        },
+    )
+
+
 def test(request):  # pragma: no cover
     request.session.set_test_cookie()
     this_session = session_as_dict(request)

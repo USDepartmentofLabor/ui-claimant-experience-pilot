@@ -3,6 +3,7 @@ import { act } from "react-dom/test-utils";
 import { Formik } from "formik";
 import { EmployerProfile } from "./EmployerProfile";
 import userEvent from "@testing-library/user-event";
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -15,7 +16,7 @@ jest.mock("react-i18next", () => ({
 describe("EmployerProfile component", () => {
   it("renders properly", () => {
     const { getByLabelText, getByRole } = render(
-      <Formik initialValues={{}} onSubmit={() => undefined}>
+      <Formik initialValues={{}} onSubmit={noop}>
         <EmployerProfile segment="0" />
       </Formik>
     );
@@ -58,7 +59,7 @@ describe("EmployerProfile component", () => {
   describe("hidden fields appear upon particular boolean selection", () => {
     it("displays the end date for this employer field only when NO is selected", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={() => undefined}>
+        <Formik initialValues={{}} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );
@@ -78,7 +79,7 @@ describe("EmployerProfile component", () => {
 
     it("displays location when claimant says 'no' to working at same address as employer", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={() => undefined}>
+        <Formik initialValues={{}} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );
@@ -99,7 +100,7 @@ describe("EmployerProfile component", () => {
     });
     it("displays work site phone field when user chooses 'no' to same phone number", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={() => undefined}>
+        <Formik initialValues={{}} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );

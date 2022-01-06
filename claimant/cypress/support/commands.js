@@ -60,6 +60,7 @@ Cypress.Commands.add("post_login", (email) => {
     email: email || "someone@example.com",
     ssn: "900-00-1234",
     birthdate: "2000-01-01",
+    IAL: "2",
     swa_code: "XX",
   });
 });
@@ -76,6 +77,7 @@ Cypress.Commands.add("mock_login", () => {
       swa_claimant_url: "https://some-state.fake.url/",
       claimant_id: "the-claimant-id",
       ssn: "900-00-1234",
+      IAL: "2",
       birthdate: "2000-01-01",
     });
   }).as("api-whoami");
@@ -190,10 +192,12 @@ Cypress.Commands.add("complete_claimant_names", (claimant) => {
   cy.get("[name=claimant_name\\.first_name]").type(claimant.first_name);
   cy.get("[name=claimant_name\\.last_name]").type(claimant.last_name);
   if (claimant.alternate_names) {
-    cy.get("input[id=claimant_has_alternate_names\\.yes").parent().click();
+    cy.get("input[id=LOCAL_claimant_has_alternate_names\\.yes")
+      .parent()
+      .click();
     // TODO handle alternate_names
   } else {
-    cy.get("input[id=claimant_has_alternate_names\\.no").parent().click();
+    cy.get("input[id=LOCAL_claimant_has_alternate_names\\.no").parent().click();
   }
 });
 

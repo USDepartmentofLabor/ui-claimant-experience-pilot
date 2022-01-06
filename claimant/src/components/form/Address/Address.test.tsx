@@ -2,6 +2,7 @@ import { render } from "@testing-library/react";
 import { Formik } from "formik";
 
 import { Address } from "./Address";
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -26,7 +27,7 @@ describe("Address component", () => {
     const stateSlice = ["AL", "WY"];
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <Address basename={basename} stateSlice={stateSlice} />
       </Formik>
     );
@@ -66,7 +67,7 @@ describe("Address component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <Address basename={basename} />
       </Formik>
     );
@@ -102,7 +103,7 @@ describe("Address component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <Address basename={basename} labels={myLabels} />
       </Formik>
     );

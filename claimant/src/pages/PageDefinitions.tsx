@@ -4,13 +4,11 @@ import { EmployerInformationPage } from "./Questions/EmployerInformation/Employe
 import { SubmitPage } from "./Questions/Submit/Submit";
 import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
-import { ObjectShape } from "yup/lib/object";
 
 export interface IPageDefinition {
   path: string;
   schemaFields: ClaimSchemaField[];
   initialValues: FormValues;
-  additionalValidations?: ObjectShape;
   Component: FC<PageProps>;
   repeatable?: (
     currentSegment: string | undefined,

@@ -55,7 +55,7 @@ type StateType = {
 
 type ClaimantNamesType = {
   claimant_name?: PersonName;
-  claimant_has_alternate_names?: YesNo;
+  LOCAL_claimant_has_alternate_names?: YesNo;
   alternate_names?: PersonName[];
 };
 

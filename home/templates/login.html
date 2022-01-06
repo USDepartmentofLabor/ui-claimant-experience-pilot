@@ -26,22 +26,20 @@
           <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="last_name" label="Last Name" %}
 
-          <label class="usa-label" for="email">
-            Email
-            <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
-          </label>
-          <input
-            class="usa-input"
-            type="text"
-            id="email"
-            name="email"
-            required
-          />
+          <label class="usa-label" for="IAL"
+            >Identity Assurance Level (IAL)</label
+          >
+          <select name="IAL" class="usa-select">
+            <option selected value="2">2</option>
+            <option value="1">1</option>
+          </select>
 
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate" %}
+          {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="ssn" label="SSN" %}
+          {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate" required=True %}
+          <!-- prettier-ignore -->
+          {% include "uswds/_text_field.html" with id="ssn" label="SSN" required=True %}
           <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="phone" label="Phone" %}
 

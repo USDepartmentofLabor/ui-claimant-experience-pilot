@@ -1,34 +1,20 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
 
-import {
-  CLAIMANT_NAMES_ADDITIONAL_VALIDATIONS,
-  CLAIMANT_NAMES_SCHEMA_FIELDS,
-  ClaimantNames,
-} from "./ClaimantNames";
+import { CLAIMANT_NAMES_SCHEMA_FIELDS, ClaimantNames } from "./ClaimantNames";
 import YupBuilder from "../../../common/YupBuilder";
-import * as yup from "yup";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Claimant Names",
   component: ClaimantNames,
 } as ComponentMeta<typeof ClaimantNames>;
 
-const noop = () => undefined;
-
 const Template: ComponentStory<typeof ClaimantNames> = () => {
-  const additionalValidationsSchema = yup
-    .object()
-    .shape(CLAIMANT_NAMES_ADDITIONAL_VALIDATIONS);
-
-  const jsonSchemaValidationSchema = YupBuilder(
+  const validationSchema = YupBuilder(
     "claim-v1.0",
     CLAIMANT_NAMES_SCHEMA_FIELDS
   );
-
-  const validationSchema = jsonSchemaValidationSchema
-    ? additionalValidationsSchema.concat(jsonSchemaValidationSchema)
-    : additionalValidationsSchema;
 
   const initialValues = {
     claimant_name: {
@@ -36,7 +22,7 @@ const Template: ComponentStory<typeof ClaimantNames> = () => {
       middle_name: "",
       last_name: "",
     },
-    claimant_has_alternate_names: undefined,
+    LCOAL_claimant_has_alternate_names: undefined,
     alternate_names: [],
   };
   ``;

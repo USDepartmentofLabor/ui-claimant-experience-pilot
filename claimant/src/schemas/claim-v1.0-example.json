@@ -12,18 +12,20 @@
     "middle_name": "Rockstar",
     "suffix": "Jr."
   },
-  "mailing_address": {
-    "address1": "123 Any St",
-    "city": "Somewhere",
-    "state": "KS",
-    "zipcode": "00000"
-  },
+  "LOCAL_claimant_has_alternate_names": "no",
   "residence_address": {
     "address1": "456 Main Ave",
     "address2": "Apartment 789",
     "city": "Elsewhere",
     "state": "MO",
     "zipcode": "00000-1234"
+  },
+  "LOCAL_mailing_address_same": false,
+  "mailing_address": {
+    "address1": "123 Any St",
+    "city": "Somewhere",
+    "state": "KS",
+    "zipcode": "00000"
   },
   "sex": "female",
   "race": ["black", "asian"],
@@ -84,6 +86,7 @@
     {
       "name": "ACME Stuff",
       "days_employed": 123,
+      "LOCAL_still_working": "no",
       "first_work_date": "2020-02-02",
       "last_work_date": "2020-11-30",
       "recall_date": "2020-12-13",
@@ -95,12 +98,14 @@
         "state": "KS",
         "zipcode": "11111-9999"
       },
+      "LOCAL_same_address": "no",
       "work_site_address": {
         "address1": "888 Sun Ave",
         "city": "Elsewhere",
         "state": "KS",
         "zipcode": "11111-8888"
       },
+      "LOCAL_same_phone": "yes",
       "phones": [
         {
           "number": "555-555-1234",

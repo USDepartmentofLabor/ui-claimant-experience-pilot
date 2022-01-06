@@ -6,6 +6,9 @@ from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
 from api.models import IdentityProvider
+import logging
+
+logger = logging.getLogger(__name__)
 
 # set up the mock OIDC server
 MockServer.register_client(
@@ -57,8 +60,43 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get("/logindotgov/explain")
         explained = response.json()
         whoami = explained["whoami"]
+        logger.debug("whoami={}".format(whoami))
         self.assertEquals(explained["verified"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
+        self.assertEquals(whoami["IAL"], 2)
+        self.assertTrue(whoami["first_name"])
+        self.assertTrue(whoami["last_name"])
+        self.assertTrue(whoami["ssn"])
+        self.assertTrue(whoami["birthdate"])
+        self.assertTrue(whoami["phone"])
+
+    @override_settings(DEBUG=True)  # so that /explain works
+    def test_ial1(self):
+        # ial == 2 unless explicitly == 1
+        response = self.client.get("/logindotgov/?ial=0")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 2)
+
+        response = self.client.get("/logindotgov/?ial=1")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 1)
+
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(response, "/logindotgov/explain", status_code=302)
+
+        # confirm our session looks as we expect
+        response = self.client.get("/logindotgov/explain")
+        explained = response.json()
+        whoami = explained["whoami"]
+        self.assertEquals(explained["verified"], True)
+        self.assertEquals(whoami["email"], "you@example.gov")
+        self.assertEquals(whoami["IAL"], 1)
+        self.assertFalse(whoami["first_name"])
+        self.assertFalse(whoami["last_name"])
+        self.assertFalse(whoami["ssn"])
+        self.assertFalse(whoami["birthdate"])
+        self.assertFalse(whoami["phone"])
 
     def test_session_verified(self):
         session = self.client.session
@@ -109,6 +147,15 @@ class LoginDotGovTestCase(TestCase):
         self.assertEquals(response.status_code, 403)
         self.assertEquals(response.content.decode("utf-8"), "Error exchanging token")
 
+        # ial missing from session
+        session = self.client.session
+        del session["IAL"]
+        session.save()
+        response = self.client.get("/logindotgov/result")
+        self.assertRedirects(
+            response, "/", status_code=302, fetch_redirect_response=False
+        )
+
     def test_redirect_to(self):
         session = self.client.session
         session["redirect_to"] = "/some/place/else"
@@ -122,6 +169,24 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertRedirects(
             response, "/some/place/else", status_code=302, fetch_redirect_response=False
+        )
+
+    # this is the "escape" url from login.gov where users can opt-out of proofing
+    def test_ial2required(self):
+        response = self.client.get("/logindotgov/ial2required")
+        self.assertRedirects(
+            response,
+            "/ial2required/?idp=logindotgov",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+        session = self.client.session
+        session["verified"] = True
+        session.save()
+        response = self.client.get("/logindotgov/ial2required")
+        self.assertRedirects(
+            response, "/", status_code=302, fetch_redirect_response=False
         )
 
     def test_swa_selection(self):

@@ -30,6 +30,7 @@ from core.claim_encryption import (
 from core.claim_storage import ClaimReader
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI
+from .claim_cleaner import ClaimCleaner
 
 
 logger = logging.getLogger("api.tests")
@@ -161,6 +162,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "LOCAL_mailing_address_same": False,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -196,6 +198,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "email": "someone@example.com",
             "mailing_address": MAILING_ADDRESS,
             "residence_address": RESIDENCE_ADDRESS,
+            "LOCAL_mailing_address_same": False,
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -218,6 +221,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
+        self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
 
     def test_completed_claim_with_csrf(self):
         idp = create_idp()
@@ -280,6 +284,25 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(claim_response["id"], str(claim.uuid))
         self.assertEqual(claim_response["status"], None)
         self.assertEqual(len(claim_response["events"]), 3)
+
+        # if we have another claim that is newer and completed, but resolved, ignore it.
+        logger.debug("🚀 ignore resolved claim")
+        # re-use the current session but  modify it to remove any cached claim id.
+        current_session = csrf_client.session
+        current_session["whoami"]["swa_code"] = swa.code
+        current_session["whoami"]["claimant_id"] = claimant.idp_user_xid
+        del current_session["whoami"]["claim_id"]
+        current_session.save()
+
+        completed_claim_uuid = str(claim.uuid)
+        resolved_claim = Claim(claimant=claimant, swa=swa)
+        resolved_claim.save()
+        resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        claim_response = response.json()
+        self.assertEqual(claim_response["id"], completed_claim_uuid)
 
         # only GET or POST allowed
         response = csrf_client.put(
@@ -533,6 +556,7 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         claimant2.save()
         claim = Claim(claimant=claimant, swa=swa)
         claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
 
         finder = ClaimFinder(
             WhoAmI(
@@ -585,6 +609,21 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
             WhoAmI(email="foo@example.com", claim_id=str(uuid.uuid4()))
         )
         self.assertFalse(finder.find())
+
+        # multiple completed claims will ignore any resolved even if newer
+        claim2 = Claim(claimant=claimant, swa=swa)
+        claim2.save()
+        claim2.events.create(category=Claim.EventCategories.COMPLETED)
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant.idp_user_xid,
+                swa_code=swa.code,
+            )
+        )
+        self.assertEqual(claim2, finder.find())
+        claim2.events.create(category=Claim.EventCategories.RESOLVED)
+        self.assertEqual(claim, finder.find())
 
     def test_claim_request(self):
         idp = create_idp()
@@ -671,10 +710,10 @@ class ClaimValidatorTestCase(TestCase):
             json_str = f.read()
         example_claim = json_decode(json_str)
         cv = ClaimValidator(example_claim)
-        logger.debug("errors={}".format(cv.errors_as_dict()))
+        logger.debug("🚀 partial errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
-        ccv = CompletedClaimValidator(example_claim)
-        logger.debug("errors={}".format(ccv.errors_as_dict()))
+        ccv = CompletedClaimValidator(ClaimCleaner(example_claim).cleaned())
+        logger.debug("🚀 complete errors={}".format(ccv.errors_as_dict()))
         self.assertTrue(ccv.valid)
 
     def base_claim(self):
@@ -693,6 +732,35 @@ class ClaimValidatorTestCase(TestCase):
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "employers": [
+                {
+                    "name": "ACME Stuff",
+                    "days_employed": 123,
+                    "LOCAL_still_working": "no",
+                    "first_work_date": "2020-02-02",
+                    "last_work_date": "2020-11-30",
+                    "recall_date": "2020-12-13",
+                    "fein": "00-1234567",
+                    "address": {
+                        "address1": "999 Acme Way",
+                        "address2": "Suite 888",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-9999",
+                    },
+                    "LOCAL_same_address": "no",
+                    "work_site_address": {
+                        "address1": "888 Sun Ave",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-8888",
+                    },
+                    "LOCAL_same_phone": "yes",
+                    "phones": [{"number": "555-555-1234", "sms": False}],
+                    "separation_reason": "Layed off",
+                    "separation_comment": "they ran out of money",
+                }
+            ],
         }
 
     def test_claim_validator(self):
@@ -807,6 +875,7 @@ class ClaimValidatorTestCase(TestCase):
             "validated_at": timezone.now().isoformat(),
         }
         cv = CompletedClaimValidator(claim)
+        logger.debug("🚀 LOCAL_")
         logger.debug(cv.errors_as_dict())
         self.assertTrue(cv.valid)
 

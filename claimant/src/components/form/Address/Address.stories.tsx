@@ -4,13 +4,12 @@ import * as yup from "yup";
 
 import Address from "./Address";
 import { useTranslation } from "react-i18next";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Address",
   component: Address,
 } as ComponentMeta<typeof Address>;
-
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof Address> = (args) => {
   const { t } = useTranslation("home");

@@ -35,7 +35,20 @@
       "$id": "/definitions/address",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$anchor": "#/definitions/address",
-      "type": ["object", "null"],
+      "type": "object",
+      "properties": {
+        "address1": { "type": "string", "maxLength": 64 },
+        "address2": { "type": "string", "maxLength": 64 },
+        "city": { "type": "string", "maxLength": 64 },
+        "state": { "$ref": "#/definitions/state" },
+        "zipcode": { "type": "string", "maxLength": 12 }
+      },
+      "required": ["address1", "city", "state", "zipcode"]
+    },
+    "optionaladdress": {
+      "$id": "/definitions/optionaladdress",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": ["object", null],
       "properties": {
         "address1": { "type": "string", "maxLength": 64 },
         "address2": { "type": "string", "maxLength": 64 },
@@ -71,15 +84,26 @@
         "recall_date": { "type": "string", "format": "date" },
         "fein": { "type": "string", "pattern": "^[0-9]{2}-[0-9]{7}$" },
         "address": { "$ref": "#/definitions/address" },
-        "work_site_address": { "$ref": "#/definitions/address" },
+        "work_site_address": { "$ref": "#/definitions/optionaladdress" },
         "phones": {
           "type": "array",
           "items": { "$ref": "#/definitions/phone" }
         },
         "separation_reason": { "type": "string", "maxLength": 255 },
-        "separation_comment": { "type": "string", "maxLength": 1024 }
+        "separation_comment": { "type": "string", "maxLength": 1024 },
+        "LOCAL_still_working": { "type": "string", "enum": ["yes", "no"] },
+        "LOCAL_same_address": { "type": "string", "enum": ["yes", "no"] },
+        "LOCAL_same_phone": { "type": "string", "enum": ["yes", "no"] }
       },
-      "required": ["name", "address", "first_work_date", "phones"]
+      "required": [
+        "name",
+        "address",
+        "first_work_date",
+        "phones",
+        "LOCAL_still_working",
+        "LOCAL_same_address",
+        "LOCAL_same_phone"
+      ]
     },
     "citizenship": {
       "$id": "/definitions/citizenship",
@@ -252,22 +276,22 @@
       "description": "Unique identifier for the Claim",
       "type": "string",
       "format": "uuid",
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "claimant_id": {
       "description": "Identifier for the Claimant. Unique to the Identity Provider used.",
       "type": "string",
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "identity_provider": {
       "description": "Name of the Identity Provider used to authenticate the Claimant",
       "type": "string",
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "swa_code": {
       "description": "2-letter code identifying the State Workforce Agency",
       "type": "string",
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "validated_at": {
       "description": "Datetime of the last time the Claim was validated against this schema",
@@ -279,15 +303,21 @@
       "type": "string"
     },
     "is_complete": {
-      "description": "Meta field to indicate that the required_for_swa attribute should be applied",
+      "description": "Meta field to indicate that the required_for_complete attribute should be applied",
       "type": "boolean"
     },
     "claimant_name": {
       "description": "Claimant's name",
       "$ref": "#/definitions/person_name"
     },
+    "LOCAL_claimant_has_alternate_names": {
+      "description": "Whether or not the claimant has used alternate names in the last (n) months",
+      "type": "string",
+      "enum": ["yes", "no"],
+      "required_for_partial": true
+    },
     "alternate_names": {
-      "description": "Alternate names used by the claimant in the last 18 months",
+      "description": "Alternate names used by the claimant in the last (n) months",
       "type": "array",
       "items": { "$ref": "#/definitions/person_name" }
     },
@@ -295,13 +325,13 @@
       "description": "Date of birth",
       "type": "string",
       "format": "date",
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
       "enum": ["male", "female"],
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "race": {
       "description": "",
@@ -316,13 +346,13 @@
           "white"
         ]
       },
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "ethnicity": {
       "description": "",
       "type": "string",
       "enum": ["opt_out", "hispanic", "not_hispanic"],
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "phones": {
       "description": "",
@@ -338,62 +368,72 @@
       "description": "Required per 20 CFR 603.3",
       "type": "string",
       "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "currently_reside_in_us": {
       "description": "Required per 20 CFR Appendix A to Part 625",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "employed_in_last_18_months": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "employers": {
       "description": "Required if employed_in_last_18_months is true",
       "type": "array",
       "items": { "$ref": "#/definitions/employer" }
     },
+    "LOCAL_more_employers": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["yes", "no"] },
+      "required_for_partial": true
+    },
     "active_military_in_last_18_months": {
       "description": "Required per 20 CFR 614",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "federal_employment_in_last_18_months": {
       "description": "Required per 20 CFR 609",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "worked_in_other_states": {
       "description": "Required per 20 CFR 616",
       "type": "array",
       "items": { "$ref": "#/definitions/state" },
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "currently_disabled_unable_to_work": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
-    },
-    "mailing_address": {
-      "description": "",
-      "required_for_swa": true,
-      "$ref": "#/definitions/address"
+      "TODO_required_for_complete": true
     },
     "residence_address": {
       "description": "",
-      "required_for_swa": true,
+      "required_for_complete": true,
+      "$ref": "#/definitions/address"
+    },
+    "LOCAL_mailing_address_same": {
+      "description": "Mailing is the same as the residence address",
+      "type": "boolean",
+      "required_for_partial": true
+    },
+    "mailing_address": {
+      "description": "",
+      "required_for_complete": true,
       "$ref": "#/definitions/address"
     },
     "us_citizenship": {
       "description": "",
       "$ref": "#/definitions/citizenship",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "union": {
       "$ref": "#/definitions/union_membership",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "email": {
       "description": "",
@@ -401,7 +441,7 @@
       "format": "email",
       "maxLength": 128,
       "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "education_level": {
       "description": "",
@@ -421,52 +461,52 @@
         "professional",
         "doctorate"
       ],
-      "required_for_swa": true
+      "required_for_complete": true
     },
     "occupation": {
       "description": "https://www.bls.gov/oes/current/oes_stru.htm",
       "$ref": "#/definitions/occupation",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "ready_willing_able_to_work": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "federal_income_tax_withheld": {
       "description": "Required per UIPL 17-95",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "refused_any_job_since_last_worked": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "student_fulltime_in_last_18_months": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "primary_wage_earner": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "interpreter_required": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "dependency_allowance": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     },
     "registered_with_vocational_rehab": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_swa": true
+      "TODO_required_for_complete": true
     }
   }
 }

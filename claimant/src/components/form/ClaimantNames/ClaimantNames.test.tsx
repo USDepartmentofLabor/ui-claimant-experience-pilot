@@ -3,6 +3,7 @@ import { Formik } from "formik";
 
 import { ClaimantNames } from "./ClaimantNames";
 import userEvent from "@testing-library/user-event";
+import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -26,7 +27,7 @@ describe("ClaimantNames component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <ClaimantNames />
       </Formik>
     );
@@ -79,7 +80,7 @@ describe("ClaimantNames component", () => {
     };
 
     const { getByRole, getAllByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={() => undefined}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <ClaimantNames />
       </Formik>
     );

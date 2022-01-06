@@ -86,20 +86,20 @@ def v1_act_on_claim(request, claim_uuid):
         return GET_v1_claim_details(claim)
     elif request.method == "PATCH":
         payload = json_decode(request.body.decode("utf-8"))
+        if len(payload) != 1:
+            return JsonResponse(
+                {"status": "error", "error": "only one value expected in payload"},
+                status=400,
+            )
         if "status" in payload:
             if len(payload) == 1:
                 return PATCH_v1_claim_status(claim, payload["status"])
-            return JsonResponse(
-                {"status": "error", "error": "only one value expected in payload"},
-                status=400,
-            )
         if "fetched" in payload and str(payload["fetched"].lower()) == "true":
             if len(payload) == 1:
                 return PATCH_v1_claim_fetched(claim)
-            return JsonResponse(
-                {"status": "error", "error": "only one value expected in payload"},
-                status=400,
-            )
+        if "resolved" in payload:
+            if len(payload) == 1:
+                return PATCH_v1_claim_resolved(claim, payload["resolved"])
     elif request.method == "DELETE":
         return DELETE_v1_claim(claim)
 
@@ -134,6 +134,20 @@ def PATCH_v1_claim_status(claim, new_status):
 def PATCH_v1_claim_fetched(claim):
     try:
         claim.events.create(category=Claim.EventCategories.FETCHED)
+        return JsonResponse({"status": "ok"}, status=200)
+    except Exception as err:
+        logger.exception(err)
+        return JsonResponse(
+            {"status": "error", "error": "failed to save change"}, status=500
+        )
+
+
+def PATCH_v1_claim_resolved(claim, reason):
+    try:
+        claim.events.create(
+            category=Claim.EventCategories.RESOLVED,
+            description=(reason if reason else "[none]"),
+        )
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as err:
         logger.exception(err)

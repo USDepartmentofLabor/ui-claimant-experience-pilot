@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "secure_redis",
     "home",
     "swa",
+    "appoptics_apm.djangoware",
 ]
 
 # only install in dev/ci

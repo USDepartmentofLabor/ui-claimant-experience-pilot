@@ -5,13 +5,12 @@ import { useTranslation } from "react-i18next";
 import { Fieldset } from "@trussworks/react-uswds";
 
 import { Name } from "./Name";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Name",
   component: Name,
 } as ComponentMeta<typeof Name>;
-
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof Name> = (args) => {
   const { t } = useTranslation("home");

@@ -171,6 +171,20 @@ as a Claimant might see it:
 {"status": "ok"}
 ```
 
+## Marking a Claim as resolved
+
+Once a Claim has run its course in the SWA system of record, it should be marked as resolved in the USDOL system so
+that any subsequent attempt by a claimant to create a new Claim can proceed. Otherwise, the USDOL system only allows
+one completed Claim to exist per claimant and will disallow starting a new Claim.
+
+The `resolved` parameter takes an optional "reason" that will be stored as the description on the Claim `RESOLVED` event.
+
+```sh
+% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+       --data '{"resolved":"the claim was closed"}'
+{"status": "ok"}
+```
+
 ## Deleting sensitive Claim data
 
 After a Claim has been established in the SWA's system of record and there is no longer any need for sensitive Claimant

@@ -9,30 +9,12 @@ import { EmployerProfile } from "../../../components/form/EmployerProfile/Employ
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { useFormikContext } from "formik";
-import * as yup from "yup";
-import i18next from "i18next";
 import { IPageDefinition } from "../../PageDefinitions";
 
 const schemaFields: ClaimSchemaField[] = ["employers"];
 
-export const additionalValidations = {
-  LOCAL_more_employers: yup
-    .array()
-    .of(yup.string())
-    .test(
-      "len-matches-employers",
-      i18next.t("validation.required"),
-      (value, ctx) => {
-        if (value?.length !== ctx.parent.employers.length) {
-          ctx.createError({
-            message: i18next.t("validation.required"),
-          });
-          return false;
-        }
-        return true;
-      }
-    ),
-};
+// TODO: Validate that the number of employers matches the number of times that
+//  the claimant has selected "LOCAL_more_employers"
 
 const repeatable = (currentSegment: string | undefined, values: FormValues) => {
   if (!values["LOCAL_more_employers"]) {
@@ -116,7 +98,6 @@ export const EmployerInformationPage: IPageDefinition = {
     employers: [],
     LOCAL_more_employers: [],
   },
-  additionalValidations: additionalValidations,
   Component: EmployerInformation,
   repeatable: repeatable,
   nextSegment: nextSegment,

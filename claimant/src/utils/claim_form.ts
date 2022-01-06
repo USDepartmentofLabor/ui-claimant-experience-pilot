@@ -65,14 +65,17 @@ export const mergeClaimFormValues = (
   // first, merge the objects
   const mergedValues = { ...initialValues, ...partialClaim };
 
-  // second, set any of the frontend-only flow control fields to their logical starting values
+  // second, set any of the LOCAL_ flow control fields to their logical starting values
   // based on what we see. This is because initialValues and partialClaim both likely
   // originated with server-side responses.
-  if (partialClaim.alternate_names) {
+  if (
+    partialClaim.alternate_names &&
+    !mergedValues.LOCAL_claimant_has_alternate_names
+  ) {
     if (mergedValues.alternate_names?.length > 0) {
-      mergedValues.claimant_has_alternate_names = "yes";
+      mergedValues.LOCAL_claimant_has_alternate_names = "yes";
     } else {
-      mergedValues.claimant_has_alternate_names = "no";
+      mergedValues.LOCAL_claimant_has_alternate_names = "no";
     }
   }
   if (
@@ -84,23 +87,43 @@ export const mergeClaimFormValues = (
     mergedValues.LOCAL_mailing_address_same = false;
   }
   if (mergedValues.employers) {
-    mergedValues.LOCAL_more_employers = [];
+    if (!mergedValues.LOCAL_more_employers) {
+      mergedValues.LOCAL_more_employers = [];
+    }
     mergedValues.employers.forEach((employer: EmployerType, idx: number) => {
-      if (employer.last_work_date) {
-        employer.LOCAL_still_working = "no";
+      if (!employer.LOCAL_still_working) {
+        if (employer.last_work_date) {
+          employer.LOCAL_still_working = "no";
+        } else {
+          employer.LOCAL_still_working = "yes";
+        }
       }
-      if (employer.work_site_address) {
-        employer.LOCAL_same_address = "no";
+      if (!employer.LOCAL_same_address) {
+        if (employer.work_site_address) {
+          employer.LOCAL_same_address = "no";
+        } else {
+          employer.LOCAL_same_address = "yes";
+        }
       }
-      if (employer.phones && employer.phones.length > 1) {
+      if (
+        !employer.LOCAL_same_phone &&
+        employer.phones &&
+        employer.phones.length > 1
+      ) {
         employer.LOCAL_same_phone = "no";
       }
-      if (mergedValues.employers.length > idx + 1) {
+      if (
+        mergedValues.LOCAL_more_employers.length <
+          mergedValues.employers.length &&
+        mergedValues.employers.length > idx + 1
+      ) {
         mergedValues.LOCAL_more_employers.push("yes");
       }
     });
     // only assume "no" for last if we have more than one already
-    if (mergedValues.LOCAL_more_employers.length) {
+    if (
+      mergedValues.LOCAL_more_employers.length < mergedValues.employers.length
+    ) {
       mergedValues.LOCAL_more_employers.push("no");
     }
   }

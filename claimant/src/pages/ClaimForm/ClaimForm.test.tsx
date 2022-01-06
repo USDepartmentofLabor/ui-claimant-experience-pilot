@@ -152,9 +152,9 @@ describe("the ClaimForm page", () => {
       restoredClaim
     );
     expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
-    expect(mergedValues.claimant_has_alternate_names).toEqual("yes");
+    expect(mergedValues.LOCAL_claimant_has_alternate_names).toEqual("yes");
     expect(mergedValues.employers[0].LOCAL_same_address).toEqual("no");
-    expect(mergedValues.employers[1].LOCAL_same_address).toEqual(undefined);
+    expect(mergedValues.employers[1].LOCAL_same_address).toEqual("yes");
     expect(mergedValues.employers[0].LOCAL_same_phone).toEqual("no");
     expect(mergedValues.employers[1].LOCAL_same_phone).toEqual(undefined);
     expect(mergedValues.LOCAL_more_employers).toEqual(["yes", "no"]);
