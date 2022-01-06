@@ -17,7 +17,7 @@ export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
         id={`${id}.number`}
         name={`${name}.number`}
         label={t("phone.number.label")}
-        type="text"
+        type="tel"
       />
       <DropdownField
         id={`${id}.type`}
