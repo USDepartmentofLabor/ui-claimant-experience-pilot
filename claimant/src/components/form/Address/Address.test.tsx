@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { Formik } from "formik";
 
-import { Address } from "./Address";
+import { Address, StateAbbrev } from "./Address";
 import { noop } from "../../../testUtils/noop";
 
 jest.mock("react-i18next", () => ({
@@ -24,7 +24,7 @@ describe("Address component", () => {
         zipcode: "",
       },
     };
-    const stateSlice = ["AL", "WY"];
+    const stateSlice: StateAbbrev[] = ["AL", "WY"];
 
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>

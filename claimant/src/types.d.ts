@@ -42,8 +42,8 @@ type AddressType = {
 
 type PhoneType = {
   number: string;
-  sms: boolean;
-  type: string;
+  sms?: boolean;
+  type?: string;
 };
 
 type YesNo = "yes" | "no";

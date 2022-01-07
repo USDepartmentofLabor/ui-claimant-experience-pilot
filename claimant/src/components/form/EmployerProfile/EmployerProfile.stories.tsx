@@ -15,11 +15,12 @@ const Template: ComponentStory<typeof EmployerProfile> = () => {
     "claim-v1.0",
     EmployerInformationPage.schemaFields
   );
+
   const initialValues = {
     employers: [
       {
         name: "",
-        LOCAL_still_working: null,
+        LOCAL_still_working: undefined,
         first_work_date: "",
         last_work_date: "",
         address: {
@@ -29,7 +30,7 @@ const Template: ComponentStory<typeof EmployerProfile> = () => {
           state: "",
           zipcode: "",
         },
-        LOCAL_same_address: null,
+        LOCAL_same_address: undefined,
         work_site_address: {
           address1: "",
           address2: "",
@@ -38,7 +39,7 @@ const Template: ComponentStory<typeof EmployerProfile> = () => {
           zipcode: "",
         },
         phones: [{ number: "" }, { number: "" }],
-        LOCAL_same_phone: null,
+        LOCAL_same_phone: undefined,
         fein: "",
       },
     ],

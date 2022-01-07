@@ -14,9 +14,38 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("EmployerProfile component", () => {
+  const initialValues = {
+    employers: [
+      {
+        name: "",
+        LOCAL_still_working: undefined,
+        first_work_date: "",
+        last_work_date: "",
+        address: {
+          address1: "",
+          address2: "",
+          city: "",
+          state: "",
+          zipcode: "",
+        },
+        LOCAL_same_address: undefined,
+        work_site_address: {
+          address1: "",
+          address2: "",
+          city: "",
+          state: "",
+          zipcode: "",
+        },
+        phones: [{ number: "" }, { number: "" }],
+        LOCAL_same_phone: undefined,
+        fein: "",
+      },
+    ],
+  };
+
   it("renders properly", () => {
     const { getByLabelText, getByRole } = render(
-      <Formik initialValues={{}} onSubmit={noop}>
+      <Formik initialValues={initialValues} onSubmit={noop}>
         <EmployerProfile segment="0" />
       </Formik>
     );
@@ -56,10 +85,11 @@ describe("EmployerProfile component", () => {
       "employers[0].fein"
     );
   });
+
   describe("hidden fields appear upon particular boolean selection", () => {
     it("displays the end date for this employer field only when NO is selected", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={noop}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );
@@ -79,7 +109,7 @@ describe("EmployerProfile component", () => {
 
     it("displays location when claimant says 'no' to working at same address as employer", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={noop}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );
@@ -98,9 +128,10 @@ describe("EmployerProfile component", () => {
         screen.getByRole("group", { name: "work_site_address.heading" })
       ).toBeInTheDocument();
     });
+
     it("displays work site phone field when user chooses 'no' to same phone number", async () => {
       render(
-        <Formik initialValues={{}} onSubmit={noop}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <EmployerProfile segment="0" />
         </Formik>
       );

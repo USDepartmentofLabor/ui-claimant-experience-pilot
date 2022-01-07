@@ -1,17 +1,12 @@
 import { useTranslation } from "react-i18next";
-import {
-  ErrorMessage,
-  Fieldset,
-  FormGroup,
-  Button,
-} from "@trussworks/react-uswds";
+import { Fieldset, Button } from "@trussworks/react-uswds";
 import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
 
-const schemaFields: ClaimSchemaField[] = ["employers"];
+const schemaFields: ClaimSchemaField[] = ["employers", "LOCAL_more_employers"];
 
 // TODO: Validate that the number of employers matches the number of times that
 //  the claimant has selected "LOCAL_more_employers"
@@ -42,11 +37,8 @@ const previousSegment = (currentSegment: string | undefined) => {
 
 export const EmployerInformation = (props: PageProps) => {
   const { t } = useTranslation("claimForm");
-  const { values, touched, errors, setValues } =
-    useFormikContext<ClaimantInput>();
+  const { values, setValues } = useFormikContext<ClaimantInput>();
   const segment = props.segment || "0";
-  const showMoreEmployersError =
-    touched.LOCAL_more_employers && !!errors.LOCAL_more_employers;
 
   const removeEmployer = (idx: number) => {
     const employers = values.employers?.filter((_, i) => i !== idx);
@@ -77,15 +69,10 @@ export const EmployerInformation = (props: PageProps) => {
       ))}
       <EmployerProfile segment={segment} />
       <Fieldset legend={t("employers.more_employers.label")}>
-        <FormGroup error={showMoreEmployersError}>
-          <YesNoRadio
-            id={`LOCAL_more_employers[${segment}]`}
-            name={`LOCAL_more_employers[${segment}]`}
-          />
-        </FormGroup>
-        {showMoreEmployersError && (
-          <ErrorMessage>{errors.LOCAL_more_employers}</ErrorMessage>
-        )}
+        <YesNoRadio
+          id={`LOCAL_more_employers[${segment}]`}
+          name={`LOCAL_more_employers[${segment}]`}
+        />
       </Fieldset>
     </>
   );

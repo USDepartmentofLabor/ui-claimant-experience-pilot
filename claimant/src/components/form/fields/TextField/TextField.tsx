@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
@@ -10,9 +10,10 @@ import {
 type TextInputProps = React.ComponentProps<typeof TextInput>;
 
 interface ITextFieldProps extends TextInputProps {
-  label: React.ReactNode;
+  label: ReactNode;
   labelClassName?: string;
   labelHint?: string;
+  hint?: ReactNode;
 }
 
 // TODO consider from https://github.com/transcom/mymove/tree/master/src/components/Hint
@@ -33,6 +34,7 @@ export const TextField = ({
   label,
   labelClassName,
   labelHint,
+  hint,
   ...textInputProps
 }: ITextFieldProps) => {
   const [fieldProps, metaProps] = useField({
@@ -54,6 +56,10 @@ export const TextField = ({
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <TextInput {...fieldProps} {...textInputProps} />
+
+      <div className="usa-hint" id={`${textInputProps.name}-hint`}>
+        {hint}
+      </div>
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
     </FormGroup>

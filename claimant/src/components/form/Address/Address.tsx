@@ -4,7 +4,7 @@ import DropdownField from "../fields/DropdownField/DropdownField";
 import states from "../../../schemas/states.json";
 import { FormGroup } from "@trussworks/react-uswds";
 
-type StateAbbrev = keyof typeof states;
+export type StateAbbrev = keyof typeof states;
 
 interface IAddressLabels {
   address1: string;

@@ -19,6 +19,7 @@ const BLANK_PERSON_NAME: PersonName = {
 
 export const ClaimantNames = () => {
   const { values } = useFormikContext<Claim>();
+
   return (
     <>
       <Fieldset legend="Legal Name">

@@ -207,22 +207,19 @@ export const ClaimForm = () => {
           }
         }}
       >
-        {(errors) => {
-          const currentPageErrors =
-            errors && Object.keys(errors.errors).length ? true : false;
-          if (errors && Object.keys(errors.errors).length) {
-            console.log({ errors: errors.errors });
-          }
-          //{(props: FormikProps<ClaimantInput>) => (
+        {(claimForm) => {
+          const showError =
+            Object.keys(claimForm.errors).length > 0 &&
+            Object.keys(claimForm.touched).length > 0;
           return (
             <Form>
               <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
-                <FormGroup error={currentPageErrors}>
+                <FormGroup error={showError}>
                   {previousPageLink()}
                   {nextPageLink()}
                 </FormGroup>
-                {currentPageErrors && (
+                {showError && (
                   <ErrorMessage>{commonT("form_errors")}</ErrorMessage>
                 )}
               </div>

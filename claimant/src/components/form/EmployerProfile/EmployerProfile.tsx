@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ErrorMessage, FormGroup, Fieldset } from "@trussworks/react-uswds";
+import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
@@ -15,7 +15,7 @@ interface IEmployerProfileProps {
 
 export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
-  const { values, errors, setFieldValue } = useFormikContext<ClaimantInput>();
+  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
   const segmentIdx = parseInt(segment);
   const segmentExists = !!values.employers?.[segmentIdx];
@@ -25,35 +25,20 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       const employers = [...(values.employers || [])];
       employers[segmentIdx] = { ...EMPLOYER_SKELETON };
       setFieldValue("employers", employers);
+      setFieldValue(
+        "LOCAL_more_employers",
+        values.LOCAL_more_employers
+          ? [...values.LOCAL_more_employers, undefined]
+          : [undefined]
+      );
     }
   }, [segmentExists]);
 
   // Let the effect hook populate values if necessary
-  if (!segmentExists || !values.employers) {
-    return <></>;
+  if (!values.employers || !segmentExists) {
+    return null;
   }
   const employer = values.employers[segmentIdx];
-  const employerErrors =
-    errors && errors.employers && errors.employers[segmentIdx]
-      ? errors.employers[segmentIdx]
-      : {};
-  // const touchedEmployer = (touched.employers && touched.employers[segmentIdx]) ? touched.employers[segmentIdx] : {};
-
-  // TODO we want these error states conditional on whether the field is "touched" or not
-  // so that the errors don't show up until Next is clicked
-  const showPhonesError = "phones" in employerErrors;
-  const showStillWorkingError = employer.LOCAL_still_working === undefined;
-  const showSameAddressError = employer.LOCAL_same_address === undefined;
-  const showSamePhoneError = employer.LOCAL_same_phone === undefined;
-
-  console.log({
-    values,
-    employer,
-    // touched,
-    errors,
-    employerErrors,
-    // touchedEmployer,
-  });
 
   return (
     <>
@@ -65,15 +50,10 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].name`}
       />
       <Fieldset legend={t("still_working.label")}>
-        <FormGroup error={showStillWorkingError}>
-          <YesNoRadio
-            id={`employers[${segment}].LOCAL_still_working`}
-            name={`employers[${segment}].LOCAL_still_working`}
-          />
-        </FormGroup>
-        {showStillWorkingError && (
-          <ErrorMessage>{t("errors.required")}</ErrorMessage>
-        )}
+        <YesNoRadio
+          id={`employers[${segment}].LOCAL_still_working`}
+          name={`employers[${segment}].LOCAL_still_working`}
+        />
       </Fieldset>
       <DatePicker
         label={t("first_work_date.label")}
@@ -113,16 +93,11 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         basename={`employers[${segment}].address`}
       />
       <Fieldset legend={t("same_address.label")}>
-        <FormGroup error={showSameAddressError}>
-          <YesNoRadio
-            id={`employers[${segment}].LOCAL_same_address`}
-            name={`employers[${segment}].LOCAL_same_address`}
-            noLabel={t("no_different_address")}
-          />
-        </FormGroup>
-        {showSameAddressError && (
-          <ErrorMessage>{t("errors.required")}</ErrorMessage>
-        )}
+        <YesNoRadio
+          id={`employers[${segment}].LOCAL_same_address`}
+          name={`employers[${segment}].LOCAL_same_address`}
+          noLabel={t("no_different_address")}
+        />
       </Fieldset>
       {employer.LOCAL_same_address === "no" && (
         <Fieldset legend={t("work_site_address.heading")}>
@@ -138,28 +113,19 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
           />
         </Fieldset>
       )}
-      <FormGroup error={showPhonesError}>
-        <TextField
-          name={`employers[${segment}].phones[0].number`}
-          label={t("phones.number.label")}
-          type="text"
-          id={`employers[${segment}].phones[0].number`}
-        />
-      </FormGroup>
-      {showPhonesError && (
-        <ErrorMessage>{t("phones.number.errors.required")}</ErrorMessage>
-      )}
+      <TextField
+        name={`employers[${segment}].phones[0].number`}
+        label={t("phones.number.label")}
+        type="text"
+        id={`employers[${segment}].phones[0].number`}
+      />
+
       <Fieldset legend={t("same_phone.label")}>
-        <FormGroup error={showSamePhoneError}>
-          <YesNoRadio
-            id={`employers[${segment}].LOCAL_same_phone`}
-            name={`employers[${segment}].LOCAL_same_phone`}
-            noLabel={t("no_different_phone")}
-          />
-        </FormGroup>
-        {showSamePhoneError && (
-          <ErrorMessage>{t("errors.required")}</ErrorMessage>
-        )}
+        <YesNoRadio
+          id={`employers[${segment}].LOCAL_same_phone`}
+          name={`employers[${segment}].LOCAL_same_phone`}
+          noLabel={t("no_different_phone")}
+        />
       </Fieldset>
       {employer.LOCAL_same_phone === "no" && (
         <TextField
@@ -169,17 +135,13 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
           id={`employers[${segment}].phones[1].number`}
         />
       )}
-      <FormGroup>
-        <TextField
-          name={`employers[${segment}].fein`}
-          label={t("fein.label")}
-          type="text"
-          id={`employers[${segment}].fein`}
-        />
-        <div className="usa-hint" id={`employers[${segment}].fein-hint`}>
-          {t("fein.hint")}
-        </div>
-      </FormGroup>
+      <TextField
+        name={`employers[${segment}].fein`}
+        label={t("fein.label")}
+        type="text"
+        id={`employers[${segment}].fein`}
+        hint={t("fein.hint")}
+      />
     </>
   );
 };

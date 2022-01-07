@@ -13,11 +13,12 @@ export const ADDRESS_SKELETON: AddressType = {
 export const EMPLOYER_SKELETON: EmployerType = {
   name: "",
   LOCAL_still_working: undefined,
-  LOCAL_same_address: undefined,
-  LOCAL_same_phone: undefined,
   first_work_date: "",
-  address: { address1: "", city: "", state: "", zipcode: "" },
-  phones: [],
+  address: { ...ADDRESS_SKELETON },
+  work_site_address: undefined,
+  LOCAL_same_address: undefined,
+  phones: [{ number: "" }],
+  LOCAL_same_phone: undefined,
   separation_reason: "",
   separation_comment: "",
 };
