@@ -1,0 +1,20 @@
+{% load static %} {% load i18n %}
+<!DOCTYPE html5>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- prettier-ignore -->
+    <title>
+      {% translate "Unemployment Insurance Claim Application | U.S. Department of Labor" %}
+    </title>
+    <script src="{% static 'js/uswds-init.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
+  </head>
+  <body>
+    <section>{% include '_claimant_header.html' %}</section>
+    <section class="usa-section" id="main-content">
+      {% block content %}{% endblock %}
+    </section>
+  </body>
+</html>

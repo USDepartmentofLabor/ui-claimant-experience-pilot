@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-03 13:50-0800\n"
+"POT-Creation-Date: 2022-01-05 16:16-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE &lt;LL@li.org>\n"
@@ -26,121 +26,137 @@ msgstr ""
 msgid "Sorry, we had a problem."
 msgstr ""
 
-#: home/templates/_header.html:3
+#: home/templates/_claimant_header.html:3 home/templates/_header.html:3
 msgid "Skip to main content"
 msgstr "Saltar al contento principal"
 
-#: home/templates/_header.html:10
+#: home/templates/_claimant_header.html:9 home/templates/_header.html:9
 msgid ""
 "TEST SITE - Do not use real personal information (demo purposes only) - TEST "
 "SITE"
 msgstr ""
 
-#: home/templates/_header.html:26
+#: home/templates/_claimant_header.html:25 home/templates/_header.html:25
 msgid "U.S. flag"
 msgstr "Bandera de los Estados Unidos"
 
-#: home/templates/_header.html:33
+#: home/templates/_claimant_header.html:32 home/templates/_header.html:32
 msgid "An official website of the United States government"
 msgstr "Un sitio web del gobierno de los Estados Unidos"
 
-#: home/templates/_header.html:36 home/templates/_header.html:45
+#: home/templates/_claimant_header.html:35 home/templates/_header.html:35
+#: home/templates/_header.html:44
 msgid "Here’s how you know"
 msgstr "Cómo se sabe"
 
-#: home/templates/_header.html:62
+#: home/templates/_claimant_header.html:44
+#, fuzzy
+#| msgid "Here’s how you know"
+msgid "Here’s how you know NEEDS IMPLEMENTING"
+msgstr "Cómo se sabe"
+
+#: home/templates/_header.html:61
 msgid "Official websites use .gov"
 msgstr ""
 
-#: home/templates/_header.html:64
+#: home/templates/_header.html:63
 msgid ""
 "A <strong>.gov</strong> website belongs to an official government "
 "organization in the United States."
 msgstr ""
 
-#: home/templates/_header.html:80
+#: home/templates/_header.html:79
 msgid "Secure .gov websites use HTTPS"
 msgstr ""
 
-#: home/templates/_header.html:82
+#: home/templates/_header.html:81
 msgid "A <strong>lock</strong>"
 msgstr ""
 
-#: home/templates/_header.html:94
+#: home/templates/_header.html:93
 msgid "Lock"
 msgstr ""
 
-#: home/templates/_header.html:96
+#: home/templates/_header.html:95
 msgid "A locked padlock"
 msgstr ""
 
-#: home/templates/_header.html:122
+#: home/templates/_header.html:121
 msgid "United States Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:125
+#: home/templates/_header.html:124
 msgid "U.S. Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:129
+#: home/templates/_header.html:128
 msgid "Menu"
 msgstr "Menú"
 
-#: home/templates/_header.html:136
+#: home/templates/_header.html:135
 msgid "Close"
 msgstr ""
 
-#: home/templates/_header.html:145
+#: home/templates/_header.html:144
 msgid "Current section"
 msgstr "&lt;Sección actual &gt;"
 
-#: home/templates/_header.html:150
+#: home/templates/_header.html:149
 msgid "&lt;Navigation link&lt;"
 msgstr "&lt;Navigación&gt;"
 
-#: home/templates/_header.html:153 home/templates/_header.html:156
-#: home/templates/_header.html:171 home/templates/_header.html:174
-#: home/templates/_header.html:177
+#: home/templates/_header.html:152 home/templates/_header.html:155
+#: home/templates/_header.html:170 home/templates/_header.html:173
+#: home/templates/_header.html:176
 msgid "&lt;Navigation link&gt;"
 msgstr "&lt;Navigación &gt;"
 
-#: home/templates/_header.html:166
+#: home/templates/_header.html:165
 msgid "&lt;Section&gt;"
 msgstr "&lt;Sección&gt;"
 
-#: home/templates/_header.html:183
+#: home/templates/_header.html:182
 msgid "&lt;Simple link&gt;"
 msgstr "&lt;Enlace&gt;"
 
-#: home/templates/_header.html:190
+#: home/templates/_header.html:189
 msgid "&lt;Secondary link&gt;"
 msgstr "&lt;Enlace segondario&gt;"
 
-#: home/templates/_header.html:193
+#: home/templates/_header.html:192
 msgid "&lt;Another secondary link&gt;"
 msgstr "&lt;Otro enlace segundario&gt;"
 
-#: home/templates/_header.html:199 home/templates/_header.html:208
+#: home/templates/_header.html:198 home/templates/_header.html:207
 msgid "Search"
 msgstr "Buscar"
 
-#: home/templates/base.html:19
+#: home/templates/base.html:19 home/templates/claimant-base.html:8
 #, fuzzy
 #| msgid "Unemployment Insurance Claim Application"
 msgid "Unemployment Insurance Claim Application | U.S. Department of Labor"
 msgstr "Solicitud de reclamo del seguro de desempleo"
 
 #: home/templates/emails/claim_confirmation_email.txt:2
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "    Please do not reply to this email.\n"
+#| "    Thanks for submitting your claim for unemployment insurance "
+#| "benefits.\n"
+#| "    Your claim has been forwarded to %(name)s. All questions about your\n"
+#| "    claim should be directed to: "
 msgid ""
 "\n"
-"    Please do not reply to this email.\n"
-"    Thanks for submitting your claim for unemployment insurance benefits.\n"
-"    Your claim has been forwarded to %(name)s. All questions about your\n"
-"    claim should be directed to: "
-msgstr "\n"
+"Please do not reply to this email.\n"
+"Thanks for submitting your claim for unemployment insurance benefits.\n"
+"Your claim has been forwarded to %(name)s. All questions about your\n"
+"claim should be directed to: "
+msgstr ""
+"\n"
 "Gracias por enviar su reclamo del seguro de desempleo. \n"
-"Su reclamo ha sido reenviado a %(name)s.  Todas las preguntas sobre su reclamo debe ser redirigido a: "
+"Su reclamo ha sido reenviado a %(name)s.  Todas las preguntas sobre su "
+"reclamo debe ser redirigido a: "
 
 #: home/templates/emails/claim_confirmation_email.txt:8
 #, python-format
@@ -148,12 +164,17 @@ msgid "%(name)s's workforce agency"
 msgstr "%(name)s's workforce agency"
 
 #: home/templates/emails/claim_confirmation_email.txt:9
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "    Your Claim ID is %(claim_id)s\n"
+#| "\n"
+#| "    Thank you.\n"
 msgid ""
 "\n"
-"    Your Claim ID is %(claim_id)s\n"
+"Your Claim ID is %(claim_id)s\n"
 "\n"
-"    Thank you.\n"
+"Thank you.\n"
 msgstr ""
 "\n"
 "Su numero do reclamo: %(claim_id)s\n"
@@ -166,6 +187,10 @@ msgstr ""
 #: home/templates/idp.html:38
 msgid "Log In or Sign Up"
 msgstr "Iniciar sessión o Registrar"
+
+#: home/templates/idp.html:45
+msgid "Sign in with Login.gov, external website"
+msgstr ""
 
 #: home/templates/idp.html:52
 msgid "Test Login"
@@ -182,3 +207,85 @@ msgstr "Solicitar beneficios"
 #: home/templates/index.html:11
 msgid "Get started"
 msgstr "Empezar"
+
+#: home/templates/prequalifications.html:30
+msgid "PREQUALIFICATION"
+msgstr ""
+
+#: home/templates/prequalifications.html:33
+msgid "State residence"
+msgstr ""
+
+#: home/templates/prequalifications.html:35
+msgid "Do you currently live in the United States?"
+msgstr ""
+
+#: home/templates/prequalifications.html:39
+msgid ""
+"Have you worked in any state other than the state you currently live in the "
+"last 18 months (not including military service)?"
+msgstr ""
+
+#: home/templates/prequalifications.html:42
+msgid "Recent employment"
+msgstr ""
+
+#: home/templates/prequalifications.html:44
+msgid "Have you had a job during the last 18 months?"
+msgstr ""
+
+#: home/templates/prequalifications.html:46
+msgid "Disability"
+msgstr ""
+
+#: home/templates/prequalifications.html:48
+msgid "Are you currently disabled and unable to work?"
+msgstr ""
+
+#: home/templates/prequalifications.html:50
+msgid "Military service"
+msgstr ""
+
+#: home/templates/prequalifications.html:52
+msgid "Have you served in the United States military in the last 18 months?"
+msgstr ""
+
+#: home/templates/prequalifications.html:54
+msgid "Federal employment"
+msgstr ""
+
+#: home/templates/prequalifications.html:56
+msgid ""
+"Have you worked for the federal government in the last 18 months (not "
+"including military service?"
+msgstr ""
+
+#: home/templates/prequalifications.html:58
+msgid "Maritime employment"
+msgstr ""
+
+#: home/templates/prequalifications.html:60
+msgid ""
+"Have you worked for a maritime employer in the last 18 months (for example, "
+"did you work on a ship in a harbor)?"
+msgstr ""
+
+#: home/templates/prequalifications.html:64
+msgid "Next"
+msgstr ""
+
+#: home/templates/uswds/_swa_options.html:3
+msgid "Select your state"
+msgstr ""
+
+#: home/templates/uswds/_swa_options.html:6
+msgid "Select"
+msgstr ""
+
+#: home/templates/uswds/_yes_no_radio.html:14
+msgid "Yes"
+msgstr ""
+
+#: home/templates/uswds/_yes_no_radio.html:27
+msgid "No"
+msgstr ""

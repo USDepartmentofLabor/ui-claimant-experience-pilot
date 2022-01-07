@@ -1,0 +1,79 @@
+{% extends "claimant-base.html" %} {% block content %}{% load i18n %}
+<!-- prettier-ignore -->
+<script type="text/JavaScript">
+
+    function onChangeLiveUSHandler() {
+        const formData = new FormData(document.getElementById("prequalification-form"));
+        const swaOptions = document.getElementById("swa-options")
+        if (formData.get("live_in_us") === "yes") {
+            if(swaOptions.classList.contains("display-none")){
+                swaOptions.classList.remove("display-none");
+            }
+        } else {
+            if(!swaOptions.classList.contains("display-none")){
+                swaOptions.classList.add("display-none");
+            }
+        }
+    }
+    function submitPrequalifications(){
+        const formData = new FormData(document.getElementById("prequalification-form"));
+        if(formData.get("live_in_us") === "no"){
+            formData.delete("swa_code");
+        }
+        let formKeyValues = [];
+        for (let pair of formData) {
+            formKeyValues.push(pair)
+        }
+        // code below for demo purposes until hooked up to js formula
+        console.log(formKeyValues);
+        let displayString = 'FORM VALUES SUBMITTED: \n';
+        let counter = 1;
+        formKeyValues.forEach(kp => {
+            counter++
+            displayString += `${kp[0]}: ${kp[1]}\n`
+        })
+        alert(displayString);
+    }
+</script>
+<!-- prettier-ignore -->
+<div class="grid-container">
+    <main>
+        <h1>{% translate "PREQUALIFICATION" %}</h1>
+        <form class="usa-form" id="prequalification-form">
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+        {% translate "State residence" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="onChangeLiveUSHandler"  %}
+                <div class="display-none" id="swa-options">{% include './uswds/_swa_options.html' with swas=swas %}</div>
+          <div class="margin-top-4">
+
+              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="live_other_state" %}
+          </div>
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+            {% translate "Recent employment" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" %}
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+            {% translate "Disability" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" %}
+          <h2 class="{{styles.section_margin}} {{ styles.section_heading }}">
+              {% translate "Military service" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" %}
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+            {% translate "Federal employment" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" %}
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+            {% translate "Maritime employment" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" %}
+        </form>
+
+        <button class="usa-button margin-top-6" onclick="submitPrequalifications()">
+          {% translate "Next" %}
+        </button>
+    </main>
+</div>
+{% endblock %}

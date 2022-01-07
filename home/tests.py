@@ -61,3 +61,7 @@ class HomeTestCase(TestCase):
             status_code=302,
             fetch_redirect_response=False,
         )
+
+    def test_prequalifications_page(self):
+        response = self.client.get("/prequalifications/")
+        self.assertContains(response, "Prequalifications", status_code=200)

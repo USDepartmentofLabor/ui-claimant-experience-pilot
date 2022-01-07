@@ -96,6 +96,21 @@ def login(request):
         return HttpResponse("GET or POST", status=405)
 
 
+def prequalifications(request):
+    return render(
+        None,
+        "prequalifications.html",
+        {
+            "base_url": base_url(request),
+            "swas": active_swas_ordered_by_name(),
+            "styles": {
+                "section_margin": "margin-top-6",
+                "section_heading": "font-heading-sm",
+            },
+        },
+    )
+
+
 def base_url(request):  # pragma: no cover
     if settings.BASE_URL:
         return settings.BASE_URL

@@ -1,0 +1,30 @@
+{% load i18n %}
+<fieldset class="usa-fieldset border-0">
+  <legend class="usa-legend">{% translate field_label %}</legend>
+  <div class="usa-radio display-inline-block margin-right-8">
+    <input
+      class="usa-radio__input"
+      id="{{ field_name }}-yes"
+      type="radio"
+      name="{{field_name}}"
+      value="yes"
+      onchange="{% if onchange %}{{ onchange}}(){% endif %}"
+    />
+    <label class="usa-radio__label" for="{{ field_name }}-yes"
+      >{% translate "Yes" %}</label
+    >
+  </div>
+  <div class="usa-radio display-inline-block">
+    <input
+      class="usa-radio__input"
+      id="{{ field_name }}-no"
+      type="radio"
+      name="{{ field_name }}"
+      value="no"
+      onchange="{% if onchange %}{{ onchange}}(){% endif %}"
+    />
+    <label class="usa-radio__label" for="{{ field_name }}-no"
+      >{% translate "No" %}</label
+    >
+  </div>
+</fieldset>
