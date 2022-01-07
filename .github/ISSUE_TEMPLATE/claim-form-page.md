@@ -1,10 +1,9 @@
 ---
 name: claim-form-page
 about: template for tracking claim form work
-title: ''
-labels: ''
+title: ""
+labels: ""
 assignees: pkarman
-
 ---
 
 ## Jira
