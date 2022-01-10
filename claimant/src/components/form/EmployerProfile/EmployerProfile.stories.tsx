@@ -4,6 +4,7 @@ import { Form, Formik } from "formik";
 import YupBuilder from "../../../common/YupBuilder";
 import { EmployerInformationPage } from "../../../pages/Questions/EmployerInformation/EmployerInformation";
 import { noop } from "../../../testUtils/noop";
+import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
 
 export default {
   title: "Components/Form/Employer Profile",
@@ -17,32 +18,7 @@ const Template: ComponentStory<typeof EmployerProfile> = () => {
   );
 
   const initialValues = {
-    employers: [
-      {
-        name: "",
-        LOCAL_still_working: undefined,
-        first_work_date: "",
-        last_work_date: "",
-        address: {
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          zipcode: "",
-        },
-        LOCAL_same_address: undefined,
-        work_site_address: {
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          zipcode: "",
-        },
-        phones: [{ number: "" }, { number: "" }],
-        LOCAL_same_phone: undefined,
-        fein: "",
-      },
-    ],
+    employers: [{ ...EMPLOYER_SKELETON }],
   };
 
   return (

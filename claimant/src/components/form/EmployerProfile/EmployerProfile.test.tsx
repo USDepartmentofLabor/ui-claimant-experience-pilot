@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import { EmployerProfile } from "./EmployerProfile";
 import userEvent from "@testing-library/user-event";
 import { noop } from "../../../testUtils/noop";
+import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -15,32 +16,7 @@ jest.mock("react-i18next", () => ({
 
 describe("EmployerProfile component", () => {
   const initialValues = {
-    employers: [
-      {
-        name: "",
-        LOCAL_still_working: undefined,
-        first_work_date: "",
-        last_work_date: "",
-        address: {
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          zipcode: "",
-        },
-        LOCAL_same_address: undefined,
-        work_site_address: {
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          zipcode: "",
-        },
-        phones: [{ number: "" }, { number: "" }],
-        LOCAL_same_phone: undefined,
-        fein: "",
-      },
-    ],
+    employers: [{ ...EMPLOYER_SKELETON }],
   };
 
   it("renders properly", () => {
@@ -129,7 +105,7 @@ describe("EmployerProfile component", () => {
       ).toBeInTheDocument();
     });
 
-    it("displays work site phone field when user chooses 'no' to same phone number", async () => {
+    it("displays work location phone field when user chooses 'no' to same phone number", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={noop}>
           <EmployerProfile segment="0" />

@@ -78,8 +78,8 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         name={`${basename}.zipcode`}
         label={labels ? labels.zipcode : defaultLabels.zipcode}
         type="text"
+        inputMode="numeric"
         id={`${basename}.zipcode`}
-        // TODO pattern="[\d]{5}(-[\d]{4})?"
       />
     </FormGroup>
   );

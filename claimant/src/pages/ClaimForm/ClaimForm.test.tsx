@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import isEqual from "lodash/isEqual";
 import ClaimFormPage, { ClaimForm } from "./ClaimForm";
@@ -202,21 +202,23 @@ describe("the ClaimForm page", () => {
     } = getPersonalInformationFields();
 
     // Fill out personal-information
-    await act(async () => {
-      userEvent.type(firstName, myPII.first_name);
-      userEvent.type(lastName, myPII.last_name);
-      userEvent.click(noAdditionalClaimantNames);
-      userEvent.type(residenceAddress1, "address1");
-      userEvent.type(residenceAddress2, "address2");
-      userEvent.type(residenceCity, "city");
-      userEvent.selectOptions(residenceState, ["CA"]);
-      userEvent.type(residenceZIPCode, "00000");
-      userEvent.click(mailingAddressIsSame);
-    });
+
+    await userEvent.type(firstName, myPII.first_name);
+    await userEvent.type(lastName, myPII.last_name);
+    await userEvent.click(noAdditionalClaimantNames);
+    await userEvent.type(residenceAddress1, "address1");
+    await userEvent.type(residenceAddress2, "address2");
+    await userEvent.type(residenceCity, "city");
+    await userEvent.selectOptions(residenceState, ["CA"]);
+    await userEvent.type(residenceZIPCode, "00000");
+    await userEvent.click(mailingAddressIsSame);
+
     expect(noAdditionalClaimantNames).toBeChecked();
 
-    await act(async () => {
-      userEvent.click(nextLink);
+    await userEvent.click(nextLink);
+
+    await waitFor(() => {
+      expect(firstName).not.toBeInTheDocument();
     });
 
     const getDemographicInformationFields = () => ({
@@ -233,24 +235,26 @@ describe("the ClaimForm page", () => {
     const { backButton: backToPersonalInformation } =
       getDemographicInformationFields();
 
-    await act(async () => {
-      userEvent.click(backToPersonalInformation);
+    await userEvent.click(backToPersonalInformation);
+
+    await waitFor(() => {
+      const { firstName: firstNameRevisited } = getPersonalInformationFields();
+      expect(firstNameRevisited).toBeInTheDocument();
     });
 
-    await act(async () => {
-      userEvent.click(nextLink);
-    });
+    await userEvent.click(nextLink);
 
-    const { female, hispanic, white, educationLevelDropdown, nextButton } =
-      getDemographicInformationFields();
+    await waitFor(async () => {
+      const { female, hispanic, white, educationLevelDropdown, nextButton } =
+        getDemographicInformationFields();
 
-    // Fill out demographic-information
-    await act(async () => {
+      // Fill out demographic-information
+
       await userEvent.click(female);
       await userEvent.click(hispanic);
       await userEvent.click(white);
       await userEvent.selectOptions(educationLevelDropdown, "grade_12");
-      userEvent.click(nextButton);
+      await userEvent.click(nextButton);
     });
 
     const getSubmitClaimFields = () => ({
@@ -259,22 +263,22 @@ describe("the ClaimForm page", () => {
 
     const { backButton: backToDemographicInformation } = getSubmitClaimFields();
 
-    await act(async () => {
-      userEvent.click(backToDemographicInformation);
-    });
+    await userEvent.click(backToDemographicInformation);
 
-    const {
-      female: femaleRevisited,
-      hispanic: hispanicRevisited,
-      white: whiteRevisited,
-      backButton: gotBackToPersonalInformationAgain,
-      nextButton: goToSubmitClaimAgain,
-    } = getDemographicInformationFields();
-    expect(femaleRevisited).toBeInTheDocument();
-    expect(hispanicRevisited).toBeInTheDocument();
-    expect(whiteRevisited).toBeInTheDocument();
-    expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
-    expect(goToSubmitClaimAgain).toBeInTheDocument();
+    await waitFor(() => {
+      const {
+        female: femaleRevisited,
+        hispanic: hispanicRevisited,
+        white: whiteRevisited,
+        backButton: gotBackToPersonalInformationAgain,
+        nextButton: goToSubmitClaimAgain,
+      } = getDemographicInformationFields();
+      expect(femaleRevisited).toBeInTheDocument();
+      expect(hispanicRevisited).toBeInTheDocument();
+      expect(whiteRevisited).toBeInTheDocument();
+      expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
+      expect(goToSubmitClaimAgain).toBeInTheDocument();
+    });
   });
 });
 

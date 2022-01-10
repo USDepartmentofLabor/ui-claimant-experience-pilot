@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
-import { Fieldset, Button } from "@trussworks/react-uswds";
+import { Trans, useTranslation } from "react-i18next";
+import { Alert, Button, Fieldset } from "@trussworks/react-uswds";
 import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
@@ -67,6 +67,13 @@ export const EmployerInformation = (props: PageProps) => {
           </Button>
         </div>
       ))}
+      {/*TODO: Display only for first segment? ("TBD" in figma)*/}
+      <Alert type="info">
+        <Trans ns="claimForm" i18nKey="employers.reason_for_data_collection">
+          {/*TODO: Just include english text as default here as the docs do?*/}
+          employers.reason_for_data_collection
+        </Trans>
+      </Alert>
       <EmployerProfile segment={segment} />
       <Fieldset legend={t("employers.more_employers.label")}>
         <YesNoRadio

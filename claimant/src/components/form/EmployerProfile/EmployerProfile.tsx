@@ -48,6 +48,7 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         label={t("name.label")}
         type="text"
         id={`employers[${segment}].name`}
+        hint={t("name.hint")}
       />
       <Fieldset legend={t("still_working.label")}>
         <YesNoRadio
@@ -116,10 +117,9 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       <TextField
         name={`employers[${segment}].phones[0].number`}
         label={t("phones.number.label")}
-        type="text"
+        type="tel"
         id={`employers[${segment}].phones[0].number`}
       />
-
       <Fieldset legend={t("same_phone.label")}>
         <YesNoRadio
           id={`employers[${segment}].LOCAL_same_phone`}
@@ -131,7 +131,7 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         <TextField
           name={`employers[${segment}].phones[1].number`}
           label={t("alt_employer_phone")}
-          type="text"
+          type="tel"
           id={`employers[${segment}].phones[1].number`}
         />
       )}

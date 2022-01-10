@@ -62,18 +62,21 @@ const claimForm = {
   },
   employers: {
     heading: "Your most recent employer:",
+    reason_for_data_collection:
+      "We need the <strong>last 18 months</strong> of your work history because it helps calculate your unemployment benefit amount. Include all your jobs to avoid delays with your application",
     errors: {
       required: "This field is required",
     },
     address: {
       address1: { label: "Employer address line 1" },
-      address2: { label: "Employer address line 2" },
+      address2: { label: "Employer address line 2 (optional)" },
       city: { label: "City" },
       state: { label: "State" },
       zipcode: { label: "ZIP code" },
     },
     name: {
       label: "Employer name",
+      hint: "You can usually find your employer or company’s name on your paystub or W2.",
     },
     more_employers: {
       label:
@@ -99,13 +102,13 @@ const claimForm = {
         },
       },
     },
-    alt_employer_phone: "Work site phone number",
+    alt_employer_phone: "Work location phone number",
     same_address: {
       label:
         "Did you work at the physical location you listed for your employer?",
     },
     work_site_address: {
-      heading: "Your work site address:",
+      heading: "Your work location address:",
       address1: { label: "Employer address line 1" },
       address2: { label: "Employer address line 2" },
       city: { label: "City" },

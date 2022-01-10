@@ -20,7 +20,10 @@ const Template: ComponentStory<typeof Address> = (args) => {
       address2: yup.string().optional(),
       city: yup.string().required(t("validation.required")),
       state: yup.string().required(t("validation.required")),
-      zipcode: yup.string().required(t("validation.required")),
+      zipcode: yup
+        .string()
+        .matches(/^\d{5}(-\d{4})?$/, t("validation.notZipCode"))
+        .required(t("validation.required")),
     }),
   });
 

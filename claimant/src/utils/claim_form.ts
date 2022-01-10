@@ -21,6 +21,7 @@ export const EMPLOYER_SKELETON: EmployerType = {
   LOCAL_same_phone: undefined,
   separation_reason: "",
   separation_comment: "",
+  fein: "",
 };
 
 // The _entire_ claimant data, even if rendering a subset.
