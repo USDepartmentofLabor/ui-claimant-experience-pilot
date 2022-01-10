@@ -59,7 +59,7 @@ root@randomdockerstring:/app# make migrate
 Finally, run:
 
 ```sh
-root@randomdockerstring:/app# make dev-run
+root@randomdockerstring:/app# make run
 ```
 
 You can now visit http://sandbox.ui.dol.gov:8004/ (thanks to your `/etc/hosts` entries) or http://localhost:8004/.
