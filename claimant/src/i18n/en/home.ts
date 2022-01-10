@@ -20,6 +20,7 @@ const home = {
   validation: {
     required: "This field is required",
     notEmail: "This is not a valid email",
+    email_does_not_match: "Confirmation email does not match",
   },
   pagination: {
     next: "Next",

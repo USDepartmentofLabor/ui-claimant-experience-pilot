@@ -9,6 +9,8 @@ const contact = {
     mailing_address: "What is your mailing address?",
     mailing_address_same:
       "My mailing address is the same as my primary address",
+    email_address: "Email address",
+    confirm_email_address: "Confirm email address",
   },
 };
 
