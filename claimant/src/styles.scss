@@ -54,3 +54,28 @@
   margin-top: units(3);
   margin-bottom: units(3);
 }
+
+.usa-link svg {
+  margin-left: 2px;
+  vertical-align: middle;
+}
+
+.screen-reader-only {
+  position: absolute;
+  width: 1px;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.usa-input-prefix,
+.usa-input-suffix {
+  color: #757575;
+  line-height: 0;
+  padding: 0 0.5rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+}

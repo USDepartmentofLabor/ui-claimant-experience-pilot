@@ -96,12 +96,17 @@ type EmployersType = {
   LOCAL_more_employers?: YesNo[];
 };
 
+type OccupationType = {
+  job_title: string;
+  job_description: string;
+  bls_code: string;
+  bls_title: string;
+  bls_description: string;
+};
+
 type ClaimantInput = PersonalInformationType &
   DemographicInformationType &
-  EmployersType & {
-    ssn?: string;
-    email?: string;
-    phone?: string | null;
+  EmployersType & { occupation?: OccupationType } & {
     is_complete?: boolean;
   };
 

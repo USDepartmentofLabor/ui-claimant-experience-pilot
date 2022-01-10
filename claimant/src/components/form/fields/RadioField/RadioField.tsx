@@ -7,7 +7,12 @@ interface IRadioOption {
   value: string;
 }
 
-interface IRadioFieldProps {
+type RadioInputProps = Omit<
+  React.ComponentProps<typeof Radio>,
+  "label" | "value"
+>;
+
+interface IRadioFieldProps extends RadioInputProps {
   id: string;
   name: string;
   options: IRadioOption[];
@@ -38,7 +43,7 @@ export const RadioField = ({
           {...fieldProps}
           key={`${id}.${index}.${option.value}`}
           id={`${id}.${option.value}`}
-          name={name}
+          data-testid={`${id}.${option.value}`}
           label={option.label}
           value={option.value}
           checked={metaProps.value === option.value}

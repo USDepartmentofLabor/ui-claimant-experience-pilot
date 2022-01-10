@@ -122,6 +122,18 @@ const claimForm = {
       hint: "You can usually find your employer's FEIN on your W2 or other tax documents your employer provides.",
     },
   },
+  occupation: {
+    search: "Search",
+    choose_the_occupation:
+      "Choose the occupation that best matches your selection above. If nothing matches, please try another search.",
+    heading: "Your occupation",
+    what_is_your_occupation: { label: "What is your occupation?" },
+    hint: "If you're not sure, see our",
+    list_of_occupations: "list of occupations",
+    short_description: { label: "Short description of your job" },
+    no_results: "", // TODO?
+    opens_in_a_new_tab: "opens in a new tab",
+  },
 };
 
 export default claimForm;
