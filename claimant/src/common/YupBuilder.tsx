@@ -14,7 +14,8 @@ interface SchemaConfig {
 }
 
 const schemas: SchemaLookup = {
-  "claim-v1.0": claim_v1_0 as JSONSchema7,
+  // eslint-disable-next-line
+  "claim-v1.0": claim_v1_0 as any as JSONSchema7,
 };
 
 const schemaConfigs: SchemaConfig = {

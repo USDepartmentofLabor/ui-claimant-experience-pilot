@@ -10724,10 +10724,9 @@ json-schema-traverse@^1.0.0:
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz#ae7bcb3656ab77a73ba5c49bf654f38e6b6860e2"
   integrity sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==
 
-json-schema-yup-transformer@^1.6.0:
+"json-schema-yup-transformer@https://github.com/nickscialli-usds/json-schema-yup-transform#d641513":
   version "1.6.0"
-  resolved "https://registry.yarnpkg.com/json-schema-yup-transformer/-/json-schema-yup-transformer-1.6.0.tgz#e1c629bd1447435fce871bb8bcd0a894c61ca429"
-  integrity sha512-fxS3g2t+taJ8ZBlbmA8rK3YO9SyjeQxvCIIJxC8iDsaqnGn0SVI3DnFePdmtHmYmyor9mlKOKvk6Sc0YT2ZP7Q==
+  resolved "https://github.com/nickscialli-usds/json-schema-yup-transform#d6415137746b151cdf9ab87c9d93412ecef0b52d"
   dependencies:
     is-relative-url "3.0.0"
     lodash "4.17.21"

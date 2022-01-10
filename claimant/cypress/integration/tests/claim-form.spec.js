@@ -85,6 +85,19 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_more_employers("no");
     cy.click_next();
 
+    /// Self-employment page
+    const selfEmployment = {
+      is_self_employed: "yes",
+      ownership_in_business: "yes",
+      is_corporate_officer: "yes",
+      related_to_owner: "yes",
+      name_of_business: "Joe's Cafe",
+      name_of_corporation: "ACME Corp",
+      corporation_or_partnership: "no",
+    };
+    cy.complete_self_employment_information(selfEmployment);
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // final page

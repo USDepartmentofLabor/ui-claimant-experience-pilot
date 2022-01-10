@@ -106,7 +106,8 @@ type OccupationType = {
 
 type ClaimantInput = PersonalInformationType &
   DemographicInformationType &
-  EmployersType & { occupation?: OccupationType } & {
+  EmployersType &
+  SelfEmploymentType & { occupation?: OccupationType } & {
     is_complete?: boolean;
   };
 
@@ -118,4 +119,20 @@ type Claim = ClaimantInput & {
 
 type PageProps = {
   segment: string | undefined;
+};
+
+type SelfEmploymentType = DeepPartial<{
+  self_employment: {
+    is_self_employed: YesNo;
+    ownership_in_business: YesNo;
+    name_of_business: string | null;
+    is_corporate_officer: YesNo;
+    name_of_corporation: string | null;
+    related_to_owner: YesNo;
+    corporation_or_partnership: YesNo;
+  };
+}>;
+
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
 };

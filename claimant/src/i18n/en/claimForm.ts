@@ -122,6 +122,27 @@ const claimForm = {
       hint: "You can usually find your employer's FEIN on your W2 or other tax documents your employer provides.",
     },
   },
+  self_employment: {
+    label: "Self-employment",
+    self_employed: { label: "Are you self-employed?" },
+    business_ownership: {
+      label: "Do you have ownership in a business of any kind?",
+    },
+    business_name: { label: "Name of business" },
+    business_interests: { label: "Your business interests" },
+    corporate_officer: {
+      label:
+        "Are you a corporate officer, or do you own more than 5% of the stock for the company you worked for?",
+    },
+    corporation_name: { label: "Name of corporation" },
+    related_to_owner: {
+      label:
+        "Are you related to the owner of any business you worked for during the last 18 months?",
+    },
+    corporation_or_partnership: {
+      label: "Is this business a corporation or partnership?",
+    },
+  },
   occupation: {
     search: "Search",
     choose_the_occupation:

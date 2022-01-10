@@ -232,3 +232,26 @@ Cypress.Commands.add("complete_demographic_information", () => {
   cy.get("input[id=race\\.hawaiian_or_pacific_islander").parent().click();
   cy.get("[name=education_level]").select("bachelors");
 });
+
+Cypress.Commands.add(
+  "complete_self_employment_information",
+  (selfEmployment) => {
+    [
+      "is_self_employed",
+      "ownership_in_business",
+      "is_corporate_officer",
+      "related_to_owner",
+      "corporation_or_partnership",
+    ].forEach((id) => {
+      cy.get(`input[id=self_employment\\.${id}\\.${selfEmployment[id]}]`)
+        .parent()
+        .click();
+    });
+
+    ["name_of_business", "name_of_corporation"].forEach((id) => {
+      if (selfEmployment[id]) {
+        cy.get(`[name=self_employment\\.${id}]`).type(selfEmployment[id]);
+      }
+    });
+  }
+);

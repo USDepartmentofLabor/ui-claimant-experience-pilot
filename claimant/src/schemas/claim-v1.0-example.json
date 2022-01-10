@@ -115,5 +115,14 @@
       "separation_reason": "Layed off",
       "separation_comment": "they ran out of money"
     }
-  ]
+  ],
+  "self_employment": {
+    "is_self_employed": "no",
+    "ownership_in_business": "yes",
+    "name_of_business": "BusinessCo",
+    "is_corporate_officer": "yes",
+    "name_of_corporation": "ACME Inc",
+    "related_to_owner": "yes",
+    "corporation_or_partnership": "no"
+  }
 }

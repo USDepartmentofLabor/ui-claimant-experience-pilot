@@ -163,6 +163,15 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
             "LOCAL_mailing_address_same": False,
+            "self_employment": {
+                "is_self_employed": "no",
+                "ownership_in_business": "yes",
+                "name_of_business": "BusinessCo",
+                "is_corporate_officer": "yes",
+                "name_of_corporation": "ACME Inc",
+                "related_to_owner": "yes",
+                "corporation_or_partnership": "no",
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -254,6 +263,15 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "self_employment": {
+                "is_self_employed": "no",
+                "ownership_in_business": "yes",
+                "name_of_business": "BusinessCo",
+                "is_corporate_officer": "yes",
+                "name_of_corporation": "ACME Inc",
+                "related_to_owner": "yes",
+                "corporation_or_partnership": "no",
+            },
         }
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
@@ -761,6 +779,14 @@ class ClaimValidatorTestCase(TestCase):
                     "separation_comment": "they ran out of money",
                 }
             ],
+            "self_employment": {
+                "is_self_employed": "no",
+                "ownership_in_business": "yes",
+                "name_of_business": "BusinessCo",
+                "is_corporate_officer": "yes",
+                "name_of_corporation": "ACME Inc",
+                "related_to_owner": "no",
+            },
         }
 
     def test_claim_validator(self):
@@ -882,7 +908,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 12)
+        self.assertEqual(len(cv.errors), 13)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)

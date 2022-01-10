@@ -276,6 +276,90 @@
         "WV",
         "WY"
       ]
+    },
+    "self_employment": {
+      "$id": "/definitions/self_employment",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/self_employment",
+      "type": "object",
+      "properties": {
+        "is_self_employed": {
+          "description": "whether or not the claimant is self-employed",
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
+        "ownership_in_business": {
+          "description": "whether or not the claimant has ownership in a business",
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
+        "is_corporate_officer": {
+          "description": "whether or not the claimant is is a corporate officer",
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
+        "related_to_owner": {
+          "description": "whether or not the claimant was related to the owner of an employer",
+          "type": "string",
+          "enum": ["yes", "no"]
+        }
+      },
+      "required": [
+        "is_self_employed",
+        "ownership_in_business",
+        "is_corporate_officer",
+        "related_to_owner"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "ownership_in_business": { "type": "string", "enum": ["yes"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "name_of_business": {
+                "description": "the name of the claimant's business if they own one",
+                "type": "string"
+              }
+            },
+            "required": ["name_of_business"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "is_corporate_officer": { "type": "string", "enum": ["yes"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "name_of_corporation": {
+                "description": "the name of the claimant's corporation if they participate in one",
+                "type": "string"
+              }
+            },
+            "required": ["name_of_corporation"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "related_to_owner": { "type": "string", "enum": ["yes"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "corporation_or_partnership": {
+                "description": "If the claimant is related to their business owner, whether the business is a corporation or partnership",
+                "type": "string"
+              }
+            },
+            "required": ["corporation_or_partnership"]
+          }
+        }
+      ]
     }
   },
   "required": ["claimant_name"],
@@ -515,6 +599,10 @@
       "description": "",
       "type": "boolean",
       "TODO_required_for_complete": true
+    },
+    "self_employment": {
+      "$ref": "#/definitions/self_employment",
+      "required_for_complete": true
     }
   }
 }
