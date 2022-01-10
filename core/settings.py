@@ -15,7 +15,6 @@ import environ
 import logging
 import logging.config
 import base64
-from corsheaders.defaults import default_headers
 
 
 # our symmetric encryptions keys must be 32 bytes (256 bits) base64-encoded
@@ -124,7 +123,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "corsheaders",
     "api",
     "login-dot-gov",
     "secure_redis",
@@ -141,7 +139,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",  # must come after session middleware and before common middleware
     "django.middleware.common.CommonMiddleware",
@@ -299,20 +296,6 @@ SECURE_BROWSER_XSS_FILTER = True
 # Content-Security-Policy configuration
 CSP_DEFAULT_SRC = None
 CSP_FRAME_ANCESTORS = ["'none'"]
-
-# CORS Cross-Origin Configuration
-# https://github.com/adamchainz/django-cors-headers
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
-CORS_ALLOWED_ORIGIN_REGEXES = env.list("CORS_ALLOWED_ORIGIN_REGEXES", default=[])
-# important to allow cookie to pass through
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "Cache-Control",
-    "If-Modified-Since",
-    "Keep-Alive",
-    "X-Requested-With",
-    "X-DOL",
-]
 
 # Email
 EMAIL_HOST = env.str("SMTP_HOSTNAME")
