@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import {
+  ErrorMessage,
   Label,
   Link,
-  ErrorMessage,
   FormGroup,
   IconLaunch,
   IconSearch,
@@ -13,7 +13,7 @@ import { TextAreaField } from "../fields/TextAreaField/TextAreaField";
 import { useField, useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 
-import soc_structure_2018 from "../../../schemas/soc_structure_2018.json";
+import soc_entries_2018 from "../../../schemas/soc_entries_2018.json";
 
 type OccupationOption = {
   code: string;
@@ -23,13 +23,15 @@ type OccupationOption = {
 };
 
 type SOCEntry = {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  [key: string]: string | any;
+  c: string; // code
+  t: string; // title
+  d: string; // description
+  e: string | null; // examples
 };
 
-const SOCEntries = soc_structure_2018 as SOCEntry;
+const SOCEntries = soc_entries_2018 as { [key: string]: SOCEntry };
 
-const OccupationEntry = (props: { occupation: SOCEntry }) => {
+const OccupationEntry = (props: { occupation: OccupationOption }) => {
   const entry = props.occupation;
   return (
     <>
@@ -69,46 +71,91 @@ const OccupationList = (props: OccupationListProps) => {
   );
 };
 
-const searchSOCLabels = (searchPattern: RegExp) => {
-  const matches: OccupationOption[] = [];
+type OccMatch = {
+  score: number;
+  tokens: string[];
+  occupation: SOCEntry;
+};
 
-  // structure is major, minor, broad, detailed
-  Object.keys(SOCEntries).forEach((majorId) => {
-    // const majorLabel = soc_structure_2018[majorId]._label;
-    const minorIds = Object.keys(SOCEntries[majorId] as SOCEntry).filter(
-      (el) => el !== "_label"
-    );
-    minorIds.forEach((minorId) => {
-      const minorLabel = SOCEntries[majorId][minorId]._label;
-      const broadIds = Object.keys(SOCEntries[majorId][minorId]).filter(
-        (el) => el !== "_label"
-      );
-      broadIds.forEach((broadId) => {
-        const broadLabel = SOCEntries[majorId][minorId][broadId]._label;
-        const detailIds = Object.keys(
-          SOCEntries[majorId][minorId][broadId]
-        ).filter((el) => el !== "_label");
-        detailIds.forEach((detailId) => {
-          const detail = SOCEntries[majorId][minorId][broadId][detailId];
-          if (
-            searchPattern.test(broadLabel) ||
-            searchPattern.test(minorLabel) ||
-            searchPattern.test(detail.title) ||
-            searchPattern.test(detail.desc) ||
-            searchPattern.test(detail.ex)
-          ) {
-            matches.push({
-              code: detailId,
-              title: detail.title,
-              description: detail.desc,
-              examples: detail.ex,
-            });
-          }
-        });
-      });
+const searchSOCEntries = (searchString: string) => {
+  const matches: { [key: string]: OccMatch } = {};
+
+  /* search algorithm
+     - tokenize searchString
+     - for each token, find matches in entries (case insensitive)
+     - score each match based on whether it was full or partial match on word boundaries
+     - sum the scores for each match (more tokens matching == bigger score) (we know this is naive)
+     - sort by scores
+  */
+  const tokens = searchString.split(/ +/);
+  // console.log({ tokens });
+  const matchingOccupations: OccupationOption[] = [];
+
+  tokens.forEach((token) => {
+    // allow only alphanumeric
+    token = token.replace(/\W/, "");
+    if (token.length < 3) {
+      return; // skip short tokens
+    }
+    const fullMatch = new RegExp(`\\b${token}\\b`, "ig");
+    // our titles are often plural, but claimant often enters singular.
+    // yes, we know this pluralization is grammatically naive.
+    const pluralMatch = new RegExp(`\\b${token}e?s\\b`, "ig");
+    const partialMatch = new RegExp(`${token}`, "i"); // NOTE no g since we don't match()
+    Object.entries(SOCEntries).forEach(([code, occupation]) => {
+      let score = 0;
+      score += 5 * (occupation.t.match(fullMatch) || []).length;
+      score += 4 * (occupation.t.match(pluralMatch) || []).length;
+      if (occupation.e) {
+        score += 4 * (occupation.e.match(fullMatch) || []).length;
+        score += 3 * (occupation.e.match(pluralMatch) || []).length;
+      }
+      if (
+        partialMatch.test(occupation.t) ||
+        (occupation.e && partialMatch.test(occupation.e))
+      ) {
+        score += 2;
+      }
+      // only try full match on description since there are too many hits otherwise
+      score += (occupation.d.match(fullMatch) || []).length;
+
+      if (score) {
+        if (code in matches) {
+          matches[code].score += score;
+          matches[code].tokens.push(token);
+        } else {
+          matches[code] = {
+            score: score,
+            tokens: [token],
+            occupation: occupation,
+          };
+        }
+      }
     });
   });
-  return matches;
+
+  // TODO if we wanted AND boolean logic, filter matches by tokens.length == match.tokens.length
+  // TODO since we now sort by rank, consider only returning 10 matches to make it simpler to scroll.
+
+  // console.log({ matches });
+
+  const matchingCodes = Object.keys(matches);
+  matchingCodes.sort((a, b) => {
+    return (
+      matches[b].score * matches[b].tokens.length -
+      matches[a].score * matches[a].tokens.length
+    );
+  });
+  matchingCodes.forEach((code) => {
+    matchingOccupations.push({
+      code: code,
+      title: matches[code].occupation.t,
+      description: matches[code].occupation.d,
+      examples: matches[code].occupation.e,
+    });
+  });
+
+  return matchingOccupations;
 };
 
 export const OccupationPicker = () => {
@@ -125,10 +172,7 @@ export const OccupationPicker = () => {
       return;
     }
 
-    // TODO escaping?
-    const searchPattern = new RegExp(input.replace(/ +/, "|"), "i");
-
-    const matches = searchSOCLabels(searchPattern);
+    const matches = searchSOCEntries(input);
     setOccupationOptions(matches);
   };
 

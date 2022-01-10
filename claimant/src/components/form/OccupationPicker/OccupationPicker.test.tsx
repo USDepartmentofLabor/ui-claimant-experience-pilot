@@ -67,7 +67,7 @@ describe("OccupationPicker component", () => {
       "occupation.bls_code.29-1141"
     );
     expect(selectedBlsCode).toBeChecked();
-    expect(matchingBlsCodes.length).toEqual(14);
+    expect(matchingBlsCodes.length).toEqual(8);
     matchingBlsCodes.forEach((radio) => {
       expect(radio).toHaveAttribute("name", "occupation.bls_code");
     });
@@ -132,6 +132,6 @@ describe("OccupationPicker component", () => {
       userEvent.type(jobTitle, "software designer");
     });
     const matchingBlsCodes = await screen.findAllByRole("radio");
-    expect(matchingBlsCodes.length).toEqual(35);
+    expect(matchingBlsCodes.length).toEqual(29);
   });
 });

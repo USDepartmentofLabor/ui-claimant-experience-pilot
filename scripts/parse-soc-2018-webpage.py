@@ -51,9 +51,14 @@ examples_pattern = r"Illustrative examples: <em>(.+?)</em>"
 
 entries = {}
 for detail_entry in re.finditer(detail_entry_pattern, body, flags=re.DOTALL):
-    id = detail_entry.group(2)
-    label = " ".join(detail_entry.group(3).split())
+    code = detail_entry.group(2)
+    title = " ".join(detail_entry.group(3).split())
     descr = " ".join(detail_entry.group(4).split())
+    # some descriptions have a "Excludes ..." sentence that we do not want,
+    # since it is meaningless to claimants and provides false hits in search.
+    if ". Excludes" in descr:
+        descr = re.sub(r". Excludes .+?\.", ".", descr, flags=re.DOTALL)
+
     # not all entries have examples
     if len(detail_entry.group(5)):
         examples = " ".join(
@@ -63,8 +68,10 @@ for detail_entry in re.finditer(detail_entry_pattern, body, flags=re.DOTALL):
         ).replace(" , ", ", ")
     else:
         examples = None
-    detail = {"id": id, "label": label, "description": descr, "examples": examples}
-    entries[id] = detail
+
+    # single letter keys to save space
+    detail = {"c": code, "t": title, "d": descr, "e": examples}
+    entries[code] = detail
 
 # some quality checks
 expected_ids = ["19-3011", "11-9041"]

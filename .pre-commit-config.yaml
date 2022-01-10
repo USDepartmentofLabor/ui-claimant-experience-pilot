@@ -38,7 +38,7 @@ repos:
       - id: prettier
         exclude: >
           (?x)^(
-            claimant/src/schemas/soc_structure_2018.json|
+            claimant/src/schemas/soc_.*_2018.json|
           )$
 
   - repo: https://github.com/pre-commit/mirrors-eslint

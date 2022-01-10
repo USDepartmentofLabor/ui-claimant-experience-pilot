@@ -39,8 +39,8 @@ for major_id, minors in tree.items():
 
                 entry = detail_entries[detail_id]
                 # short key names to save space
-                detail["desc"] = entry["description"]
-                detail["ex"] = entry["examples"]
+                detail["desc"] = entry["d"]
+                detail["ex"] = entry["e"]
                 # rename for consistency
                 detail["title"] = detail["_label"]
                 del detail["_label"]

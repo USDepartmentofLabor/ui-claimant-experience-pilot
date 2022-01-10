@@ -282,6 +282,10 @@ soc: ## Build the SOC codes from the BLS site
 	python scripts/parse-soc-2018-webpage.py > soc-entries.json
 	python scripts/merge-soc-2018.py soc_structure_2018.json soc-entries.json > merged-soc.json
 	mv merged-soc.json claimant/src/schemas/soc_structure_2018.json
+	mv soc-entries.json claimant/src/schemas/soc_entries_2018.json
+
+soc-clean: ## Clean up the SOC code temp files
+	rm -f soc_structure_2018.xlsx soc_structure_2018.csv soc_structure_2018.json major_groups.htm
 
 default: help
 
