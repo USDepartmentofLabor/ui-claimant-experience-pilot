@@ -8,7 +8,10 @@ import {
   ClaimantAddress,
 } from "../../../components/form/ClaimantAddress/ClaimantAddress";
 import { IPageDefinition } from "../../PageDefinitions";
-import { ADDRESS_SKELETON } from "../../../utils/claim_form";
+import {
+  ADDRESS_SKELETON,
+  PERSON_NAME_SKELETON,
+} from "../../../utils/claim_form";
 
 const schemaFields: ClaimSchemaField[] = [
   ...CLAIMANT_NAMES_SCHEMA_FIELDS,
@@ -28,7 +31,7 @@ export const PersonalInformationPage: IPageDefinition = {
   path: "personal-information",
   schemaFields: schemaFields,
   initialValues: {
-    claimant_name: { first_name: "", middle_name: "", last_name: "" },
+    claimant_name: { ...PERSON_NAME_SKELETON },
     LOCAL_claimant_has_alternate_names: undefined,
     alternate_names: [],
     residence_address: ADDRESS_SKELETON,

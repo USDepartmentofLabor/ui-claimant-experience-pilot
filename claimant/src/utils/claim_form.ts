@@ -2,6 +2,12 @@ import isEqual from "lodash/isEqual";
 import { IPageDefinition } from "../pages/PageDefinitions";
 
 // skeleton shapes with which to initialize form fields
+export const PERSON_NAME_SKELETON: PersonName = {
+  first_name: "",
+  middle_name: "",
+  last_name: "",
+};
+
 export const ADDRESS_SKELETON: AddressType = {
   address1: "",
   address2: "",

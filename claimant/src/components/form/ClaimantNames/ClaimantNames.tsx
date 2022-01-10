@@ -4,6 +4,8 @@ import { ClaimSchemaField } from "../../../common/YupBuilder";
 
 import { Name } from "../Name/Name";
 import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
+import { useEffect } from "react";
+import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
 
 export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaField[] = [
   "claimant_name",
@@ -11,14 +13,15 @@ export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaField[] = [
   "alternate_names",
 ];
 
-const BLANK_PERSON_NAME: PersonName = {
-  first_name: "",
-  middle_name: "",
-  last_name: "",
-};
-
 export const ClaimantNames = () => {
-  const { values } = useFormikContext<Claim>();
+  const { values, setFieldValue, setFieldTouched } = useFormikContext<Claim>();
+
+  useEffect(() => {
+    if (values.LOCAL_claimant_has_alternate_names === "no") {
+      setFieldValue("alternate_names", []);
+      setFieldTouched("alternate_names", false);
+    }
+  }, [values.LOCAL_claimant_has_alternate_names]);
 
   return (
     <>
@@ -39,7 +42,7 @@ export const ClaimantNames = () => {
             name="alternate_names"
             render={() => {
               values.alternate_names?.length === 0 &&
-                values.alternate_names.push(BLANK_PERSON_NAME);
+                values.alternate_names.push({ ...PERSON_NAME_SKELETON });
               return values.alternate_names?.map((alternateName, index) => {
                 const name = `alternate_names.${index}`;
                 return <Name key={name} id={name} name={name} />;
