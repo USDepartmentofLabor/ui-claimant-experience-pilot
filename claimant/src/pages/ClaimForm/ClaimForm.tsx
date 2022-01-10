@@ -220,7 +220,14 @@ export const ClaimForm = () => {
                   {nextPageLink()}
                 </FormGroup>
                 {showError && (
-                  <ErrorMessage>{commonT("form_errors")}</ErrorMessage>
+                  <>
+                    <ErrorMessage>{commonT("form_errors")}</ErrorMessage>
+                    {Object.keys(claimForm.errors).map((err, idx) => (
+                      <ErrorMessage key={`claim-form-error-${idx}`}>
+                        {JSON.stringify(claimForm.errors[err])}
+                      </ErrorMessage>
+                    ))}
+                  </>
                 )}
               </div>
             </Form>

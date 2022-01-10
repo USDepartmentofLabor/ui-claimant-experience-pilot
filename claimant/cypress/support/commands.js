@@ -225,6 +225,16 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
   }
 });
 
+Cypress.Commands.add("complete_occupation_form", (occupation) => {
+  cy.get("[name=occupation\\.job_title]").clear().type(occupation.title);
+  cy.get(`input[id=occupation\\.bls_code\\.${occupation.bls_code}`)
+    .parent()
+    .click();
+  cy.get("[name=occupation\\.job_description]")
+    .clear()
+    .type(occupation.description);
+});
+
 Cypress.Commands.add("complete_demographic_information", () => {
   cy.get("input[id=sex\\.female").parent().click();
   cy.get("input[id=ethnicity\\.not_hispanic").parent().click();

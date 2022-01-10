@@ -98,6 +98,14 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_self_employment_information(selfEmployment);
     cy.click_next();
 
+    // Occupation page
+    cy.complete_occupation_form({
+      title: "registered nurse",
+      description: "I am a nurse",
+      bls_code: "29-1141",
+    });
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // final page

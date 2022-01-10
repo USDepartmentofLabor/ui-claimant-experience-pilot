@@ -53,6 +53,6 @@ context("Employer section of Claim form", { scrollBehavior: "center" }, () => {
     cy.click_more_employers("no", "1");
     cy.click_next();
 
-    cy.contains("Success status").should("be.visible");
+    cy.contains("Progress saved").should("be.visible");
   });
 });

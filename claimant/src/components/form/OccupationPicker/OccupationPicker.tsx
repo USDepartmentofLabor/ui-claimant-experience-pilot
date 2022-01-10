@@ -195,7 +195,8 @@ export const OccupationPicker = () => {
     occupationOptions.forEach((option) => {
       if (option.code === occupation.bls_code) {
         occupation.bls_title = option.title;
-        occupation.bls_description = option.description;
+        // TODO NJ schema has max length of 255. Why?
+        occupation.bls_description = option.description.slice(0, 254);
       }
     });
     setFieldValue("occupation.bls_title", occupation.bls_title);
