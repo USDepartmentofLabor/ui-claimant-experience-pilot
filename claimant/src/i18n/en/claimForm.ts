@@ -182,6 +182,10 @@ const claimForm = {
         "Are you required to seek work through a union hiring hall (a job placement office operated by your union)?",
     },
   },
+  contact_information: {
+    interpreter_required: "Do you need an interpreter to communicate with us?",
+    preferred_language: "What language do you speak?",
+  },
 };
 
 export default claimForm;
