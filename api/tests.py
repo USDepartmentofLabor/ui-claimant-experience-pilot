@@ -172,6 +172,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "related_to_owner": "yes",
                 "corporation_or_partnership": "no",
             },
+            "student_fulltime_in_last_18_months": False,
+            "attending_college_or_job_training": True,
+            "registered_with_vocational_rehab": False,
             "union": {
                 "is_union_member": True,
                 "union_name": "foo",
@@ -278,6 +281,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "related_to_owner": "yes",
                 "corporation_or_partnership": "no",
             },
+            "student_fulltime_in_last_18_months": False,
+            "attending_college_or_job_training": True,
+            "registered_with_vocational_rehab": False,
             "union": {
                 "is_union_member": True,
                 "union_name": "foo",
@@ -799,6 +805,9 @@ class ClaimValidatorTestCase(TestCase):
                 "name_of_corporation": "ACME Inc",
                 "related_to_owner": "no",
             },
+            "student_fulltime_in_last_18_months": False,
+            "attending_college_or_job_training": True,
+            "registered_with_vocational_rehab": False,
             "union": {
                 "is_union_member": True,
                 "union_name": "foo",
@@ -928,7 +937,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 13)
+        self.assertEqual(len(cv.errors), 16)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)

@@ -6,6 +6,7 @@ import { SubmitPage } from "./Questions/Submit/Submit";
 import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
+import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
 
 export interface IPageDefinition {
   path: string;
@@ -26,6 +27,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   EmployerInformationPage,
   SelfEmploymentPage,
   OccupationPage,
+  EducationVocationalRehabPage,
   SubmitPage,
 ] as const;
 

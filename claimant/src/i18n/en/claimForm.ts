@@ -155,6 +155,23 @@ const claimForm = {
     no_results: "", // TODO?
     opens_in_a_new_tab: "opens in a new tab",
   },
+  education_vocational_rehab: {
+    education: {
+      heading: "Your education",
+      full_time_student: {
+        label: "Have you been a full-time student during the last 18 months?",
+      },
+      attending_training: {
+        label: "Are you currently attending college or job training?",
+      },
+    },
+    vocational_rehab: {
+      heading: "Vocational rehabilitation",
+      is_registered: {
+        label: "Are you currently registered with Vocational Rehabilitation?",
+      },
+    },
+  },
   union: {
     heading: "Union membership",
     is_union_member: { label: "Are you a member of a union?" },

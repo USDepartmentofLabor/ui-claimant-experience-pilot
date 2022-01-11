@@ -578,11 +578,6 @@
       "type": "boolean",
       "TODO_required_for_complete": true
     },
-    "student_fulltime_in_last_18_months": {
-      "description": "",
-      "type": "boolean",
-      "TODO_required_for_complete": true
-    },
     "primary_wage_earner": {
       "description": "",
       "type": "boolean",
@@ -598,10 +593,20 @@
       "type": "boolean",
       "TODO_required_for_complete": true
     },
-    "registered_with_vocational_rehab": {
-      "description": "",
+    "student_fulltime_in_last_18_months": {
+      "description": "If the claimant has been a full-time student during the last 18 months",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "required_for_complete": true
+    },
+    "attending_college_or_job_training": {
+      "description": "If the claimant is currently attending college or job training",
+      "type": "boolean",
+      "required_for_complete": true
+    },
+    "registered_with_vocational_rehab": {
+      "description": "If the claimant is registered with vocational rehabilitation",
+      "type": "boolean",
+      "required_for_complete": true
     },
     "self_employment": {
       "$ref": "#/definitions/self_employment",

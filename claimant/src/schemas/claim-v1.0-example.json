@@ -68,8 +68,6 @@
     }
   ],
   "ready_willing_able_to_work": true,
-  "registered_with_vocational_rehab": false,
-  "student_fulltime_in_last_18_months": false,
   "active_military_in_last_18_months": false,
   "employed_in_last_18_months": true,
   "currently_reside_in_us": true,
@@ -124,5 +122,8 @@
     "name_of_corporation": "ACME Inc",
     "related_to_owner": "yes",
     "corporation_or_partnership": "no"
-  }
+  },
+  "student_fulltime_in_last_18_months": false,
+  "attending_college_or_job_training": false,
+  "registered_with_vocational_rehab": true
 }

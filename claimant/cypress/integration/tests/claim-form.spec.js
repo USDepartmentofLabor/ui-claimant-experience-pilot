@@ -106,6 +106,15 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.click_next();
 
+    // Education and Vocational Rehab page
+    const educationVocation = {
+      student_fulltime_in_last_18_months: "yes",
+      attending_college_or_job_training: "no",
+      registered_with_vocational_rehab: "no",
+    };
+    cy.complete_education_vocational_information(educationVocation);
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // final page

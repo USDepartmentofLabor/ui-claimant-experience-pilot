@@ -113,7 +113,8 @@ type UnionType = {
 
 type ClaimantInput = PersonalInformationType &
   DemographicInformationType &
-  EmployersType & { union?: UnionType } & {
+  EmployersType &
+  EducationVocationalRehabType & { union?: UnionType } & {
     occupation?: OccupationType;
   } & SelfEmploymentType & {
     is_complete?: boolean;
@@ -139,6 +140,12 @@ type SelfEmploymentType = DeepPartial<{
     related_to_owner: YesNo;
     corporation_or_partnership: YesNo;
   };
+}>;
+
+type EducationVocationalRehabType = Partial<{
+  student_fulltime_in_last_18_months: boolean;
+  attending_college_or_job_training: boolean;
+  registered_with_vocational_rehab: boolean;
 }>;
 
 type DeepPartial<T> = {
