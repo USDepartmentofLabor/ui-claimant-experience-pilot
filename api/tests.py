@@ -172,6 +172,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "related_to_owner": "yes",
                 "corporation_or_partnership": "no",
             },
+            "union": {
+                "is_union_member": True,
+                "union_name": "foo",
+                "union_local_number": "1234",
+                "required_to_seek_work_through_hiring_hall": False,
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -271,6 +277,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "name_of_corporation": "ACME Inc",
                 "related_to_owner": "yes",
                 "corporation_or_partnership": "no",
+            },
+            "union": {
+                "is_union_member": True,
+                "union_name": "foo",
+                "union_local_number": "1234",
+                "required_to_seek_work_through_hiring_hall": False,
             },
         }
         response = csrf_client.post(
@@ -787,6 +799,12 @@ class ClaimValidatorTestCase(TestCase):
                 "name_of_corporation": "ACME Inc",
                 "related_to_owner": "no",
             },
+            "union": {
+                "is_union_member": True,
+                "union_name": "foo",
+                "union_local_number": "1234",
+                "required_to_seek_work_through_hiring_hall": False,
+            },
         }
 
     def test_claim_validator(self):
@@ -873,21 +891,23 @@ class ClaimValidatorTestCase(TestCase):
         )
 
         # union membership
-        union_claim = self.base_claim() | {"union": {"union_member": False}}
+        union_claim = self.base_claim() | {"union": {"is_union_member": False}}
         cv = ClaimValidator(union_claim)
+        error_dict = cv.errors_as_dict()
+        logger.debug("🚀 errors={}".format(error_dict))
         self.assertTrue(cv.valid)
-        union_claim = self.base_claim() | {"union": {"union_member": True}}
+        union_claim = self.base_claim() | {"union": {"is_union_member": True}}
         cv = ClaimValidator(union_claim)
         self.assertFalse(cv.valid)
         error_dict = cv.errors_as_dict()
-        logger.debug("errors={}".format(error_dict))
+        logger.debug("🚀 errors={}".format(error_dict))
         self.assertIn(
             "'union_name' is a required property",
             list(error_dict.keys()),
         )
         union_claim = self.base_claim() | {
             "union": {
-                "union_member": True,
+                "is_union_member": True,
                 "union_name": "foo",
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,

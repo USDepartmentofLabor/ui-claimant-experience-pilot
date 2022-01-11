@@ -104,10 +104,18 @@ type OccupationType = {
   bls_description: string;
 };
 
+type UnionType = {
+  is_union_member?: boolean;
+  union_name?: string;
+  union_local_number?: string;
+  required_to_seek_work_through_hiring_hall?: boolean;
+};
+
 type ClaimantInput = PersonalInformationType &
   DemographicInformationType &
-  EmployersType &
-  SelfEmploymentType & { occupation?: OccupationType } & {
+  EmployersType & { union?: UnionType } & {
+    occupation?: OccupationType;
+  } & SelfEmploymentType & {
     is_complete?: boolean;
   };
 

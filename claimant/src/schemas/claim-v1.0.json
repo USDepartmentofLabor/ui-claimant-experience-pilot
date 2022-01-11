@@ -178,37 +178,40 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
-        "union_member": {
-          "type": "boolean"
-        },
-        "union_name": {
-          "type": "string",
-          "maxLength": 32
-        },
-        "union_local_number": {
-          "type": "string",
-          "maxLength": 16
-        },
-        "required_to_seek_work_through_hiring_hall": {
+        "is_union_member": {
           "type": "boolean"
         }
       },
-      "required": ["union_member"],
-      "if": {
-        "properties": {
-          "union_member": {
-            "enum": [true]
+      "required": ["is_union_member"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "is_union_member": { "type": "boolean", "enum": [true] }
+            }
+          },
+          "then": {
+            "properties": {
+              "union_name": {
+                "type": "string",
+                "maxLength": 32
+              },
+              "union_local_number": {
+                "type": "string",
+                "maxLength": 16
+              },
+              "required_to_seek_work_through_hiring_hall": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "union_name",
+              "union_local_number",
+              "required_to_seek_work_through_hiring_hall"
+            ]
           }
         }
-      },
-      "then": {
-        "required": [
-          "union_member",
-          "union_name",
-          "union_local_number",
-          "required_to_seek_work_through_hiring_hall"
-        ]
-      }
+      ]
     },
     "state": {
       "$id": "/definitions/state",

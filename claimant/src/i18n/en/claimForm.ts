@@ -155,6 +155,16 @@ const claimForm = {
     no_results: "", // TODO?
     opens_in_a_new_tab: "opens in a new tab",
   },
+  union: {
+    heading: "Union membership",
+    is_union_member: { label: "Are you a member of a union?" },
+    union_name: { label: "Name of your union" },
+    union_local_number: { label: "Union local number" },
+    required_to_seek_work_through_hiring_hall: {
+      label:
+        "Are you required to seek work through a union hiring hall (a job placement office operated by your union)?",
+    },
+  },
 };
 
 export default claimForm;
