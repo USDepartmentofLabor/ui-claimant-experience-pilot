@@ -22,7 +22,7 @@ const Template: ComponentStory<typeof ClaimantNames> = () => {
       middle_name: "",
       last_name: "",
     },
-    LCOAL_claimant_has_alternate_names: undefined,
+    LOCAL_claimant_has_alternate_names: undefined,
     alternate_names: [],
   };
   ``;

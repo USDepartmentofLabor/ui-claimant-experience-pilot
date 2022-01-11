@@ -63,5 +63,5 @@ class HomeTestCase(TestCase):
         )
 
     def test_prequalifications_page(self):
-        response = self.client.get("/prequalifications/")
+        response = self.client.get("/prequal/")
         self.assertContains(response, "Prequalifications", status_code=200)
