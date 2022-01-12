@@ -93,6 +93,13 @@ Cypress.Commands.overwrite("log", (subject, message) =>
   cy.task("log", message)
 );
 
+Cypress.Commands.add("check_a11y", () => {
+  cy.pa11y({
+    runners: ["htmlcs"],
+    standard: "WCAG2AA",
+  });
+});
+
 Cypress.Commands.add("click_next", () => {
   cy.get("button")
     .contains("Next")

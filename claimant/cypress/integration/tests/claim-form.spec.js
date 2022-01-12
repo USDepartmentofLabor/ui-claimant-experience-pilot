@@ -52,7 +52,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
-  it("saves completed claim", () => {
+  it("saves completed claim (also checks a11y on each page)", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
@@ -65,8 +65,10 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "00000",
       },
     });
+    cy.check_a11y();
     cy.click_next();
     cy.complete_demographic_information();
+    cy.check_a11y();
     cy.click_next();
 
     const employer0 = {
@@ -83,6 +85,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_employer_form(employer0);
     cy.click_more_employers("no");
+    cy.check_a11y();
     cy.click_next();
 
     /// Self-employment page
@@ -96,6 +99,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       corporation_or_partnership: "no",
     };
     cy.complete_self_employment_information(selfEmployment);
+    cy.check_a11y();
     cy.click_next();
 
     // Occupation page
@@ -104,6 +108,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       description: "I am a nurse",
       bls_code: "29-1141",
     });
+    cy.check_a11y();
     cy.click_next();
 
     // Education and Vocational Rehab page
@@ -113,12 +118,14 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       registered_with_vocational_rehab: "no",
     };
     cy.complete_education_vocational_information(educationVocation);
+    cy.check_a11y();
     cy.click_next();
 
     // TODO all the other pages go here as we write them
 
     // final page
     cy.click_is_complete();
+    cy.check_a11y();
     cy.click_final_submit();
     cy.contains("Claim submitted").should("be.visible");
     // Should no longer allow the claim form to be accessed
