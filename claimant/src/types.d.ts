@@ -112,10 +112,10 @@ type UnionType = {
 };
 
 type ContactType = {
-  phones: PhoneType[];
-  interpreter_required: boolean;
-  preferred_language: string;
-  LOCAL_more_phones: boolean;
+  phones?: PhoneType[];
+  interpreter_required?: boolean;
+  preferred_language?: string;
+  LOCAL_more_phones?: boolean;
 };
 
 type ClaimantInput = PersonalInformationType &
