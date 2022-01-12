@@ -7,6 +7,7 @@ import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
+import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
 
 export interface IPageDefinition {
   path: string;
@@ -23,6 +24,7 @@ export interface IPageDefinition {
 
 export const pages: ReadonlyArray<IPageDefinition> = [
   PersonalInformationPage,
+  ContactInformationPage,
   DemographicInformationPage,
   EmployerInformationPage,
   SelfEmploymentPage,
