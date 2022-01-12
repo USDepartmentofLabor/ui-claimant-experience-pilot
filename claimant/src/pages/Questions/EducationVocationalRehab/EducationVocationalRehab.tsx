@@ -57,6 +57,7 @@ const schemaFields: ClaimSchemaField[] = [
 
 export const EducationVocationalRehabPage: IPageDefinition = {
   path: "education-vocational-rehab",
+  heading: "education_vocational_rehab",
   schemaFields: schemaFields,
   initialValues: {},
   Component: EducationVocationalRehab,

@@ -7,9 +7,11 @@ import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
+import en from "../i18n/en";
 
 export interface IPageDefinition {
   path: string;
+  heading: keyof typeof en.common.page_headings;
   schemaFields: ClaimSchemaField[];
   initialValues: FormValues;
   Component: FC<PageProps>;

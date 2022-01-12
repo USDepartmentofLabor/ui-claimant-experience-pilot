@@ -92,7 +92,9 @@ describe("the ClaimForm page", () => {
   );
   it("renders without error", async () => {
     render(Page);
-    expect(await screen.findByRole("heading")).toHaveTextContent("Welcome");
+    expect(await screen.findByRole("heading")).toHaveTextContent(
+      "Personal Information"
+    );
   });
 
   it("initializes form values", async () => {

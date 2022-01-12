@@ -32,6 +32,7 @@ export const ContactInformation = () => {
 
 export const ContactInformationPage: IPageDefinition = {
   path: "contact-information",
+  heading: "contact_information",
   schemaFields: schemaFields,
   initialValues: {
     interpreter_required: undefined,

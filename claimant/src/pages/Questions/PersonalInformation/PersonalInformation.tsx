@@ -29,6 +29,7 @@ const PersonalInformation = () => {
 
 export const PersonalInformationPage: IPageDefinition = {
   path: "personal-information",
+  heading: "personal_information",
   schemaFields: schemaFields,
   initialValues: {
     claimant_name: { ...PERSON_NAME_SKELETON },
