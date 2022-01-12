@@ -6,10 +6,20 @@ import CheckboxField from "../fields/CheckboxField/CheckboxField";
 type PhoneNumberFieldProps = {
   id: string;
   name: string;
+  showSMS?: boolean;
 };
 
-export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
+export const PhoneNumberField = ({
+  id,
+  name,
+  showSMS,
+}: PhoneNumberFieldProps) => {
   const { t } = useTranslation("common");
+
+  // TODO more idiomatic?
+  if (showSMS === undefined) {
+    showSMS = true;
+  }
 
   return (
     <>
@@ -30,11 +40,13 @@ export const PhoneNumberField = ({ id, name }: PhoneNumberFieldProps) => {
           { value: "work", label: t("phone.work") },
         ]}
       />
-      <CheckboxField
-        id={`${id}.sms`}
-        name={`${name}.sms`}
-        label={t("phone.sms.label")}
-      />
+      {showSMS && (
+        <CheckboxField
+          id={`${id}.sms`}
+          name={`${name}.sms`}
+          label={t("phone.sms.label")}
+        />
+      )}
     </>
   );
 };

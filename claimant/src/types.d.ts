@@ -111,7 +111,15 @@ type UnionType = {
   required_to_seek_work_through_hiring_hall?: boolean;
 };
 
+type ContactType = {
+  phones: PhoneType[];
+  interpreter_required: boolean;
+  preferred_language: string;
+  LOCAL_more_phones: boolean;
+};
+
 type ClaimantInput = PersonalInformationType &
+  ContactType &
   DemographicInformationType &
   EmployersType &
   EducationVocationalRehabType & { union?: UnionType } & {

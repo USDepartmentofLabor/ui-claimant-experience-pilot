@@ -183,6 +183,8 @@ const claimForm = {
     },
   },
   contact_information: {
+    what_is_your_contact_information: "What is your contact information?",
+    more_phones: "Add another phone number",
     interpreter_required: {
       label: "Do you need an interpreter to communicate with us?",
     },

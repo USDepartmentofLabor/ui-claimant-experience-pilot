@@ -450,6 +450,10 @@
       "type": "array",
       "items": { "$ref": "#/definitions/phone" }
     },
+    "LOCAL_more_phones": {
+      "description": "flow control only",
+      "type": "boolean"
+    },
     "preferred_language": {
       "description": "",
       "type": "string",
