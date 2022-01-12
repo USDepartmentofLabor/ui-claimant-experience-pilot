@@ -1,6 +1,56 @@
 {% extends "claimant-base.html" %} {% block content %}{% load i18n %}
 <!-- prettier-ignore -->
 <script type="text/JavaScript">
+    const prequalFields = [
+        "live_in_us",
+        "swa_code",
+        "job_last_18mo",
+        "disabled",
+        "military_service",
+        "federal_employment",
+        "maritime_employment"
+    ]
+    function getUnansweredQuestions(formData){
+        let fieldsToCheck = prequalFields;
+        if(formData.get("live_in_us") === "no") {
+            fieldsToCheck = prequalFields.filter(item => item !== "swa_code");
+            console.log("prequal fields", fieldsToCheck);
+        }
+        const emptyFields = [];
+        fieldsToCheck.forEach((field) => !formData.has(field) && emptyFields.push(field));
+        return emptyFields
+    }
+    function determineClaimantProceeds(formData){
+        // formData is in FormData object format
+        const yesProceedsFields = [
+            "live_in_us",
+            "job_last_18mo",
+        ];
+        const noProceedsFields = [
+            "disabled",
+            "military_service",
+            "federal_employment",
+            "maritime_employment"
+        ];
+
+        let canProceed = true;
+
+        const setCanProceed = (fields, deniedAnswer) => {
+             fields.forEach((field) => {
+            if (formData.get(field) === deniedAnswer) {
+                canProceed = false;
+            }
+        });
+        }
+        setCanProceed(yesProceedsFields, "no")
+        setCanProceed(noProceedsFields, "yes")
+
+        if ((formData.get("swa_code") === "NJ") && (formData.get("worked_other_state") === "yes")) {
+            canProceed = false;
+        }
+
+        return canProceed;
+    }
 
     function onChangeLiveUSHandler() {
         const formData = new FormData(document.getElementById("prequalification-form"));
@@ -17,6 +67,11 @@
     }
     function submitPrequalifications(){
         const formData = new FormData(document.getElementById("prequalification-form"));
+        const unanswered = getUnansweredQuestions(formData);
+        if(unanswered.length > 0){
+            alert("{%  translate "Must answer all questions" %}");
+            return;
+        }
         if(formData.get("live_in_us") === "no"){
             formData.delete("swa_code");
         }
@@ -24,15 +79,18 @@
         for (let pair of formData) {
             formKeyValues.push(pair)
         }
-        // code below for demo purposes until hooked up to js formula
-        console.log(formKeyValues);
-        let displayString = 'FORM VALUES SUBMITTED: \n';
+
+        const canProceed = determineClaimantProceeds(formData);
+        // code below for demo purposes until hooked up to validations and correct pages
+        const proceedMessage = canProceed ? "User may proceed to pilot\n" : "User does not qualify and will be sent back to SWA\n";
+        let displayString = proceedMessage + '\n' + 'FORM VALUES SUBMITTED: \n';
         let counter = 1;
         formKeyValues.forEach(kp => {
             counter++
             displayString += `${kp[0]}: ${kp[1]}\n`
         })
         alert(displayString);
+        window.location.href = "/claimant/"
     }
 </script>
 <!-- prettier-ignore -->
@@ -45,26 +103,29 @@
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="onChangeLiveUSHandler"  %}
                 <div class="display-none" id="swa-options">{% include './uswds/_swa_options.html' with swas=swas %}</div>
-          <div class="margin-top-4">
 
-              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="live_other_state" %}
-          </div>
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Recent employment" %}
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" %}
+          <div class="margin-top-4">
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
+          </div>
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Disability" %}
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" %}
+
           <h2 class="{{styles.section_margin}} {{ styles.section_heading }}">
               {% translate "Military service" %}
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" %}
+
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Federal employment" %}
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" %}
+
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Maritime employment" %}
           </h2>

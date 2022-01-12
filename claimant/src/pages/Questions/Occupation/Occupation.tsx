@@ -10,6 +10,7 @@ export const Occupation = () => {
 
 export const OccupationPage: IPageDefinition = {
   path: "occupation",
+  heading: "occupation",
   schemaFields: schemaFields,
   initialValues: {
     occupation: {},

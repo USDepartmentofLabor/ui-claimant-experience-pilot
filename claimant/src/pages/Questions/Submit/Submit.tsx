@@ -21,6 +21,7 @@ export const Submit = () => {
 
 export const SubmitPage: IPageDefinition = {
   path: "submit",
+  heading: "submit",
   schemaFields: schemaFields,
   initialValues: {
     is_complete: false,

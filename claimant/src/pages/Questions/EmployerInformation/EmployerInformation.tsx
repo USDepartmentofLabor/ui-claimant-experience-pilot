@@ -87,6 +87,7 @@ export const EmployerInformation = (props: PageProps) => {
 
 export const EmployerInformationPage: IPageDefinition = {
   path: "employer-information",
+  heading: "recent_employer",
   schemaFields: schemaFields,
   initialValues: {
     employers: [],

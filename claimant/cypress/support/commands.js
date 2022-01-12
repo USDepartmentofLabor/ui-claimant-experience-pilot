@@ -93,6 +93,13 @@ Cypress.Commands.overwrite("log", (subject, message) =>
   cy.task("log", message)
 );
 
+Cypress.Commands.add("check_a11y", () => {
+  cy.pa11y({
+    runners: ["htmlcs"],
+    standard: "WCAG2AA",
+  });
+});
+
 Cypress.Commands.add("click_next", () => {
   cy.get("button")
     .contains("Next")
@@ -236,10 +243,10 @@ Cypress.Commands.add("complete_occupation_form", (occupation) => {
 });
 
 Cypress.Commands.add("complete_demographic_information", () => {
-  cy.get("input[id=sex\\.female").parent().click();
-  cy.get("input[id=ethnicity\\.not_hispanic").parent().click();
-  cy.get("input[id=race\\.asian").parent().click();
-  cy.get("input[id=race\\.hawaiian_or_pacific_islander").parent().click();
+  cy.get("input[id=sex\\.female]").parent().click();
+  cy.get("input[id=ethnicity\\.not_hispanic]").parent().click();
+  cy.get("input[id=race\\.asian]").parent().click();
+  cy.get("input[id=race\\.hawaiian_or_pacific_islander]").parent().click();
   cy.get("[name=education_level]").select("bachelors");
 });
 
@@ -262,6 +269,21 @@ Cypress.Commands.add(
       if (selfEmployment[id]) {
         cy.get(`[name=self_employment\\.${id}]`).type(selfEmployment[id]);
       }
+    });
+  }
+);
+
+Cypress.Commands.add(
+  "complete_education_vocational_information",
+  (educationVocationalInfo) => {
+    [
+      "student_fulltime_in_last_18_months",
+      "attending_college_or_job_training",
+      "registered_with_vocational_rehab",
+    ].forEach((id) => {
+      cy.get(`input[id=${id}\\.${educationVocationalInfo[id]}]`)
+        .parent()
+        .click();
     });
   }
 );

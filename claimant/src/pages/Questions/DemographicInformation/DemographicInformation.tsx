@@ -131,6 +131,7 @@ export const DemographicInformation = () => {
 
 export const DemographicInformationPage: IPageDefinition = {
   path: "demographic-information",
+  heading: "demographic_information",
   schemaFields: schemaFields,
   initialValues: {
     birthdate: "",

@@ -104,10 +104,19 @@ type OccupationType = {
   bls_description: string;
 };
 
+type UnionType = {
+  is_union_member?: boolean;
+  union_name?: string;
+  union_local_number?: string;
+  required_to_seek_work_through_hiring_hall?: boolean;
+};
+
 type ClaimantInput = PersonalInformationType &
   DemographicInformationType &
   EmployersType &
-  SelfEmploymentType & { occupation?: OccupationType } & {
+  EducationVocationalRehabType & { union?: UnionType } & {
+    occupation?: OccupationType;
+  } & SelfEmploymentType & {
     is_complete?: boolean;
   };
 
@@ -131,6 +140,12 @@ type SelfEmploymentType = DeepPartial<{
     related_to_owner: YesNo;
     corporation_or_partnership: YesNo;
   };
+}>;
+
+type EducationVocationalRehabType = Partial<{
+  student_fulltime_in_last_18_months: boolean;
+  attending_college_or_job_training: boolean;
+  registered_with_vocational_rehab: boolean;
 }>;
 
 type DeepPartial<T> = {

@@ -155,6 +155,39 @@ const claimForm = {
     no_results: "", // TODO?
     opens_in_a_new_tab: "opens in a new tab",
   },
+  education_vocational_rehab: {
+    education: {
+      heading: "Your education",
+      full_time_student: {
+        label: "Have you been a full-time student during the last 18 months?",
+      },
+      attending_training: {
+        label: "Are you currently attending college or job training?",
+      },
+    },
+    vocational_rehab: {
+      heading: "Vocational rehabilitation",
+      is_registered: {
+        label: "Are you currently registered with Vocational Rehabilitation?",
+      },
+    },
+  },
+  union: {
+    heading: "Union membership",
+    is_union_member: { label: "Are you a member of a union?" },
+    union_name: { label: "Name of your union" },
+    union_local_number: { label: "Union local number" },
+    required_to_seek_work_through_hiring_hall: {
+      label:
+        "Are you required to seek work through a union hiring hall (a job placement office operated by your union)?",
+    },
+  },
+  contact_information: {
+    interpreter_required: {
+      label: "Do you need an interpreter to communicate with us?",
+    },
+    preferred_language: { label: "What language do you speak?" },
+  },
 };
 
 export default claimForm;

@@ -2,26 +2,32 @@
 <fieldset class="usa-fieldset border-0">
   <legend class="usa-legend">{% translate field_label %}</legend>
   <div class="usa-radio display-inline-block margin-right-8">
+    <!-- prettier-ignore -->
     <input
       class="usa-radio__input"
       id="{{ field_name }}-yes"
       type="radio"
       name="{{field_name}}"
       value="yes"
-      onchange="{% if onchange %}{{ onchange}}(){% endif %}"
+      {% if onchange %}
+      onchange="{{ onchange }}()"
+      {% endif %}
     />
     <label class="usa-radio__label" for="{{ field_name }}-yes"
       >{% translate "Yes" %}</label
     >
   </div>
   <div class="usa-radio display-inline-block">
+    <!-- prettier-ignore -->
     <input
       class="usa-radio__input"
       id="{{ field_name }}-no"
       type="radio"
       name="{{ field_name }}"
       value="no"
-      onchange="{% if onchange %}{{ onchange}}(){% endif %}"
+      {% if onchange %}
+      onchange="{{ onchange}}()"
+      {% endif %}
     />
     <label class="usa-radio__label" for="{{ field_name }}-no"
       >{% translate "No" %}</label
