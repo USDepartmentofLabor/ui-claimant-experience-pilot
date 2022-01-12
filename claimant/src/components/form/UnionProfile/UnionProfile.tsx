@@ -10,6 +10,7 @@ export const UnionProfile = () => {
   const {
     values: { union },
     setFieldValue,
+    // setFieldTouched,
   } = useFormikContext<ClaimantInput>();
 
   const formData: ClaimantInput["union"] = union || {};
@@ -23,12 +24,15 @@ export const UnionProfile = () => {
         "union.required_to_seek_work_through_hiring_hall",
         undefined
       );
+    } else {
+      // TODO ?
+      // "touch" all the child fields so errors display
+      // setFieldTouched("union.union_name", true, );
     }
-  }, [formData]);
+  }, [formData.is_union_member]);
 
   return (
     <>
-      <h3>{t("heading")}</h3>
       <Fieldset legend={t("is_union_member.label")}>
         <BooleanRadio id="union.is_union_member" name="union.is_union_member" />
       </Fieldset>

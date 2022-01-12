@@ -102,6 +102,7 @@ const schemaFields: ClaimSchemaField[] = ["self_employment"];
 
 export const SelfEmploymentPage: IPageDefinition = {
   path: "self-employment",
+  heading: "self_employment",
   schemaFields: schemaFields,
   initialValues: {},
   Component: SelfEmployment,

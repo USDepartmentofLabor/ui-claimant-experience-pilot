@@ -2,15 +2,18 @@ import { PersonalInformationPage } from "./Questions/PersonalInformation/Persona
 import { DemographicInformationPage } from "./Questions/DemographicInformation/DemographicInformation";
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
 import { OccupationPage } from "./Questions/Occupation/Occupation";
+import { UnionPage } from "./Questions/Union/Union";
 import { SubmitPage } from "./Questions/Submit/Submit";
 import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
 import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
+import en from "../i18n/en";
 
 export interface IPageDefinition {
   path: string;
+  heading: keyof typeof en.common.page_headings;
   schemaFields: ClaimSchemaField[];
   initialValues: FormValues;
   Component: FC<PageProps>;
@@ -30,6 +33,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   SelfEmploymentPage,
   OccupationPage,
   EducationVocationalRehabPage,
+  UnionPage,
   SubmitPage,
 ] as const;
 

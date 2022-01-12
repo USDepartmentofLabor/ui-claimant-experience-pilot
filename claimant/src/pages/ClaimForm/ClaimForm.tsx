@@ -255,10 +255,15 @@ export const ClaimForm = () => {
 };
 
 const ClaimFormPage = () => {
-  const { t } = useTranslation("home"); // TODO
+  const { t } = useTranslation("common", { keyPrefix: "page_headings" });
+  const { page } = useParams();
+  const currentPageIndex = pages.findIndex((p) => p.path === page);
+  const { heading } = pages[currentPageIndex];
   return (
     <main data-testid="claim-form-page">
-      <h1>{t("welcome")}</h1>
+      <h1>
+        <Trans t={t}>{heading}</Trans>
+      </h1>
       <RequestErrorBoundary>
         <ClaimForm />
       </RequestErrorBoundary>

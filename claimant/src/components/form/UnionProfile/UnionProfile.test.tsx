@@ -21,7 +21,9 @@ describe("UnionProfile", () => {
     );
   });
   it("renders", async () => {
-    expect(await screen.findByText("heading")).toBeInTheDocument();
+    expect(
+      await screen.findByText("is_union_member.label")
+    ).toBeInTheDocument();
   });
   it("shows fields conditionally", async () => {
     const yesButtons = screen.getAllByLabelText("yes");

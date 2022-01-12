@@ -26,6 +26,17 @@ const common = {
     work: "Work",
   },
   select_one: "-- Select one --",
+  page_headings: {
+    personal_information: "Personal Information",
+    contact_information: "Contact Information",
+    demographic_information: "Demographic Information",
+    education_vocational_rehab: "Education and Vocational Rehabilitation",
+    recent_employer: "Recent Employer",
+    self_employment: "Self Employment",
+    occupation: "Occupation",
+    union: "Union Membership",
+    submit: "Review",
+  },
 };
 
 export default common;
