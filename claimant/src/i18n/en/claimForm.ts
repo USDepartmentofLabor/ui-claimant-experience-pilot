@@ -183,8 +183,10 @@ const claimForm = {
     },
   },
   contact_information: {
-    interpreter_required: "Do you need an interpreter to communicate with us?",
-    preferred_language: "What language do you speak?",
+    interpreter_required: {
+      label: "Do you need an interpreter to communicate with us?",
+    },
+    preferred_language: { label: "What language do you speak?" },
   },
 };
 

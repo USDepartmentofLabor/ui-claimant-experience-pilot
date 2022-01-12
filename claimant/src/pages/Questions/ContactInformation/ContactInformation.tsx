@@ -17,11 +17,11 @@ export const ContactInformation = () => {
 
   return (
     <>
-      <Fieldset legend={t("contact_information.interpreter_required")}>
+      <Fieldset legend={t("contact_information.interpreter_required.label")}>
         <BooleanRadio id="interpreter_required" name="interpreter_required" />
       </Fieldset>
       <TextField
-        label={t("contact_information.preferred_language")}
+        label={t("contact_information.preferred_language.label")}
         id={"preferred_language"}
         name={"preferred_language"}
         type="text"

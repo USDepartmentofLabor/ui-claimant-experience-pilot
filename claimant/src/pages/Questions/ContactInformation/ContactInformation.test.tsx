@@ -25,14 +25,16 @@ describe("ContactInformation component", () => {
     );
 
     const interpreterField = getByRole("group", {
-      name: "interpreter_required.label",
+      name: "contact_information.interpreter_required.label",
     });
     const interpreterYes = within(interpreterField).getByLabelText("yes");
     const interpreterNo = within(interpreterField).getByLabelText("no");
     expect(interpreterYes).toHaveAttribute("id", "interpreter_required.yes");
     expect(interpreterNo).toHaveAttribute("id", "interpreter_required.no");
 
-    const preferredLanguageField = getByLabelText("preferred_language.label");
+    const preferredLanguageField = getByLabelText(
+      "contact_information.preferred_language.label"
+    );
     expect(preferredLanguageField).toHaveValue(
       initialValues.preferred_language
     );
