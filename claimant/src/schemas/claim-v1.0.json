@@ -183,35 +183,31 @@
         }
       },
       "required": ["is_union_member"],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "is_union_member": { "type": "boolean", "enum": [true] }
-            }
-          },
-          "then": {
-            "properties": {
-              "union_name": {
-                "type": "string",
-                "maxLength": 32
-              },
-              "union_local_number": {
-                "type": "string",
-                "maxLength": 16
-              },
-              "required_to_seek_work_through_hiring_hall": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "union_name",
-              "union_local_number",
-              "required_to_seek_work_through_hiring_hall"
-            ]
-          }
+      "if": {
+        "properties": {
+          "is_union_member": { "type": "boolean", "const": true }
         }
-      ]
+      },
+      "then": {
+        "properties": {
+          "union_name": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "union_local_number": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "required_to_seek_work_through_hiring_hall": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "union_name",
+          "union_local_number",
+          "required_to_seek_work_through_hiring_hall"
+        ]
+      }
     },
     "state": {
       "$id": "/definitions/state",

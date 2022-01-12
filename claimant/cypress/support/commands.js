@@ -86,7 +86,13 @@ Cypress.Commands.add("mock_login", () => {
   }).as("api-partial-claim");
   cy.intercept("GET", "/api/completed-claim/", (req) => {
     req.reply({ statusCode: 404, body: { status: "error" } });
-  }).as("api-partial-claim");
+  }).as("api-completed-claim");
+});
+
+Cypress.Commands.add("mock_partial_success", () => {
+  cy.intercept("POST", "/api/partial-claim/", (req) => {
+    req.reply({ statusCode: 202, body: { status: "ok" } });
+  }).as("POST-api-partial-claim");
 });
 
 Cypress.Commands.overwrite("log", (subject, message) =>
@@ -248,6 +254,28 @@ Cypress.Commands.add("complete_demographic_information", () => {
   cy.get("input[id=race\\.asian]").parent().click();
   cy.get("input[id=race\\.hawaiian_or_pacific_islander]").parent().click();
   cy.get("[name=education_level]").select("bachelors");
+});
+
+Cypress.Commands.add("complete_union_form", (union) => {
+  cy.get(
+    `input[id=union\\.is_union_member\\.${
+      union.is_union_member ? "yes" : "no"
+    }]`
+  ).click({ force: true });
+  if (union.is_union_member) {
+    cy.get("[name=union\\.union_name]")
+      .should("be.visible")
+      .clear()
+      .type(union.union_name);
+    cy.get(
+      `input[id=union\\.required_to_seek_work_through_hiring_hall\\.${
+        union.required_to_seek_work_through_hiring_hall ? "yes" : "no"
+      }]`
+    ).click({ force: true });
+    cy.get("[name=union\\.union_local_number]")
+      .clear()
+      .type(union.union_local_number);
+  }
 });
 
 Cypress.Commands.add(

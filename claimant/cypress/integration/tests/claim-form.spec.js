@@ -121,6 +121,14 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    cy.complete_union_form({
+      is_union_member: true,
+      required_to_seek_work_through_hiring_hall: true,
+      union_name: "United ACME",
+      union_local_number: "12345",
+    });
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // final page

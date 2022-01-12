@@ -12,12 +12,7 @@ const noop = () => undefined;
 const Template: ComponentStory<typeof UnionProfile> = () => {
   const validationSchema = YupBuilder("claim-v1.0", ["union"]);
   const initialValues = {
-    union: {
-      is_union_member: true,
-      required_to_seek_work_through_hiring_hall: true,
-      union_name: "United ACME",
-      union_local_number: "12345",
-    },
+    union: {},
   };
 
   return (

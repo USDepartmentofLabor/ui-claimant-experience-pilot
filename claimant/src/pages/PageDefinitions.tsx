@@ -2,6 +2,7 @@ import { PersonalInformationPage } from "./Questions/PersonalInformation/Persona
 import { DemographicInformationPage } from "./Questions/DemographicInformation/DemographicInformation";
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
 import { OccupationPage } from "./Questions/Occupation/Occupation";
+import { UnionPage } from "./Questions/Union/Union";
 import { SubmitPage } from "./Questions/Submit/Submit";
 import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
@@ -30,6 +31,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   SelfEmploymentPage,
   OccupationPage,
   EducationVocationalRehabPage,
+  UnionPage,
   SubmitPage,
 ] as const;
 
