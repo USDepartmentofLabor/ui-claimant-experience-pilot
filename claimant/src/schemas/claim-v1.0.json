@@ -448,7 +448,8 @@
     "phones": {
       "description": "",
       "type": "array",
-      "items": { "$ref": "#/definitions/phone" }
+      "items": { "$ref": "#/definitions/phone" },
+      "required_for_complete": true
     },
     "LOCAL_more_phones": {
       "description": "flow control only",
@@ -586,7 +587,7 @@
     "interpreter_required": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "required_for_complete": true
     },
     "dependency_allowance": {
       "description": "",
