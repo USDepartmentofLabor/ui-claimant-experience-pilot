@@ -161,8 +161,6 @@ export const ClaimForm = () => {
     );
   }
 
-  console.log({ initialValues });
-
   if (!Object.keys(initialValues)) {
     throw new Error("no initialValues");
   }

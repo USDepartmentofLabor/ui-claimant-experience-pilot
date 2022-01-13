@@ -112,6 +112,7 @@ type UnionType = {
 };
 
 type ContactType = {
+  email?: string; // populated from whoami but optional until then.
   phones?: PhoneType[];
   interpreter_required?: boolean;
   preferred_language?: string;

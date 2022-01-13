@@ -34,7 +34,6 @@ export const EMPLOYER_SKELETON: EmployerType = {
 // These values are empty strings on the first load, but might
 // be persisted somewhere and restored on later visits.
 const CLAIM_FORM_SKELETON: FormValues = {
-  email: "",
   ssn: "",
 };
 

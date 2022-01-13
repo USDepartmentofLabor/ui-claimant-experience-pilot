@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
-
+import { useEffect } from "react";
 import { IPageDefinition } from "../../PageDefinitions";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { CheckboxField } from "../../../components/form/fields/CheckboxField/CheckboxField";
 import { PhoneNumberField } from "../../../components/form/PhoneNumberField/PhoneNumberField";
 
 const schemaFields: ClaimSchemaField[] = [
+  "email",
   "phones",
   "LOCAL_more_phones",
   "interpreter_required",
@@ -20,7 +21,19 @@ export const ContactInformation = () => {
   const { t } = useTranslation("claimForm", {
     keyPrefix: "contact_information",
   });
-  const { values } = useFormikContext<ClaimantInput>();
+  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+
+  // Remove phones[1] if unchecked
+  useEffect(() => {
+    if (
+      !values.LOCAL_more_phones &&
+      values.phones &&
+      values.phones.length > 1
+    ) {
+      const firstPhone = values.phones[0];
+      setFieldValue("phones", [firstPhone]);
+    }
+  }, [values.LOCAL_more_phones]);
 
   return (
     <>
@@ -36,6 +49,14 @@ export const ContactInformation = () => {
           <PhoneNumberField id="phones[1]" name="phones[1]" showSMS={false} />
         )}
       </Fieldset>
+      <TextField
+        name="email"
+        id="email"
+        type="text"
+        label={t("email")}
+        disabled
+        readOnly
+      />
       <Fieldset legend={t("interpreter_required.label")}>
         <BooleanRadio id="interpreter_required" name="interpreter_required" />
       </Fieldset>
@@ -54,6 +75,7 @@ export const ContactInformationPage: IPageDefinition = {
   heading: "contact_information",
   schemaFields: schemaFields,
   initialValues: {
+    email: undefined, // whoami will populate
     phones: [],
     LOCAL_more_phones: undefined,
     interpreter_required: undefined,
