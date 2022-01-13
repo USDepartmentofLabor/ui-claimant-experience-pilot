@@ -12,14 +12,9 @@ type PhoneNumberFieldProps = {
 export const PhoneNumberField = ({
   id,
   name,
-  showSMS,
+  showSMS = true,
 }: PhoneNumberFieldProps) => {
   const { t } = useTranslation("common");
-
-  // TODO more idiomatic?
-  if (showSMS === undefined) {
-    showSMS = true;
-  }
 
   return (
     <>
