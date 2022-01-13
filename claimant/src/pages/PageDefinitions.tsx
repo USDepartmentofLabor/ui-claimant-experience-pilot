@@ -1,3 +1,5 @@
+import { AnySchema } from "yup";
+import { TFunction } from "react-i18next";
 import { PersonalInformationPage } from "./Questions/PersonalInformation/PersonalInformation";
 import { DemographicInformationPage } from "./Questions/DemographicInformation/DemographicInformation";
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
@@ -24,6 +26,7 @@ export interface IPageDefinition {
   ) => boolean;
   nextSegment?: (currentSegment: string | undefined) => string | false;
   previousSegment?: (currentSegment: string | undefined) => string | false;
+  pageSchema?: (t: TFunction<"claimForm">) => AnySchema;
 }
 
 export const pages: ReadonlyArray<IPageDefinition> = [

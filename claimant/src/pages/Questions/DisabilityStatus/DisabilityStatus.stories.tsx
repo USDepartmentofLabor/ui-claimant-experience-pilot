@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
+import { useTranslation } from "react-i18next";
 
-import YupBuilder from "../../../common/YupBuilder";
 import { noop } from "../../../testUtils/noop";
 import { DisabilityStatus, DisabilityStatusPage } from "./DisabilityStatus";
 
@@ -11,10 +11,8 @@ export default {
 } as ComponentMeta<typeof DisabilityStatus>;
 
 const Template: ComponentStory<typeof DisabilityStatus> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    DisabilityStatusPage.schemaFields
-  );
+  const { t } = useTranslation("claimForm");
+  const validationSchema = DisabilityStatusPage.pageSchema?.(t);
 
   return (
     <Formik

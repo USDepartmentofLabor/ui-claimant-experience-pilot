@@ -160,6 +160,8 @@ const claimForm = {
     has_collected_disability: {
       label:
         "Since your last day worked, have you collected disability or worker's compensation?",
+      required:
+        "You must indicate whether you have collected disability or worker's compensation",
     },
     disabled_immediately_before: {
       label:

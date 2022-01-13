@@ -1,13 +1,21 @@
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { TFunction, useTranslation } from "react-i18next";
+import * as yup from "yup";
+
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { DatePicker } from "../../../components/form/fields/DatePicker/DatePicker";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { formatUserInputDate } from "../../../utils/format";
 import { IPageDefinition } from "../../PageDefinitions";
+
+const typeOptions = [
+  { label: "State Plan", value: "State Plan" },
+  { label: "Private Plan", value: "Private Plan" },
+  { label: "Worker's Compensation", value: "Worker's Compensation" },
+];
 
 export const DisabilityStatus = () => {
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
@@ -57,14 +65,7 @@ export const DisabilityStatus = () => {
             id="disability.type_of_disability"
             name="disability.type_of_disability"
             label={t("disability.type_of_disability.label")}
-            options={[
-              { label: "State Plan", value: "State Plan" },
-              { label: "Private Plan", value: "Private Plan" },
-              {
-                label: "Worker's Compensation",
-                value: "Worker's Compensation",
-              },
-            ]}
+            options={typeOptions}
             startEmpty
           />
           <DatePicker
@@ -117,10 +118,53 @@ export const DisabilityStatus = () => {
 
 const schemaFields: ClaimSchemaField[] = ["disability"];
 
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object({
+    disability: yup.object({
+      has_collected_disability: yup
+        .boolean()
+        .required(t("disability.has_collected_disability.required")),
+      disabled_immediately_before: yup
+        .boolean()
+        .when("has_collected_disability", {
+          is: true,
+          then: yup.boolean().required(),
+        }),
+      date_disability_began: yup
+        .date()
+        .max(new Date())
+        .when("has_collected_disability", {
+          is: true,
+          then: yup.date().required(),
+        }),
+      recovery_date: yup
+        .date()
+        .max(new Date())
+        .when("date_disability_began", {
+          is: (date: string | undefined) => !!date,
+          then: yup.date().min(yup.ref("date_disability_began")),
+        }),
+      type_of_disability: yup
+        .mixed()
+        .oneOf(typeOptions.map(({ value }) => value))
+        .when("has_collected_disability", {
+          is: true,
+          then: yup.mixed().required(),
+        }),
+      contacted_last_employer_after_recovery: yup
+        .boolean()
+        .when("recovery_date", {
+          is: (val: string | undefined) => !!val,
+          then: yup.boolean().required(),
+        }),
+    }),
+  });
+
 export const DisabilityStatusPage: IPageDefinition = {
   path: "disability-status",
   heading: "disability",
   schemaFields: schemaFields,
   initialValues: { disability: {} },
   Component: DisabilityStatus,
+  pageSchema,
 };

@@ -37,6 +37,7 @@ export const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
   const { t: commonT } = useTranslation("common");
+  const { t: formT } = useTranslation("claimForm");
   const navigate = useNavigate();
 
   const { data: completedClaim, isFetched: completedClaimIsFetched } =
@@ -68,6 +69,7 @@ export const ClaimForm = () => {
     repeatable,
     nextSegment,
     previousSegment,
+    pageSchema,
   } = pages[currentPageIndex];
 
   const navigateToNextPage = (values: FormValues) => {
@@ -116,7 +118,8 @@ export const ClaimForm = () => {
       </Button>
     );
 
-  const validationSchema = YupBuilder("claim-v1.0", schemaFields);
+  const validationSchema =
+    pageSchema?.(formT) || YupBuilder("claim-v1.0", schemaFields);
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
