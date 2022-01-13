@@ -67,6 +67,9 @@ function App() {
   return (
     <>
       <Header basic>
+        <a className="usa-skipnav" href="#main-content">
+          {t("skip_to_main_content")}
+        </a>
         <GovBanner />
         <div className="usa-nav-container">
           <div className="usa-navbar">
@@ -89,7 +92,7 @@ function App() {
         </div>
       </Header>
 
-      <section className="usa-section">
+      <section className="usa-section" id="main-content">
         <GridContainer>
           <AuthContainer>
             <Suspense fallback={<PageLoader />}>

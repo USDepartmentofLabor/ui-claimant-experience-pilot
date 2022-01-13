@@ -3,6 +3,7 @@ const common = {
   logout: "Log out",
   yes: "Yes",
   no: "No",
+  skip_to_main_content: "Skip to main content",
   form_errors: "Please correct errors above",
   address: {
     address1: { label: "Address 1" },
