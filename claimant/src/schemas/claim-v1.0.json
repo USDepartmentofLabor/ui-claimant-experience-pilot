@@ -537,7 +537,7 @@
       "format": "email",
       "maxLength": 128,
       "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them",
-      "TODO_required_for_complete": true
+      "required_for_complete": true
     },
     "education_level": {
       "description": "",
