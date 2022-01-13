@@ -76,7 +76,7 @@ export const ContactInformationPage: IPageDefinition = {
   schemaFields: schemaFields,
   initialValues: {
     email: undefined, // whoami will populate
-    phones: [],
+    phones: [{ number: "" }],
     LOCAL_more_phones: undefined,
     interpreter_required: undefined,
     preferred_language: "",
