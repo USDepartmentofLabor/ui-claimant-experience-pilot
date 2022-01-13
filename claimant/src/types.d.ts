@@ -123,6 +123,8 @@ type ClaimantInput = PersonalInformationType &
   ContactType &
   DemographicInformationType &
   EmployersType &
+  SelfEmploymentType &
+  DisabilityStatusType &
   EducationVocationalRehabType & { union?: UnionType } & {
     occupation?: OccupationType;
   } & SelfEmploymentType & {
@@ -148,6 +150,17 @@ type SelfEmploymentType = DeepPartial<{
     name_of_corporation: string | null;
     related_to_owner: YesNo;
     corporation_or_partnership: YesNo;
+  };
+}>;
+
+type DisabilityStatusType = DeepPartial<{
+  disability: {
+    has_collected_disability: boolean;
+    disabled_immediately_before: boolean;
+    type_of_disability: string;
+    date_disability_began: string;
+    recovery_date: string;
+    contacted_last_employer_after_recovery: boolean;
   };
 }>;
 

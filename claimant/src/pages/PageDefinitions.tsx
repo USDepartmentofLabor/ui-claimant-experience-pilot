@@ -8,6 +8,7 @@ import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
+import { DisabilityStatusPage } from "./Questions/DisabilityStatus/DisabilityStatus";
 import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
 import en from "../i18n/en";
 
@@ -34,6 +35,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   OccupationPage,
   EducationVocationalRehabPage,
   UnionPage,
+  DisabilityStatusPage,
   SubmitPage,
 ] as const;
 

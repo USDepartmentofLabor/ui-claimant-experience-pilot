@@ -36,6 +36,7 @@ const common = {
     self_employment: "Self Employment",
     occupation: "Occupation",
     union: "Union Membership",
+    disability: "Disability",
     submit: "Review",
   },
 };

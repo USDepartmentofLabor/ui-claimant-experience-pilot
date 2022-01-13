@@ -100,8 +100,8 @@ export const ClaimForm = () => {
   const previousPageLink = () =>
     !claimCompleted() &&
     pages[currentPageIndex - 1] && (
-      <Link to={previousPageUrl()} className="usa-button">
-        &laquo; {t("pagination.previous")}
+      <Link to={previousPageUrl()} className="usa-button usa-button--outline">
+        {t("pagination.previous")}
       </Link>
     );
 
@@ -109,7 +109,7 @@ export const ClaimForm = () => {
     !claimCompleted() && (
       <Button disabled={submitClaim.isLoading} type="submit">
         {pages[currentPageIndex + 1] ? (
-          <>{t("pagination.next")} &raquo;</>
+          <>{t("pagination.next")}</>
         ) : (
           t("sampleForm.claimButton")
         )}
@@ -169,42 +169,60 @@ export const ClaimForm = () => {
     segment,
   };
 
+  const saveCurrentFormValues = async (currentValues: FormValues) => {
+    if (!whoami) {
+      return;
+    }
+
+    // Only send the Formik values that map to values in the JSON Schema
+    // TODO recurse for employers and other arrays
+    const schemaValues = Object.keys(currentValues)
+      .filter((key) => Object.keys(claim_v1_0.properties).includes(key))
+      .reduce(
+        (res, key) => Object.assign(res, { [key]: currentValues[key] }),
+        {}
+      );
+    const claim: Claim = {
+      ...schemaValues,
+      swa_code: whoami.swa_code,
+      claimant_id: whoami.claimant_id,
+    };
+    if (whoami.claim_id) {
+      claim.id = whoami.claim_id;
+    }
+    const r = await submitClaim.mutateAsync(claim);
+    if (!whoami.claim_id) {
+      queryClient.setQueryData("whoami", {
+        ...whoami,
+        claim_id: r.data.claim_id,
+      });
+    }
+  };
+
+  const saveAndExit = async (currentValues: FormValues) => {
+    const baseUrl = process.env.REACT_APP_BASE_URL || "";
+    const logoutUrl = `${baseUrl}/logout/`;
+    // save first, then navigate
+    await saveCurrentFormValues(currentValues);
+    window.location.href = logoutUrl;
+  };
+
+  const saveAndExitLink = (currentValues: FormValues) =>
+    !claimCompleted() && (
+      <Button type="button" onClick={() => saveAndExit(currentValues)} unstyled>
+        {t("pagination.save_and_exit")}
+      </Button>
+    );
+
   return (
     <div data-testid="claim-submission">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values: FormValues) => {
+          // navigate first, then fire the xhr call, so we display message on the next page.
           navigateToNextPage(values);
-
-          if (!whoami) {
-            return;
-          }
-
-          //Only send the Formik values that map to values in the JSON Schema
-          // TODO recurse for employers and other arrays
-          // TODO filter out anything starting with LOCAL_
-          const schemaValues = Object.keys(values)
-            .filter((key) => Object.keys(claim_v1_0.properties).includes(key))
-            .reduce(
-              (res, key) => Object.assign(res, { [key]: values[key] }),
-              {}
-            );
-          const claim: Claim = {
-            ...schemaValues,
-            swa_code: whoami.swa_code,
-            claimant_id: whoami.claimant_id,
-          };
-          if (whoami.claim_id) {
-            claim.id = whoami.claim_id;
-          }
-          const r = await submitClaim.mutateAsync(claim);
-          if (!whoami.claim_id) {
-            queryClient.setQueryData("whoami", {
-              ...whoami,
-              claim_id: r.data.claim_id,
-            });
-          }
+          saveCurrentFormValues(values);
         }}
       >
         {(claimForm) => {
@@ -216,8 +234,13 @@ export const ClaimForm = () => {
               <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
                 <FormGroup error={showError}>
-                  {previousPageLink()}
-                  {nextPageLink()}
+                  <div className="text-center">
+                    {previousPageLink()}
+                    {nextPageLink()}
+                    <div className="margin-top-1">
+                      {saveAndExitLink(claimForm.values)}
+                    </div>
+                  </div>
                 </FormGroup>
                 {showError && (
                   <>
