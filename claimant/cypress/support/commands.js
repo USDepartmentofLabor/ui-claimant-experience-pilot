@@ -114,6 +114,20 @@ Cypress.Commands.add("click_next", () => {
     .click();
 });
 
+Cypress.Commands.add("click_save_and_exit", () => {
+  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+    cy.click_next(); // TODO how to mock the save part?
+    cy.clearCookies();
+  } else {
+    cy.get("button")
+      .contains("Save and exit")
+      .scrollIntoView()
+      .should("be.visible")
+      .click();
+  }
+  cy.wait(1000); // hesitate just a second to let the server do its thing
+});
+
 Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
   cy.get(`[name=employers\\[${idx}\\]\\.name`)
     .should("be.visible")

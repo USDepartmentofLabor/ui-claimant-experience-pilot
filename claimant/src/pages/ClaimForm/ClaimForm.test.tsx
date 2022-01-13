@@ -226,7 +226,7 @@ describe("the ClaimForm page", () => {
     const getContactInformationFields = () => ({
       needsInterpreterYes: getByTestId("interpreter_required.yes"),
       preferredLanguage: getByTestId("preferred_language"),
-      backButton: getByText("Previous", { exact: false }),
+      backButton: getByText("Back", { exact: false }),
       nextButton: getByText("Next", { exact: false }),
     });
 
@@ -254,7 +254,7 @@ describe("the ClaimForm page", () => {
     });
 
     const getSubmitClaimFields = () => ({
-      backButton: getByText("Previous", { exact: false }),
+      backButton: getByText("Back", { exact: false }),
     });
 
     const { backButton: backToDemographicInformation } = getSubmitClaimFields();

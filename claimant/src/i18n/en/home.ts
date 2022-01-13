@@ -25,7 +25,8 @@ const home = {
   },
   pagination: {
     next: "Next",
-    previous: "Previous",
+    previous: "Back",
+    save_and_exit: "Save and exit",
   },
   claimAlreadySubmitted:
     "Sorry, you have a Claim currently being processed by {{ swaName }}. " +
