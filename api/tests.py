@@ -978,6 +978,18 @@ class ClaimValidatorTestCase(TestCase):
         self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
 
+    def test_local_validation_rules(self):
+        # first work date later than last work date
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        claim["employers"][0]["first_work_date"] = "2022-02-01"
+        claim["employers"][0]["last_work_date"] = "2022-01-01"
+        cv = CompletedClaimValidator(claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        self.assertIn("first_work_date is later than last_work_date", error_dict)
+
     def test_nested_conditional_validation(self):
         claim = self.base_claim() | {
             "validated_at": timezone.now().isoformat(),

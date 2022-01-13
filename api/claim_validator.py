@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from jsonschema.validators import validator_for
+from jsonschema.exceptions import ValidationError
 from jsonschema import FormatChecker
 from django.conf import settings
 import jsonref
+from datetime import datetime
 
 CLAIM_V1 = "claim-v1.0"
 DEFAULT_SCHEMA = CLAIM_V1
@@ -28,7 +30,24 @@ class ClaimValidator(object):
         self.errors = []
         for err in self.validator.iter_errors(instance=self.claim):
             self.errors.append(err)
+        self._apply_local_validations()
         return len(self.errors) == 0
+
+    # things that JSON schema cannot enforce
+    def _apply_local_validations(self):
+        if "employers" in self.claim:
+            for idx, employer in enumerate(self.claim["employers"]):
+                # if last_work_date exists, verify first_work_date is earlier
+                if "last_work_date" in employer:
+                    last_date = datetime.fromisoformat(employer["last_work_date"])
+                    first_date = datetime.fromisoformat(employer["first_work_date"])
+                    if first_date > last_date:
+                        err = ValidationError(
+                            message="first_work_date is later than last_work_date",
+                            path=[f"employers[{idx}]", "first_work_date"],
+                            validator_value=None,
+                        )
+                        self.errors.append(err)
 
     def errors_as_dict(self):
         errors = {}
