@@ -263,11 +263,11 @@ Cypress.Commands.add("complete_occupation_form", (occupation) => {
 });
 
 Cypress.Commands.add("complete_contact_information", () => {
-  cy.get("[name=phones[0].number")
+  cy.get("[name=phones\\[0\\].number")
     .should("be.visible")
     .clear()
     .type("555-555-1224");
-  cy.get("[name=phones[0].type")
+  cy.get("[name=phones\\[0\\].type")
     .select("mobile")
     .should("have.value", "mobile");
   cy.get("input[id=interpreter_required\\.yes]").parent().click();
