@@ -171,7 +171,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     // TODO all the other pages go here as we write them
 
-    // final page
+    // Review page
     cy.click_is_complete();
     cy.check_a11y();
     cy.click_final_submit();

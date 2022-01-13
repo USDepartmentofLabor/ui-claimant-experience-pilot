@@ -143,13 +143,13 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         swa, private_key_jwk = create_swa()
         claimant = create_claimant(idp)
         csrf_client = self.csrf_client()
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/completed-claim/"
         payload = {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
             "ssn": "900-00-1234",
-            "email": "someone@example.com",
+            "email": whoami["email"],
             "is_complete": True,
             "claimant_name": {
                 "first_name": "Ima",
@@ -181,6 +181,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
             },
+            "interpreter_required": True,
+            "phones": [{"number": "555-555-1234"}],
             "disability": {
                 "has_collected_disability": True,
                 "disabled_immediately_before": False,
@@ -254,7 +256,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         swa, _ = create_swa()
         claimant = create_claimant(idp)
         csrf_client = self.csrf_client(claimant)
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/completed-claim/"
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
 
@@ -267,7 +269,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
             "ssn": "900-00-1234",
-            "email": "someone@example.com",
+            "email": whoami["email"],
             "claimant_name": {
                 "first_name": "Ima",
                 "last_name": "Claimant",
@@ -298,6 +300,8 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
             },
+            "interpreter_required": True,
+            "phones": [{"number": "555-555-1234"}],
             "disability": {
                 "has_collected_disability": True,
                 "disabled_immediately_before": False,
@@ -310,6 +314,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
+        logger.debug(response.json())
         self.assertEqual(response.status_code, 201)
         claim = claimant.claim_set.all()[0]
         self.assertEqual(
@@ -830,6 +835,8 @@ class ClaimValidatorTestCase(TestCase):
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
             },
+            "interpreter_required": True,
+            "phones": [{"number": "555-555-1234"}],
             "disability": {
                 "has_collected_disability": True,
                 "disabled_immediately_before": False,
@@ -961,7 +968,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 17)
+        self.assertEqual(len(cv.errors), 20)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)

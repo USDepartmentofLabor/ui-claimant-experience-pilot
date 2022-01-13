@@ -201,6 +201,9 @@ const claimForm = {
     },
   },
   contact_information: {
+    what_is_your_contact_information: "What is your contact information?",
+    more_phones: "Add another phone number",
+    email: "Email address", // no label, not editable
     interpreter_required: {
       label: "Do you need an interpreter to communicate with us?",
     },

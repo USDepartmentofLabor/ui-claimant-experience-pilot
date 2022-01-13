@@ -125,6 +125,7 @@
   "student_fulltime_in_last_18_months": false,
   "attending_college_or_job_training": false,
   "registered_with_vocational_rehab": true,
+  "interpreter_required": true,
   "disability": {
     "has_collected_disability": true,
     "disabled_immediately_before": false,

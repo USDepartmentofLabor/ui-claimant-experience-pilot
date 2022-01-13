@@ -190,6 +190,14 @@ describe("the ClaimForm page", () => {
       };
     };
 
+    const getContactInformationFields = () => ({
+      phoneOne: getByTestId("phones[0].number"),
+      needsInterpreterYes: getByTestId("interpreter_required.yes"),
+      preferredLanguage: getByTestId("preferred_language"),
+      backButton: getByText("Back", { exact: false }),
+      nextButton: getByText("Next", { exact: false }),
+    });
+
     const {
       firstName,
       lastName,
@@ -223,13 +231,6 @@ describe("the ClaimForm page", () => {
       expect(firstName).not.toBeInTheDocument();
     });
 
-    const getContactInformationFields = () => ({
-      needsInterpreterYes: getByTestId("interpreter_required.yes"),
-      preferredLanguage: getByTestId("preferred_language"),
-      backButton: getByText("Back", { exact: false }),
-      nextButton: getByText("Next", { exact: false }),
-    });
-
     const { backButton: backToPersonalInformation } =
       getContactInformationFields();
 
@@ -242,36 +243,20 @@ describe("the ClaimForm page", () => {
 
     await userEvent.click(nextLink);
 
-    await waitFor(async () => {
-      const { needsInterpreterYes, preferredLanguage, nextButton } =
-        getContactInformationFields();
-
-      // Fill out demographic-information
-
-      await userEvent.click(needsInterpreterYes);
-      await userEvent.type(preferredLanguage, "Klingon");
-      await userEvent.click(nextButton);
+    await waitFor(() => {
+      expect(firstName).not.toBeInTheDocument();
     });
 
-    const getSubmitClaimFields = () => ({
-      backButton: getByText("Back", { exact: false }),
-    });
+    const { phoneOne, needsInterpreterYes, preferredLanguage, nextButton } =
+      getContactInformationFields();
 
-    const { backButton: backToDemographicInformation } = getSubmitClaimFields();
-
-    await userEvent.click(backToDemographicInformation);
+    await userEvent.type(phoneOne, "555-555-1234");
+    await userEvent.click(needsInterpreterYes);
+    await userEvent.type(preferredLanguage, "Klingon");
+    await userEvent.click(nextButton);
 
     await waitFor(() => {
-      const {
-        needsInterpreterYes: needsInterpreterYesRevisited,
-        preferredLanguage: preferredLanguageRevisited,
-        backButton: gotBackToPersonalInformationAgain,
-        nextButton: goToSubmitClaimAgain,
-      } = getContactInformationFields();
-      expect(needsInterpreterYesRevisited).toBeInTheDocument();
-      expect(preferredLanguageRevisited).toBeInTheDocument();
-      expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
-      expect(goToSubmitClaimAgain).toBeInTheDocument();
+      expect(preferredLanguage).not.toBeInTheDocument();
     });
   });
 });
