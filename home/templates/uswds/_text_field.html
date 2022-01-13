@@ -1,9 +1,11 @@
 <!-- prettier-ignore -->
-<label class="usa-label {% if required %}required{% endif %}" for="{{ id }}">
-  {{ label }}
-  {% if required %}
-  <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
-  {% endif %}
-</label>
-<!-- prettier-ignore -->
-<input {% if required %}required{% endif %} class="usa-input" type="{{ type|default:'text' }}" id="{{ id }}" name="{{ id }}" />
+<div class="usa-form-group">
+    <label class="usa-label {% if required %}required{% endif %}" for="{{ id }}">
+      {{ label }}
+      {% if required %}
+      <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
+      {% endif %}
+    </label>
+    <!-- prettier-ignore -->
+    <input {% if required %}required{% endif %} class="usa-input" type="{{ type|default:'text' }}" id="{{ id }}" name="{{ id }}" />
+</div>

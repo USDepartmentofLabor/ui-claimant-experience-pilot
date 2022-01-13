@@ -14,7 +14,6 @@
         let fieldsToCheck = prequalFields;
         if(formData.get("live_in_us") === "no") {
             fieldsToCheck = prequalFields.filter(item => item !== "swa_code");
-            console.log("prequal fields", fieldsToCheck);
         }
         const emptyFields = [];
         fieldsToCheck.forEach((field) => !formData.has(field) && emptyFields.push(field));
@@ -45,6 +44,9 @@
         setCanProceed(yesProceedsFields, "no")
         setCanProceed(noProceedsFields, "yes")
 
+        const allowedSwas = ["NJ", "AR"];
+        canProceed = allowedSwas.includes(formData.get("swa_code"));
+
         if ((formData.get("swa_code") === "NJ") && (formData.get("worked_other_state") === "yes")) {
             canProceed = false;
         }
@@ -65,6 +67,7 @@
             }
         }
     }
+
     function submitPrequalifications(){
         const formData = new FormData(document.getElementById("prequalification-form"));
         const unanswered = getUnansweredQuestions(formData);
@@ -98,11 +101,12 @@
     <main>
         <h1>{% translate "PREQUALIFICATION" %}</h1>
         <form class="usa-form" id="prequalification-form">
+
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
         {% translate "State residence" %}
           </h2>
           {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="onChangeLiveUSHandler"  %}
-                <div class="display-none" id="swa-options">{% include './uswds/_swa_options.html' with swas=swas %}</div>
+          <div class="display-none" id="swa-options">{% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" %}</div>
 
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Recent employment" %}
@@ -111,6 +115,7 @@
           <div class="margin-top-4">
             {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
           </div>
+
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Disability" %}
           </h2>

@@ -20,7 +20,7 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
 
 const completePrequalFormProceed = () => {
   cy.get("input[id=live_in_us-yes]").click({ force: true });
-  cy.get("select[id=swa_code]").select("NJ");
+  cy.get("select[name=swa_code]").select("NJ", { force: true }); // for some reason id is not found
   cy.get("input[id=job_last_18mo-yes]").click({ force: true });
   cy.get("input[id=worked_other_state-no]").click({ force: true });
   cy.get("input[id=disabled-no]").click({ force: true });

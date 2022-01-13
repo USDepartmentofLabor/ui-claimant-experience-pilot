@@ -1,0 +1,16 @@
+{% load i18n %}
+<div class="usa-form-group">
+  <label class="usa-label" for="{{field_name }}">{{ field_label }}</label>
+  <div class="usa-combo-box">
+    <select
+      class="usa-select usa-combo-box__select"
+      name="{{ field_name }}"
+      id="{{ field_name }}"
+    >
+      <option value>{% translate "--Select--" %}</option>
+      {% for key, value in dict_options.items %}
+      <option value="{{key}}">{{value}}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>

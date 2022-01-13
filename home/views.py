@@ -7,6 +7,8 @@ from api.models import SWA
 import django.middleware.csrf
 import logging
 
+import json
+
 logger = logging.getLogger("home")
 
 
@@ -97,12 +99,19 @@ def login(request):
 
 
 def prequalifications(request):
+    state_json_data = open(settings.BASE_DIR / "schemas" / "states.json")
+    states = json.load(state_json_data)
+    state_json_data.close()
+    states_without_swa = ["AS", "FM", "GU", "MH", "MP", "PW"]
+    for state in states_without_swa:
+        states.pop(state)
+
     return render(
         None,
         "prequalifications.html",
         {
             "base_url": base_url(request),
-            "swas": active_swas_ordered_by_name(),
+            "swas": states,
             "styles": {
                 "section_margin": "margin-top-6",
                 "section_heading": "font-heading-sm",
