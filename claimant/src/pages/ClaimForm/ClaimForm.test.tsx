@@ -194,7 +194,7 @@ describe("the ClaimForm page", () => {
       phoneOne: getByTestId("phones[0].number"),
       needsInterpreterYes: getByTestId("interpreter_required.yes"),
       preferredLanguage: getByTestId("preferred_language"),
-      backButton: getByText("Previous", { exact: false }),
+      backButton: getByText("Back", { exact: false }),
       nextButton: getByText("Next", { exact: false }),
     });
 
