@@ -284,6 +284,9 @@ const ClaimFormPage = () => {
   const { t } = useTranslation("common", { keyPrefix: "page_headings" });
   const { page } = useParams();
   const currentPageIndex = pages.findIndex((p) => p.path === page);
+  if (currentPageIndex === -1) {
+    throw new Error("Page not found");
+  }
   const { heading } = pages[currentPageIndex];
   return (
     <main data-testid="claim-form-page">
