@@ -248,6 +248,11 @@ Cypress.Commands.add("complete_occupation_form", (occupation) => {
     .type(occupation.description);
 });
 
+Cypress.Commands.add("complete_contact_information", () => {
+  cy.get("input[id=interpreter_required\\.yes]").parent().click();
+  cy.get("input[id=preferred_language]").clear().type("Klingon");
+});
+
 Cypress.Commands.add("complete_demographic_information", () => {
   cy.get("input[id=sex\\.female]").parent().click();
   cy.get("input[id=ethnicity\\.not_hispanic]").parent().click();

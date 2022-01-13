@@ -25,7 +25,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
-    cy.complete_demographic_information();
+    cy.complete_contact_information();
     cy.click_next();
     cy.contains("Progress saved").should("be.visible");
   });
@@ -67,6 +67,11 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.check_a11y();
     cy.click_next();
+
+    cy.complete_contact_information();
+    cy.check_a11y();
+    cy.click_next();
+
     cy.complete_demographic_information();
     cy.check_a11y();
     cy.click_next();

@@ -223,19 +223,15 @@ describe("the ClaimForm page", () => {
       expect(firstName).not.toBeInTheDocument();
     });
 
-    const getDemographicInformationFields = () => ({
-      female: getByRole("radio", { name: "Female" }),
-      hispanic: getByRole("radio", { name: "Yes" }),
-      white: getByLabelText("White"),
-      educationLevelDropdown: getByLabelText(
-        "How many years of education have you finished?"
-      ),
+    const getContactInformationFields = () => ({
+      needsInterpreterYes: getByTestId("interpreter_required.yes"),
+      preferredLanguage: getByTestId("preferred_language"),
       backButton: getByText("Previous", { exact: false }),
       nextButton: getByText("Next", { exact: false }),
     });
 
     const { backButton: backToPersonalInformation } =
-      getDemographicInformationFields();
+      getContactInformationFields();
 
     await userEvent.click(backToPersonalInformation);
 
@@ -247,15 +243,13 @@ describe("the ClaimForm page", () => {
     await userEvent.click(nextLink);
 
     await waitFor(async () => {
-      const { female, hispanic, white, educationLevelDropdown, nextButton } =
-        getDemographicInformationFields();
+      const { needsInterpreterYes, preferredLanguage, nextButton } =
+        getContactInformationFields();
 
       // Fill out demographic-information
 
-      await userEvent.click(female);
-      await userEvent.click(hispanic);
-      await userEvent.click(white);
-      await userEvent.selectOptions(educationLevelDropdown, "grade_12");
+      await userEvent.click(needsInterpreterYes);
+      await userEvent.type(preferredLanguage, "Klingon");
       await userEvent.click(nextButton);
     });
 
@@ -269,15 +263,13 @@ describe("the ClaimForm page", () => {
 
     await waitFor(() => {
       const {
-        female: femaleRevisited,
-        hispanic: hispanicRevisited,
-        white: whiteRevisited,
+        needsInterpreterYes: needsInterpreterYesRevisited,
+        preferredLanguage: preferredLanguageRevisited,
         backButton: gotBackToPersonalInformationAgain,
         nextButton: goToSubmitClaimAgain,
-      } = getDemographicInformationFields();
-      expect(femaleRevisited).toBeInTheDocument();
-      expect(hispanicRevisited).toBeInTheDocument();
-      expect(whiteRevisited).toBeInTheDocument();
+      } = getContactInformationFields();
+      expect(needsInterpreterYesRevisited).toBeInTheDocument();
+      expect(preferredLanguageRevisited).toBeInTheDocument();
       expect(gotBackToPersonalInformationAgain).toBeInTheDocument();
       expect(goToSubmitClaimAgain).toBeInTheDocument();
     });

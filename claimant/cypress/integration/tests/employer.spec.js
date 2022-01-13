@@ -18,6 +18,9 @@ context("Employer section of Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.click_next();
 
+    cy.complete_contact_information();
+    cy.click_next();
+
     cy.complete_demographic_information();
     cy.click_next();
 

@@ -55,7 +55,11 @@ export const TextField = ({
       </Label>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <TextInput {...fieldProps} {...textInputProps} />
+      <TextInput
+        {...fieldProps}
+        data-testid={textInputProps.id}
+        {...textInputProps}
+      />
 
       <div className="usa-hint" id={`${textInputProps.name}-hint`}>
         {hint}
