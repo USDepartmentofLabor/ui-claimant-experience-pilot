@@ -125,5 +125,6 @@
   },
   "student_fulltime_in_last_18_months": false,
   "attending_college_or_job_training": false,
-  "registered_with_vocational_rehab": true
+  "registered_with_vocational_rehab": true,
+  "interpreter_required": true
 }

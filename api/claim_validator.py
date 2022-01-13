@@ -49,6 +49,14 @@ class CompletedClaimValidator(ClaimValidator):
         schema = super().read_schema(schema_name)
         return self._clean_schema(schema)
 
+    def validate_against_whoami(self, whoami):
+        # TODO populate self.errors
+        if "email" not in self.claim:
+            return False
+        if self.claim["email"] != whoami.email:
+            return False
+        return True
+
     def _clean_schema(self, schema):
         props_to_remove = []
         if "properties" not in schema:  # pragma: no-cover

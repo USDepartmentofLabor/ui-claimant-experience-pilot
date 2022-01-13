@@ -215,6 +215,8 @@ def POST_completed_claim(request):
     claim_validator = CompletedClaimValidator(claim_request.payload)
     if not claim_validator.valid:
         return invalid_claim_response(claim_validator)
+    elif not claim_validator.validate_against_whoami(claim_request.whoami):
+        return invalid_claim_response(claim_validator)
     else:
         # mark our payload with validation info
         claim_request.payload["validated_at"] = timezone.now().isoformat()
