@@ -114,6 +114,20 @@ Cypress.Commands.add("click_next", () => {
     .click();
 });
 
+Cypress.Commands.add("click_save_and_exit", () => {
+  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+    cy.click_next(); // TODO how to mock the save part?
+    cy.clearCookies();
+  } else {
+    cy.get("button")
+      .contains("Save and exit")
+      .scrollIntoView()
+      .should("be.visible")
+      .click();
+  }
+  cy.wait(1000); // hesitate just a second to let the server do its thing
+});
+
 Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
   cy.get(`[name=employers\\[${idx}\\]\\.name`)
     .should("be.visible")
@@ -325,5 +339,56 @@ Cypress.Commands.add(
         .parent()
         .click();
     });
+  }
+);
+
+Cypress.Commands.add(
+  "complete_disability_status_information",
+  (disabilityStatus) => {
+    const {
+      has_collected_disability,
+      disabled_immediately_before,
+      type_of_disability,
+      date_disability_began,
+      recovery_date,
+      contacted_last_employer_after_recovery,
+    } = disabilityStatus;
+    cy.get(
+      `input[id=disability\\.has_collected_disability\\.${has_collected_disability}]`
+    )
+      .parent()
+      .click();
+
+    if (disabled_immediately_before) {
+      cy.get(
+        `input[id=disability\\.disabled_immediately_before\\.${disabled_immediately_before}]`
+      )
+        .parent()
+        .click();
+    }
+
+    if (type_of_disability) {
+      cy.get("select").select(type_of_disability);
+    }
+
+    if (date_disability_began) {
+      cy.get(`input[id=disability\\.date_disability_began`)
+        .should("be.visible")
+        .type(date_disability_began);
+    }
+
+    if (recovery_date) {
+      cy.get(`input[id=disability\\.recovery_date`)
+        .should("be.visible")
+        .type(recovery_date);
+    }
+
+    if (contacted_last_employer_after_recovery) {
+      cy.get(
+        `input[id=disability\\.contacted_last_employer_after_recovery\\.${contacted_last_employer_after_recovery}]`
+      )
+        .parent()
+        .click();
+    }
   }
 );

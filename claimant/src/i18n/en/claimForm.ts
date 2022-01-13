@@ -155,6 +155,24 @@ const claimForm = {
     no_results: "", // TODO?
     opens_in_a_new_tab: "opens in a new tab",
   },
+  disability: {
+    heading: "Disability",
+    has_collected_disability: {
+      label:
+        "Since your last day worked, have you collected disability or worker's compensation?",
+    },
+    disabled_immediately_before: {
+      label:
+        "Were you disabled immediately before filling out this application?",
+    },
+    type_of_disability: { label: "Type of disability" },
+    date_disability_began: { label: "Date disability began" },
+    recovery_date: { label: "Recovery date (optional)" },
+    contact_employer_after_recovering: {
+      label:
+        "After recovering, did you contact your last employer for more work?",
+    },
+  },
   education_vocational_rehab: {
     education: {
       heading: "Your education",

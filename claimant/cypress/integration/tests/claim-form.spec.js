@@ -30,6 +30,27 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.contains("Progress saved").should("be.visible");
   });
 
+  it("saves and exits and restores", () => {
+    const email = faker.internet.exampleEmail();
+    cy.login(email);
+    cy.visit("/claimant/");
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
+    cy.click_save_and_exit();
+
+    cy.login(email);
+    cy.visit("/claimant/");
+    cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
+  });
+
   it("restores partial claim", () => {
     const email = faker.internet.exampleEmail();
     cy.login(email);
@@ -132,6 +153,20 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       union_name: "United ACME",
       union_local_number: "12345",
     });
+    cy.check_a11y();
+    cy.click_next();
+
+    // Disability status page
+    const disabilityStatus = {
+      has_collected_disability: "yes",
+      disabled_immediately_before: "no",
+      type_of_disability: "State Plan",
+      date_disability_began: "01/01/2020",
+      recovery_date: "05/02/2020",
+      contacted_last_employer_after_recovery: "yes",
+    };
+    cy.complete_disability_status_information(disabilityStatus);
+    cy.check_a11y();
     cy.click_next();
 
     // TODO all the other pages go here as we write them

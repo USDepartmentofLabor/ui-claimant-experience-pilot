@@ -35,7 +35,6 @@
   "preferred_language": "English",
   "dependency_allowance": false,
   "federal_income_tax_withheld": true,
-  "currently_disabled_unable_to_work": false,
   "worked_in_other_states": ["MN", "KS", "MO"],
   "us_citizenship": {
     "is_citizen": false,
@@ -126,5 +125,13 @@
   "student_fulltime_in_last_18_months": false,
   "attending_college_or_job_training": false,
   "registered_with_vocational_rehab": true,
-  "interpreter_required": true
+  "interpreter_required": true,
+  "disability": {
+    "has_collected_disability": true,
+    "disabled_immediately_before": false,
+    "type_of_disability": "State Plan",
+    "date_disability_began": "2020-01-01",
+    "recovery_date": "2022-01-08",
+    "contacted_last_employer_after_recovery": false
+  }
 }

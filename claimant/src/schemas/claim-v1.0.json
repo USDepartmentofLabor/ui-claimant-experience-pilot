@@ -359,6 +359,59 @@
           }
         }
       ]
+    },
+    "disability": {
+      "$id": "/definitions/disability",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/disability",
+      "type": "object",
+      "properties": {
+        "has_collected_disability": {
+          "description": "If the claimant has collected disability or worker's compensation since the last day they worked",
+          "type": "boolean"
+        }
+      },
+      "required": ["has_collected_disability"],
+      "if": {
+        "properties": {
+          "has_collected_disability": { "type": "boolean", "const": true }
+        }
+      },
+      "then": {
+        "properties": {
+          "disabled_immediately_before": {
+            "description": "If the claimant was disabled immediately before filling out the applciation",
+            "type": "boolean"
+          },
+          "type_of_disability": {
+            "description": "The claimant's disability type",
+            "type": "string",
+            "enum": ["State Plan", "Private Plan", "Worker's Compensation"]
+          },
+          "date_disability_began": {
+            "description": "The date the disability began",
+            "type": "string",
+            "format": "date"
+          },
+          "recovery_date": {
+            "description": "Optional disability recovery date",
+            "type": "string",
+            "format": "date"
+          },
+          "contacted_last_employer_after_recovery": {
+            "description": "Whether the claimant has contacted their last employer if they have recovered",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "disabled_immediately_before",
+          "type_of_disability",
+          "date_disability_began"
+        ],
+        "dependentRequired": {
+          "recovery_date": ["contacted_last_employer_after_recovery"]
+        }
+      }
     }
   },
   "required": ["claimant_name"],
@@ -502,11 +555,6 @@
       "items": { "$ref": "#/definitions/state" },
       "TODO_required_for_complete": true
     },
-    "currently_disabled_unable_to_work": {
-      "description": "",
-      "type": "boolean",
-      "TODO_required_for_complete": true
-    },
     "residence_address": {
       "description": "",
       "required_for_complete": true,
@@ -611,6 +659,10 @@
     },
     "self_employment": {
       "$ref": "#/definitions/self_employment",
+      "required_for_complete": true
+    },
+    "disability": {
+      "$ref": "#/definitions/disability",
       "required_for_complete": true
     }
   }
