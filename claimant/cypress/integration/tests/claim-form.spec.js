@@ -132,6 +132,20 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       union_name: "United ACME",
       union_local_number: "12345",
     });
+    cy.check_a11y();
+    cy.click_next();
+
+    // Disability status page
+    const disabilityStatus = {
+      has_collected_disability: "yes",
+      disabled_immediately_before: "no",
+      type_of_disability: "State Plan",
+      date_disability_began: "01/01/2020",
+      recovery_date: "05/02/2020",
+      contacted_last_employer_after_recovery: "yes",
+    };
+    cy.complete_disability_status_information(disabilityStatus);
+    cy.check_a11y();
     cy.click_next();
 
     // TODO all the other pages go here as we write them

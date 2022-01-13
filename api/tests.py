@@ -181,6 +181,14 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
             },
+            "disability": {
+                "has_collected_disability": True,
+                "disabled_immediately_before": False,
+                "type_of_disability": "State Plan",
+                "date_disability_began": "2020-01-01",
+                "recovery_date": "2022-01-08",
+                "contacted_last_employer_after_recovery": False,
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -289,6 +297,14 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "union_name": "foo",
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
+            },
+            "disability": {
+                "has_collected_disability": True,
+                "disabled_immediately_before": False,
+                "type_of_disability": "State Plan",
+                "date_disability_began": "2020-01-01",
+                "recovery_date": "2022-01-08",
+                "contacted_last_employer_after_recovery": False,
             },
         }
         response = csrf_client.post(
@@ -814,6 +830,14 @@ class ClaimValidatorTestCase(TestCase):
                 "union_local_number": "1234",
                 "required_to_seek_work_through_hiring_hall": False,
             },
+            "disability": {
+                "has_collected_disability": True,
+                "disabled_immediately_before": False,
+                "type_of_disability": "State Plan",
+                "date_disability_began": "2020-01-01",
+                "recovery_date": "2022-01-08",
+                "contacted_last_employer_after_recovery": False,
+            },
         }
 
     def test_claim_validator(self):
@@ -937,7 +961,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 16)
+        self.assertEqual(len(cv.errors), 17)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
@@ -946,3 +970,19 @@ class ClaimValidatorTestCase(TestCase):
         self.assertIn("'residence_address' is a required property", error_dict)
         self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
+
+    def test_nested_conditional_validation(self):
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        # Delete attribute required by nested conditional
+        del claim["disability"]["contacted_last_employer_after_recovery"]
+        cv = CompletedClaimValidator(claim)
+        logger.debug(cv.errors_as_dict())
+        self.assertFalse(cv.valid)
+
+        # Delete attribute requiring previously-deleted conditional
+        del claim["disability"]["recovery_date"]
+        cv = CompletedClaimValidator(claim)
+        logger.debug(cv.errors_as_dict())
+        self.assertTrue(cv.valid)
