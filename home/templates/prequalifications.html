@@ -26,10 +26,11 @@
             "job_last_18mo",
         ];
         const noProceedsFields = [
-            "disabled",
-            "military_service",
-            "federal_employment",
-            "maritime_employment"
+          "recent_disaster",
+          "disabled",
+          "military_service",
+          "federal_employment",
+          "maritime_employment",
         ];
 
         let canProceed = true;
@@ -116,6 +117,10 @@
             {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
           </div>
 
+          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
+            {% translate "Disaster" %}
+          </h2>
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" %}
           <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
             {% translate "Disability" %}
           </h2>

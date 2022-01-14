@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-05 16:16-0800\n"
+"POT-Creation-Date: 2022-01-13 16:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE &lt;LL@li.org>\n"
@@ -26,112 +26,57 @@ msgstr ""
 msgid "Sorry, we had a problem."
 msgstr ""
 
-#: home/templates/_claimant_header.html:3 home/templates/_header.html:3
-msgid "Skip to main content"
-msgstr "Saltar al contento principal"
-
-#: home/templates/_claimant_header.html:9 home/templates/_header.html:9
-msgid ""
-"TEST SITE - Do not use real personal information (demo purposes only) - TEST "
-"SITE"
-msgstr ""
-
-#: home/templates/_claimant_header.html:25 home/templates/_header.html:25
-msgid "U.S. flag"
-msgstr "Bandera de los Estados Unidos"
-
-#: home/templates/_claimant_header.html:32 home/templates/_header.html:32
-msgid "An official website of the United States government"
-msgstr "Un sitio web del gobierno de los Estados Unidos"
-
-#: home/templates/_claimant_header.html:35 home/templates/_header.html:35
-#: home/templates/_header.html:44
-msgid "Here’s how you know"
-msgstr "Cómo se sabe"
-
-#: home/templates/_claimant_header.html:44
-#, fuzzy
-#| msgid "Here’s how you know"
-msgid "Here’s how you know NEEDS IMPLEMENTING"
-msgstr "Cómo se sabe"
-
-#: home/templates/_header.html:61
-msgid "Official websites use .gov"
-msgstr ""
-
-#: home/templates/_header.html:63
-msgid ""
-"A <strong>.gov</strong> website belongs to an official government "
-"organization in the United States."
-msgstr ""
-
-#: home/templates/_header.html:79
-msgid "Secure .gov websites use HTTPS"
-msgstr ""
-
-#: home/templates/_header.html:81
-msgid "A <strong>lock</strong>"
-msgstr ""
-
-#: home/templates/_header.html:93
-msgid "Lock"
-msgstr ""
-
-#: home/templates/_header.html:95
-msgid "A locked padlock"
-msgstr ""
-
-#: home/templates/_header.html:121
+#: home/templates/_header.html:10
 msgid "United States Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:124
+#: home/templates/_header.html:13
 msgid "U.S. Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:128
+#: home/templates/_header.html:17
 msgid "Menu"
 msgstr "Menú"
 
-#: home/templates/_header.html:135
+#: home/templates/_header.html:24
 msgid "Close"
 msgstr ""
 
-#: home/templates/_header.html:144
+#: home/templates/_header.html:33
 msgid "Current section"
 msgstr "&lt;Sección actual &gt;"
 
-#: home/templates/_header.html:149
+#: home/templates/_header.html:38
 msgid "&lt;Navigation link&lt;"
 msgstr "&lt;Navigación&gt;"
 
-#: home/templates/_header.html:152 home/templates/_header.html:155
-#: home/templates/_header.html:170 home/templates/_header.html:173
-#: home/templates/_header.html:176
+#: home/templates/_header.html:41 home/templates/_header.html:44
+#: home/templates/_header.html:59 home/templates/_header.html:62
+#: home/templates/_header.html:65
 msgid "&lt;Navigation link&gt;"
 msgstr "&lt;Navigación &gt;"
 
-#: home/templates/_header.html:165
+#: home/templates/_header.html:54
 msgid "&lt;Section&gt;"
 msgstr "&lt;Sección&gt;"
 
-#: home/templates/_header.html:182
+#: home/templates/_header.html:71
 msgid "&lt;Simple link&gt;"
 msgstr "&lt;Enlace&gt;"
 
-#: home/templates/_header.html:189
+#: home/templates/_header.html:78
 msgid "&lt;Secondary link&gt;"
 msgstr "&lt;Enlace segondario&gt;"
 
-#: home/templates/_header.html:192
+#: home/templates/_header.html:81
 msgid "&lt;Another secondary link&gt;"
 msgstr "&lt;Otro enlace segundario&gt;"
 
-#: home/templates/_header.html:198 home/templates/_header.html:207
+#: home/templates/_header.html:87 home/templates/_header.html:96
 msgid "Search"
 msgstr "Buscar"
 
-#: home/templates/base.html:19 home/templates/claimant-base.html:8
+#: home/templates/base.html:19 home/templates/claimant-base.html:9
 #, fuzzy
 #| msgid "Unemployment Insurance Claim Application"
 msgid "Unemployment Insurance Claim Application | U.S. Department of Labor"
@@ -180,6 +125,20 @@ msgstr ""
 "Su numero do reclamo: %(claim_id)s\n"
 "Gracias. \n"
 
+#: home/templates/ial2required.html:7
+msgid "Apply and verify later"
+msgstr ""
+
+#: home/templates/ial2required.html:13
+msgid ""
+"If you could not reach IAL2, you can proceed with the form and try again "
+"later."
+msgstr ""
+
+#: home/templates/ial2required.html:17
+msgid "Click here to apply"
+msgstr ""
+
 #: home/templates/idp.html:19
 msgid "Select a State"
 msgstr ""
@@ -208,84 +167,156 @@ msgstr "Solicitar beneficios"
 msgid "Get started"
 msgstr "Empezar"
 
-#: home/templates/prequalifications.html:30
+#: home/templates/prequalifications.html:75
+msgid "Must answer all questions"
+msgstr ""
+
+#: home/templates/prequalifications.html:102
 msgid "PREQUALIFICATION"
 msgstr ""
 
-#: home/templates/prequalifications.html:33
+#: home/templates/prequalifications.html:106
 msgid "State residence"
 msgstr ""
 
-#: home/templates/prequalifications.html:35
+#: home/templates/prequalifications.html:108
 msgid "Do you currently live in the United States?"
 msgstr ""
 
-#: home/templates/prequalifications.html:39
+#: home/templates/prequalifications.html:109
+#: home/templates/uswds/_swa_options.html:3
+msgid "Select your state"
+msgstr ""
+
+#: home/templates/prequalifications.html:112
+msgid "Recent employment"
+msgstr ""
+
+#: home/templates/prequalifications.html:114
+msgid "Have you had a job during the last 18 months?"
+msgstr ""
+
+#: home/templates/prequalifications.html:116
 msgid ""
 "Have you worked in any state other than the state you currently live in the "
 "last 18 months (not including military service)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:42
-msgid "Recent employment"
+#: home/templates/prequalifications.html:120
+msgid "Disaster"
 msgstr ""
 
-#: home/templates/prequalifications.html:44
-msgid "Have you had a job during the last 18 months?"
+#: home/templates/prequalifications.html:122
+msgid ""
+"Have you been impacted by a recent natural disaster (like a hurricane or "
+"wildfire)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:46
+#: home/templates/prequalifications.html:124
 msgid "Disability"
 msgstr ""
 
-#: home/templates/prequalifications.html:48
+#: home/templates/prequalifications.html:126
 msgid "Are you currently disabled and unable to work?"
 msgstr ""
 
-#: home/templates/prequalifications.html:50
+#: home/templates/prequalifications.html:129
 msgid "Military service"
 msgstr ""
 
-#: home/templates/prequalifications.html:52
+#: home/templates/prequalifications.html:131
 msgid "Have you served in the United States military in the last 18 months?"
 msgstr ""
 
-#: home/templates/prequalifications.html:54
+#: home/templates/prequalifications.html:134
 msgid "Federal employment"
 msgstr ""
 
-#: home/templates/prequalifications.html:56
+#: home/templates/prequalifications.html:136
 msgid ""
 "Have you worked for the federal government in the last 18 months (not "
-"including military service?"
+"including military service)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:58
+#: home/templates/prequalifications.html:139
 msgid "Maritime employment"
 msgstr ""
 
-#: home/templates/prequalifications.html:60
+#: home/templates/prequalifications.html:141
 msgid ""
 "Have you worked for a maritime employer in the last 18 months (for example, "
-"did you work on a ship in a harbor)?"
+"did you work on a ship or in a harbor)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:64
+#: home/templates/prequalifications.html:145
 msgid "Next"
 msgstr ""
 
-#: home/templates/uswds/_swa_options.html:3
-msgid "Select your state"
+#: home/templates/uswds/_banner.html:3
+msgid "Skip to main content"
+msgstr "Saltar al contento principal"
+
+#: home/templates/uswds/_banner.html:9
+msgid ""
+"TEST SITE - Do not use real personal information (demo purposes only) - TEST "
+"SITE"
+msgstr ""
+
+#: home/templates/uswds/_banner.html:25
+msgid "U.S. flag"
+msgstr "Bandera de los Estados Unidos"
+
+#: home/templates/uswds/_banner.html:32
+msgid "An official website of the United States government"
+msgstr "Un sitio web del gobierno de los Estados Unidos"
+
+#: home/templates/uswds/_banner.html:35 home/templates/uswds/_banner.html:44
+msgid "Here’s how you know"
+msgstr "Cómo se sabe"
+
+#: home/templates/uswds/_banner.html:61
+msgid "Official websites use .gov"
+msgstr ""
+
+#: home/templates/uswds/_banner.html:63
+msgid ""
+"A <strong>.gov</strong> website belongs to an official government "
+"organization in the United States."
+msgstr ""
+
+#: home/templates/uswds/_banner.html:79
+msgid "Secure .gov websites use HTTPS"
+msgstr ""
+
+#: home/templates/uswds/_banner.html:81
+msgid "A <strong>lock</strong>"
+msgstr ""
+
+#: home/templates/uswds/_banner.html:93
+msgid "Lock"
+msgstr ""
+
+#: home/templates/uswds/_banner.html:95
+msgid "A locked padlock"
+msgstr ""
+
+#: home/templates/uswds/_combo_box.html:10
+msgid "--Select--"
 msgstr ""
 
 #: home/templates/uswds/_swa_options.html:6
 msgid "Select"
 msgstr ""
 
-#: home/templates/uswds/_yes_no_radio.html:14
+#: home/templates/uswds/_yes_no_radio.html:18
 msgid "Yes"
 msgstr ""
 
-#: home/templates/uswds/_yes_no_radio.html:27
+#: home/templates/uswds/_yes_no_radio.html:34
 msgid "No"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Here’s how you know"
+#~ msgid "Here’s how you know NEEDS IMPLEMENTING"
+#~ msgstr "Cómo se sabe"
