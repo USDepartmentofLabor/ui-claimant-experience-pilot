@@ -3,7 +3,7 @@ import { useFormikContext } from "formik";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import TextField from "../../../components/form/fields/TextField/TextField";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 
 export const UnionProfile = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "union" });

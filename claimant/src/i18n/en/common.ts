@@ -5,6 +5,7 @@ const common = {
   no: "No",
   skip_to_main_content: "Skip to main content",
   form_errors: "Please correct errors above",
+  provide_more_information: "Please provide more information",
   address: {
     address1: { label: "Address 1" },
     address2: { label: "Address 2" },
@@ -37,6 +38,7 @@ const common = {
     occupation: "Occupation",
     union: "Union Membership",
     disability: "Disability",
+    availability: "Availability",
     submit: "Review",
   },
 };

@@ -8,7 +8,7 @@ import {
 } from "./ContactInformation";
 
 export default {
-  title: "Components/Form/Contact Info",
+  title: "Pages/Contact Information",
   component: ContactInformation,
 } as ComponentMeta<typeof ContactInformation>;
 

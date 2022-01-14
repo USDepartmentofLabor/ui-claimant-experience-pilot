@@ -13,6 +13,7 @@ import { EducationVocationalRehabPage } from "./Questions/EducationVocationalReh
 import { DisabilityStatusPage } from "./Questions/DisabilityStatus/DisabilityStatus";
 import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
 import en from "../i18n/en";
+import { AvailabilityPage } from "./Questions/Availability/Availability";
 
 export interface IPageDefinition {
   path: string;
@@ -39,6 +40,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   EducationVocationalRehabPage,
   UnionPage,
   DisabilityStatusPage,
+  AvailabilityPage,
   SubmitPage,
 ] as const;
 

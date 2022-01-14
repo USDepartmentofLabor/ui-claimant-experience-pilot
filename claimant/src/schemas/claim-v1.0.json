@@ -412,6 +412,97 @@
           "recovery_date": ["contacted_last_employer_after_recovery"]
         }
       }
+    },
+    "availability": {
+      "$id": "/definitions/availability",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/availability",
+      "type": "object",
+      "properties": {
+        "can_begin_work_immediately": {
+          "description": "Is the claimant is able to begin work immediately",
+          "type": "boolean",
+          "TODO_required_for_complete": true
+        },
+        "can_work_full_time": {
+          "description": "Is the claimant able to work full time?",
+          "type": "boolean",
+          "TODO_required_for_complete": true
+        },
+        "is_prevented_from_accepting_full_time_work": {
+          "description": "Is the claimant prevented from accepting full time work?",
+          "type": "boolean",
+          "TODO_required_for_complete": true
+        }
+      },
+      "required": [
+        "can_begin_work_immediately",
+        "can_work_full_time",
+        "is_prevented_from_accepting_full_time_work"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "can_begin_work_immediately": {
+                "not": {
+                  "type": "boolean",
+                  "const": true
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cannot_begin_work_immediately_reason": {
+                "description": "The reason that the claimant cannot begin working immediately",
+                "type": "string"
+              }
+            },
+            "required": ["cannot_begin_work_immediately_reason"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "can_work_full_time": {
+                "not": {
+                  "type": "boolean",
+                  "const": true
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cannot_work_full_time_reason": {
+                "description": "The reason that the claimant cannot work full time",
+                "type": "string"
+              }
+            },
+            "required": ["cannot_work_full_time_reason"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "is_prevented_from_accepting_full_time_work": {
+                "type": "boolean",
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "is_prevented_from_accepting_full_time_work_reason": {
+                "description": "The reason the claimant is prevented from accepting full-time work",
+                "type": "string"
+              }
+            },
+            "required": ["is_prevented_from_accepting_full_time_work_reason"]
+          }
+        }
+      ]
     }
   },
   "required": ["claimant_name"],
@@ -663,6 +754,10 @@
     },
     "disability": {
       "$ref": "#/definitions/disability",
+      "required_for_complete": true
+    },
+    "availability": {
+      "$ref": "#/definitions/availability",
       "required_for_complete": true
     }
   }

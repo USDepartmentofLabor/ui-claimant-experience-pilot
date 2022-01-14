@@ -169,6 +169,19 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    //Availability page
+    const availability = {
+      can_begin_work_immediately: "yes",
+      cannot_begin_work_immediately_reason: undefined,
+      can_work_full_time: "no",
+      cannot_work_full_time_reason: "Community obligation 3 days per week.",
+      is_prevented_from_accepting_full_time_work: "no",
+      is_prevented_from_accepting_full_time_work_reason: undefined,
+    };
+    cy.complete_availability_information(availability);
+    cy.check_a11y();
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // Review page

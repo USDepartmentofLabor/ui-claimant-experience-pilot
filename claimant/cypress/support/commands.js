@@ -392,3 +392,47 @@ Cypress.Commands.add(
     }
   }
 );
+
+Cypress.Commands.add("complete_availability_information", (availability) => {
+  const {
+    can_begin_work_immediately,
+    cannot_begin_work_immediately_reason,
+    can_work_full_time,
+    cannot_work_full_time_reason,
+    is_prevented_from_accepting_full_time_work,
+    is_prevented_from_accepting_full_time_work_reason,
+  } = availability;
+  cy.get(
+    `input[id=availability\\.can_begin_work_immediately\\.${can_begin_work_immediately}]`
+  )
+    .parent()
+    .click();
+
+  if (cannot_begin_work_immediately_reason) {
+    cy.get("[name=availability\\.cannot_begin_work_immediately_reason]").type(
+      cannot_begin_work_immediately_reason
+    );
+  }
+
+  cy.get(`input[id=availability\\.can_work_full_time\\.${can_work_full_time}]`)
+    .parent()
+    .click();
+
+  if (cannot_work_full_time_reason) {
+    cy.get("[name=availability\\.cannot_work_full_time_reason]").type(
+      cannot_work_full_time_reason
+    );
+  }
+
+  cy.get(
+    `input[id=availability\\.is_prevented_from_accepting_full_time_work\\.${is_prevented_from_accepting_full_time_work}]`
+  )
+    .parent()
+    .click();
+
+  if (is_prevented_from_accepting_full_time_work_reason) {
+    cy.get(
+      "[name=availability\\.is_prevented_from_accepting_full_time_work_reason]"
+    ).type(is_prevented_from_accepting_full_time_work_reason);
+  }
+});

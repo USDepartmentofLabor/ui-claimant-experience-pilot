@@ -119,12 +119,23 @@ type ContactType = {
   LOCAL_more_phones?: boolean;
 };
 
+type AvailabilityType = {
+  availability?: {
+    can_begin_work_immediately?: boolean;
+    cannot_begin_work_immediately_reason?: string;
+    can_work_full_time?: boolean;
+    cannot_work_full_time_reason?: string;
+    is_prevented_from_accepting_full_time_work?: boolean;
+    is_prevented_from_accepting_full_time_work_reason?: string;
+  };
+};
+
 type ClaimantInput = PersonalInformationType &
   ContactType &
   DemographicInformationType &
   EmployersType &
-  SelfEmploymentType &
   DisabilityStatusType &
+  AvailabilityType &
   EducationVocationalRehabType & { union?: UnionType } & {
     occupation?: OccupationType;
   } & SelfEmploymentType & {

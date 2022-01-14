@@ -9,7 +9,7 @@ import YupBuilder from "../../../common/YupBuilder";
 import { noop } from "../../../testUtils/noop";
 
 export default {
-  title: "Components/Form/Demographic Info",
+  title: "Pages/Demographic Information",
   component: DemographicInformation,
 } as ComponentMeta<typeof DemographicInformation>;
 

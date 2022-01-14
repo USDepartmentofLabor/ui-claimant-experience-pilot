@@ -6,7 +6,7 @@ import { noop } from "../../../testUtils/noop";
 import { SelfEmployment, SelfEmploymentPage } from "./SelfEmployment";
 
 export default {
-  title: "Components/Form/Self Employment",
+  title: "Pages/Self Employment",
   component: SelfEmployment,
 } as ComponentMeta<typeof SelfEmployment>;
 

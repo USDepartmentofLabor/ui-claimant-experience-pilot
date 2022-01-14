@@ -202,6 +202,18 @@ const claimForm = {
         "Are you required to seek work through a union hiring hall (a job placement office operated by your union)?",
     },
   },
+  availability: {
+    heading: "Your availability to work",
+    can_begin_work_immediately: {
+      label: "Can you begin work immediately?",
+    },
+    can_work_full_time: {
+      label: "Can you work full time?",
+    },
+    is_prevented_from_accepting_full_time_work: {
+      label: "Is anything preventing you from accepting full-time work?",
+    },
+  },
   contact_information: {
     what_is_your_contact_information: "What is your contact information?",
     more_phones: "Add another phone number",

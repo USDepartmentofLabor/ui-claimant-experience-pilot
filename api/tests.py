@@ -191,6 +191,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "recovery_date": "2022-01-08",
                 "contacted_last_employer_after_recovery": False,
             },
+            "availability": {
+                "can_begin_work_immediately": False,
+                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
+                "can_work_full_time": True,
+                "is_prevented_from_accepting_full_time_work": False,
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -309,6 +315,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "date_disability_began": "2020-01-01",
                 "recovery_date": "2022-01-08",
                 "contacted_last_employer_after_recovery": False,
+            },
+            "availability": {
+                "can_begin_work_immediately": False,
+                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
+                "can_work_full_time": True,
+                "is_prevented_from_accepting_full_time_work": False,
             },
         }
         response = csrf_client.post(
@@ -845,6 +857,12 @@ class ClaimValidatorTestCase(TestCase):
                 "recovery_date": "2022-01-08",
                 "contacted_last_employer_after_recovery": False,
             },
+            "availability": {
+                "can_begin_work_immediately": False,
+                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
+                "can_work_full_time": True,
+                "is_prevented_from_accepting_full_time_work": False,
+            },
         }
 
     def test_claim_validator(self):
@@ -968,7 +986,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 20)
+        self.assertEqual(len(cv.errors), 21)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
