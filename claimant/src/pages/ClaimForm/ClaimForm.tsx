@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import {
@@ -217,19 +217,34 @@ export const ClaimForm = () => {
       </Button>
     );
 
+  const onSubmit = async (
+    values: FormValues,
+    { resetForm }: FormikHelpers<FormValues>
+  ) => {
+    // navigate first, then fire the xhr call, so we display message on the next page.
+    navigateToNextPage(values);
+    saveCurrentFormValues(values);
+    // Reset form to clear "submitted" status and prevent eager validations on all fields.
+    resetForm({
+      values,
+      submitCount: 0,
+      touched: {},
+      errors: {},
+      isValidating: false,
+      isSubmitting: false,
+    });
+  };
+
   return (
     <div data-testid="claim-submission">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={async (values: FormValues) => {
-          // navigate first, then fire the xhr call, so we display message on the next page.
-          navigateToNextPage(values);
-          saveCurrentFormValues(values);
-        }}
+        onSubmit={onSubmit}
       >
         {(claimForm) => {
           const showError =
+            claimForm.submitCount > 0 &&
             Object.keys(claimForm.errors).length > 0 &&
             Object.keys(claimForm.touched).length > 0;
           return (

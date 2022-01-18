@@ -7,6 +7,7 @@ import {
   ErrorMessage,
 } from "@trussworks/react-uswds";
 import { useTranslation } from "react-i18next";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 type DropdownOption = {
   label: string;
@@ -47,7 +48,7 @@ const DropdownField = ({
 }: IDropdownFieldProps & JSX.IntrinsicElements["select"]) => {
   const { t } = useTranslation("common");
   const [fieldProps, metaProps] = useField({ name });
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(name);
 
   if (startEmpty && options[0].value !== EMPTY_OPTION_VALUE) {
     options.unshift({ value: EMPTY_OPTION_VALUE, label: t("select_one") });

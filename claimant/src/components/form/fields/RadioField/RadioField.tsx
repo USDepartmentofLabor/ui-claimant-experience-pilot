@@ -1,6 +1,7 @@
 import { useField } from "formik";
 import { Radio, FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import { ChangeEvent, ChangeEventHandler, ReactNode } from "react";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 interface IRadioOption {
   label: ReactNode;
@@ -27,7 +28,7 @@ export const RadioField = ({
   ...inputProps
 }: IRadioFieldProps & JSX.IntrinsicElements["input"]) => {
   const [fieldProps, metaProps] = useField(name);
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(name);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     fieldProps.onChange(e);

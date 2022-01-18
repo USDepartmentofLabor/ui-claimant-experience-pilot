@@ -6,6 +6,7 @@ import {
   Textarea,
   ErrorMessage,
 } from "@trussworks/react-uswds";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 type TextareaProps = React.ComponentProps<typeof Textarea>;
 
@@ -26,7 +27,7 @@ export const TextAreaField = ({
   const [fieldProps, metaProps] = useField({
     name: textareaProps.name,
   });
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(textareaProps.name);
 
   return (
     <FormGroup error={showError}>

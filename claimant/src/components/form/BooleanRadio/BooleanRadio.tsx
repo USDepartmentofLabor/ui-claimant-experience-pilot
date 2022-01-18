@@ -3,6 +3,7 @@ import { Radio, FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import { ChangeEvent, ChangeEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./BooleanRadio.module.scss";
+import { useShowErrors } from "../../../hooks/useShowErrors";
 
 interface IBooleanRadioProps {
   id: string;
@@ -22,7 +23,7 @@ export const BooleanRadio = ({
 }: IBooleanRadioProps & JSX.IntrinsicElements["input"]) => {
   const { t } = useTranslation("common");
   const [fieldProps, metaProps, fieldHelperProps] = useField(name);
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(name);
 
   const convertValueToBoolean = (value: string): boolean | undefined => {
     return value === "" ? undefined : value === "yes";

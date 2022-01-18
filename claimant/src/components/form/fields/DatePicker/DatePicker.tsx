@@ -6,6 +6,7 @@ import {
   ErrorMessage,
   DatePicker as USWDSDatePicker,
 } from "@trussworks/react-uswds";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 type DatePickerProps = React.ComponentProps<typeof USWDSDatePicker>;
 
@@ -23,7 +24,7 @@ export const DatePicker = ({
   ...inputProps
 }: IDatePickerProps) => {
   const [fieldProps, metaProps] = useField(name);
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(name);
 
   return (
     <FormGroup error={showError}>

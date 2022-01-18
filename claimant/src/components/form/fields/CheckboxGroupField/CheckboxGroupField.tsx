@@ -3,6 +3,7 @@ import { FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import { useField } from "formik";
 
 import CheckboxField from "../CheckboxField/CheckboxField";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 type CheckboxOption = {
   value: string;
@@ -25,7 +26,7 @@ export const CheckboxGroupField = ({
   options,
 }: ICheckBoxGroupFieldProps) => {
   const [fieldProps, metaProps] = useField(name);
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(name);
 
   return (
     <FormGroup error={showError}>

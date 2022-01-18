@@ -6,6 +6,7 @@ import {
   TextInput,
   ErrorMessage,
 } from "@trussworks/react-uswds";
+import { useShowErrors } from "../../../../hooks/useShowErrors";
 
 type TextInputProps = React.ComponentProps<typeof TextInput>;
 
@@ -41,7 +42,7 @@ export const TextField = ({
     name: textInputProps.name,
     type: textInputProps.type,
   });
-  const showError = metaProps.touched && !!metaProps.error;
+  const showError = useShowErrors(textInputProps.name);
 
   return (
     <FormGroup error={showError}>

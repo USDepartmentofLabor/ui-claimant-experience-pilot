@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { useField } from "formik"; // package will be auto mocked
+import { useField, useFormikContext } from "formik"; // package will be auto mocked
 
 import TextField from "./TextField";
 
@@ -9,6 +9,10 @@ import TextField from "./TextField";
 jest.mock("formik");
 
 describe("TextField component", () => {
+  beforeEach(() => {
+    useFormikContext.mockReturnValue({ submitCount: 0 });
+  });
+
   it("renders the elements that make up a field", () => {
     const mockMeta = {
       touched: false,
