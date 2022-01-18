@@ -61,6 +61,95 @@ const claimForm = {
     },
   },
   employers: {
+    separation: {
+      heading: "Separation",
+      reason: {
+        label: "What was your reason for separation?",
+      },
+      comment: {
+        required_label: "Please share any additional details below",
+        optional_label: "Please share any additional details below (optional)",
+      },
+      reasons: {
+        laid_off: {
+          label: "Laid off",
+          description:
+            "Your job ended due to lack of work, downsizing, your contract ending, or your place of work closing or moving.",
+          option_heading: "What was the reason you were laid off?",
+          options: {
+            lack_of_work: "Lack of work, including seasonal",
+            finished_job: "Finished job/position or contract ended",
+            position_eliminated: "Position eliminated/downsizing",
+            business_closed: "Business closed or moved out of area",
+          },
+        },
+        fired_discharged_terminated: {
+          label: "Fired, discharged, or terminated",
+          description:
+            "Your employer ended your job, claiming you had performance or behavior issues.",
+          option_heading: "TODO",
+          options: {
+            absent_tardy: "Absent/tardy",
+            drinking_drugs: "Drinking/drugs/drug test",
+            insubordination: "Insubordination/disobedience",
+            sleeping: "Sleeping",
+            fighting: "Fighting",
+            military: "Military",
+            general: "General",
+          },
+        },
+        still_employed: {
+          label: "Still employed",
+          description:
+            "You're still working for your employer, but you may have fewer hours or be on a leave/break.",
+          option_heading: "What has changed about your job?",
+          options: {
+            still_working_hours_unchanged:
+              "Still working, hours have not changed",
+            hours_reduced_by_employer: "Hours reduced by employer",
+            hours_reduced_by_me: "Hours reduced by me",
+            shared_work_program: "Shared Work Program",
+            leave_of_absence:
+              "On a leave of absence (personal, medical, or family medical)",
+            temporary: "On a temporary layoff, furloughed",
+            still_working_self_employed:
+              "Still working, self-employed with this employer",
+            suspended: "Suspended",
+            school_employee: "School employee, on a break/holiday",
+            holiday_vacation: "Holiday/vacation",
+          },
+        },
+        quit: {
+          label: "Quit",
+          description:
+            "You voluntarily left your job (this does not include retirement).",
+          option_heading: "Why did you quit your job?",
+          options: {
+            emergency: "Personal emergency",
+            health: "Health",
+            general: "General",
+          },
+        },
+        strike: {
+          label: "Strike or lock out by employer",
+          description:
+            "During a labor dispute, you chose to stop work or your employer stopped work.",
+          // unconventional to have a null translation but it's because we leverage this file also for TS types
+          option_heading: null,
+        },
+        retired: {
+          label: "Retired",
+          description:
+            "You have concluded your working career. Retiring can be voluntary or mandatory.",
+          option_heading: null,
+        },
+        shutdown: {
+          label: "Federal or State shutdown",
+          description: "Your job ended due to lack of government funding.",
+          option_heading: null,
+        },
+      },
+    },
     heading: "Your most recent employer:",
     reason_for_data_collection:
       "We need the <strong>last 18 months</strong> of your work history because it helps calculate your unemployment benefit amount. Include all your jobs to avoid delays with your application",
