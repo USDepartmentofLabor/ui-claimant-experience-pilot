@@ -205,6 +205,7 @@ SESSION_EXPIRY = env.int(
     "SESSION_EXPIRY", 30 * 60
 )  # 30 minute timeout on no requests TODO
 SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # allow XHR/CORS to work in local dev with http/https mix,
 # SESSION_COOKIE_SAMESITE is set to None in the .env-example for dev.
 # NOTE that this assumes you are running react app on http and django on https behind proxy
@@ -214,6 +215,9 @@ SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 SESSION_COOKIE_SECURE = (
     os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 )
+
+CSRF_COOKIE_AGE = None
+CSRF_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

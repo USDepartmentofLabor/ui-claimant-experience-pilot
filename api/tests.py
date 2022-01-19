@@ -138,6 +138,14 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         )
         self.assertEqual(response.status_code, 403)
 
+    def test_response_cookies_should_not_have_expire_setting(self):
+        csrf_client = self.csrf_client()
+        response = csrf_client.get("/api/whoami/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.cookies), 2)
+        self.assertEqual(response.cookies["sessionid"]["expires"], "")
+        self.assertEqual(response.cookies["csrftoken"]["expires"], "")
+
     def test_encrypted_completed_claim(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa()
