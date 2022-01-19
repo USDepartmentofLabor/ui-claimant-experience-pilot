@@ -834,7 +834,8 @@ class ClaimValidatorTestCase(TestCase):
                     },
                     "LOCAL_same_phone": "yes",
                     "phones": [{"number": "555-555-1234", "sms": False}],
-                    "separation_reason": "Layed off",
+                    "separation_reason": "laid_off",
+                    "separation_option": "position_eliminated",
                     "separation_comment": "they ran out of money",
                 }
             ],
@@ -1003,6 +1004,41 @@ class ClaimValidatorTestCase(TestCase):
         self.assertIn("'residence_address' is a required property", error_dict)
         self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
+
+    def test_employer_conditionals(self):
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        del claim["employers"][0]["last_work_date"]
+        cv = CompletedClaimValidator(claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        self.assertIn("'last_work_date' is a required property", error_dict)
+
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        claim["employers"][0]["separation_reason"] = "still_employed"
+        del claim["employers"][0]["last_work_date"]
+        cv = CompletedClaimValidator(claim)
+        self.assertTrue(cv.valid)
+
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        del claim["employers"][0]["separation_option"]
+        cv = CompletedClaimValidator(claim)
+        self.assertFalse(cv.valid)
+        error_dict = cv.errors_as_dict()
+        self.assertIn("'separation_option' is a required property", error_dict)
+
+        claim = self.base_claim() | {
+            "validated_at": timezone.now().isoformat(),
+        }
+        claim["employers"][0]["separation_reason"] = "retired"
+        del claim["employers"][0]["separation_option"]
+        cv = CompletedClaimValidator(claim)
+        self.assertTrue(cv.valid)
 
     def test_local_validation_rules(self):
         # first work date later than last work date

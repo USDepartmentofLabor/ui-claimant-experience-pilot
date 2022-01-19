@@ -18,7 +18,6 @@ export const ADDRESS_SKELETON: AddressType = {
 
 export const EMPLOYER_SKELETON: EmployerType = {
   name: "",
-  LOCAL_still_working: undefined,
   first_work_date: "",
   address: { ...ADDRESS_SKELETON },
   work_site_address: undefined,
@@ -98,13 +97,6 @@ export const mergeClaimFormValues = (
       mergedValues.LOCAL_more_employers = [];
     }
     mergedValues.employers.forEach((employer: EmployerType, idx: number) => {
-      if (!employer.LOCAL_still_working) {
-        if (employer.last_work_date) {
-          employer.LOCAL_still_working = "no";
-        } else {
-          employer.LOCAL_still_working = "yes";
-        }
-      }
       if (!employer.LOCAL_same_address) {
         if (employer.work_site_address) {
           employer.LOCAL_same_address = "no";

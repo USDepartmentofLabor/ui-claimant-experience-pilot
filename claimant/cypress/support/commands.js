@@ -132,24 +132,6 @@ Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
   cy.get(`[name=employers\\[${idx}\\]\\.name`)
     .should("be.visible")
     .type(employer.name);
-  if (employer.last_work_date) {
-    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_still_working\\.no`)
-      .parent()
-      .should("be.visible")
-      .click();
-    cy.get(`input[id=employers\\[${idx}\\]\\.last_work_date`)
-      .should("be.visible")
-      .type(employer.last_work_date);
-  } else {
-    cy.get(`input[id=employers\\[${idx}\\]\\.LOCAL_still_working\\.yes`)
-      .parent()
-      .should("be.visible")
-      .click();
-  }
-  cy.get(`input[id=employers\\[${idx}\\]\\.first_work_date`)
-    .should("be.visible")
-    .clear()
-    .type(employer.first_work_date);
   cy.get(`[name=employers\\[${idx}\\]\\.address\\.address1`)
     .should("be.visible")
     .type(employer.address.address1);
@@ -195,9 +177,37 @@ Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
       .click();
   }
   if (employer.fein) {
-    cy.get(`[name=employers\\[${idx}\\]\\.fein`)
+    cy.get(`[name=employers\\[${idx}\\]\\.fein]`)
       .should("be.visible")
       .type(employer.fein);
+  }
+  if (employer.separation) {
+    cy.get(
+      `input[id=employers\\[${idx}\\]\\.separation_reason\\.${employer.separation.reason}]`
+    )
+      .should("be.visible")
+      .parent()
+      .click();
+    cy.get(
+      `input[id=employers\\[${idx}\\]\\.separation_option\\.${employer.separation.option}]`
+    )
+      .should("be.visible")
+      .parent()
+      .click();
+    cy.get(`[name=employers\\[${idx}\\]\\.separation_comment]`)
+      .should("be.visible")
+      .clear()
+      .type(employer.separation.comment);
+  }
+  cy.get(`input[id=employers\\[${idx}\\]\\.first_work_date`)
+    .should("be.visible")
+    .clear()
+    .type(employer.first_work_date);
+  if (employer.last_work_date) {
+    cy.get(`input[id=employers\\[${idx}\\]\\.last_work_date`)
+      .should("be.visible")
+      .clear()
+      .type(employer.last_work_date);
   }
 });
 

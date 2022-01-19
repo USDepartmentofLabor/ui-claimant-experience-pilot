@@ -77,7 +77,6 @@ type DemographicInformationType = {
 type EmployerType = {
   name: string;
   days_employed?: number;
-  LOCAL_still_working: YesNo | undefined;
   LOCAL_same_address: YesNo | undefined;
   LOCAL_same_phone: YesNo | undefined;
   first_work_date: string;

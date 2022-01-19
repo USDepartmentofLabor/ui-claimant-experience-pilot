@@ -87,7 +87,8 @@ const claimForm = {
           label: "Fired, discharged, or terminated",
           description:
             "Your employer ended your job, claiming you had performance or behavior issues.",
-          option_heading: "TODO",
+          option_heading:
+            "What was the reason you were fired, discharged, or terminated?",
           options: {
             absent_tardy: "Absent/tardy",
             drinking_drugs: "Drinking/drugs/drug test",
@@ -176,9 +177,6 @@ const claimForm = {
     },
     last_work_date: {
       label: "Last day of work for this employer:",
-    },
-    still_working: {
-      label: "Are you still working for this employer?",
     },
     same_phone: {
       label: "Is this the phone number of the location where you worked?",

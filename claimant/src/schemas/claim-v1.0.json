@@ -88,7 +88,6 @@
         "name": { "type": "string", "maxLength": 255 },
         "days_employed": { "type": "integer" },
         "first_work_date": { "type": "string", "format": "date" },
-        "last_work_date": { "type": "string", "format": "date" },
         "recall_date": { "type": "string", "format": "date" },
         "fein": { "type": "string", "pattern": "(^[0-9]{2}-[0-9]{7}$|)" },
         "address": { "$ref": "#/definitions/address" },
@@ -97,9 +96,8 @@
           "type": "array",
           "items": { "$ref": "#/definitions/phone" }
         },
-        "separation_reason": { "type": "string", "maxLength": 255 },
+        "separation_reason": { "type": "string", "maxLength": 64 },
         "separation_comment": { "type": "string", "maxLength": 1024 },
-        "LOCAL_still_working": { "type": "string", "enum": ["yes", "no"] },
         "LOCAL_same_address": { "type": "string", "enum": ["yes", "no"] },
         "LOCAL_same_phone": { "type": "string", "enum": ["yes", "no"] }
       },
@@ -108,9 +106,55 @@
         "address",
         "first_work_date",
         "phones",
-        "LOCAL_still_working",
+        "separation_reason",
         "LOCAL_same_address",
         "LOCAL_same_phone"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "separation_reason": {
+                "type": "string",
+                "enum": [
+                  "laid_off",
+                  "fired_discharged_terminated",
+                  "still_employed",
+                  "quit"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "separation_option": { "type": "string", "maxLength": 64 }
+            },
+            "required": ["separation_option"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "separation_reason": {
+                "type": "string",
+                "enum": [
+                  "laid_off",
+                  "fired_discharged_terminated",
+                  "quit",
+                  "strike",
+                  "retired",
+                  "shutdown"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "last_work_date": { "type": "string", "format": "date" }
+            },
+            "required": ["last_work_date"]
+          }
+        }
       ]
     },
     "citizenship": {

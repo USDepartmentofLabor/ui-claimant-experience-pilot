@@ -1,4 +1,4 @@
-import { render, within, screen } from "@testing-library/react";
+import { render, waitFor, within, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Formik } from "formik";
 import { EmployerProfile } from "./EmployerProfile";
@@ -12,6 +12,7 @@ jest.mock("react-i18next", () => ({
       t: (str: string) => str,
     };
   },
+  Trans: ({ children }: ComponentProps<typeof Trans>) => <>{children}</>,
 }));
 
 describe("EmployerProfile component", () => {
@@ -27,12 +28,6 @@ describe("EmployerProfile component", () => {
     );
 
     const employerNameField = getByLabelText("name.label");
-    const stillWorkingField = getByRole("group", {
-      name: "still_working.label",
-    });
-    const stillWorkingYes = within(stillWorkingField).getByLabelText("yes");
-    const stillWorkingNo = within(stillWorkingField).getByLabelText("no");
-
     const employerAddress1 = getByRole("textbox", {
       name: "address.address1.label",
     });
@@ -41,14 +36,6 @@ describe("EmployerProfile component", () => {
     expect(employerNameField).toHaveAttribute("id", "employers[0].name");
     expect(employerNameField).toHaveAttribute("name", "employers[0].name");
 
-    expect(stillWorkingYes).toHaveAttribute(
-      "id",
-      "employers[0].LOCAL_still_working.yes"
-    );
-    expect(stillWorkingNo).toHaveAttribute(
-      "id",
-      "employers[0].LOCAL_still_working.no"
-    );
     expect(employerAddress1).toHaveAttribute(
       "id",
       "employers[0].address.address1"
@@ -63,26 +50,6 @@ describe("EmployerProfile component", () => {
   });
 
   describe("hidden fields appear upon particular boolean selection", () => {
-    it("displays the end date for this employer field only when NO is selected", async () => {
-      render(
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          <EmployerProfile segment="0" />
-        </Formik>
-      );
-      const stillWorkingField = screen.getByRole("group", {
-        name: "still_working.label",
-      });
-      const stillWorkingNo = within(stillWorkingField).getByLabelText("no");
-      const endDate = screen.queryByRole("textbox", {
-        name: "last_work_date.label",
-      });
-      expect(endDate).toBeNull();
-      await act(async () => userEvent.click(stillWorkingNo));
-      expect(
-        screen.getByRole("textbox", { name: "last_work_date.label" })
-      ).toBeInTheDocument();
-    });
-
     it("displays location when claimant says 'no' to working at same address as employer", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={noop}>
@@ -124,6 +91,48 @@ describe("EmployerProfile component", () => {
       expect(
         screen.getByRole("textbox", { name: "alt_employer_phone" })
       ).toBeInTheDocument();
+    });
+  });
+
+  it("displays last date field when laid_off separation reason is selected", async () => {
+    const { getByTestId, getByLabelText, queryByLabelText } = render(
+      <Formik initialValues={initialValues} onSubmit={noop}>
+        <EmployerProfile segment="0" />
+      </Formik>
+    );
+    const laidOff = getByTestId("employers[0].separation_reason.laid_off");
+    const firstDateWorked = getByLabelText("first_work_date.label");
+    const lastDateWorked = queryByLabelText("last_work_date.label");
+    expect(laidOff).not.toBeChecked();
+    expect(firstDateWorked).toBeInTheDocument();
+    expect(lastDateWorked).toEqual(null);
+
+    userEvent.click(laidOff);
+    await waitFor(() => {
+      expect(laidOff).toBeChecked();
+      expect(getByLabelText("last_work_date.label")).toBeInTheDocument();
+    });
+  });
+
+  it("hides last date field when still_employed separation reason is selected", async () => {
+    const { getByTestId, getByLabelText, queryByLabelText } = render(
+      <Formik initialValues={initialValues} onSubmit={noop}>
+        <EmployerProfile segment="0" />
+      </Formik>
+    );
+    const stillEmployed = getByTestId(
+      "employers[0].separation_reason.still_employed"
+    );
+    const firstDateWorked = getByLabelText("first_work_date.label");
+    const lastDateWorked = queryByLabelText("last_work_date.label");
+    expect(stillEmployed).not.toBeChecked();
+    expect(firstDateWorked).toBeInTheDocument();
+    expect(lastDateWorked).toEqual(null);
+
+    userEvent.click(stillEmployed);
+    await waitFor(() => {
+      expect(stillEmployed).toBeChecked();
+      expect(queryByLabelText("last_work_date.label")).toEqual(null);
     });
   });
 });

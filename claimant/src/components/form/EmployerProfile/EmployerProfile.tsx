@@ -6,6 +6,7 @@ import TextField from "../fields/TextField/TextField";
 import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 import { DatePicker } from "../fields/DatePicker/DatePicker";
 import Address from "../Address/Address";
+import { SeparationReason } from "../SeparationReason/SeparationReason";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
 import { formatUserInputDate } from "../../../utils/format";
 
@@ -50,39 +51,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].name`}
         hint={t("name.hint")}
       />
-      <Fieldset legend={t("still_working.label")}>
-        <YesNoRadio
-          id={`employers[${segment}].LOCAL_still_working`}
-          name={`employers[${segment}].LOCAL_still_working`}
-        />
-      </Fieldset>
-      <DatePicker
-        label={t("first_work_date.label")}
-        id={`employers[${segment}].first_work_date`}
-        name={`employers[${segment}].first_work_date`}
-        defaultValue={employer.first_work_date}
-        onChange={(val: string | undefined) => {
-          setFieldValue(
-            `employers[${segment}].first_work_date`,
-            formatUserInputDate(val),
-            true
-          );
-        }}
-      />
-      {employer.LOCAL_still_working === "no" && (
-        <DatePicker
-          label={t("last_work_date.label")}
-          id={`employers[${segment}].last_work_date`}
-          name={`employers[${segment}].last_work_date`}
-          defaultValue={employer.last_work_date}
-          onChange={(val: string | undefined) => {
-            setFieldValue(
-              `employers[${segment}].last_work_date`,
-              formatUserInputDate(val)
-            );
-          }}
-        />
-      )}
       <Address
         labels={{
           address1: t("address.address1.label"),
@@ -142,6 +110,35 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].fein`}
         hint={t("fein.hint")}
       />
+      <SeparationReason segment={segment} />
+      <DatePicker
+        label={t("first_work_date.label")}
+        id={`employers[${segment}].first_work_date`}
+        name={`employers[${segment}].first_work_date`}
+        defaultValue={employer.first_work_date}
+        onChange={(val: string | undefined) => {
+          setFieldValue(
+            `employers[${segment}].first_work_date`,
+            formatUserInputDate(val),
+            true
+          );
+        }}
+      />
+      {employer.separation_reason &&
+        employer.separation_reason !== "still_employed" && (
+          <DatePicker
+            label={t("last_work_date.label")}
+            id={`employers[${segment}].last_work_date`}
+            name={`employers[${segment}].last_work_date`}
+            defaultValue={employer.last_work_date}
+            onChange={(val: string | undefined) => {
+              setFieldValue(
+                `employers[${segment}].last_work_date`,
+                formatUserInputDate(val)
+              );
+            }}
+          />
+        )}
     </>
   );
 };

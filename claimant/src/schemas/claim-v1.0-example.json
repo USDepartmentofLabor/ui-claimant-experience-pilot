@@ -83,7 +83,6 @@
     {
       "name": "ACME Stuff",
       "days_employed": 123,
-      "LOCAL_still_working": "no",
       "first_work_date": "2020-02-02",
       "last_work_date": "2020-11-30",
       "recall_date": "2020-12-13",
@@ -109,7 +108,8 @@
           "sms": false
         }
       ],
-      "separation_reason": "Layed off",
+      "separation_reason": "laid_off",
+      "separation_option": "position_eliminated",
       "separation_comment": "they ran out of money"
     }
   ],
