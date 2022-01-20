@@ -358,8 +358,15 @@ else:  # pragma: no cover
         logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
         LOGIN_DOT_GOV_PRIVATE_KEY = False
 
-# The /login/ page bypasses all other IdP so only use in CI/dev
-if os.environ.get("ENV_NAME") == "wcms":  # pragma: no cover
+# The /login/ page bypasses all other IdP so only use in allowed environments
+LOGIN_PAGE_ALLOWED_WCMS_ENVIRONMENTS = {
+    "https://dev1-unemployment.dol.gov",
+    "https://test1-unemployment.dol.gov",
+}
+if (
+    os.environ.get("ENV_NAME") == "wcms"
+    and BASE_URL not in LOGIN_PAGE_ALLOWED_WCMS_ENVIRONMENTS
+):  # pragma: no cover
     SHOW_LOGIN_PAGE = False
 else:
     SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"
