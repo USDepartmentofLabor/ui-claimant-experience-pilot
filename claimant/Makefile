@@ -18,8 +18,11 @@ instrumented-build: ## Build the app for CI (includes Cypress instrumentation fo
 	yarn add @cypress/instrument-cra nyc-config-tsx
 	yarn build:instrumented
 
+# the DANGEROUSLY_DISABLE_HOST_CHECK is there because CRA 5 has a bug where our `proxy` setting in package.json
+# is both required for the proxy to work, but also prevents the dev server from starting.
+# it is not actually dangerous for our use case.
 dev-run: node_modules ## Run the app
-	yarn start
+	DANGEROUSLY_DISABLE_HOST_CHECK=true yarn start
 
 deps node_modules: ## Install dependencies
 	yarn install

@@ -9,7 +9,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("../../queries/whoami");
-const mockedUseWhoAmI = useWhoAmI as jest.Mock;
+const mockedUseWhoAmI = useWhoAmI as any; // jest.MockedFunction<typeof useWhoAmI>;
 
 describe("the Whoami page", () => {
   beforeEach(() => {
@@ -52,7 +52,7 @@ describe("component WhoAmI", () => {
   beforeEach(() => {
     resetAllMocks();
     jest.spyOn(console, "error");
-    console.error.mockImplementation(jest.fn());
+    (console.error as jest.Mock).mockImplementation(jest.fn());
     mockedUseWhoAmI.mockImplementation(() => ({
       isSuccess: true,
       data: myPII,
@@ -61,7 +61,7 @@ describe("component WhoAmI", () => {
   });
 
   afterEach(() => {
-    console.error.mockRestore();
+    (console.error as jest.Mock).mockRestore();
   });
 
   const queryClient = new QueryClient();
@@ -117,7 +117,7 @@ describe("component WhoAmI", () => {
 
     expect(() => render(whoAmI)).toThrow("Error getting myPII data");
     expect(console.error).toHaveBeenCalled();
-    expect(console.error.mock.calls[0][0]).toContain(
+    expect((console.error as jest.Mock).mock.calls[0][0]).toContain(
       "The above error occurred in the <WhoAmI> component:"
     );
   });

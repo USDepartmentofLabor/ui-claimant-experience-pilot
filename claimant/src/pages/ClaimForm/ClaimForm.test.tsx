@@ -23,7 +23,7 @@ import { pages } from "../PageDefinitions";
 const { CLAIM_FORM_PAGE } = ROUTES;
 
 jest.mock("../../queries/whoami");
-const mockedUseWhoAmI = useWhoAmI as jest.Mock;
+const mockedUseWhoAmI = useWhoAmI as any; // jest.MockedFunction<typeof useWhoAmI>;
 
 jest.mock("../../queries/claim");
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;

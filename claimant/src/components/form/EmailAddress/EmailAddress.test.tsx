@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Formik } from "formik";
+import { noop } from "../../../testUtils/noop";
 import { EmailAddress } from "./EmailAddress";
 
 jest.mock("react-i18next", () => ({
@@ -13,12 +14,7 @@ jest.mock("react-i18next", () => ({
 describe("EmailAddress", () => {
   beforeEach(() => {
     render(
-      <Formik
-        initialValues={{}}
-        onSubmit={() => {
-          return;
-        }}
-      >
+      <Formik initialValues={{}} onSubmit={noop}>
         <EmailAddress />
       </Formik>
     );

@@ -2,14 +2,17 @@ import { useEffect, ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { RequestErrorBoundary } from "./RequestErrorBoundary";
 
+let consoleError: jest.Mock;
+
 describe("Error Boundary", () => {
   beforeEach(() => {
     jest.spyOn(console, "error");
-    console.error.mockImplementation(jest.fn());
+    consoleError = console.error as jest.Mock;
+    consoleError.mockImplementation(jest.fn());
   });
 
   afterEach(() => {
-    console.error.mockRestore();
+    consoleError.mockRestore();
   });
 
   const renderComponent = (children: ReactNode) => {
@@ -24,8 +27,8 @@ describe("Error Boundary", () => {
     };
     renderComponent(<ComponentThatThrowsError />);
     expect(screen.getByText("I am an error")).toBeVisible();
-    expect(console.error).toHaveBeenCalled();
-    expect(console.error.mock.calls[0][0]).toContain(
+    expect(consoleError).toHaveBeenCalled();
+    expect(consoleError.mock.calls[0][0]).toContain(
       "Error: Uncaught [Error: I am an error]"
     );
   });
@@ -33,6 +36,6 @@ describe("Error Boundary", () => {
     renderComponent(<div>Vader, I am your child</div>);
 
     expect(screen.getByText("Vader, I am your child")).toBeVisible();
-    expect(console.error.mock.calls.length).toBe(0);
+    expect(consoleError.mock.calls.length).toBe(0);
   });
 });

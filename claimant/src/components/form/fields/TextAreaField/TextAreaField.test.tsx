@@ -7,10 +7,13 @@ import TextAreaField from "./TextAreaField";
 // mock out formik hook as we are not testing formik
 // needs to be before first describe
 jest.mock("formik");
+const mockUseField = useField as typeof useField & jest.Mock;
+const mockUseFormikContext = useFormikContext as typeof useFormikContext &
+  jest.Mock;
 
 describe("TextAreaField component", () => {
   beforeEach(() => {
-    useFormikContext.mockReturnValue({ submitCount: 0 });
+    mockUseFormikContext.mockReturnValue({ submitCount: 0 });
   });
 
   it("renders the elements that make up a field", () => {
@@ -31,7 +34,7 @@ describe("TextAreaField component", () => {
       name: "firstName",
     };
 
-    useField.mockReturnValue([mockField, mockMeta]);
+    mockUseField.mockReturnValue([mockField, mockMeta]);
 
     const { queryByText, queryByLabelText } = render(
       <TextAreaField name="firstName" label="First Name" id="firstName" />
@@ -44,7 +47,7 @@ describe("TextAreaField component", () => {
   });
 
   it("passes a custom className prop to the input element", () => {
-    useField.mockReturnValue([{}, {}]);
+    mockUseField.mockReturnValue([{}, {}]);
 
     const { queryByLabelText } = render(
       <TextAreaField
@@ -78,7 +81,7 @@ describe("TextAreaField component", () => {
         name: "firstName",
       };
 
-      useField.mockReturnValue([mockField, mockMeta]);
+      mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
         <TextAreaField name="firstName" label="First Name" id="firstName" />
@@ -106,7 +109,7 @@ describe("TextAreaField component", () => {
         name: "firstName",
       };
 
-      useField.mockReturnValue([mockField, mockMeta]);
+      mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
         <TextAreaField name="firstName" label="First Name" id="firstName" />

@@ -1,9 +1,11 @@
+import { ComponentProps } from "react";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Formik } from "formik";
 import { SeparationReason } from "./SeparationReason";
 import { noop } from "../../../testUtils/noop";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
+import { Trans } from "react-i18next";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {

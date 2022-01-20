@@ -6,6 +6,9 @@ module.exports = {
     "@storybook/preset-create-react-app",
     "@storybook/addon-a11y",
   ],
+  core: {
+    builder: "webpack5",
+  },
   typescript: {
     check: false,
     checkOptions: {},

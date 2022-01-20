@@ -3,11 +3,12 @@ import { render } from "@testing-library/react";
 import { Formik } from "formik";
 
 import { CheckboxField } from "./CheckboxField";
+import { noop } from "../../../../testUtils/noop";
 
 describe("CheckboxField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByText, getByLabelText } = render(
-      <Formik>
+      <Formik initialValues={{}} onSubmit={noop}>
         <CheckboxField
           name="checkboxField"
           label="checkboxField"
@@ -34,7 +35,7 @@ describe("CheckboxField component", () => {
       };
 
       const { getByLabelText } = render(
-        <Formik initialValues={initialValues}>
+        <Formik initialValues={initialValues} onSubmit={noop}>
           <CheckboxField
             name="checkboxField"
             label="checked"
@@ -49,7 +50,7 @@ describe("CheckboxField component", () => {
   describe("disabled", () => {
     it("disables the checkbox when it is disabled", () => {
       const { getByLabelText } = render(
-        <Formik>
+        <Formik initialValues={{}} onSubmit={noop}>
           <CheckboxField
             name="checkboxField"
             label="checkboxField"

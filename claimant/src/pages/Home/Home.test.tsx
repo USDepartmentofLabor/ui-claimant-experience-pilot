@@ -7,7 +7,7 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
 
 jest.mock("../../queries/whoami");
-const mockedUseWhoAmI = useWhoAmI as jest.Mock;
+const mockedUseWhoAmI = useWhoAmI as any; // jest.MockedFunction<typeof useWhoAmI>;
 
 const myPII: WhoAmI = {
   claim_id: "123",
@@ -19,6 +19,8 @@ const myPII: WhoAmI = {
   email: "test@example.com",
   phone: "555-555-5555",
   swa_code: "MD",
+  swa_name: "Maryland",
+  swa_claimant_url: "https://some-test-url.gov",
 };
 
 describe("the Home page", () => {

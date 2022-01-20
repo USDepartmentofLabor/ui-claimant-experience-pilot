@@ -1,7 +1,7 @@
 ARG BASE_PYTHON_IMAGE_REGISTRY=docker.io/library
 ARG BASE_PYTHON_IMAGE_VERSION=3.9.7-slim
 
-FROM node:14.16.0 as reactapps
+FROM node:14.18.0 as reactapps
 WORKDIR /app
 
 RUN apt-get update -y && apt-get install --no-install-recommends -y make
@@ -29,11 +29,11 @@ ARG ENV_NAME=""
 # we do not run tests or storybook in the container, and we do not install
 # their devDependencies (see above)
 RUN find src -name '*test.ts*' -delete && \
-    find src -name '*stories.ts*' -delete && \
-    rm src/setupTests.ts && \
-    rm src/setupProxy.tsx && \
-    rm src/*.js && \
-    make docker-build
+  find src -name '*stories.ts*' -delete && \
+  rm src/setupTests.ts && \
+  rm src/setupProxy.tsx && \
+  rm src/*.js && \
+  make docker-build
 
 ##########################################
 # Django
@@ -56,9 +56,9 @@ EXPOSE 8000
 COPY requirements*.txt .
 
 RUN apt-get update -y && apt-get install -y \
-   --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools \
-   && rm -rf /var/lib/apt/lists/* \
-   && pip install --no-cache-dir -r requirements.txt
+  --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools \
+  && rm -rf /var/lib/apt/lists/* \
+  && pip install --no-cache-dir -r requirements.txt
 
 COPY Makefile .
 COPY scripts/*sh ./scripts/

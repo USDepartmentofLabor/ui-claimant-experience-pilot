@@ -11,7 +11,7 @@ The Department of Labor has been asked to lead the executive initiative (ARPA pr
 This application requires:
 
 - Python 3.x
-- Node.js 14.16
+- Node.js 14.18
 
 Both are specified in `Dockerfile` but you will likely need both locally (natively) installed on your host machine as well.
 

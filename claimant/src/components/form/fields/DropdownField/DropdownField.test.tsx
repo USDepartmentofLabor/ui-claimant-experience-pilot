@@ -7,7 +7,7 @@ import { noop } from "../../../../testUtils/noop";
 describe("dropdownField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByText, getByLabelText } = render(
-      <Formik onSubmit={noop}>
+      <Formik initialValues={{}} onSubmit={noop}>
         <DropdownField
           name="dropdownField"
           label="dropdownField"
@@ -57,7 +57,7 @@ describe("dropdownField component", () => {
   describe("disabled", () => {
     it("disables the dropdown when it is disabled", () => {
       const { getByLabelText } = render(
-        <Formik onSubmit={noop}>
+        <Formik initialValues={{}} onSubmit={noop}>
           <DropdownField
             name="dropdownField"
             label="dropdownField"
