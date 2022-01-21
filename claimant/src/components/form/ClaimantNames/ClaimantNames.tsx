@@ -3,9 +3,9 @@ import { FieldArray, useFormikContext } from "formik";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 
 import { Name } from "../Name/Name";
-import { YesNoRadio } from "../YesNoRadio/YesNoRadio";
 import { useEffect } from "react";
 import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
+import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 
 export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaField[] = [
   "claimant_name",
@@ -17,7 +17,7 @@ export const ClaimantNames = () => {
   const { values, setFieldValue, setFieldTouched } = useFormikContext<Claim>();
 
   useEffect(() => {
-    if (values.LOCAL_claimant_has_alternate_names === "no") {
+    if (values.LOCAL_claimant_has_alternate_names === false) {
       setFieldValue("alternate_names", []);
       setFieldTouched("alternate_names", false);
     }
@@ -30,13 +30,13 @@ export const ClaimantNames = () => {
       </Fieldset>
       <br />
       <Fieldset legend="In the past 18 months, have you worked under a name different from above?">
-        <YesNoRadio
+        <BooleanRadio
           id="LOCAL_claimant_has_alternate_names"
           name="LOCAL_claimant_has_alternate_names"
         />
       </Fieldset>
       <br />
-      {values.LOCAL_claimant_has_alternate_names === "yes" && (
+      {values.LOCAL_claimant_has_alternate_names === true && (
         <Fieldset legend="Alternate Name">
           <FieldArray
             name="alternate_names"
