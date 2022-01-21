@@ -7,20 +7,15 @@ import os
 from django.conf import settings
 from django.db import transaction
 
+BUCKET_TYPE_ARCHIVE = "archive"
+BUCKET_TYPE_SWA = "swa"
 
 logger = logging.getLogger(__name__)
 
 
 class ClaimStore(object):
-    def __init__(self, bucket_name=None):
-        if bucket_name:  # pragma: no cover
-            self.bucket_name = bucket_name
-        else:
-            self.bucket_name = (
-                settings.TEST_CLAIM_BUCKET_NAME
-                if os.environ.get("RUNNING_TESTS")
-                else settings.CLAIM_BUCKET_NAME
-            )
+    def __init__(self, claim_bucket=None):
+        self.bucket_name = claim_bucket.name if claim_bucket else ClaimBucket().name
 
     def s3_client(self):
         # TODO region?
@@ -49,9 +44,27 @@ class ClaimStore(object):
         return resp
 
 
+class ClaimBucket:
+    def __init__(self, bucket_type=BUCKET_TYPE_SWA):
+        if bucket_type == BUCKET_TYPE_ARCHIVE:
+            self.name = (
+                settings.TEST_ARCHIVE_BUCKET_NAME
+                if os.environ.get("RUNNING_TESTS")
+                else settings.ARCHIVE_BUCKET_NAME
+            )
+        elif bucket_type == BUCKET_TYPE_SWA:
+            self.name = (
+                settings.TEST_CLAIM_BUCKET_NAME
+                if os.environ.get("RUNNING_TESTS")
+                else settings.CLAIM_BUCKET_NAME
+            )
+        else:
+            raise ValueError("Invalid bucket_type")
+
+
 class ClaimWriter(object):
-    def __init__(self, claim, payload, path=None):
-        self.claim_store = ClaimStore()
+    def __init__(self, claim, payload, path=None, claim_store=None):
+        self.claim_store = claim_store or ClaimStore()
         self.claim = claim
         self.payload = payload
         if path:
@@ -65,7 +78,7 @@ class ClaimWriter(object):
         try:
             with transaction.atomic():
                 self.claim_store.write(self.path, self.payload)
-                self.claim.create_stored_event()
+                self.claim.create_stored_event(self.claim_store.bucket_name)
         except ClientError as e:
             logger.exception(e)
             return False
@@ -73,8 +86,8 @@ class ClaimWriter(object):
 
 
 class ClaimReader(object):
-    def __init__(self, claim, path=None):
-        self.claim_store = ClaimStore()
+    def __init__(self, claim, path=None, claim_store=None):
+        self.claim_store = claim_store or ClaimStore()
         self.claim = claim
         if path:
             self.path = path

@@ -184,6 +184,9 @@ activate-swa: ## Set SWA record status=Active
 bucket: ## Create S3 bucket in localstack service (run inside container)
 	python manage.py create_bucket
 
+dol-bucket: ## Create DOL S3 bucket in localstack service (run inside container)
+	python manage.py create_bucket --dol
+
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 

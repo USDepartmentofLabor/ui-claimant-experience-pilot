@@ -15,7 +15,13 @@ from core.claim_encryption import (
     SymmetricClaimDecryptor,
     symmetric_encryption_key,
 )
-from core.claim_storage import ClaimReader, ClaimStore, ClaimWriter
+from core.claim_storage import (
+    BUCKET_TYPE_ARCHIVE,
+    ClaimBucket,
+    ClaimReader,
+    ClaimStore,
+    ClaimWriter,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -47,8 +53,10 @@ class Claim(TimeStampedModel):
         Event, content_type_field="model_name", object_id_field="model_id"
     )
 
-    def create_stored_event(self):
-        return self.events.create(category=Claim.EventCategories.STORED)
+    def create_stored_event(self, bucket_name):
+        return self.events.create(
+            category=Claim.EventCategories.STORED, description=bucket_name
+        )
 
     def payload_path(self):
         if self.is_completed():
@@ -158,7 +166,15 @@ class Claim(TimeStampedModel):
                 cw = ClaimWriter(
                     self, packaged_payload, path=self.completed_payload_path()
                 )
-                if not cw.write():
+                archiveCw = ClaimWriter(
+                    self,
+                    json_encode(validated_payload),
+                    path=self.completed_payload_path(),
+                    claim_store=ClaimStore(
+                        claim_bucket=ClaimBucket(BUCKET_TYPE_ARCHIVE)
+                    ),
+                )
+                if not cw.write() or not archiveCw.write():
                     raise Exception("Failed to write completed claim")
             logger.debug("🚀 wrote completed claim")
             return True

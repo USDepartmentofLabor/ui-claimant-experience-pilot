@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from jwcrypto import jwk, jwt
 from jwcrypto.common import json_decode
-from .claim_storage import ClaimStore
+from .claim_storage import BUCKET_TYPE_ARCHIVE, ClaimBucket, ClaimStore
 import secrets
 import time
 
@@ -17,13 +17,15 @@ def generate_keypair():
     return private_key_jwk, public_key_jwk
 
 
-def create_s3_bucket():
-    cs = ClaimStore()
+def create_s3_bucket(is_archive=False):
+    claim_bucket = ClaimBucket(bucket_type=BUCKET_TYPE_ARCHIVE) if is_archive else None
+    cs = ClaimStore(claim_bucket=claim_bucket)
     cs.bucket().create()
 
 
-def delete_s3_bucket():
-    cs = ClaimStore()
+def delete_s3_bucket(is_archive=False):
+    claim_bucket = ClaimBucket(bucket_type=BUCKET_TYPE_ARCHIVE) if is_archive else None
+    cs = ClaimStore(claim_bucket=claim_bucket)
     # must delete all objects first, then delete bucket
     bucket = cs.bucket()
     bucket.objects.all().delete()

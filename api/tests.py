@@ -27,7 +27,7 @@ from core.claim_encryption import (
     SymmetricClaimDecryptor,
     symmetric_encryption_key,
 )
-from core.claim_storage import ClaimReader
+from core.claim_storage import BUCKET_TYPE_ARCHIVE, ClaimBucket, ClaimReader, ClaimStore
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI
 from .claim_cleaner import ClaimCleaner
@@ -60,7 +60,101 @@ class SessionVerifier:
         return session
 
 
-class ApiTestCase(CeleryTestCase, SessionVerifier):
+class BaseClaim:
+    def base_claim(
+        self, id=str(uuid.uuid4()), claimant_id=None, email=None, swa_code=None
+    ):
+        claim = {
+            "is_complete": True,
+            "claimant_id": claimant_id or "random-claimaint-string",
+            "identity_provider": "test",
+            "swa_code": swa_code or "XX",
+            "ssn": "900-00-1234",
+            "email": email or "foo@example.com",
+            "claimant_name": {"first_name": "first", "last_name": "last"},
+            "residence_address": RESIDENCE_ADDRESS,
+            "mailing_address": MAILING_ADDRESS,
+            "birthdate": "2000-01-01",
+            "sex": "female",
+            "ethnicity": "opt_out",
+            "race": ["american_indian_or_alaskan"],
+            "education_level": "some_college",
+            "employers": [
+                {
+                    "name": "ACME Stuff",
+                    "days_employed": 123,
+                    "LOCAL_still_working": "no",
+                    "first_work_date": "2020-02-02",
+                    "last_work_date": "2020-11-30",
+                    "recall_date": "2020-12-13",
+                    "fein": "00-1234567",
+                    "address": {
+                        "address1": "999 Acme Way",
+                        "address2": "Suite 888",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-9999",
+                    },
+                    "LOCAL_same_address": "no",
+                    "work_site_address": {
+                        "address1": "888 Sun Ave",
+                        "city": "Elsewhere",
+                        "state": "KS",
+                        "zipcode": "11111-8888",
+                    },
+                    "LOCAL_same_phone": "yes",
+                    "phones": [{"number": "555-555-1234", "sms": False}],
+                    "separation_reason": "laid_off",
+                    "separation_option": "position_eliminated",
+                    "separation_comment": "they ran out of money",
+                }
+            ],
+            "self_employment": {
+                "is_self_employed": "no",
+                "ownership_in_business": "yes",
+                "name_of_business": "BusinessCo",
+                "is_corporate_officer": "yes",
+                "name_of_corporation": "ACME Inc",
+                "related_to_owner": "no",
+            },
+            "student_fulltime_in_last_18_months": False,
+            "attending_college_or_job_training": True,
+            "registered_with_vocational_rehab": False,
+            "union": {
+                "is_union_member": True,
+                "union_name": "foo",
+                "union_local_number": "1234",
+                "required_to_seek_work_through_hiring_hall": False,
+            },
+            "interpreter_required": True,
+            "phones": [{"number": "555-555-1234"}],
+            "disability": {
+                "has_collected_disability": True,
+                "disabled_immediately_before": False,
+                "type_of_disability": "State Plan",
+                "date_disability_began": "2020-01-01",
+                "recovery_date": "2022-01-08",
+                "contacted_last_employer_after_recovery": False,
+            },
+            "availability": {
+                "can_begin_work_immediately": False,
+                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
+                "can_work_full_time": True,
+                "is_prevented_from_accepting_full_time_work": False,
+            },
+            "payment": {
+                "payment_method": "direct_deposit",
+                "account_type": "checking",
+                "routing_number": "12-345678",
+                "account_number": "00983-543=001",
+            },
+        }
+        if id:
+            claim["id"] = id
+        return claim
+
+
+class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
     def setUp(self):
         super().setUp()
         # Empty the test outbox
@@ -76,11 +170,13 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
     def setUpClass(cls):
         super().setUpClass()
         create_s3_bucket()
+        create_s3_bucket(is_archive=True)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)
 
     def csrf_client(self, claimant=None, swa=None):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
@@ -153,69 +249,17 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         csrf_client = self.csrf_client()
         whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/completed-claim/"
-        payload = {
-            "claimant_id": claimant.idp_user_xid,
-            "swa_code": swa.code,
-            "ssn": "900-00-1234",
-            "email": whoami["email"],
-            "is_complete": True,
-            "claimant_name": {
-                "first_name": "Ima",
-                "last_name": "Claimant",
-            },
-            "mailing_address": MAILING_ADDRESS,
-            "residence_address": RESIDENCE_ADDRESS,
-            "birthdate": "2000-01-01",
-            "sex": "female",
-            "ethnicity": "opt_out",
-            "race": ["american_indian_or_alaskan"],
-            "education_level": "some_college",
-            "LOCAL_mailing_address_same": False,
-            "self_employment": {
-                "is_self_employed": "no",
-                "ownership_in_business": "yes",
-                "name_of_business": "BusinessCo",
-                "is_corporate_officer": "yes",
-                "name_of_corporation": "ACME Inc",
-                "related_to_owner": "yes",
-                "corporation_or_partnership": "no",
-            },
-            "student_fulltime_in_last_18_months": False,
-            "attending_college_or_job_training": True,
-            "registered_with_vocational_rehab": False,
-            "union": {
-                "is_union_member": True,
-                "union_name": "foo",
-                "union_local_number": "1234",
-                "required_to_seek_work_through_hiring_hall": False,
-            },
-            "interpreter_required": True,
-            "phones": [{"number": "555-555-1234"}],
-            "disability": {
-                "has_collected_disability": True,
-                "disabled_immediately_before": False,
-                "type_of_disability": "State Plan",
-                "date_disability_began": "2020-01-01",
-                "recovery_date": "2022-01-08",
-                "contacted_last_employer_after_recovery": False,
-            },
-            "availability": {
-                "can_begin_work_immediately": False,
-                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
-                "can_work_full_time": True,
-                "is_prevented_from_accepting_full_time_work": False,
-            },
-            "payment": {
-                "payment_method": "direct_deposit",
-                "account_type": "checking",
-                "routing_number": "12-345678",
-                "account_number": "00983-543=001",
-            },
-        }
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=whoami["email"],
+            swa_code=swa.code,
+        )
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
+        logger.debug("🚀🚀🚀🚀🚀 debug={}".format(response))
         self.assertEqual(response.status_code, 201)
 
         # fetch the encrypted claim from the S3 bucket directly and decrypt it.
@@ -229,6 +273,40 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
         self.assertEqual(decrypted_claim["id"], claim_id)
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
+
+    def test_archived_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client()
+        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/completed-claim/"
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=whoami["email"],
+            swa_code=swa.code,
+        )
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.post(
+            url, content_type="application/json", data=payload, **headers
+        )
+        self.assertEqual(response.status_code, 201)
+
+        # fetch the completed claim from the archive S3 bucket directly.
+        claim = claimant.claim_set.all()[0]
+        self.assertTrue(claim.is_completed())
+        claim_id = response.json()["claim_id"]
+        cr = ClaimReader(
+            claim,
+            claim_store=ClaimStore(
+                claim_bucket=ClaimBucket(bucket_type=BUCKET_TYPE_ARCHIVE)
+            ),
+        )
+        archived_claim = json_decode(cr.read())
+        self.assertEqual(archived_claim["id"], claim_id)
+        self.assertEqual(archived_claim["claimant_id"], claimant.idp_user_xid)
+        self.assertEqual(archived_claim["education_level"], payload["education_level"])
 
     def test_encrypted_partial_claim(self):
         idp = create_idp()
@@ -285,64 +363,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         self.assertEqual(response.status_code, 404)
 
         # POST to create
-        payload = {
-            "claimant_id": claimant.idp_user_xid,
-            "swa_code": swa.code,
-            "ssn": "900-00-1234",
-            "email": whoami["email"],
-            "claimant_name": {
-                "first_name": "Ima",
-                "last_name": "Claimant",
-            },
-            "is_complete": True,
-            "residence_address": RESIDENCE_ADDRESS,
-            "mailing_address": MAILING_ADDRESS,
-            "birthdate": "2000-01-01",
-            "sex": "female",
-            "ethnicity": "opt_out",
-            "race": ["american_indian_or_alaskan"],
-            "education_level": "some_college",
-            "self_employment": {
-                "is_self_employed": "no",
-                "ownership_in_business": "yes",
-                "name_of_business": "BusinessCo",
-                "is_corporate_officer": "yes",
-                "name_of_corporation": "ACME Inc",
-                "related_to_owner": "yes",
-                "corporation_or_partnership": "no",
-            },
-            "student_fulltime_in_last_18_months": False,
-            "attending_college_or_job_training": True,
-            "registered_with_vocational_rehab": False,
-            "union": {
-                "is_union_member": True,
-                "union_name": "foo",
-                "union_local_number": "1234",
-                "required_to_seek_work_through_hiring_hall": False,
-            },
-            "interpreter_required": True,
-            "phones": [{"number": "555-555-1234"}],
-            "disability": {
-                "has_collected_disability": True,
-                "disabled_immediately_before": False,
-                "type_of_disability": "State Plan",
-                "date_disability_began": "2020-01-01",
-                "recovery_date": "2022-01-08",
-                "contacted_last_employer_after_recovery": False,
-            },
-            "availability": {
-                "can_begin_work_immediately": False,
-                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
-                "can_work_full_time": True,
-                "is_prevented_from_accepting_full_time_work": False,
-            },
-            "payment": {
-                "payment_method": "direct_deposit",
-                "account_type": "checking",
-                "routing_number": "12-345678",
-                "account_number": "00983-543=001",
-            },
-        }
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=whoami["email"],
+            swa_code=swa.code,
+        )
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
@@ -354,7 +380,17 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         )
         self.assertTrue(claim.is_completed())
         self.assertEqual(
-            claim.events.filter(category=Claim.EventCategories.STORED).count(), 1
+            claim.events.filter(
+                category=Claim.EventCategories.STORED, description=ClaimBucket().name
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.STORED,
+                description=ClaimBucket(bucket_type=BUCKET_TYPE_ARCHIVE).name,
+            ).count(),
+            1,
         )
         self.assertEqual(
             claim.events.filter(category=Claim.EventCategories.SUBMITTED).count(), 1
@@ -372,7 +408,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
         claim_response = response.json()
         self.assertEqual(claim_response["id"], str(claim.uuid))
         self.assertEqual(claim_response["status"], None)
-        self.assertEqual(len(claim_response["events"]), 3)
+        self.assertEqual(len(claim_response["events"]), 4)
 
         # if we have another claim that is newer and completed, but resolved, ignore it.
         logger.debug("🚀 ignore resolved claim")
@@ -792,7 +828,7 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         self.assertEqual(claim.id, claim_request.claim.id)
 
 
-class ClaimValidatorTestCase(TestCase):
+class ClaimValidatorTestCase(TestCase, BaseClaim):
     def test_example_claim_instance(self):
         example = settings.BASE_DIR / "schemas" / "claim-v1.0-example.json"
         with open(example) as f:
@@ -804,93 +840,6 @@ class ClaimValidatorTestCase(TestCase):
         ccv = CompletedClaimValidator(ClaimCleaner(example_claim).cleaned())
         logger.debug("🚀 complete errors={}".format(ccv.errors_as_dict()))
         self.assertTrue(ccv.valid)
-
-    def base_claim(self):
-        return {
-            "id": str(uuid.uuid4()),
-            "claimant_id": "random-claimaint-string",
-            "identity_provider": "test",
-            "swa_code": "XX",
-            "ssn": "900-00-1234",
-            "email": "foo@example.com",
-            "claimant_name": {"first_name": "first", "last_name": "last"},
-            "residence_address": RESIDENCE_ADDRESS,
-            "mailing_address": MAILING_ADDRESS,
-            "birthdate": "2000-01-01",
-            "sex": "female",
-            "ethnicity": "opt_out",
-            "race": ["american_indian_or_alaskan"],
-            "education_level": "some_college",
-            "employers": [
-                {
-                    "name": "ACME Stuff",
-                    "days_employed": 123,
-                    "LOCAL_still_working": "no",
-                    "first_work_date": "2020-02-02",
-                    "last_work_date": "2020-11-30",
-                    "recall_date": "2020-12-13",
-                    "fein": "00-1234567",
-                    "address": {
-                        "address1": "999 Acme Way",
-                        "address2": "Suite 888",
-                        "city": "Elsewhere",
-                        "state": "KS",
-                        "zipcode": "11111-9999",
-                    },
-                    "LOCAL_same_address": "no",
-                    "work_site_address": {
-                        "address1": "888 Sun Ave",
-                        "city": "Elsewhere",
-                        "state": "KS",
-                        "zipcode": "11111-8888",
-                    },
-                    "LOCAL_same_phone": "yes",
-                    "phones": [{"number": "555-555-1234", "sms": False}],
-                    "separation_reason": "laid_off",
-                    "separation_option": "position_eliminated",
-                    "separation_comment": "they ran out of money",
-                }
-            ],
-            "self_employment": {
-                "is_self_employed": "no",
-                "ownership_in_business": "yes",
-                "name_of_business": "BusinessCo",
-                "is_corporate_officer": "yes",
-                "name_of_corporation": "ACME Inc",
-                "related_to_owner": "no",
-            },
-            "student_fulltime_in_last_18_months": False,
-            "attending_college_or_job_training": True,
-            "registered_with_vocational_rehab": False,
-            "union": {
-                "is_union_member": True,
-                "union_name": "foo",
-                "union_local_number": "1234",
-                "required_to_seek_work_through_hiring_hall": False,
-            },
-            "interpreter_required": True,
-            "phones": [{"number": "555-555-1234"}],
-            "disability": {
-                "has_collected_disability": True,
-                "disabled_immediately_before": False,
-                "type_of_disability": "State Plan",
-                "date_disability_began": "2020-01-01",
-                "recovery_date": "2022-01-08",
-                "contacted_last_employer_after_recovery": False,
-            },
-            "availability": {
-                "can_begin_work_immediately": False,
-                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
-                "can_work_full_time": True,
-                "is_prevented_from_accepting_full_time_work": False,
-            },
-            "payment": {
-                "payment_method": "direct_deposit",
-                "account_type": "checking",
-                "routing_number": "12-345678",
-                "account_number": "00983-543=001",
-            },
-        }
 
     def test_claim_validator(self):
         claim = self.base_claim()

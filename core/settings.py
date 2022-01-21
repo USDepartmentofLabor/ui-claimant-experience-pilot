@@ -386,6 +386,10 @@ os.environ["KOMBU_FERNET_KEY"] = redis_secret_key
 AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", "https://s3.amazonaws.com")
 TEST_CLAIM_BUCKET_NAME = env.str("TEST_S3_BUCKET_URL", "usdol-ui-claims-test")
 CLAIM_BUCKET_NAME = env.str("S3_BUCKET_URL", "usdol-ui-claims")
+TEST_ARCHIVE_BUCKET_NAME = env.str(
+    "TEST_S3_ARCHIVE_BUCKET_URL", "usdol-ui-archive-test"
+)
+ARCHIVE_BUCKET_NAME = env.str("S3_ARCHIVE_BUCKET_URL", "usdol-ui-archive")
 
 # CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
 try:
