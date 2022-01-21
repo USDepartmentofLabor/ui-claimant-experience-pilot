@@ -139,5 +139,11 @@
     "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
     "can_work_full_time": true,
     "is_prevented_from_accepting_full_time_work": false
+  },
+  "payment": {
+    "payment_method": "direct_deposit",
+    "account_type": "checking",
+    "routing_number": "12-345678",
+    "account_number": "00983-543=001"
   }
 }

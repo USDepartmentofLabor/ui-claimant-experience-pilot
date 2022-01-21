@@ -192,6 +192,17 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    // Payment information page
+    const paymentInformation = {
+      payment_method: "direct_deposit",
+      account_type: "checking",
+      routing_number: "12345",
+      account_number: "abcdefg",
+    };
+    cy.complete_payment_information(paymentInformation);
+    cy.check_a11y();
+    cy.click_next();
+
     // TODO all the other pages go here as we write them
 
     // Review page

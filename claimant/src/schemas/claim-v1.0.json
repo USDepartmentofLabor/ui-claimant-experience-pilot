@@ -547,6 +547,42 @@
           }
         }
       ]
+    },
+    "payment": {
+      "$id": "/definitions/payment",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$anchor": "#/definitions/payment",
+      "type": "object",
+      "properties": {
+        "payment_method": {
+          "type": "string",
+          "enum": ["debit", "direct_deposit"]
+        }
+      },
+      "required": ["payment_method"],
+      "if": {
+        "properties": {
+          "payment_method": {
+            "type": "string",
+            "const": "direct_deposit"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "account_type": {
+            "type": "string",
+            "enum": ["checking", "savings"]
+          },
+          "routing_number": {
+            "type": "string"
+          },
+          "account_number": {
+            "type": "string"
+          }
+        },
+        "required": ["account_type", "routing_number", "account_number"]
+      }
     }
   },
   "required": ["claimant_name"],
@@ -802,6 +838,10 @@
     },
     "availability": {
       "$ref": "#/definitions/availability",
+      "required_for_complete": true
+    },
+    "payment": {
+      "$ref": "#/definitions/payment",
       "required_for_complete": true
     }
   }

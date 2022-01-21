@@ -205,6 +205,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "can_work_full_time": True,
                 "is_prevented_from_accepting_full_time_work": False,
             },
+            "payment": {
+                "payment_method": "direct_deposit",
+                "account_type": "checking",
+                "routing_number": "12-345678",
+                "account_number": "00983-543=001",
+            },
         }
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
         response = csrf_client.post(
@@ -329,6 +335,12 @@ class ApiTestCase(CeleryTestCase, SessionVerifier):
                 "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
                 "can_work_full_time": True,
                 "is_prevented_from_accepting_full_time_work": False,
+            },
+            "payment": {
+                "payment_method": "direct_deposit",
+                "account_type": "checking",
+                "routing_number": "12-345678",
+                "account_number": "00983-543=001",
             },
         }
         response = csrf_client.post(
@@ -872,6 +884,12 @@ class ClaimValidatorTestCase(TestCase):
                 "can_work_full_time": True,
                 "is_prevented_from_accepting_full_time_work": False,
             },
+            "payment": {
+                "payment_method": "direct_deposit",
+                "account_type": "checking",
+                "routing_number": "12-345678",
+                "account_number": "00983-543=001",
+            },
         }
 
     def test_claim_validator(self):
@@ -995,7 +1013,7 @@ class ClaimValidatorTestCase(TestCase):
         invalid_claim = {"birthdate": "1234"}
         cv = CompletedClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 21)
+        self.assertEqual(len(cv.errors), 22)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
@@ -1004,6 +1022,7 @@ class ClaimValidatorTestCase(TestCase):
         self.assertIn("'residence_address' is a required property", error_dict)
         self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
+        self.assertIn("'payment' is a required property", error_dict)
 
     def test_employer_conditionals(self):
         claim = self.base_claim() | {
@@ -1067,3 +1086,8 @@ class ClaimValidatorTestCase(TestCase):
         cv = CompletedClaimValidator(claim)
         logger.debug(cv.errors_as_dict())
         self.assertTrue(cv.valid)
+
+        del claim["payment"]["account_type"]
+        cv = CompletedClaimValidator(claim)
+        logger.debug(cv.errors_as_dict())
+        self.assertFalse(cv.valid)

@@ -14,11 +14,12 @@ import { DisabilityStatusPage } from "./Questions/DisabilityStatus/DisabilitySta
 import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
 import en from "../i18n/en";
 import { AvailabilityPage } from "./Questions/Availability/Availability";
+import { PaymentInformationPage } from "./Questions/PaymentInformation/PaymentInformation";
 
 export interface IPageDefinition {
   path: string;
   heading: keyof typeof en.common.page_headings;
-  schemaFields: ClaimSchemaField[];
+  schemaFields?: ClaimSchemaField[];
   initialValues: FormValues;
   Component: FC<PageProps>;
   repeatable?: (
@@ -41,6 +42,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   UnionPage,
   DisabilityStatusPage,
   AvailabilityPage,
+  PaymentInformationPage,
   SubmitPage,
 ] as const;
 

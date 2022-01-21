@@ -39,6 +39,7 @@ const common = {
     union: "Union Membership",
     disability: "Disability",
     availability: "Availability",
+    payment_information: "Payment information",
     submit: "Review",
   },
 };

@@ -310,6 +310,32 @@ const claimForm = {
     },
     preferred_language: { label: "What language do you speak?" },
   },
+  payment: {
+    payment_method: {
+      label: "How would you like to receive your benefit payment?",
+      options: {
+        debit: "Debit card mailed to me",
+        direct_deposit: "Direct deposit to my bank account",
+      },
+    },
+    account_type: {
+      label: "Account type",
+      options: {
+        checking: "Checking",
+        savings: "Savings",
+      },
+    },
+    routing_number: { label: "Routing number" },
+    re_enter_routing_number: {
+      label: "Re-enter routing number",
+      errors: { mustMatch: "Must match routing number" },
+    },
+    account_number: { label: "Account number" },
+    re_enter_account_number: {
+      label: "Re-enter account number",
+      errors: { mustMatch: "Must match account number" },
+    },
+  },
 };
 
 export default claimForm;

@@ -1,3 +1,23 @@
+type ClaimantInput = PersonalInformationType &
+  ContactType &
+  DemographicInformationType &
+  PaymentInformationType &
+  EmployersType &
+  SelfEmploymentType &
+  DisabilityStatusType &
+  AvailabilityType &
+  EducationVocationalRehabType & { union?: UnionType } & {
+    occupation?: OccupationType;
+  } & SelfEmploymentType & {
+    is_complete?: boolean;
+  };
+
+type Claim = ClaimantInput & {
+  id?: string;
+  swa_code: string;
+  claimant_id: string;
+};
+
 type WhoAmI = {
   claim_id?: string;
   claimant_id: string;
@@ -129,23 +149,16 @@ type AvailabilityType = {
   };
 };
 
-type ClaimantInput = PersonalInformationType &
-  ContactType &
-  DemographicInformationType &
-  EmployersType &
-  DisabilityStatusType &
-  AvailabilityType &
-  EducationVocationalRehabType & { union?: UnionType } & {
-    occupation?: OccupationType;
-  } & SelfEmploymentType & {
-    is_complete?: boolean;
+type PaymentInformationType = DeepPartial<{
+  payment: {
+    payment_method: string;
+    account_type: string;
+    routing_number: string;
+    LOCAL_re_enter_routing_number: string;
+    account_number: string;
+    LOCAL_re_enter_account_number: string;
   };
-
-type Claim = ClaimantInput & {
-  id?: string;
-  swa_code: string;
-  claimant_id: string;
-};
+}>;
 
 type PageProps = {
   segment: string | undefined;
