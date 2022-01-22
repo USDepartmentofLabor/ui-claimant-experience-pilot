@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from api.models import Claimant
+from api.test_utils import create_swa
 import logging
 
 logger = logging.getLogger("home.tests")
@@ -65,3 +66,13 @@ class HomeTestCase(TestCase):
     def test_prequalifications_page(self):
         response = self.client.get("/prequal/")
         self.assertContains(response, "Prequalifications", status_code=200)
+
+    def test_swa_redirect_page(self):
+        # with active SWA we get a link to the SWA
+        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
+        response = self.client.get(f"/swa-redirect/{swa.code}/")
+        self.assertContains(response, "link to the SWA page", status_code=200)
+
+        # not found or inactive SWA, we get link to federal site
+        response = self.client.get("/swa-redirect/XX/")
+        self.assertContains(response, "link to a federal", status_code=200)

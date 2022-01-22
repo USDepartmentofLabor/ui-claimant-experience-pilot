@@ -10,12 +10,21 @@
     </title>
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
+
+    <style>
+      #prequalification-form section {
+        margin-top: 3rem;
+      }
+      img.logindotgov {
+        height: 1rem;
+        vertical-align: text-bottom;
+      }
+    </style>
   </head>
   <body>
     <script src="{% static 'js/uswds.min.js' %}"></script>
     <section>{% include '_claimant_header.html' %}</section>
-    <section class="usa-section" id="main-content">
-      {% block content %}{% endblock %}
-    </section>
+    <section id="main-content">{% block content %}{% endblock %}</section>
+    <section>{% include '_claimant_footer.html' %}</section>
   </body>
 </html>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import never_cache
 from django.conf import settings
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
@@ -28,6 +29,9 @@ def index(request):
     return render(None, "index.html", {"base_url": base_url(request)})
 
 
+# the /idp/ page is our first contact between CDN-cached pages and our per-user session,
+# so never cache it.
+@never_cache
 def idp(request):
     if "redirect_to" in request.GET:
         request.session["redirect_to"] = request.GET["redirect_to"]
@@ -35,6 +39,7 @@ def idp(request):
         None,
         "idp.html",
         {
+            "swa": request.session.get("swa", None),
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
             "swas": active_swas_ordered_by_name(),
@@ -42,11 +47,23 @@ def idp(request):
     )
 
 
+# some unhappy-path answer on the /prequal page results in redirect to here
+def swa_redirect(request, swa_code):
+    try:
+        swa = SWA.active.get(code=swa_code)
+    except SWA.DoesNotExist:
+        swa = None
+    view_args = {"swa": swa, "base_url": base_url(request)}
+    return render(None, "swa-redirect.html", view_args)
+
+
+@never_cache
 def logout(request):
     request.session.flush()
     return redirect("/")
 
 
+@never_cache
 def ial2required(request):
     return render(
         None,
@@ -59,6 +76,7 @@ def ial2required(request):
     )
 
 
+@never_cache
 def test(request):  # pragma: no cover
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
@@ -67,6 +85,7 @@ def test(request):  # pragma: no cover
 
 
 # NOTE this login page is for testing only, see the SHOW_LOGIN_PAGE setting in views.py
+@never_cache
 def login(request):
     if request.method == "GET":
         # make sure we init both session and CSRF cookies
@@ -83,6 +102,7 @@ def login(request):
             {
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
+                "swa": request.session.get("swa", None),
                 "swas": active_swas_ordered_by_name(),
             },
         )
@@ -112,10 +132,9 @@ def prequalifications(request):
         {
             "base_url": base_url(request),
             "swas": states,
-            "styles": {
-                "section_margin": "margin-top-6",
-                "section_heading": "font-heading-sm",
-            },
+            # set basic defaults so var key exists, override in template partials
+            "onchange": None,
+            "required": False,
         },
     )
 
