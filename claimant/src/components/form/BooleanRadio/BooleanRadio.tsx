@@ -30,7 +30,7 @@ export const BooleanRadio = ({
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    fieldHelperProps.setValue(convertValueToBoolean(e.target.value), false);
+    fieldHelperProps.setValue(convertValueToBoolean(e.target.value));
     fieldHelperProps.setTouched(true, false);
     if (onChange) {
       onChange(e);
