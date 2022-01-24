@@ -27,6 +27,17 @@ const common = {
     home: "Home",
     work: "Work",
   },
+  date: {
+    month: {
+      label: "Month",
+    },
+    day: {
+      label: "Day",
+    },
+    year: {
+      label: "Year",
+    },
+  },
   select_one: "-- Select one --",
   page_headings: {
     personal_information: "Personal Information",
