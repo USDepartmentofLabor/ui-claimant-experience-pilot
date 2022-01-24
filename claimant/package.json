@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@testing-library/react-hooks": "^7.0.2",
-    "@trussworks/react-uswds": "^2.4.1",
+    "@trussworks/react-uswds": "^2.7.0",
     "axios": "0.24.0",
     "dayjs": "^1.10.7",
     "formik": "^2.2.9",
