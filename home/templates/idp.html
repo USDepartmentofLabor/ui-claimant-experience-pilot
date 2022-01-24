@@ -1,6 +1,19 @@
-{% extends "base.html" %} {% block content %} {% load i18n %}
+{% extends "claimant-base.html" %} {% block content %} {% load i18n %}
 <main role="main" class="">
-  <section class="grid-container margin-top-1">
+  <section class="grid-container usa-section">
+  {% if swa %}
+    <div>
+      {% translate "You will now be transferred to " %}
+      <img src="https://login.gov/assets/img/logo_sign_in.svg" alt="{% translate "Login.gov, external website" %}" class="logindotgov" />
+      {% translate "to sign in and verify your identity." %}
+    </div>
+    <div class="margin-top-2">
+      <a class="usa-button" href="{{ base_url }}/logindotgov/?swa={{ swa }}"
+        >{% translate "Continue" %}</a
+      >
+    </div>
+    {% include "./_local_login_link.html" with show_login_page=show_login_page %}
+  {% else %}
     <script type="text/javascript">
       function addSwaCode(code) {
         const idpLinks = document.querySelectorAll(".idp-link");
@@ -13,48 +26,10 @@
         idpPicker.classList.remove("display-none");
       }
     </script>
-    <div class="grid-row grid-gap">
-      <div class="tablet:grid-col-4">
-        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
-          {% translate "Select a State" %}
-        </h2>
-      </div>
-      <div class="tablet:grid-col-8 usa-prose">
-        <form>
-          <select class="usa-select" onchange="addSwaCode(this.value)">
-            <option disabled selected value>--</option>
-            {% for swa in swas %}
-            <option value="{{swa.code}}">{% translate swa.name %}</option>
-            {% endfor %}
-          </select>
-        </form>
-      </div>
-    </div>
-  </section>
-  <section id="idp-picker" class="display-none grid-container margin-top-1">
-    <div class="grid-row grid-gap">
-      <div class="tablet:grid-col-4">
-        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">
-          {% translate "Log In or Sign Up" %}
-        </h2>
-      </div>
-      <div class="tablet:grid-col-8 usa-prose">
-        <p>
-          <a class="idp-link" href="{{ base_url }}/logindotgov/">
-            <!-- prettier-ignore -->
-            <img src="https://www.ssa.gov/fleximg/Log_in_logo1.png" alt="{% translate "Sign in with Login.gov, external website" %}"
-            class="cspLogo-imgBorder" />
-          </a>
-        </p>
-        {% if show_login_page %}
-        <p>
-          <a class="usa-button idp-link" href="{{ base_url }}/login/"
-            >{% translate "Test Login" %}</a
-          >
-        </p>
-        {% endif %}
-      </div>
-    </div>
+    {% include "uswds/_swa_options.html" with swas=swas onchange="addSwaCode(this.value)" %}
+    {% include "./_logindotgov_link.html" %}
+    {% include "./_local_login_link.html" with show_login_page=show_login_page %}
+  {% endif %}
   </section>
 </main>
 {% endblock %}

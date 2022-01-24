@@ -1,0 +1,11 @@
+{% extends "claimant-base.html" %} {% block content %} {% load i18n %}
+<main role="main" class="">
+  <section class="grid-container usa-section">
+    {% if swa and swa.claimant_url %}
+      This page will give you helpful info and a <a href="{{ swa.claimant_url }}">link to the SWA page</a>.
+    {% else %}
+      This page will give you helpful info and a <a href="#TODO">link to a federal SWA locator site</a>.
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

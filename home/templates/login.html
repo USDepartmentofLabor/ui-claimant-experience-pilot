@@ -1,6 +1,6 @@
-{% extends "base.html" %} {% block content %}
+{% extends "claimant-base.html" %} {% block content %}
 <main role="main">
-  <div class="grid-container">
+  <div class="grid-container usa-section">
     <div class="grid-row">
       <form class="usa-form usa-form--large" action="/login/" method="POST">
         <input
@@ -20,11 +20,11 @@
           </p>
 
           <!-- prettier-ignore -->
-          {% include "uswds/_swa_options.html" with swas=swas %}
+          {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="first_name" label="First Name" %}
+          {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=False %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" %}
+          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=False %}
 
           <label class="usa-label" for="IAL"
             >Identity Assurance Level (IAL)</label
@@ -37,11 +37,11 @@
           <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate" required=True %}
+          {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate" type="text" required=True %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="ssn" label="SSN" required=True %}
+          {% include "uswds/_text_field.html" with id="ssn" label="SSN" type="text" required=True %}
           <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="phone" label="Phone" %}
+          {% include "uswds/_text_field.html" with id="phone" label="Phone" type="text" required=False %}
 
           <div>
             <button class="usa-button" type="submit" data-testid="loginbutton">

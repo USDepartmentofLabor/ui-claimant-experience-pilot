@@ -10,6 +10,9 @@
                   type="radio"
                   name="{{field_name}}"
                   value="yes"
+                  {% if required %}
+                  required="required"
+                  {% endif %}
                   {% if onchange %}
                   onchange="{{ onchange }}()"
                   {% endif %}
@@ -26,6 +29,9 @@
                   type="radio"
                   name="{{ field_name }}"
                   value="no"
+                  {% if required %}
+                  required="required"
+                  {% endif %}
                   {% if onchange %}
                   onchange="{{ onchange }}()"
                   {% endif %}

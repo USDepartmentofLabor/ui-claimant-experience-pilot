@@ -1,150 +1,196 @@
 {% extends "claimant-base.html" %} {% block content %}{% load i18n %}
 <!-- prettier-ignore -->
 <script type="text/JavaScript">
-    const prequalFields = [
+  // namespace just so we don't accidentally step on reserved words
+  const USDOL = {
+    prequalFields: {
+      "live_in_us": "{% translate "State residence" %}",
+      "swa_code": "{% translate "State" %}" ,
+      "job_last_18mo": "{% translate "Recent employment" %}",
+      "disabled": "{% translate "Disability" %}",
+      "military_service": "{% translate "Military service" %}",
+      "federal_employment": "{% translate "Federal employment" %}",
+      "maritime_employment": "{% translate "Maritime employment" %}",
+      "recent_disaster": "{% translate "Disaster" %}",
+      "worked_other_state": "{% translate "Worked in another state" %}",
+    },
+    getUnansweredQuestions: (formData) => {
+      let fieldsToCheck = Object.keys(USDOL.prequalFields);
+      if (formData.get("live_in_us") === "no") {
+        fieldsToCheck = fieldsToCheck.filter((item) => item !== "swa_code");
+      }
+      const emptyFields = fieldsToCheck.filter((field) => !formData.get(field));
+      return emptyFields;
+    },
+    determineClaimantProceeds: (formData) => {
+      // formData is in FormData object format
+      const yesProceedsFields = [
         "live_in_us",
-        "swa_code",
         "job_last_18mo",
+      ];
+      const noProceedsFields = [
+        "recent_disaster",
         "disabled",
         "military_service",
         "federal_employment",
-        "maritime_employment"
-    ]
-    function getUnansweredQuestions(formData){
-        let fieldsToCheck = prequalFields;
-        if(formData.get("live_in_us") === "no") {
-            fieldsToCheck = prequalFields.filter(item => item !== "swa_code");
-        }
-        const emptyFields = [];
-        fieldsToCheck.forEach((field) => !formData.has(field) && emptyFields.push(field));
-        return emptyFields
-    }
-    function determineClaimantProceeds(formData){
-        // formData is in FormData object format
-        const yesProceedsFields = [
-            "live_in_us",
-            "job_last_18mo",
-        ];
-        const noProceedsFields = [
-          "recent_disaster",
-          "disabled",
-          "military_service",
-          "federal_employment",
-          "maritime_employment",
-        ];
+        "maritime_employment",
+      ];
 
-        let canProceed = true;
+      let canProceed = true;
 
-        const setCanProceed = (fields, deniedAnswer) => {
-             fields.forEach((field) => {
-            if (formData.get(field) === deniedAnswer) {
-                canProceed = false;
-            }
-        });
-        }
-        setCanProceed(yesProceedsFields, "no")
-        setCanProceed(noProceedsFields, "yes")
-
-        const allowedSwas = ["NJ", "AR"];
-        canProceed = allowedSwas.includes(formData.get("swa_code"));
-
-        if ((formData.get("swa_code") === "NJ") && (formData.get("worked_other_state") === "yes")) {
+      const setCanProceed = (fields, deniedAnswer) => {
+        fields.forEach((field) => {
+          if (formData.get(field) === deniedAnswer) {
             canProceed = false;
-        }
+          }
+        });
+      }
+      setCanProceed(yesProceedsFields, "no");
+      setCanProceed(noProceedsFields, "yes");
 
-        return canProceed;
-    }
+      if (!canProceed) {
+        return false;
+      }
 
-    function onChangeLiveUSHandler() {
-        const formData = new FormData(document.getElementById("prequalification-form"));
-        const swaOptions = document.getElementById("swa-options")
-        if (formData.get("live_in_us") === "yes") {
-            if(swaOptions.classList.contains("display-none")){
-                swaOptions.classList.remove("display-none");
-            }
-        } else {
-            if(!swaOptions.classList.contains("display-none")){
-                swaOptions.classList.add("display-none");
-            }
-        }
-    }
+      const allowedSwas = ["NJ", "AR"];
+      if (!allowedSwas.includes(formData.get("swa_code"))) {
+        return false;
+      }
 
-    function submitPrequalifications(){
-        const formData = new FormData(document.getElementById("prequalification-form"));
-        const unanswered = getUnansweredQuestions(formData);
-        if(unanswered.length > 0){
-            alert("{%  translate "Must answer all questions" %}");
-            return;
-        }
-        if(formData.get("live_in_us") === "no"){
-            formData.delete("swa_code");
-        }
-        let formKeyValues = [];
-        for (let pair of formData) {
-            formKeyValues.push(pair)
-        }
+      if ((formData.get("swa_code") === "NJ") && (formData.get("worked_other_state") === "yes")) {
+        return false;
+      }
 
-        const canProceed = determineClaimantProceeds(formData);
-        // code below for demo purposes until hooked up to validations and correct pages
-        const proceedMessage = canProceed ? "User may proceed to pilot\n" : "User does not qualify and will be sent back to SWA\n";
-        let displayString = proceedMessage + '\n' + 'FORM VALUES SUBMITTED: \n';
-        let counter = 1;
-        formKeyValues.forEach(kp => {
-            counter++
-            displayString += `${kp[0]}: ${kp[1]}\n`
-        })
-        alert(displayString);
-        window.location.href = "/claimant/"
-    }
+      return true;
+    },
+    onChangeLiveUSHandler: () => {
+      const formData = new FormData(document.getElementById("prequalification-form"));
+      const swaOptions = document.getElementById("swa-options")
+      if (formData.get("live_in_us") === "yes") {
+        if (swaOptions.classList.contains("display-none")){
+          swaOptions.classList.remove("display-none");
+        }
+      } else {
+        if (!swaOptions.classList.contains("display-none")){
+          swaOptions.classList.add("display-none");
+        }
+      }
+    },
+    submitPrequalifications: () => {
+      // always clear errors to start
+      USDOL.clearErrors();
+
+      const formData = new FormData(document.getElementById("prequalification-form"));
+      const unanswered = USDOL.getUnansweredQuestions(formData);
+      const errors = [];
+      unanswered.forEach((field) => {
+        errors.push(`${USDOL.prequalFields[field]} {% translate 'is required' %}`);
+      });
+      if (unanswered.length > 0){
+        USDOL.showErrors(errors);
+        return;
+      }
+      if (formData.get("live_in_us") === "no"){
+        formData.delete("swa_code");
+      }
+      let formKeyValues = [];
+      for (let pair of formData) {
+        formKeyValues.push(pair)
+      }
+
+      const canProceed = USDOL.determineClaimantProceeds(formData);
+
+      // TODO GA event
+
+      if (canProceed) {
+        // TODO set cookie to say we passed so that /idp/ page knows it's ok to proceed.
+
+        const loginUrl = `/claimant/?swa=${formData.get("swa_code")}`; // will trigger authn redirect
+        window.location = loginUrl;
+      } else {
+        const swaUrl = `/swa-redirect/${formData.get("swa_code")}/`;
+        window.location = swaUrl;
+      }
+    },
+    showErrors: (errors) => {
+      const errorDiv = document.getElementById("form-errors");
+      const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
+      errors.forEach((err) => {
+        const errEl = document.createElement("div");
+        const text = document.createTextNode(err);
+        errEl.appendChild(text);
+        errorP.appendChild(errEl);
+      });
+      errorDiv.classList.remove("display-none");
+      errorDiv.scrollIntoView({ behavior: "smooth" });
+    },
+    clearErrors: () => {
+      const errorDiv = document.getElementById("form-errors");
+      const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
+      errorDiv.classList.add("display-none");
+      errorP.innerHTML = "";
+    },
+  };
 </script>
 <!-- prettier-ignore -->
 <div class="grid-container">
     <main>
-        <h1>{% translate "PREQUALIFICATION" %}</h1>
-        <form class="usa-form" id="prequalification-form">
-
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-        {% translate "State residence" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="onChangeLiveUSHandler"  %}
-          <div class="display-none" id="swa-options">{% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" %}</div>
-
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-            {% translate "Recent employment" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" %}
-          <div class="margin-top-4">
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
+        <h1>{% translate "Prequalification" %}</h1>
+        <form method="POST" class="usa-form--large" id="prequalification-form" onsubmit="return false">
+          <!-- placeholder -->
+          <div class="usa-alert usa-alert--error display-none" id="form-errors" role="alert">
+            <div class="usa-alert__body">
+              <h4 class="usa-alert__heading">{% translate "Form errors" %}</h4>
+              <p class="usa-alert__text"></p>
+            </div>
           </div>
 
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-            {% translate "Disaster" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" %}
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-            {% translate "Disability" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" %}
+          <section>
+            <h2>{% translate "State residence" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" %}
+            <div class="display-none" id="swa-options">
+              {% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" %}
+            </div>
+          </section>
 
-          <h2 class="{{styles.section_margin}} {{ styles.section_heading }}">
-              {% translate "Military service" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" %}
+          <section>
+            <h2>{% translate "Recent employment" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" %}
+            <div class="margin-top-4">
+              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
+            </div>
+          </section>
 
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-            {% translate "Federal employment" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" %}
+          <section>
+            <h2>{% translate "Disaster" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" %}
+          </section>
 
-          <h2 class="{{ styles.section_margin}} {{ styles.section_heading }}">
-            {% translate "Maritime employment" %}
-          </h2>
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" %}
+          <section>
+            <h2>{% translate "Disability" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" %}
+          </section>
+
+          <section>
+            <h2>{% translate "Military service" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" %}
+          </section>
+
+          <section>
+            <h2>{% translate "Federal employment" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" %}
+          </section>
+
+          <section>
+            <h2>{% translate "Maritime employment" %}</h2>
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" %}
+          </section>
+
+          <section class="text-center">
+            <a href="/" class="usa-button usa-button--outline">{% translate "Back" %}</a>
+            <button class="usa-button" onclick="USDOL.submitPrequalifications()">{% translate "Next" %}</button>
+          </section>
         </form>
-
-        <button class="usa-button margin-top-6" onclick="submitPrequalifications()">
-          {% translate "Next" %}
-        </button>
     </main>
 </div>
 {% endblock %}

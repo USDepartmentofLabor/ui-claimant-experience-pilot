@@ -1,0 +1,6 @@
+{% load i18n %} {% if show_login_page %}
+<p>
+  <!-- prettier-ignore -->
+  <a class="usa-button idp-link" href="{{ base_url }}/login/?swa={{ swa }}">{% translate "Test Login" %}</a >
+</p>
+{% endif %}

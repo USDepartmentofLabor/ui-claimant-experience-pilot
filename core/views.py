@@ -20,6 +20,10 @@ def raise_error(request):
 
 
 def claimant(request):
+    # remember specific swa if mentioned
+    if "swa" in request.GET:
+        request.session["swa"] = request.GET["swa"]
+
     return render(None, "build/index.html", {"base_url": base_url(request)})
 
 
