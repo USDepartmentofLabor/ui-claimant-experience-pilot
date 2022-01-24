@@ -104,11 +104,20 @@ class LoginDotGovTestCase(TestCase):
         session.save()
 
         response = self.client.get("/logindotgov/")
-        self.assertRedirects(response, "/", status_code=302)
+        self.assertRedirects(response, "/claimant/", status_code=302)
 
     def test_explain(self):
         response = self.client.get("/logindotgov/explain")
         self.assertEqual(response.status_code, 401)
+
+    def test_oidc_restart_when_no_session_found(self):
+        response = self.client.get("/logindotgov/result")
+        self.assertRedirects(
+            response,
+            "/logindotgov/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
 
     def test_oidc_errors(self):
         response = self.client.get("/logindotgov/")
@@ -153,7 +162,7 @@ class LoginDotGovTestCase(TestCase):
         session.save()
         response = self.client.get("/logindotgov/result")
         self.assertRedirects(
-            response, "/", status_code=302, fetch_redirect_response=False
+            response, "/logindotgov/", status_code=302, fetch_redirect_response=False
         )
 
     def test_redirect_to(self):

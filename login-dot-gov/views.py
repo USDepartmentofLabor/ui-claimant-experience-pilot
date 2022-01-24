@@ -53,7 +53,7 @@ def ial2required(request):
 def index(request):
     # if we already have a verified session, redirect to frontend app
     if request.session.get("verified"):
-        return redirect("/")
+        return redirect("/claimant/")
 
     # stash selection
     if "swa" in request.GET:
@@ -94,8 +94,16 @@ def index(request):
 # OIDC OP redirects here after auth attempt
 @never_cache
 def result(request):
-    if "IAL" not in request.session:
-        return redirect("/")
+    # it's possible that a legitimate IdP request took so long to complete
+    # (e.g. when creating an account for the first time at IAL2)
+    # that our session has expired in the meantime.
+    # it's impossible to distinguish that scenario from a bad actor,
+    # so if we don't have an existing session that matches our expectations,
+    # always re-start the OIDC cycle via a redirect to our index().
+    # in the legit case, the login.gov session should still be live, and it
+    # will just redirect back here.
+    if "IAL" not in request.session or "logindotgov" not in request.session:
+        return redirect("/logindotgov/")
 
     client = logindotgov_client()
     try:
