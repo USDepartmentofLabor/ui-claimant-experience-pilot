@@ -79,9 +79,9 @@ export const mergeClaimFormValues = (
     !mergedValues.LOCAL_claimant_has_alternate_names
   ) {
     if (mergedValues.alternate_names?.length > 0) {
-      mergedValues.LOCAL_claimant_has_alternate_names = "yes";
+      mergedValues.LOCAL_claimant_has_alternate_names = true;
     } else {
-      mergedValues.LOCAL_claimant_has_alternate_names = "no";
+      mergedValues.LOCAL_claimant_has_alternate_names = false;
     }
   }
   if (

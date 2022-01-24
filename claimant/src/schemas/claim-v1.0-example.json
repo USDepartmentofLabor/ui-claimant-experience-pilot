@@ -12,7 +12,7 @@
     "middle_name": "Rockstar",
     "suffix": "Jr."
   },
-  "LOCAL_claimant_has_alternate_names": "no",
+  "LOCAL_claimant_has_alternate_names": false,
   "residence_address": {
     "address1": "456 Main Ave",
     "address2": "Apartment 789",

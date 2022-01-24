@@ -627,8 +627,7 @@
     },
     "LOCAL_claimant_has_alternate_names": {
       "description": "Whether or not the claimant has used alternate names in the last (n) months",
-      "type": "string",
-      "enum": ["yes", "no"],
+      "type": "boolean",
       "required_for_partial": true
     },
     "alternate_names": {
