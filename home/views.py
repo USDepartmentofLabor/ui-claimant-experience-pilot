@@ -25,8 +25,20 @@ def active_swas_ordered_by_name():
     return SWA.active.order_by("name").all()
 
 
+# TODO should this be a 404 or a placeholder referring viewers to a SWA finder fed site?
 def index(request):
     return render(None, "index.html", {"base_url": base_url(request)})
+
+
+# the swa-specific pages should be cache-able
+def swa_index(request, swa_code):
+    try:
+        swa = SWA.active.get(code=swa_code)
+        return render(
+            None, "swa-index.html", {"swa": swa, "base_url": base_url(request)}
+        )
+    except SWA.DoesNotExist:
+        return handle_404(request, None)
 
 
 # the /idp/ page is our first contact between CDN-cached pages and our per-user session,

@@ -5,7 +5,7 @@
 
 make bucket
 make dol-bucket
-make create-swa SWA=XX NAME=test && \
+make create-swa SWA=XX NAME=test URL=https://xx.example.gov/ && \
 make activate-swa SWA=XX && \
 make ec-keys PREFIX=XX PASSWD=secret && \
 make add-swa-key SWA=XX PEM=XX-public.pem

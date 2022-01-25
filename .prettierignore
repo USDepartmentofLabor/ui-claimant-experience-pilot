@@ -1,3 +1,4 @@
 home/templates/idp.html
 home/templates/uswds/_swa_options.html
 home/templates/swa-redirect.html
+home/templates/swa-index.html

@@ -11,7 +11,14 @@ class Command(BaseCommand):
             "swa_code", nargs=1, type=str, help="Two-letter code for the SWA"
         )
         parser.add_argument("swa_name", nargs=1, type=str, help="Name of the SWA")
+        parser.add_argument(
+            "claimant_url", nargs=1, type=str, help="URL of the SWA Claimant URL"
+        )
 
     def handle(self, *args, **options):
-        swa = SWA(code=options["swa_code"][0], name=options["swa_name"][0])
+        swa = SWA(
+            code=options["swa_code"][0],
+            name=options["swa_name"][0],
+            claimant_url=options["claimant_url"][0],
+        )
         swa.save()
