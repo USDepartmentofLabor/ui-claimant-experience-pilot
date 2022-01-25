@@ -110,7 +110,7 @@ class BaseClaim:
                 }
             ],
             "self_employment": {
-                "is_self_employed": "no",
+                "is_self_employed": False,
                 "ownership_in_business": "yes",
                 "name_of_business": "BusinessCo",
                 "is_corporate_officer": "yes",

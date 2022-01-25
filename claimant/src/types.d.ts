@@ -166,7 +166,7 @@ type PageProps = {
 
 type SelfEmploymentType = DeepPartial<{
   self_employment: {
-    is_self_employed: YesNo;
+    is_self_employed: boolean;
     ownership_in_business: YesNo;
     name_of_business: string | null;
     is_corporate_officer: YesNo;

@@ -328,8 +328,7 @@
       "properties": {
         "is_self_employed": {
           "description": "whether or not the claimant is self-employed",
-          "type": "string",
-          "enum": ["yes", "no"]
+          "type": "boolean"
         },
         "ownership_in_business": {
           "description": "whether or not the claimant has ownership in a business",

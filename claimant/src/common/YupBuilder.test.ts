@@ -2,7 +2,7 @@ import YupBuilder from "./YupBuilder";
 
 describe("YupBuilder", () => {
   const self_employment: ClaimantInput["self_employment"] = {
-    is_self_employed: "no",
+    is_self_employed: false,
     ownership_in_business: "no",
     is_corporate_officer: "no",
     related_to_owner: "no",

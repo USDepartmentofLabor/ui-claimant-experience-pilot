@@ -6,6 +6,7 @@ import { ClaimSchemaField } from "../../../common/YupBuilder";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { IPageDefinition } from "../../PageDefinitions";
+import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 
 export const SelfEmployment = () => {
   const {
@@ -42,7 +43,7 @@ export const SelfEmployment = () => {
     <>
       <Fieldset legend={t("self_employment.label")}>
         <Fieldset legend={t("self_employment.self_employed.label")}>
-          <YesNoRadio
+          <BooleanRadio
             id="self_employment.is_self_employed"
             name="self_employment.is_self_employed"
           />

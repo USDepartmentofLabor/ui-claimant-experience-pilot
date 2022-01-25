@@ -114,7 +114,7 @@
     }
   ],
   "self_employment": {
-    "is_self_employed": "no",
+    "is_self_employed": false,
     "ownership_in_business": "yes",
     "name_of_business": "BusinessCo",
     "is_corporate_officer": "yes",
