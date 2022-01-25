@@ -5,49 +5,29 @@ import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useClearFields } from "../../../hooks/useClearFields";
 
 const schemaFields: ClaimSchemaField[] = ["availability"];
 
 export const Availability = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "availability" });
   const { t: tCommon } = useTranslation("common");
-  const { values, setFieldValue, setFieldTouched } =
-    useFormikContext<ClaimantInput>();
+  const { values } = useFormikContext<ClaimantInput>();
 
-  // TODO: Custom hook for hiding and clearing these fields
-  useEffect(() => {
-    if (values.availability?.can_begin_work_immediately) {
-      setFieldValue(
-        "availability.cannot_begin_work_immediately_reason",
-        undefined
-      );
-      setFieldTouched(
-        "availability.cannot_begin_work_immediately_reason",
-        false
-      );
-    }
-  }, [values.availability?.can_begin_work_immediately]);
+  useClearFields(
+    values.availability?.can_begin_work_immediately,
+    "availability.cannot_begin_work_immediately_reason"
+  );
 
-  useEffect(() => {
-    if (values.availability?.can_work_full_time) {
-      setFieldValue("availability.cannot_work_full_time_reason", undefined);
-      setFieldTouched("availability.cannot_work_full_time_reason", false);
-    }
-  }, [values.availability?.can_work_full_time]);
+  useClearFields(
+    values.availability?.can_work_full_time,
+    "availability.cannot_work_full_time_reason"
+  );
 
-  useEffect(() => {
-    if (values.availability?.is_prevented_from_accepting_full_time_work) {
-      setFieldValue(
-        "availability.is_prevented_from_accepting_full_time_work_reason",
-        undefined
-      );
-      setFieldTouched(
-        "availability.is_prevented_from_accepting_full_time_work_reason",
-        false
-      );
-    }
-  }, [values.availability?.is_prevented_from_accepting_full_time_work]);
+  useClearFields(
+    !values.availability?.is_prevented_from_accepting_full_time_work,
+    "availability.is_prevented_from_accepting_full_time_work_reason"
+  );
 
   return (
     <>

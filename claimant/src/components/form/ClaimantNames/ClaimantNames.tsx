@@ -3,8 +3,8 @@ import { FieldArray, useFormikContext } from "formik";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 
 import { Name } from "../Name/Name";
-import { useEffect } from "react";
 import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
+import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 
 export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaField[] = [
@@ -14,14 +14,12 @@ export const CLAIMANT_NAMES_SCHEMA_FIELDS: ClaimSchemaField[] = [
 ];
 
 export const ClaimantNames = () => {
-  const { values, setFieldValue, setFieldTouched } = useFormikContext<Claim>();
+  const { values } = useFormikContext<Claim>();
 
-  useEffect(() => {
-    if (values.LOCAL_claimant_has_alternate_names === false) {
-      setFieldValue("alternate_names", []);
-      setFieldTouched("alternate_names", false);
-    }
-  }, [values.LOCAL_claimant_has_alternate_names]);
+  useClearFields(values.LOCAL_claimant_has_alternate_names === false, {
+    fieldName: "alternate_names",
+    value: [],
+  });
 
   return (
     <>

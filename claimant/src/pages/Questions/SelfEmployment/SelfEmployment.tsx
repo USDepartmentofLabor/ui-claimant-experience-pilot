@@ -1,43 +1,37 @@
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { IPageDefinition } from "../../PageDefinitions";
+import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 
 export const SelfEmployment = () => {
   const {
     values: { self_employment },
-    setFieldValue,
   } = useFormikContext<ClaimantInput>();
   const { t } = useTranslation("claimForm");
 
   const data: ClaimantInput["self_employment"] = self_employment || {};
 
   // Remove conditional data if previous answer is changed
-  useEffect(() => {
-    if (
-      data.ownership_in_business === "no" &&
-      data.name_of_business !== undefined
-    ) {
-      setFieldValue("self_employment.name_of_business", undefined);
-    }
-    if (
-      data.is_corporate_officer === "no" &&
-      data.name_of_corporation !== undefined
-    ) {
-      setFieldValue("self_employment.name_of_corporation", undefined);
-    }
-    if (
-      data.related_to_owner === "no" &&
-      data.corporation_or_partnership !== undefined
-    ) {
-      setFieldValue("self_employment.corporation_or_partnership", undefined);
-    }
-  }, [data]);
+
+  useClearFields(
+    data.ownership_in_business === "no",
+    "self_employment.name_of_business"
+  );
+
+  useClearFields(
+    data.is_corporate_officer === "no",
+    "self_employment.name_of_corporation"
+  );
+
+  useClearFields(
+    data.related_to_owner === "no",
+    "self_employment.corporation_or_partnership"
+  );
 
   return (
     <>

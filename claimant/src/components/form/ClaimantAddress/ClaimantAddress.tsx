@@ -6,6 +6,7 @@ import { ClaimSchemaField } from "../../../common/YupBuilder";
 import Address from "../Address/Address";
 import { CheckboxField } from "../fields/CheckboxField/CheckboxField";
 import { ADDRESS_SKELETON } from "../../../utils/claim_form";
+import { useClearFields } from "../../../hooks/useClearFields";
 
 export const CLAIMANT_ADDRESS_SCHEMA_FIELDS: ClaimSchemaField[] = [
   "residence_address",
@@ -25,11 +26,10 @@ export const ClaimantAddress = () => {
   const { values, setFieldValue } = useFormikContext<ClaimantAddressValues>();
 
   // Reset mailing_address if unchecked
-  useEffect(() => {
-    if (!values.LOCAL_mailing_address_same) {
-      setFieldValue("mailing_address", { ...ADDRESS_SKELETON });
-    }
-  }, [values.LOCAL_mailing_address_same]);
+  useClearFields(!values.LOCAL_mailing_address_same, {
+    fieldName: "mailing_address",
+    value: { ...ADDRESS_SKELETON },
+  });
 
   // Keep mailing_address synchronized if checked
   useEffect(() => {

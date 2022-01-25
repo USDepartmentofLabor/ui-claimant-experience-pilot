@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { ClaimSchemaField } from "../../../common/YupBuilder";
-import { useEffect } from "react";
 import { IPageDefinition } from "../../PageDefinitions";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { CheckboxField } from "../../../components/form/fields/CheckboxField/CheckboxField";
 import { PhoneNumberField } from "../../../components/form/PhoneNumberField/PhoneNumberField";
+import { useClearFields } from "../../../hooks/useClearFields";
 
 const schemaFields: ClaimSchemaField[] = [
   "email",
@@ -21,19 +21,16 @@ export const ContactInformation = () => {
   const { t } = useTranslation("claimForm", {
     keyPrefix: "contact_information",
   });
-  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+  const { values } = useFormikContext<ClaimantInput>();
 
-  // Remove phones[1] if unchecked
-  useEffect(() => {
-    if (
-      !values.LOCAL_more_phones &&
-      values.phones &&
-      values.phones.length > 1
-    ) {
-      const firstPhone = values.phones[0];
-      setFieldValue("phones", [firstPhone]);
+  // Remove phones[1] if unchecked TODO: Use Formik FieldArray to represent field array?
+  useClearFields(
+    !values.LOCAL_more_phones && values.phones && values.phones.length > 1,
+    {
+      fieldName: "phones",
+      value: [values.phones?.[0]],
     }
-  }, [values.LOCAL_more_phones]);
+  );
 
   return (
     <>

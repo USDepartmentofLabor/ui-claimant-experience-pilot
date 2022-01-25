@@ -25,7 +25,6 @@ const Template: ComponentStory<typeof ClaimantNames> = () => {
     LOCAL_claimant_has_alternate_names: undefined,
     alternate_names: [],
   };
-  ``;
 
   return (
     <Formik
