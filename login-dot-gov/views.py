@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import redirect
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 import logging
 import secrets
@@ -10,6 +10,7 @@ from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider
 from django.conf import settings
 from api.whoami import WhoAmI
+from home.views import base_url
 
 logger = logging.getLogger("logindotgov")
 
@@ -110,19 +111,35 @@ def result(request):
         auth_code, auth_state = client.validate_code_and_state(request.GET)
     except LoginDotGovOIDCError as error:
         logger.exception(error)
-        return HttpResponse(error, status=403)
+        return render(
+            None,
+            "auth-error.html",
+            {"error": str(error), "base_url": base_url(request)},
+            status=403,
+        )
 
     logger.debug("code={} state={}".format(auth_code, auth_state))
     logger.debug("session: {}".format(session_as_dict(request)))
     if auth_state != request.session["logindotgov"]["state"]:
         logger.error("state mismatch")
-        return HttpResponse("state mismatch", status=403)
+        return render(
+            None,
+            "auth-error.html",
+            {"error": "state mismatch", "base_url": base_url(request)},
+            status=403,
+        )
 
     tokens = client.get_tokens(auth_code)
 
     # TODO check for error messages
     if "access_token" not in tokens:
-        return HttpResponse(tokens, status=403)
+        logger.error("access_token missing")
+        return render(
+            None,
+            "auth-error.html",
+            {"error": "missing access_token", "base_url": base_url(request)},
+            status=403,
+        )
 
     try:
         client.validate_tokens(
@@ -130,7 +147,12 @@ def result(request):
         )
     except LoginDotGovOIDCError as error:
         logger.exception(error)
-        return HttpResponse("Error exchanging token", status=403)
+        return render(
+            None,
+            "auth-error.html",
+            {"error": "Error exchanging token", "base_url": base_url(request)},
+            status=403,
+        )
 
     userinfo = client.get_userinfo(tokens["access_token"])
 
@@ -154,7 +176,7 @@ def result(request):
     )
     request.session["whoami"] = whoami.as_dict()
 
-    redirect_to = "/logindotgov/explain"
+    redirect_to = "/claimant/"
     if "redirect_to" in request.session:
         redirect_to = request.session["redirect_to"]
         del request.session["redirect_to"]

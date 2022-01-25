@@ -54,7 +54,7 @@ class LoginDotGovTestCase(TestCase):
 
         # the server will redirect to here
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
-        self.assertRedirects(response, "/logindotgov/explain", status_code=302)
+        self.assertRedirects(response, "/claimant/", status_code=302)
 
         # confirm our session looks as we expect
         response = self.client.get("/logindotgov/explain")
@@ -83,7 +83,7 @@ class LoginDotGovTestCase(TestCase):
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
-        self.assertRedirects(response, "/logindotgov/explain", status_code=302)
+        self.assertRedirects(response, "/claimant/", status_code=302)
 
         # confirm our session looks as we expect
         response = self.client.get("/logindotgov/explain")
@@ -128,33 +128,28 @@ class LoginDotGovTestCase(TestCase):
 
         # missing state or code
         response = self.client.get("/logindotgov/result?code=foo123")
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content.decode("utf-8"), "Missing state param")
+        self.assertContains(response, "Missing state param", status_code=403)
         response = self.client.get("/logindotgov/result?state=foo123")
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content.decode("utf-8"), "Missing code param")
+        self.assertContains(response, "Missing code param", status_code=403)
 
         # state does not match
         response = self.client.get(
             f"/logindotgov/result?state=wrong&code={authorize_params['code']}"
         )
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content.decode("utf-8"), "state mismatch")
+        self.assertContains(response, "state mismatch", status_code=403)
 
         # bad code
         response = self.client.get(
             f"/logindotgov/result?code=wrong&state={authorize_params['state']}"
         )
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content.decode("utf-8"), "invalid code")
+        self.assertContains(response, "missing access_token", status_code=403)
 
         # the nonce we sent initially changes
         session = self.client.session
         session["logindotgov"]["nonce"] = "changed"
         session.save()
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content.decode("utf-8"), "Error exchanging token")
+        self.assertContains(response, "Error exchanging token", status_code=403)
 
         # ial missing from session
         session = self.client.session
