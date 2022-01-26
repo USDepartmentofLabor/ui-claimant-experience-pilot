@@ -6,7 +6,6 @@ import { EmployerInformationPage } from "./Questions/EmployerInformation/Employe
 import { OccupationPage } from "./Questions/Occupation/Occupation";
 import { UnionPage } from "./Questions/Union/Union";
 import { SubmitPage } from "./Questions/Submit/Submit";
-import { ClaimSchemaField } from "../common/YupBuilder";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
@@ -19,7 +18,6 @@ import { PaymentInformationPage } from "./Questions/PaymentInformation/PaymentIn
 export interface IPageDefinition {
   path: string;
   heading: keyof typeof en.common.page_headings;
-  schemaFields?: ClaimSchemaField[];
   initialValues: FormValues;
   Component: FC<PageProps>;
   repeatable?: (
@@ -28,7 +26,7 @@ export interface IPageDefinition {
   ) => boolean;
   nextSegment?: (currentSegment: string | undefined) => string | false;
   previousSegment?: (currentSegment: string | undefined) => string | false;
-  pageSchema?: (t: TFunction<"claimForm">) => AnySchema;
+  pageSchema: (t: TFunction<"claimForm">) => AnySchema;
 }
 
 export const pages: ReadonlyArray<IPageDefinition> = [

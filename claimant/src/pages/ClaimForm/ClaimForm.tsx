@@ -13,7 +13,6 @@ import {
   mergeClaimFormValues,
 } from "../../utils/claim_form";
 import { Trans, useTranslation } from "react-i18next";
-import YupBuilder from "../../common/YupBuilder";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -64,7 +63,6 @@ export const ClaimForm = () => {
   }
 
   const {
-    schemaFields,
     Component: CurrentPage,
     repeatable,
     nextSegment,
@@ -118,8 +116,7 @@ export const ClaimForm = () => {
       </Button>
     );
 
-  const validationSchema =
-    pageSchema?.(formT) || YupBuilder("claim-v1.0", schemaFields);
+  const validationSchema = pageSchema(formT);
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;

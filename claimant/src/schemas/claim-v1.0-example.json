@@ -94,14 +94,12 @@
         "state": "KS",
         "zipcode": "11111-9999"
       },
-      "LOCAL_same_address": "no",
       "work_site_address": {
         "address1": "888 Sun Ave",
         "city": "Elsewhere",
         "state": "KS",
         "zipcode": "11111-8888"
       },
-      "LOCAL_same_phone": "yes",
       "phones": [
         {
           "number": "555-555-1234",

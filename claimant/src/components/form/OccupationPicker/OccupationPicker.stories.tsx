@@ -1,7 +1,8 @@
 import { OccupationPicker } from "./OccupationPicker";
+import { OccupationPage } from "../../../pages/Questions/Occupation/Occupation";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
-import YupBuilder from "../../../common/YupBuilder";
+import { useTranslation } from "react-i18next";
 
 export default {
   title: "Components/Form/Occupation Picker",
@@ -10,7 +11,8 @@ export default {
 const noop = () => undefined;
 
 const Template: ComponentStory<typeof OccupationPicker> = () => {
-  const validationSchema = YupBuilder("claim-v1.0", ["occupation"]);
+  const { t } = useTranslation("claimForm");
+  const validationSchema = OccupationPage.pageSchema(t);
   const initialValues = {
     occupation: {
       job_title: "nurse",

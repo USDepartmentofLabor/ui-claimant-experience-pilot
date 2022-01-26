@@ -1,7 +1,8 @@
 import { UnionProfile } from "./UnionProfile";
+import { UnionPage } from "../../../pages/Questions/Union/Union";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
-import YupBuilder from "../../../common/YupBuilder";
+import { useTranslation } from "react-i18next";
 
 export default {
   title: "Components/Form/Union Profile",
@@ -10,7 +11,8 @@ export default {
 const noop = () => undefined;
 
 const Template: ComponentStory<typeof UnionProfile> = () => {
-  const validationSchema = YupBuilder("claim-v1.0", ["union"]);
+  const { t } = useTranslation("claimForm");
+  const validationSchema = UnionPage.pageSchema(t);
   const initialValues = {
     union: {},
   };

@@ -1,6 +1,5 @@
 import { ComponentProps } from "react";
 import { render, waitFor, within, screen } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import { Formik } from "formik";
 import { EmployerProfile } from "./EmployerProfile";
 import userEvent from "@testing-library/user-event";
@@ -68,10 +67,12 @@ describe("EmployerProfile component", () => {
       expect(
         screen.queryByRole("group", { name: "work_site_address.heading" })
       ).toBeNull();
-      await act(async () => userEvent.click(sameAddressNo));
-      expect(
-        screen.getByRole("group", { name: "work_site_address.heading" })
-      ).toBeInTheDocument();
+      userEvent.click(sameAddressNo);
+      await waitFor(() => {
+        expect(
+          screen.getByRole("group", { name: "work_site_address.heading" })
+        ).toBeInTheDocument();
+      });
     });
 
     it("displays work location phone field when user chooses 'no' to same phone number", async () => {
@@ -89,10 +90,12 @@ describe("EmployerProfile component", () => {
       expect(
         screen.queryByRole("textbox", { name: "alt_employer_phone" })
       ).toBeNull();
-      await act(async () => userEvent.click(sameAddressNo));
-      expect(
-        screen.getByRole("textbox", { name: "alt_employer_phone" })
-      ).toBeInTheDocument();
+      userEvent.click(sameAddressNo);
+      await waitFor(() => {
+        expect(
+          screen.getByRole("textbox", { name: "alt_employer_phone" })
+        ).toBeInTheDocument();
+      });
     });
   });
 

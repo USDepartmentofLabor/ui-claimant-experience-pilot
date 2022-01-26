@@ -97,8 +97,8 @@ type DemographicInformationType = {
 type EmployerType = {
   name: string;
   days_employed?: number;
-  LOCAL_same_address: YesNo | undefined;
-  LOCAL_same_phone: YesNo | undefined;
+  LOCAL_same_address?: boolean;
+  LOCAL_same_phone?: boolean;
   first_work_date: string;
   last_work_date?: string;
   recall_date?: string;
@@ -112,7 +112,7 @@ type EmployerType = {
 
 type EmployersType = {
   employers?: EmployerType[];
-  LOCAL_more_employers?: YesNo[];
+  LOCAL_more_employers?: boolean[];
 };
 
 type OccupationType = {

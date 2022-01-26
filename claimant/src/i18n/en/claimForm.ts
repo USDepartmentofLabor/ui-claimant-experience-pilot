@@ -58,6 +58,10 @@ const claimForm = {
       heading: "Separation",
       reason: {
         label: "What was your reason for separation?",
+        required: "Separation reason is required",
+      },
+      option: {
+        required: "Please select a separation option",
       },
       comment: {
         required_label: "Please share any additional details below",
@@ -160,19 +164,26 @@ const claimForm = {
     name: {
       label: "Employer name",
       hint: "You can usually find your employer or company’s name on your paystub or W2.",
+      required: "Employer name is required",
     },
     more_employers: {
       label:
         "Have you worked for any other employers in the last 18 months (including part-time, seasonal, and self-employment)?",
+      required:
+        "Please indicate whether you have worked for any other employers in the last 18 months",
     },
     first_work_date: {
       label: "Start date for this employer:",
+      required: "Start date is required",
     },
     last_work_date: {
       label: "Last day of work for this employer:",
+      required: "Last day of work is required",
     },
     same_phone: {
       label: "Is this the phone number of the location where you worked?",
+      required:
+        "Please indicate if this is the phone number of the location where you worked",
     },
     phones: {
       number: {
@@ -186,6 +197,8 @@ const claimForm = {
     same_address: {
       label:
         "Did you work at the physical location you listed for your employer?",
+      required:
+        "Please indicate if you worked at the physical location you listed for your employer",
     },
     work_site_address: {
       heading: "Your work location address:",

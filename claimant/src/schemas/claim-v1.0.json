@@ -97,18 +97,14 @@
           "items": { "$ref": "#/definitions/phone" }
         },
         "separation_reason": { "type": "string", "maxLength": 64 },
-        "separation_comment": { "type": "string", "maxLength": 1024 },
-        "LOCAL_same_address": { "type": "string", "enum": ["yes", "no"] },
-        "LOCAL_same_phone": { "type": "string", "enum": ["yes", "no"] }
+        "separation_comment": { "type": "string", "maxLength": 1024 }
       },
       "required": [
         "name",
         "address",
         "first_work_date",
         "phones",
-        "separation_reason",
-        "LOCAL_same_address",
-        "LOCAL_same_phone"
+        "separation_reason"
       ],
       "allOf": [
         {
@@ -699,11 +695,6 @@
       "description": "Required if employed_in_last_18_months is true",
       "type": "array",
       "items": { "$ref": "#/definitions/employer" }
-    },
-    "LOCAL_more_employers": {
-      "type": "array",
-      "items": { "type": "string", "enum": ["yes", "no"] },
-      "required_for_partial": true
     },
     "active_military_in_last_18_months": {
       "description": "Required per 20 CFR 614",

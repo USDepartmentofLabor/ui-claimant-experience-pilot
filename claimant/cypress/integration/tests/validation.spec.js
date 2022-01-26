@@ -57,6 +57,6 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
 
     // New form submission again shows all errors
     cy.click_next();
-    hasNumberOfErrors(6);
+    hasNumberOfErrors(5);
   });
 });

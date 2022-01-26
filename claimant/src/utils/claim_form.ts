@@ -99,9 +99,9 @@ export const mergeClaimFormValues = (
     mergedValues.employers.forEach((employer: EmployerType, idx: number) => {
       if (!employer.LOCAL_same_address) {
         if (employer.work_site_address) {
-          employer.LOCAL_same_address = "no";
+          employer.LOCAL_same_address = false;
         } else {
-          employer.LOCAL_same_address = "yes";
+          employer.LOCAL_same_address = true;
         }
       }
       if (
@@ -109,21 +109,21 @@ export const mergeClaimFormValues = (
         employer.phones &&
         employer.phones.length > 1
       ) {
-        employer.LOCAL_same_phone = "no";
+        employer.LOCAL_same_phone = false;
       }
       if (
         mergedValues.LOCAL_more_employers.length <
           mergedValues.employers.length &&
         mergedValues.employers.length > idx + 1
       ) {
-        mergedValues.LOCAL_more_employers.push("yes");
+        mergedValues.LOCAL_more_employers.push(true);
       }
     });
     // only assume "no" for last if we have more than one already
     if (
       mergedValues.LOCAL_more_employers.length < mergedValues.employers.length
     ) {
-      mergedValues.LOCAL_more_employers.push("no");
+      mergedValues.LOCAL_more_employers.push(false);
     }
   }
 

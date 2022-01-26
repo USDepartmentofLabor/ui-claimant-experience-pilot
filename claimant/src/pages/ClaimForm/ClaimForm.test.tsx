@@ -155,11 +155,11 @@ describe("the ClaimForm page", () => {
     );
     expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
     expect(mergedValues.LOCAL_claimant_has_alternate_names).toEqual(true);
-    expect(mergedValues.employers[0].LOCAL_same_address).toEqual("no");
-    expect(mergedValues.employers[1].LOCAL_same_address).toEqual("yes");
-    expect(mergedValues.employers[0].LOCAL_same_phone).toEqual("no");
+    expect(mergedValues.employers[0].LOCAL_same_address).toEqual(false);
+    expect(mergedValues.employers[1].LOCAL_same_address).toEqual(true);
+    expect(mergedValues.employers[0].LOCAL_same_phone).toEqual(false);
     expect(mergedValues.employers[1].LOCAL_same_phone).toEqual(undefined);
-    expect(mergedValues.LOCAL_more_employers).toEqual(["yes", "no"]);
+    expect(mergedValues.LOCAL_more_employers).toEqual([true, false]);
   });
 
   it("navigates between first 2 pages", async () => {

@@ -1,7 +1,7 @@
 import { EmployerProfile } from "./EmployerProfile";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
-import YupBuilder from "../../../common/YupBuilder";
+import { useTranslation } from "react-i18next";
 import { EmployerInformationPage } from "../../../pages/Questions/EmployerInformation/EmployerInformation";
 import { noop } from "../../../testUtils/noop";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
@@ -12,11 +12,8 @@ export default {
 } as ComponentMeta<typeof EmployerProfile>;
 
 const Template: ComponentStory<typeof EmployerProfile> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    EmployerInformationPage.schemaFields
-  );
-
+  const { t } = useTranslation("claimForm");
+  const validationSchema = EmployerInformationPage.pageSchema?.(t);
   const initialValues = {
     employers: [{ ...EMPLOYER_SKELETON }],
   };
