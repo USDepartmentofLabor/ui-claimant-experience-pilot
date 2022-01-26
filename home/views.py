@@ -114,7 +114,7 @@ def login(request):
             {
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
-                "swa": request.session.get("swa", None),
+                "swa": request.GET.get("swa", request.session.get("swa", None)),
                 "swas": active_swas_ordered_by_name(),
             },
         )
