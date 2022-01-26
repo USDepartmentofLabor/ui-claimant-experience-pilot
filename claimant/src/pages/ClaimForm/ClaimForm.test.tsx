@@ -19,6 +19,7 @@ import { Routes as ROUTES } from "../../routes";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../i18n";
 import { pages } from "../PageDefinitions";
+import common from "../../i18n/en/common";
 
 const { CLAIM_FORM_PAGE } = ROUTES;
 
@@ -79,8 +80,10 @@ describe("the ClaimForm page", () => {
     }));
   });
   const queryClient = new QueryClient();
-  const Page = (
-    <MemoryRouter initialEntries={["/claim/personal-information"]}>
+  const Page = ({ route }: { route?: string }) => (
+    <MemoryRouter
+      initialEntries={[`/claim/${route || "personal-information"}`]}
+    >
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
           <Routes>
@@ -90,11 +93,55 @@ describe("the ClaimForm page", () => {
       </I18nextProvider>
     </MemoryRouter>
   );
+
   it("renders without error", async () => {
-    render(Page);
-    expect(await screen.findByRole("heading")).toHaveTextContent(
+    render(<Page />);
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Personal Information"
     );
+  });
+
+  const currentIndicatorStyle = "usa-step-indicator__segment--current";
+  const completeIndicatorStyle = "usa-step-indicator__segment--complete";
+
+  it("shows initial progress bar state", async () => {
+    render(<Page />);
+    const [first] = pages;
+    // First li to be current, everything else incomplete
+    const progressBar = screen.getByRole("list");
+    const barItems = within(progressBar).getAllByRole("listitem");
+    barItems.forEach((item) => {
+      if (item.textContent?.includes(common.page_headings[first.heading])) {
+        expect(item.classList.contains(currentIndicatorStyle)).toBe(true);
+      } else {
+        expect(
+          item.classList.contains(currentIndicatorStyle) ||
+            item.classList.contains(completeIndicatorStyle)
+        ).toBe(false);
+      }
+    });
+  });
+
+  it("shows later page progress bar state", async () => {
+    const [first, second] = pages;
+    render(<Page route={second.path} />);
+    // First page complete, second current, everything else incomplete
+    const progressBar = screen.getByRole("list");
+    const barItems = within(progressBar).getAllByRole("listitem");
+    barItems.forEach((item) => {
+      if (item.textContent?.includes(common.page_headings[first.heading])) {
+        expect(item.classList.contains(completeIndicatorStyle)).toBe(true);
+      } else if (
+        item.textContent?.includes(common.page_headings[second.heading])
+      ) {
+        expect(item.classList.contains(currentIndicatorStyle)).toBe(true);
+      } else {
+        expect(
+          item.classList.contains(currentIndicatorStyle) ||
+            item.classList.contains(completeIndicatorStyle)
+        ).toBe(false);
+      }
+    });
   });
 
   it("initializes form values", async () => {
@@ -163,7 +210,9 @@ describe("the ClaimForm page", () => {
   });
 
   it("navigates between first 2 pages", async () => {
-    const { getByText, getByLabelText, getByRole, getByTestId } = render(Page);
+    const { getByText, getByLabelText, getByRole, getByTestId } = render(
+      <Page />
+    );
 
     const getPersonalInformationFields = () => {
       const residenceAddressGroup = getByRole("group", {

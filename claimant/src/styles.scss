@@ -43,7 +43,7 @@
 // @import 'packages/usa-sidenav';
 // @import 'packages/usa-site-alert';
 // @import 'packages/usa-skipnav';
-// @import 'packages/usa-step-indicator';
+@import "node_modules/uswds/src/stylesheets/packages/usa-step-indicator";
 // @import 'packages/usa-summary-box';
 // @import 'packages/usa-table';
 // @import 'packages/usa-tag';
@@ -79,4 +79,8 @@
   -ms-user-select: none;
   user-select: none;
   white-space: nowrap;
+}
+
+.usa-step-indicator__heading-counter {
+  display: none;
 }

@@ -17,7 +17,13 @@ import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import claimFormStyles from "./ClaimForm.module.scss";
-import { Button, ErrorMessage, FormGroup } from "@trussworks/react-uswds";
+import {
+  Button,
+  ErrorMessage,
+  FormGroup,
+  StepIndicator,
+  StepIndicatorStep,
+} from "@trussworks/react-uswds";
 import { pages } from "../PageDefinitions";
 import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
@@ -299,12 +305,24 @@ const ClaimFormPage = () => {
   if (currentPageIndex === -1) {
     throw new Error("Page not found");
   }
-  const { heading } = pages[currentPageIndex];
+
+  const getStatus = (index: number) => {
+    if (index === currentPageIndex) return "current";
+    if (index < currentPageIndex) return "complete";
+    return undefined;
+  };
+
   return (
-    <main data-testid="claim-form-page">
-      <h1>
-        <Trans t={t}>{heading}</Trans>
-      </h1>
+    <main data-testid="claim-form-page" className="margin-top-5">
+      <StepIndicator counters="small" headingLevel="h1">
+        {pages.map((page, i) => (
+          <StepIndicatorStep
+            key={page.path}
+            label={t(page.heading)}
+            status={getStatus(i)}
+          />
+        ))}
+      </StepIndicator>
       <RequestErrorBoundary>
         <ClaimForm />
       </RequestErrorBoundary>
