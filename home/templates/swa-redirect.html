@@ -1,11 +1,36 @@
 {% extends "claimant-base.html" %} {% block content %} {% load i18n %}
 <main role="main" class="">
-  <section class="grid-container usa-section">
+  <section class="grid-container">
+    <h1>{% translate "Apply through" %} {% if swa %}{{ swa.name }}{% else %}{% translate "your state unemployment system" %}{% endif %}</h1>
     {% if swa and swa.claimant_url %}
-      This page will give you helpful info and a <a href="{{ swa.claimant_url }}">link to the SWA page</a>.
+      {% blocktranslate with name=swa.name %}
+      It looks like you'll need to complete your application on {{ name }}'s existing unemployment insurance system
+      based on the information you provided.
+      {% endblocktranslate %}
     {% else %}
-      This page will give you helpful info and a <a href="#TODO">link to a federal SWA locator site</a>.
+      {% translate "It looks like you'll need to complete your application on your state's existing unemployment insurance system based on the information you provided." %}
     {% endif %}
+
+    {% if swa and swa.code == "NJ" %}
+    <section class="margin-top-2">
+      {% translate "You may be asked to provide some of this information again once you have created your account." %}
+    </section>
+    {% endif %}
+
+    <section class="margin-top-2">
+      {% if swa and swa.claimant_url %}
+      {% blocktranslate with name=swa.name %}Click next to go to {{ name }}'s online application.{% endblocktranslate %}
+      {% else %}
+      {% translate "Click next to find unemployment resources for your state." %}
+      {% endif %}
+    </section>
+    <section class="margin-top-2 text-center">
+      {% if swa and swa.claimant_url %}
+      <a class="usa-button" href="{{ swa.claimant_url }}">{% translate "Next" %}</a>
+      {% else %}
+      <a class="usa-button" href="https://www.careeronestop.org/LocalHelp/UnemploymentBenefits/find-unemployment-benefits.aspx">{% translate "Next" %}</a>
+      {% endif %}
+    </section>
   </section>
 </main>
 {% endblock %}

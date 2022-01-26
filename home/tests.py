@@ -71,11 +71,11 @@ class HomeTestCase(TestCase):
         # with active SWA we get a link to the SWA
         swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
         response = self.client.get(f"/swa-redirect/{swa.code}/")
-        self.assertContains(response, "link to the SWA page", status_code=200)
+        self.assertContains(response, swa.name, status_code=200)
 
         # not found or inactive SWA, we get link to federal site
         response = self.client.get("/swa-redirect/XX/")
-        self.assertContains(response, "link to a federal", status_code=200)
+        self.assertContains(response, "your state's", status_code=200)
 
     def test_swa_start_page(self):
         # with active SWA we get a link to the SWA

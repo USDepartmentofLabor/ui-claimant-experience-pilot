@@ -14,7 +14,7 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
     cy.get("input[id=worked_other_state-yes]").click({ force: true });
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/swa-redirect/NJ/");
-    cy.contains("This page will give you helpful info");
+    cy.contains("You may be asked to provide some of this information");
   });
 
   it("redirects to SWA-specific if not worked in last 18 months", () => {
