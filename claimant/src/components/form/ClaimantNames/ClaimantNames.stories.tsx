@@ -1,9 +1,11 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
 
-import { CLAIMANT_NAMES_SCHEMA_FIELDS, ClaimantNames } from "./ClaimantNames";
-import YupBuilder from "../../../common/YupBuilder";
+import { ClaimantNames } from "./ClaimantNames";
+import { yupName } from "../../../common/YupBuilder";
 import { noop } from "../../../testUtils/noop";
+import * as yup from "yup";
+import { TFunction, useTranslation } from "react-i18next";
 
 export default {
   title: "Components/Form/Claimant Names",
@@ -11,10 +13,16 @@ export default {
 } as ComponentMeta<typeof ClaimantNames>;
 
 const Template: ComponentStory<typeof ClaimantNames> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    CLAIMANT_NAMES_SCHEMA_FIELDS
-  );
+  const { t } = useTranslation("claimForm");
+  const validationSchema = (t: TFunction<"claimForm">) =>
+    yup.object().shape({
+      claimant_name: yupName(t),
+      LOCAL_claimant_has_alternate_names: yup.boolean().required(),
+      alternate_names: yup.array().when("LOCAL_claimant_has_alternate_names", {
+        is: true,
+        then: yup.array().of(yupName(t)).required(),
+      }),
+    });
 
   const initialValues = {
     claimant_name: {
@@ -29,7 +37,7 @@ const Template: ComponentStory<typeof ClaimantNames> = () => {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={validationSchema(t)}
       onSubmit={noop}
     >
       <Form>

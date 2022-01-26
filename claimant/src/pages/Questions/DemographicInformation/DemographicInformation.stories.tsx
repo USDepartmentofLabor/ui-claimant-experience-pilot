@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { useTranslation } from "react-i18next";
 import { Formik, Form } from "formik";
 
 import {
   DemographicInformation,
   DemographicInformationPage,
 } from "./DemographicInformation";
-import YupBuilder from "../../../common/YupBuilder";
 import { noop } from "../../../testUtils/noop";
 
 export default {
@@ -14,11 +14,8 @@ export default {
 } as ComponentMeta<typeof DemographicInformation>;
 
 const Template: ComponentStory<typeof DemographicInformation> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    DemographicInformationPage.schemaFields
-  );
-
+  const { t } = useTranslation("claimForm");
+  const validationSchema = DemographicInformationPage.pageSchema?.(t);
   const initialValues = {
     birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,

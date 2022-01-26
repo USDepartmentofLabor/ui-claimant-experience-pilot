@@ -1,12 +1,11 @@
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
-import { useTranslation } from "react-i18next";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
+import { TFunction, useTranslation } from "react-i18next";
 import TextField from "../../../components/form/fields/TextField/TextField";
-import { YesNoRadio } from "../../../components/form/YesNoRadio/YesNoRadio";
 import { IPageDefinition } from "../../PageDefinitions";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import * as yup from "yup";
 
 export const SelfEmployment = () => {
   const {
@@ -43,12 +42,12 @@ export const SelfEmployment = () => {
           />
         </Fieldset>
         <Fieldset legend={t("self_employment.business_ownership.label")}>
-          <YesNoRadio
+          <BooleanRadio
             id="self_employment.ownership_in_business"
             name="self_employment.ownership_in_business"
           />
         </Fieldset>
-        {data.ownership_in_business === "yes" && (
+        {data.ownership_in_business && (
           <TextField
             label={t("self_employment.business_name.label")}
             type="text"
@@ -59,12 +58,12 @@ export const SelfEmployment = () => {
       </Fieldset>
       <Fieldset legend={t("self_employment.business_interests.label")}>
         <Fieldset legend={t("self_employment.corporate_officer.label")}>
-          <YesNoRadio
+          <BooleanRadio
             id="self_employment.is_corporate_officer"
             name="self_employment.is_corporate_officer"
           />
         </Fieldset>
-        {data.is_corporate_officer === "yes" && (
+        {data.is_corporate_officer && (
           <TextField
             label={t("self_employment.corporation_name.label")}
             type="text"
@@ -73,16 +72,16 @@ export const SelfEmployment = () => {
           />
         )}
         <Fieldset legend={t("self_employment.related_to_owner.label")}>
-          <YesNoRadio
+          <BooleanRadio
             id="self_employment.related_to_owner"
             name="self_employment.related_to_owner"
           />
         </Fieldset>
-        {data.related_to_owner === "yes" && (
+        {data.related_to_owner && (
           <Fieldset
             legend={t("self_employment.corporation_or_partnership.label")}
           >
-            <YesNoRadio
+            <BooleanRadio
               id="self_employment.corporation_or_partnership"
               name="self_employment.corporation_or_partnership"
             />
@@ -93,12 +92,46 @@ export const SelfEmployment = () => {
   );
 };
 
-const schemaFields: ClaimSchemaField[] = ["self_employment"];
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    self_employment: yup.object().shape({
+      is_self_employed: yup
+        .boolean()
+        .required(t("self_employment.self_employed.required")),
+      ownership_in_business: yup
+        .boolean()
+        .required(t("self_employment.business_ownership.required")),
+      name_of_business: yup.string().when("ownership_in_business", {
+        is: true,
+        then: yup
+          .string()
+          .required(t("self_employment.business_name.required")),
+      }),
+      is_corporate_officer: yup
+        .boolean()
+        .required(t("self_employment.corporate_officer.required")),
+      name_of_corporation: yup.string().when("is_corporate_officer", {
+        is: true,
+        then: yup
+          .string()
+          .required(t("self_employment.corporation_name.required")),
+      }),
+      related_to_owner: yup
+        .boolean()
+        .required(t("self_employment.related_to_owner.required")),
+      corporation_or_partnership: yup.boolean().when("related_to_owner", {
+        is: true,
+        then: yup
+          .boolean()
+          .required(t("self_employment.corporation_or_partnership.required")),
+      }),
+    }),
+  });
 
 export const SelfEmploymentPage: IPageDefinition = {
   path: "self-employment",
   heading: "self_employment",
-  schemaFields: schemaFields,
   initialValues: {},
   Component: SelfEmployment,
+  pageSchema,
 };

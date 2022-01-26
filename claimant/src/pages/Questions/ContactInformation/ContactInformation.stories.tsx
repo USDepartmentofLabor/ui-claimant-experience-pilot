@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
-import YupBuilder from "../../../common/YupBuilder";
+import { useTranslation } from "react-i18next";
 import { noop } from "../../../testUtils/noop";
 import {
   ContactInformation,
@@ -13,11 +13,8 @@ export default {
 } as ComponentMeta<typeof ContactInformation>;
 
 const Template: ComponentStory<typeof ContactInformation> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    ContactInformationPage.schemaFields
-  );
-
+  const { t } = useTranslation("claimForm");
+  const validationSchema = ContactInformationPage.pageSchema?.(t);
   const initialValues = {
     interpreter_required: undefined,
     preferred_language: "",

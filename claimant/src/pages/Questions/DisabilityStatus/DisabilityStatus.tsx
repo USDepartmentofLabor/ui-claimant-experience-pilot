@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { TFunction, useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { DatePicker } from "../../../components/form/fields/DatePicker/DatePicker";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
@@ -116,11 +115,9 @@ export const DisabilityStatus = () => {
   );
 };
 
-const schemaFields: ClaimSchemaField[] = ["disability"];
-
 const pageSchema = (t: TFunction<"claimForm">) =>
-  yup.object({
-    disability: yup.object({
+  yup.object().shape({
+    disability: yup.object().shape({
       has_collected_disability: yup
         .boolean()
         .required(t("disability.has_collected_disability.required")),
@@ -163,7 +160,6 @@ const pageSchema = (t: TFunction<"claimForm">) =>
 export const DisabilityStatusPage: IPageDefinition = {
   path: "disability-status",
   heading: "disability",
-  schemaFields: schemaFields,
   initialValues: { disability: {} },
   Component: DisabilityStatus,
   pageSchema,

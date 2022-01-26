@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { useTranslation } from "react-i18next";
 import { Availability, AvailabilityPage } from "./Availability";
 import { Form, Formik } from "formik";
 import { noop } from "../../../testUtils/noop";
-import YupBuilder from "../../../common/YupBuilder";
 
 export default {
   title: "Pages/Availability",
@@ -10,11 +10,9 @@ export default {
 } as ComponentMeta<typeof Availability>;
 
 const Template: ComponentStory<typeof Availability> = () => {
+  const { t } = useTranslation("claimForm");
   const initialValues = AvailabilityPage.initialValues;
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    AvailabilityPage.schemaFields
-  );
+  const validationSchema = AvailabilityPage.pageSchema?.(t);
 
   return (
     <Formik

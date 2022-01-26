@@ -121,8 +121,8 @@ export const PaymentInformation = () => {
 };
 
 const pageSchema = (t: TFunction<"claimForm">) =>
-  yup.object({
-    payment: yup.object({
+  yup.object().shape({
+    payment: yup.object().shape({
       payment_method: yup
         .mixed()
         .oneOf(paymentMethodOptions.map(({ value }) => value))

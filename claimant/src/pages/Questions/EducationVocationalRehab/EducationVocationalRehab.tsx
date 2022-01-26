@@ -1,8 +1,8 @@
 import { Fieldset } from "@trussworks/react-uswds";
-import { useTranslation } from "react-i18next";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
+import { TFunction, useTranslation } from "react-i18next";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { IPageDefinition } from "../../PageDefinitions";
+import * as yup from "yup";
 
 export const EducationVocationalRehab = () => {
   const { t } = useTranslation("claimForm");
@@ -49,16 +49,29 @@ export const EducationVocationalRehab = () => {
   );
 };
 
-const schemaFields: ClaimSchemaField[] = [
-  "student_fulltime_in_last_18_months",
-  "attending_college_or_job_training",
-  "registered_with_vocational_rehab",
-];
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    student_fulltime_in_last_18_months: yup
+      .boolean()
+      .required(
+        t("education_vocational_rehab.education.full_time_student.required")
+      ),
+    attending_college_or_job_training: yup
+      .boolean()
+      .required(
+        t("education_vocational_rehab.education.attending_training.required")
+      ),
+    registered_with_vocational_rehab: yup
+      .boolean()
+      .required(
+        t("education_vocational_rehab.vocational_rehab.is_registered.required")
+      ),
+  });
 
 export const EducationVocationalRehabPage: IPageDefinition = {
   path: "education-vocational-rehab",
   heading: "education_vocational_rehab",
-  schemaFields: schemaFields,
   initialValues: {},
   Component: EducationVocationalRehab,
+  pageSchema,
 };

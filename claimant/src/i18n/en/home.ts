@@ -7,12 +7,6 @@ const home = {
     claimSuccess: "Claim submitted with ID",
   },
   label: {
-    first_name: "First Name",
-    is_complete: "I'm done!",
-    is_complete_description:
-      "Checking this box means your claim will be sent to your workforce agency",
-    middle_name: "Middle Name (Optional)",
-    last_name: "Last Name",
     email: "Email",
     birthdate: "Birthdate",
     ssn: "Social Security Number",

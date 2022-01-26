@@ -115,12 +115,12 @@
   ],
   "self_employment": {
     "is_self_employed": false,
-    "ownership_in_business": "yes",
+    "ownership_in_business": true,
     "name_of_business": "BusinessCo",
-    "is_corporate_officer": "yes",
+    "is_corporate_officer": true,
     "name_of_corporation": "ACME Inc",
-    "related_to_owner": "yes",
-    "corporation_or_partnership": "no"
+    "related_to_owner": true,
+    "corporation_or_partnership": false
   },
   "student_fulltime_in_last_18_months": false,
   "attending_college_or_job_training": false,

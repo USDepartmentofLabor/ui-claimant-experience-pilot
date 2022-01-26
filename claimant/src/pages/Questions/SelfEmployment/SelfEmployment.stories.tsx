@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik, Form } from "formik";
-import YupBuilder from "../../../common/YupBuilder";
-
+import { useTranslation } from "react-i18next";
 import { noop } from "../../../testUtils/noop";
 import { SelfEmployment, SelfEmploymentPage } from "./SelfEmployment";
 
@@ -11,10 +10,8 @@ export default {
 } as ComponentMeta<typeof SelfEmployment>;
 
 const Template: ComponentStory<typeof SelfEmployment> = () => {
-  const validationSchema = YupBuilder(
-    "claim-v1.0",
-    SelfEmploymentPage.schemaFields
-  );
+  const { t } = useTranslation("claimForm");
+  const validationSchema = SelfEmploymentPage.pageSchema?.(t);
   const initialValues = { self_employment: {} };
 
   return (

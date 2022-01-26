@@ -31,9 +31,9 @@ describe("Name component", () => {
       </Formik>
     );
 
-    const firstNameField = getByLabelText("label.first_name");
-    const middleNameField = getByLabelText("label.middle_name");
-    const lastNameField = getByLabelText("label.last_name");
+    const firstNameField = getByLabelText("name.first_name.label");
+    const middleNameField = getByLabelText("name.middle_name.label");
+    const lastNameField = getByLabelText("name.last_name.label");
 
     expect(firstNameField).toHaveValue("");
     expect(firstNameField).toHaveAttribute("id", `${claimantName}.first_name`);
@@ -73,9 +73,9 @@ describe("Name component", () => {
       </Formik>
     );
 
-    const firstNameField = getByLabelText("label.first_name");
-    const middleNameField = getByLabelText("label.middle_name");
-    const lastNameField = getByLabelText("label.last_name");
+    const firstNameField = getByLabelText("name.first_name.label");
+    const middleNameField = getByLabelText("name.middle_name.label");
+    const lastNameField = getByLabelText("name.last_name.label");
 
     expect(firstNameField).toHaveValue("Ima");
     expect(middleNameField).toHaveValue("Dee");
@@ -110,8 +110,8 @@ describe("Name component", () => {
       </Formik>
     );
 
-    const firstNameField = getByLabelText("label.first_name");
-    const lastNameField = getByLabelText("label.last_name");
+    const firstNameField = getByLabelText("name.first_name.label");
+    const lastNameField = getByLabelText("name.last_name.label");
 
     expect(firstNameField).toHaveValue("");
     expect(queryByText("First Name is required")).not.toBeInTheDocument();

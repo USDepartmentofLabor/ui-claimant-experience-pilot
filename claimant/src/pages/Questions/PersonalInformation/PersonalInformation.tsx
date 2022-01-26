@@ -1,22 +1,14 @@
-import { ClaimSchemaField } from "../../../common/YupBuilder";
-import {
-  ClaimantNames,
-  CLAIMANT_NAMES_SCHEMA_FIELDS,
-} from "../../../components/form/ClaimantNames/ClaimantNames";
-import {
-  CLAIMANT_ADDRESS_SCHEMA_FIELDS,
-  ClaimantAddress,
-} from "../../../components/form/ClaimantAddress/ClaimantAddress";
+import { ClaimantNames } from "../../../components/form/ClaimantNames/ClaimantNames";
+import { ClaimantAddress } from "../../../components/form/ClaimantAddress/ClaimantAddress";
 import { IPageDefinition } from "../../PageDefinitions";
 import {
   ADDRESS_SKELETON,
   PERSON_NAME_SKELETON,
 } from "../../../utils/claim_form";
 
-const schemaFields: ClaimSchemaField[] = [
-  ...CLAIMANT_NAMES_SCHEMA_FIELDS,
-  ...CLAIMANT_ADDRESS_SCHEMA_FIELDS,
-];
+import { yupName, yupAddress } from "../../../common/YupBuilder";
+import * as yup from "yup";
+import { TFunction } from "react-i18next";
 
 const PersonalInformation = () => {
   return (
@@ -27,10 +19,22 @@ const PersonalInformation = () => {
   );
 };
 
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    claimant_name: yupName(t),
+    LOCAL_claimant_has_alternate_names: yup.boolean().required(),
+    alternate_names: yup.mixed().when("LOCAL_claimant_has_alternate_names", {
+      is: true,
+      then: yup.array().of(yupName(t)).required(),
+    }),
+    LOCAL_mailing_address_same: yup.boolean(),
+    residence_address: yupAddress(t),
+    mailing_address: yupAddress(t),
+  });
+
 export const PersonalInformationPage: IPageDefinition = {
   path: "personal-information",
   heading: "personal_information",
-  schemaFields: schemaFields,
   initialValues: {
     claimant_name: { ...PERSON_NAME_SKELETON },
     LOCAL_claimant_has_alternate_names: undefined,
@@ -40,4 +44,5 @@ export const PersonalInformationPage: IPageDefinition = {
     mailing_address: ADDRESS_SKELETON,
   },
   Component: PersonalInformation,
+  pageSchema,
 };

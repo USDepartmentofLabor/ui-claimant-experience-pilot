@@ -1,23 +1,35 @@
 import { Fieldset } from "@trussworks/react-uswds";
-import { Normalize, useTranslation } from "react-i18next";
-
+import { TFunction, Normalize, useTranslation } from "react-i18next";
+import * as yup from "yup";
 import claimForm from "../../../i18n/en/claimForm";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { CheckboxGroupField } from "../../../components/form/fields/CheckboxGroupField/CheckboxGroupField";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
 
 import formStyles from "../../../components/form/form.module.scss";
 import { IPageDefinition } from "../../PageDefinitions";
 
-const schemaFields: ClaimSchemaField[] = [
-  "birthdate",
-  "sex",
-  "race",
-  "ethnicity",
-  "education_level",
-];
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    birthdate: yup.date().required(t("birthdate.required")),
+    sex: yup
+      .mixed()
+      .oneOf(Object.keys(claimForm.sex.options))
+      .required(t("sex.required")),
+    race: yup
+      .array()
+      .of(yup.mixed().oneOf(Object.keys(claimForm.race.options)))
+      .required(t("race.required")),
+    ethnicity: yup
+      .mixed()
+      .oneOf(Object.keys(claimForm.ethnicity.options))
+      .required(t("ethnicity.required")),
+    education_level: yup
+      .mixed()
+      .oneOf(Object.keys(claimForm.education_level.options))
+      .required(t("education_level.required")),
+  });
 
 type SexOption = {
   value: string;
@@ -132,7 +144,6 @@ export const DemographicInformation = () => {
 export const DemographicInformationPage: IPageDefinition = {
   path: "demographic-information",
   heading: "demographic_information",
-  schemaFields: schemaFields,
   initialValues: {
     birthdate: "",
     sex: undefined,
@@ -141,4 +152,5 @@ export const DemographicInformationPage: IPageDefinition = {
     education_level: undefined,
   },
   Component: DemographicInformation,
+  pageSchema,
 };

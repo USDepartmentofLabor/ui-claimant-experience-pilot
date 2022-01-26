@@ -332,18 +332,15 @@
         },
         "ownership_in_business": {
           "description": "whether or not the claimant has ownership in a business",
-          "type": "string",
-          "enum": ["yes", "no"]
+          "type": "boolean"
         },
         "is_corporate_officer": {
           "description": "whether or not the claimant is is a corporate officer",
-          "type": "string",
-          "enum": ["yes", "no"]
+          "type": "boolean"
         },
         "related_to_owner": {
           "description": "whether or not the claimant was related to the owner of an employer",
-          "type": "string",
-          "enum": ["yes", "no"]
+          "type": "boolean"
         }
       },
       "required": [
@@ -356,7 +353,7 @@
         {
           "if": {
             "properties": {
-              "ownership_in_business": { "type": "string", "enum": ["yes"] }
+              "ownership_in_business": { "type": "boolean", "const": true }
             }
           },
           "then": {
@@ -372,7 +369,7 @@
         {
           "if": {
             "properties": {
-              "is_corporate_officer": { "type": "string", "enum": ["yes"] }
+              "is_corporate_officer": { "type": "boolean", "const": true }
             }
           },
           "then": {
@@ -388,14 +385,14 @@
         {
           "if": {
             "properties": {
-              "related_to_owner": { "type": "string", "enum": ["yes"] }
+              "related_to_owner": { "type": "boolean", "const": true }
             }
           },
           "then": {
             "properties": {
               "corporation_or_partnership": {
                 "description": "If the claimant is related to their business owner, whether the business is a corporation or partnership",
-                "type": "string"
+                "type": "boolean"
               }
             },
             "required": ["corporation_or_partnership"]

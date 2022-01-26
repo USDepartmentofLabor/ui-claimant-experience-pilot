@@ -3,11 +3,9 @@ import { Fieldset } from "@trussworks/react-uswds";
 import TextAreaField from "../../../components/form/fields/TextAreaField/TextAreaField";
 import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
-import { useTranslation } from "react-i18next";
+import { TFunction, useTranslation } from "react-i18next";
+import * as yup from "yup";
 import { useClearFields } from "../../../hooks/useClearFields";
-
-const schemaFields: ClaimSchemaField[] = ["availability"];
 
 export const Availability = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "availability" });
@@ -75,10 +73,54 @@ export const Availability = () => {
   );
 };
 
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    availability: yup.object().shape({
+      can_begin_work_immediately: yup
+        .boolean()
+        .required(t("availability.can_begin_work_immediately.required")),
+      cannot_begin_work_immediately_reason: yup
+        .string()
+        .when("can_begin_work_immediately", {
+          is: false,
+          then: yup
+            .string()
+            .required(
+              t("availability.cannot_begin_work_immediately_reason.required")
+            ),
+        }),
+      can_work_full_time: yup
+        .boolean()
+        .required(t("availability.can_work_full_time.required")),
+      cannot_work_full_time_reason: yup.string().when("can_work_full_time", {
+        is: false,
+        then: yup
+          .string()
+          .required(t("availability.cannot_work_full_time_reason.required")),
+      }),
+      is_prevented_from_accepting_full_time_work: yup
+        .boolean()
+        .required(
+          t("availability.is_prevented_from_accepting_full_time_work.required")
+        ),
+      is_prevented_from_accepting_full_time_work_reason: yup
+        .string()
+        .when("is_prevented_from_accepting_full_time_work", {
+          is: true,
+          then: yup
+            .string()
+            .required(
+              t(
+                "availability.is_prevented_from_accepting_full_time_work_reason.required"
+              )
+            ),
+        }),
+    }),
+  });
+
 export const AvailabilityPage: IPageDefinition = {
   path: "availability",
   heading: "availability",
-  schemaFields: schemaFields,
   initialValues: {
     availability: {
       can_begin_work_immediately: undefined,
@@ -87,4 +129,5 @@ export const AvailabilityPage: IPageDefinition = {
     },
   },
   Component: Availability,
+  pageSchema,
 };

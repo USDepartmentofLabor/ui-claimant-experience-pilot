@@ -3,6 +3,7 @@
 const claimForm = {
   birthdate: {
     label: "Date of birth",
+    required: "Date of birth is required",
   },
   sex: {
     label: "Sex",
@@ -10,9 +11,7 @@ const claimForm = {
       female: "Female",
       male: "Male",
     },
-    errors: {
-      required: "Sex is a required field",
-    },
+    required: "Sex is a required field",
   },
   race: {
     label: "What races do you identify with?",
@@ -23,9 +22,7 @@ const claimForm = {
       hawaiian_or_pacific_islander: "Native Hawaiian or Other Pacific Islander",
       white: "White",
     },
-    errors: {
-      required: "Race is a required field",
-    },
+    required: "Race is a required field",
   },
   ethnicity: {
     label: "Do you identify as Hispanic or Latino?",
@@ -34,9 +31,7 @@ const claimForm = {
       hispanic: "Yes",
       not_hispanic: "No",
     },
-    errors: {
-      required: "Ethnicity is a required field",
-    },
+    required: "Ethnicity is a required field",
   },
   education_level: {
     label: "How many years of education have you finished?",
@@ -56,9 +51,7 @@ const claimForm = {
         "Professional degree beyond bachelor's degree (for example: MD, DDS, DVM, LLB, JD)",
       doctorate: "Doctorate degree (for example, PhD, EdD)",
     },
-    errors: {
-      required: "At least one education level must be selected",
-    },
+    required: "At least one education level must be selected",
   },
   employers: {
     separation: {
@@ -211,23 +204,39 @@ const claimForm = {
   },
   self_employment: {
     label: "Self-employment",
-    self_employed: { label: "Are you self-employed?" },
+    self_employed: {
+      label: "Are you self-employed?",
+      required: "You must indicate whether you are self-employed",
+    },
     business_ownership: {
       label: "Do you have ownership in a business of any kind?",
+      required: "You must indicate whether you have ownership in a business",
     },
-    business_name: { label: "Name of business" },
+    business_name: {
+      label: "Name of business",
+      required: "You must indicate the name of the business",
+    },
     business_interests: { label: "Your business interests" },
     corporate_officer: {
       label:
         "Are you a corporate officer, or do you own more than 5% of the stock for the company you worked for?",
+      required:
+        "You must indicate whether you are a corporate officer or own stock in your company",
     },
-    corporation_name: { label: "Name of corporation" },
+    corporation_name: {
+      label: "Name of corporation",
+      required: "You must indicate the name of the corporation",
+    },
     related_to_owner: {
       label:
         "Are you related to the owner of any business you worked for during the last 18 months?",
+      required:
+        "You must indicate whether you are related to the owner of any business you worked for during the last 18 months",
     },
     corporation_or_partnership: {
       label: "Is this business a corporation or partnership?",
+      required:
+        "You must indicate whether the business is a corporation or a partnership",
     },
   },
   occupation: {
@@ -235,10 +244,19 @@ const claimForm = {
     choose_the_occupation:
       "Choose the occupation that best matches your selection above. If nothing matches, please try another search.",
     heading: "Your occupation",
-    what_is_your_occupation: { label: "What is your occupation?" },
+    what_is_your_occupation: {
+      label: "What is your occupation?",
+      required: "Occupation is required",
+    },
     hint: "If you're not sure, see our",
     list_of_occupations: "list of occupations",
-    short_description: { label: "Short description of your job" },
+    short_description: {
+      label: "Short description of your job",
+      required: "Job description is required",
+    },
+    bls_code: {
+      required: "Please select the occupation that best matches your selection",
+    },
     no_results: "", // TODO?
     opens_in_a_new_tab: "opens in a new tab",
   },
@@ -267,38 +285,68 @@ const claimForm = {
       heading: "Your education",
       full_time_student: {
         label: "Have you been a full-time student during the last 18 months?",
+        required:
+          "You must indicate whether you have been a full-time student during the last 18 months",
       },
       attending_training: {
         label: "Are you currently attending college or job training?",
+        required:
+          "You must indicate whether you are currently attending college or job training",
       },
     },
     vocational_rehab: {
       heading: "Vocational rehabilitation",
       is_registered: {
         label: "Are you currently registered with Vocational Rehabilitation?",
+        required:
+          "You must indicate whether you are currently registered with Vocational Rehabilitation",
       },
     },
   },
   union: {
     heading: "Union membership",
-    is_union_member: { label: "Are you a member of a union?" },
-    union_name: { label: "Name of your union" },
-    union_local_number: { label: "Union local number" },
+    is_union_member: {
+      label: "Are you a member of a union?",
+      required: "You must indicate whether you are a member of a union",
+    },
+    union_name: {
+      label: "Name of your union",
+      required: "You must indicate the name of your union",
+    },
+    union_local_number: {
+      label: "Union local number",
+      required: "You must indicate your union local number",
+    },
     required_to_seek_work_through_hiring_hall: {
       label:
         "Are you required to seek work through a union hiring hall (a job placement office operated by your union)?",
+      required:
+        "You must indicate whether you are required to seek work through a union hiring hall",
     },
   },
   availability: {
     heading: "Your availability to work",
     can_begin_work_immediately: {
       label: "Can you begin work immediately?",
+      required: "You must indicate whether you can begin work immediately",
     },
     can_work_full_time: {
       label: "Can you work full time?",
+      required: "You must indicate whether you can work full time",
     },
     is_prevented_from_accepting_full_time_work: {
       label: "Is anything preventing you from accepting full-time work?",
+      required:
+        "You must indicate whether anything prevents you from accepting full-time work",
+    },
+    cannot_begin_work_immediately_reason: {
+      required: "A reason you cannot being work immediately is required",
+    },
+    cannot_work_full_time_reason: {
+      required: "A reason you cannot work full-time is required",
+    },
+    is_prevented_from_accepting_full_time_work_reason: {
+      required: "A reason you cannot accept full-time work is required",
     },
   },
   contact_information: {
@@ -307,8 +355,27 @@ const claimForm = {
     email: "Email address", // no label, not editable
     interpreter_required: {
       label: "Do you need an interpreter to communicate with us?",
+      required: "You must indicate whether you need an interpreter",
     },
-    preferred_language: { label: "What language do you speak?" },
+    preferred_language: {
+      label: "What language do you speak?",
+      required: "Please indicate the language you speak",
+    },
+  },
+  address: {
+    address1: { required: "Address is required" },
+    city: { required: "City is required" },
+    state: { required: "State is required" },
+    zipcode: { required: "ZIP code is required" },
+  },
+  phone: {
+    number: { required: "Phone number is required" },
+    type: { required: "Phone type is required" },
+  },
+  name: {
+    first_name: { label: "First Name", required: "First Name is required" },
+    middle_name: { label: "Middle Name (Optional)" },
+    last_name: { label: "Last Name", required: "Last Name is required" },
   },
   payment: {
     payment_method: {
@@ -336,6 +403,9 @@ const claimForm = {
       errors: { mustMatch: "Must match account number" },
     },
   },
+  is_complete: { label: "I'm done!", required: "You must check the box" },
+  is_complete_description:
+    "Checking this box means your claim will be sent to your workforce agency",
 };
 
 export default claimForm;

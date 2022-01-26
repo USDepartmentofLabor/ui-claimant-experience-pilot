@@ -378,7 +378,7 @@ Cypress.Commands.add(
     }
 
     if (type_of_disability) {
-      cy.get("select").select(type_of_disability);
+      cy.get("#disability\\.type_of_disability").select(type_of_disability);
     }
 
     if (date_disability_began) {

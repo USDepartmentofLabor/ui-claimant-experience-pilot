@@ -31,9 +31,9 @@ describe("ClaimantNames component", () => {
       </Formik>
     );
 
-    const claimantFirstNameField = getByLabelText("label.first_name");
-    const claimantMiddleNameField = getByLabelText("label.middle_name");
-    const claimantLastNameField = getByLabelText("label.last_name");
+    const claimantFirstNameField = getByLabelText("name.first_name.label");
+    const claimantMiddleNameField = getByLabelText("name.middle_name.label");
+    const claimantLastNameField = getByLabelText("name.last_name.label");
 
     expect(claimantFirstNameField).toHaveValue("");
     expect(claimantFirstNameField).toHaveAttribute(
@@ -89,11 +89,11 @@ describe("ClaimantNames component", () => {
       userEvent.click(yesAlternateNames);
 
       const [claimantFirstNameField, claimantAlternateFirstNameField] =
-        getAllByLabelText("label.first_name");
+        getAllByLabelText("name.first_name.label");
       const [claimantMiddleNameField, claimantAlternateMiddleNameField] =
-        getAllByLabelText("label.middle_name");
+        getAllByLabelText("name.middle_name.label");
       const [claimantLastNameField, claimantAlternateLastNameField] =
-        getAllByLabelText("label.last_name");
+        getAllByLabelText("name.last_name.label");
 
       await waitFor(() => {
         expect(claimantFirstNameField).toHaveValue("");
@@ -188,12 +188,15 @@ describe("ClaimantNames component", () => {
       // Toggle on
       userEvent.click(yesAlternateNames);
 
-      const claimantAlternateFirstNameField =
-        queryAllByLabelText("label.first_name")[1];
-      const claimantAlternateMiddleNameField =
-        queryAllByLabelText("label.middle_name")[1];
-      const claimantAlternateLastNameField =
-        queryAllByLabelText("label.last_name")[1];
+      const claimantAlternateFirstNameField = queryAllByLabelText(
+        "name.first_name.label"
+      )[1];
+      const claimantAlternateMiddleNameField = queryAllByLabelText(
+        "name.middle_name.label"
+      )[1];
+      const claimantAlternateLastNameField = queryAllByLabelText(
+        "name.last_name.label"
+      )[1];
 
       await waitFor(() => {
         expect(claimantAlternateFirstNameField).toBeInTheDocument();
@@ -224,12 +227,15 @@ describe("ClaimantNames component", () => {
       userEvent.click(yesAlternateNames);
 
       await waitFor(() => {
-        const claimantAlternateFirstNameField =
-          queryAllByLabelText("label.first_name")[1];
-        const claimantAlternateMiddleNameField =
-          queryAllByLabelText("label.middle_name")[1];
-        const claimantAlternateLastNameField =
-          queryAllByLabelText("label.last_name")[1];
+        const claimantAlternateFirstNameField = queryAllByLabelText(
+          "name.first_name.label"
+        )[1];
+        const claimantAlternateMiddleNameField = queryAllByLabelText(
+          "name.middle_name.label"
+        )[1];
+        const claimantAlternateLastNameField = queryAllByLabelText(
+          "name.last_name.label"
+        )[1];
 
         expect(claimantAlternateFirstNameField).toBeInTheDocument();
         expect(claimantAlternateMiddleNameField).toBeInTheDocument();

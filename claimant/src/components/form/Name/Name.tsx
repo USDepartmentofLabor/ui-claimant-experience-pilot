@@ -7,26 +7,26 @@ interface INameProps {
 }
 
 export const Name = ({ id, name }: INameProps) => {
-  const { t } = useTranslation("home");
+  const { t } = useTranslation("claimForm");
 
   return (
     <>
       <TextField
         id={`${id}.first_name`}
         name={`${name}.first_name`}
-        label={t("label.first_name")}
+        label={t("name.first_name.label")}
         type="text"
       />
       <TextField
         id={`${id}.middle_name`}
         name={`${name}.middle_name`}
-        label={t("label.middle_name")}
+        label={t("name.middle_name.label")}
         type="text"
       />
       <TextField
         id={`${id}.last_name`}
         name={`${name}.last_name`}
-        label={t("label.last_name")}
+        label={t("name.last_name.label")}
         type="text"
       />
     </>

@@ -1,21 +1,30 @@
 import { Fieldset } from "@trussworks/react-uswds";
-import { useTranslation } from "react-i18next";
+import { TFunction, useTranslation } from "react-i18next";
 import { useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { IPageDefinition } from "../../PageDefinitions";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { CheckboxField } from "../../../components/form/fields/CheckboxField/CheckboxField";
 import { PhoneNumberField } from "../../../components/form/PhoneNumberField/PhoneNumberField";
+import { yupPhone } from "../../../common/YupBuilder";
+import * as yup from "yup";
 import { useClearFields } from "../../../hooks/useClearFields";
 
-const schemaFields: ClaimSchemaField[] = [
-  "email",
-  "phones",
-  "LOCAL_more_phones",
-  "interpreter_required",
-  "preferred_language",
-];
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    // email is not editable, so omit required() but include the schema def just in case.
+    email: yup.string().email(),
+    phones: yup.array().of(yupPhone(t)).required(),
+    interpreter_required: yup
+      .boolean()
+      .required(t("contact_information.interpreter_required.required")),
+    preferred_language: yup.string().when("interpreter_required", {
+      is: true,
+      then: yup
+        .string()
+        .required(t("contact_information.preferred_language.required")),
+    }),
+  });
 
 export const ContactInformation = () => {
   const { t } = useTranslation("claimForm", {
@@ -70,7 +79,6 @@ export const ContactInformation = () => {
 export const ContactInformationPage: IPageDefinition = {
   path: "contact-information",
   heading: "contact_information",
-  schemaFields: schemaFields,
   initialValues: {
     email: undefined, // whoami will populate
     phones: [{ number: "" }],
@@ -79,4 +87,5 @@ export const ContactInformationPage: IPageDefinition = {
     preferred_language: "",
   },
   Component: ContactInformation,
+  pageSchema,
 };

@@ -1,30 +1,33 @@
-import { useTranslation } from "react-i18next";
+import { TFunction, useTranslation } from "react-i18next";
 import CheckboxField from "../../../components/form/fields/CheckboxField/CheckboxField";
-import { ClaimSchemaField } from "../../../common/YupBuilder";
 import { IPageDefinition } from "../../PageDefinitions";
-
-const schemaFields: ClaimSchemaField[] = ["is_complete"];
+import * as yup from "yup";
 
 export const Submit = () => {
-  const { t } = useTranslation("home");
+  const { t } = useTranslation("claimForm");
 
   return (
     <CheckboxField
       id="is_complete"
       name="is_complete"
-      label={t("label.is_complete")}
-      labelDescription={t("label.is_complete_description")}
+      label={t("is_complete.label")}
+      labelDescription={t("is_complete_description")}
       tile
     />
   );
 };
 
+const pageSchema = (t: TFunction<"claimForm">) =>
+  yup.object().shape({
+    is_complete: yup.boolean().required(t("is_complete.required")),
+  });
+
 export const SubmitPage: IPageDefinition = {
   path: "submit",
   heading: "submit",
-  schemaFields: schemaFields,
   initialValues: {
     is_complete: false,
   },
   Component: Submit,
+  pageSchema,
 };
