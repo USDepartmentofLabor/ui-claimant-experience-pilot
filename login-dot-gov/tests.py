@@ -69,6 +69,15 @@ class LoginDotGovTestCase(TestCase):
         self.assertTrue(whoami["ssn"])
         self.assertTrue(whoami["birthdate"])
         self.assertTrue(whoami["phone"])
+        self.assertTrue(
+            whoami["address"],
+            {
+                "address1": "1600 Pennsylvania Ave",
+                "city": "Washington",
+                "state": "DC",
+                "zipcode": "20500",
+            },
+        )
 
     @override_settings(DEBUG=True)  # so that /explain works
     def test_ial1(self):

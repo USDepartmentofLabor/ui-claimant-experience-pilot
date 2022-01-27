@@ -16,7 +16,7 @@ from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator, CompletedClaimValidator
 from .claim_cleaner import ClaimCleaner
 from .models import Claim
-from .whoami import WhoAmI
+from .whoami import WhoAmI, WhoAmIAddress
 from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
 
@@ -53,6 +53,8 @@ def whoami(request):
     or still requires IdP AAL2 login.
     """
     whoami = WhoAmI(**request.session.get("whoami"))
+    if whoami.address and isinstance(whoami.address, dict):
+        whoami.address = WhoAmIAddress(**whoami.address)
     if "swa" in request.session and not (
         whoami.swa_code and whoami.swa_name and whoami.swa_claimant_url
     ):

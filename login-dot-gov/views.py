@@ -9,7 +9,7 @@ from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, 
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider
 from django.conf import settings
-from api.whoami import WhoAmI
+from api.whoami import WhoAmI, WhoAmIAddress
 from home.views import base_url
 
 logger = logging.getLogger("logindotgov")
@@ -164,6 +164,7 @@ def result(request):
 
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
+    address = userinfo.get("address", {})
     whoami = WhoAmI(
         IAL=request.session["IAL"],
         first_name=userinfo.get("given_name", ""),
@@ -172,6 +173,12 @@ def result(request):
         ssn=userinfo.get("social_security_number", ""),
         email=userinfo["email"],
         phone=userinfo.get("phone", ""),
+        address=WhoAmIAddress(
+            address1=address.get("street_address", ""),
+            city=address.get("locality", ""),
+            state=address.get("region", ""),
+            zipcode=address.get("postal_code", ""),
+        ),
         claimant_id=idp_user_xid,
     )
     request.session["whoami"] = whoami.as_dict()

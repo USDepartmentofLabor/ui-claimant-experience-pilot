@@ -3,6 +3,18 @@ from dataclasses import dataclass
 
 
 @dataclass
+class WhoAmIAddress:
+    address1: str = None
+    address2: str = None
+    city: str = None
+    state: str = None
+    zipcode: str = None
+
+    def as_dict(self):
+        return self.__dict__
+
+
+@dataclass
 class WhoAmI:
     email: str
     IAL: str = "2"
@@ -17,6 +29,10 @@ class WhoAmI:
     swa_code: str = None
     swa_name: str = None
     swa_claimant_url: str = None
+    address: WhoAmIAddress = None
 
     def as_dict(self):
-        return self.__dict__
+        serialized = self.__dict__
+        if "address" in serialized and isinstance(serialized["address"], WhoAmIAddress):
+            serialized["address"] = self.address.as_dict()
+        return serialized
