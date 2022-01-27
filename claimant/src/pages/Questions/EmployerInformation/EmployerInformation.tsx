@@ -147,7 +147,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
   });
 
 export const EmployerInformationPage: IPageDefinition = {
-  path: "employer-information",
+  path: "employer",
   heading: "recent_employer",
   initialValues: {
     employers: [],

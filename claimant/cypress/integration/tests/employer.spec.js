@@ -5,7 +5,7 @@ import faker from "faker";
 context("Employer section of Claim form", { scrollBehavior: "center" }, () => {
   it("navigates employers", () => {
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/claim/employer-information/");
+    cy.visit("/claimant/claim/employer/");
     const employer0 = {
       name: "ACME 0",
       first_work_date: "01/01/2020",

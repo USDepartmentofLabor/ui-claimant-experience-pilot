@@ -40,9 +40,9 @@ const common = {
   },
   select_one: "-- Select one --",
   page_headings: {
-    personal_information: "Personal Information",
-    contact_information: "Contact Information",
-    demographic_information: "Demographic Information",
+    personal: "Personal",
+    contact: "Contact",
+    demographic: "Demographic",
     education_vocational_rehab: "Education and Vocational Rehabilitation",
     recent_employer: "Recent Employer",
     self_employment: "Self Employment",
@@ -50,7 +50,7 @@ const common = {
     union: "Union Membership",
     disability: "Disability",
     availability: "Availability",
-    payment_information: "Payment information",
+    payment: "Payment",
     submit: "Review",
   },
 };

@@ -77,8 +77,8 @@ export const ContactInformation = () => {
 };
 
 export const ContactInformationPage: IPageDefinition = {
-  path: "contact-information",
-  heading: "contact_information",
+  path: "contact",
+  heading: "contact",
   initialValues: {
     email: undefined, // whoami will populate
     phones: [{ number: "" }],

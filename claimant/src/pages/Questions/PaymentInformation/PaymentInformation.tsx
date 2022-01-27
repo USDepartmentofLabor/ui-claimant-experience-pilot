@@ -181,7 +181,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
 
 export const PaymentInformationPage: IPageDefinition = {
   path: "payment",
-  heading: "payment_information",
+  heading: "payment",
   initialValues: { payment: {} },
   Component: PaymentInformation,
   pageSchema,

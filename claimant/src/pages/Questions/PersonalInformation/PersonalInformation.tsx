@@ -33,8 +33,8 @@ const pageSchema = (t: TFunction<"claimForm">) =>
   });
 
 export const PersonalInformationPage: IPageDefinition = {
-  path: "personal-information",
-  heading: "personal_information",
+  path: "personal",
+  heading: "personal",
   initialValues: {
     claimant_name: { ...PERSON_NAME_SKELETON },
     LOCAL_claimant_has_alternate_names: undefined,
