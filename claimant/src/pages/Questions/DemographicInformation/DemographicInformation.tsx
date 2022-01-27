@@ -142,8 +142,8 @@ export const DemographicInformation = () => {
 };
 
 export const DemographicInformationPage: IPageDefinition = {
-  path: "demographic-information",
-  heading: "demographic_information",
+  path: "demographic",
+  heading: "demographic",
   initialValues: {
     birthdate: "",
     sex: undefined,

@@ -81,9 +81,7 @@ describe("the ClaimForm page", () => {
   });
   const queryClient = new QueryClient();
   const Page = ({ route }: { route?: string }) => (
-    <MemoryRouter
-      initialEntries={[`/claim/${route || "personal-information"}`]}
-    >
+    <MemoryRouter initialEntries={[`/claim/${route || "personal"}`]}>
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
           <Routes>
@@ -97,7 +95,7 @@ describe("the ClaimForm page", () => {
   it("renders without error", async () => {
     render(<Page />);
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Personal Information"
+      "Personal"
     );
   });
 
@@ -261,7 +259,7 @@ describe("the ClaimForm page", () => {
       nextLink,
     } = getPersonalInformationFields();
 
-    // Fill out personal-information
+    // Fill out personal
 
     await userEvent.type(firstName, myPII.first_name);
     await userEvent.type(lastName, myPII.last_name);
@@ -366,7 +364,7 @@ describe("the ClaimForm", () => {
 
   const queryClient = new QueryClient();
   const wrappedClaimForm = (
-    <MemoryRouter initialEntries={["/claim/personal-information"]}>
+    <MemoryRouter initialEntries={["/claim/personal"]}>
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
           <Routes>
@@ -473,7 +471,7 @@ describe("Already Submitted", () => {
 
   const queryClient = new QueryClient();
   const wrappedClaimForm = (
-    <MemoryRouter initialEntries={["/claim/personal-information"]}>
+    <MemoryRouter initialEntries={["/claim/personal"]}>
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
           <Routes>
