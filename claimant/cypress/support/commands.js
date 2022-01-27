@@ -463,9 +463,19 @@ Cypress.Commands.add("complete_availability_information", (availability) => {
 });
 
 Cypress.Commands.add("complete_payment_information", (paymentInformation) => {
-  const { payment_method, account_type, routing_number, account_number } =
-    paymentInformation;
+  const {
+    federal_income_tax_withheld,
+    payment_method,
+    account_type,
+    routing_number,
+    account_number,
+  } = paymentInformation;
 
+  cy.get(
+    `input[id="federal_income_tax_withheld\\.${federal_income_tax_withheld}"]`
+  )
+    .parent()
+    .click();
   cy.get(`input[id="payment\\.payment_method\\.${payment_method}"]`)
     .parent()
     .click();

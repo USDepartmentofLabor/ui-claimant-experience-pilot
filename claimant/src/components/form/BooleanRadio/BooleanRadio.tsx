@@ -44,7 +44,7 @@ export const BooleanRadio = ({
         key={`${id}.0.yes`}
         id={`${id}.yes`}
         data-testid={`${id}.yes`}
-        name={name}
+        name={`${name}.yes`}
         label={yesLabel || t("yes")}
         value={"yes"}
         checked={metaProps.value === true}
@@ -57,7 +57,7 @@ export const BooleanRadio = ({
         key={`${id}.0.no`}
         id={`${id}.no`}
         data-testid={`${id}.no`}
-        name={name}
+        name={`${name}.no`}
         label={noLabel || t("no")}
         value={"no"}
         checked={metaProps.value === false}

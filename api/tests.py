@@ -143,6 +143,7 @@ class BaseClaim:
                 "is_prevented_from_accepting_full_time_work": False,
             },
             "payment": {
+                "withhold_federal_tax": False,
                 "payment_method": "direct_deposit",
                 "account_type": "checking",
                 "routing_number": "12-345678",

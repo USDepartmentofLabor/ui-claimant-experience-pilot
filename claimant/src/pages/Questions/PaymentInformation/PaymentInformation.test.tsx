@@ -24,6 +24,12 @@ describe("PaymentInformation page", () => {
       </Formik>
     );
 
+    ["yes", "no"].map((option) => {
+      const federalTaxWithheldRadio = screen.getByTestId(
+        `federal_income_tax_withheld.${option}`
+      );
+      expect(federalTaxWithheldRadio).not.toBeChecked();
+    });
     Object.keys(claimForm.payment.payment_method.options).map((option) => {
       const paymentMethodRadio = screen.getByRole("radio", {
         name: `payment_method.options.${option}`,

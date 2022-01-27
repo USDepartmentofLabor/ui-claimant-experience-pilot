@@ -8,7 +8,9 @@
   "dependencies": {
     "@testing-library/react-hooks": "^7.0.2",
     "@trussworks/react-uswds": "^2.7.0",
+    "@types/classnames": "^2.3.1",
     "axios": "0.24.0",
+    "classnames": "^2.3.1",
     "dayjs": "^1.10.7",
     "formik": "^2.2.9",
     "i18next": "^21.6.0",

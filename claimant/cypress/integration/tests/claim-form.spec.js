@@ -197,6 +197,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     // Payment information page
     const paymentInformation = {
+      federal_income_tax_withheld: "no",
       payment_method: "direct_deposit",
       account_type: "checking",
       routing_number: "12345",

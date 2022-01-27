@@ -150,6 +150,7 @@ type AvailabilityType = {
 };
 
 type PaymentInformationType = DeepPartial<{
+  federal_income_tax_withheld: boolean;
   payment: {
     payment_method: string;
     account_type: string;

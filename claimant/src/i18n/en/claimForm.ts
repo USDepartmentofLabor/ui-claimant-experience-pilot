@@ -391,6 +391,12 @@ const claimForm = {
     last_name: { label: "Last Name", required: "Last Name is required" },
   },
   payment: {
+    federal_income_tax_withheld: {
+      label:
+        "Would you like to have 10% Federal Income Tax withheld from your benefits?",
+      help_text:
+        "Federal tax withholding will only be made after amounts are deducted and withheld for any unemployment overpayments, child support obligations, or any other amounts required to be deducted and withheld by law.",
+    },
     payment_method: {
       label: "How would you like to receive your benefit payment?",
       options: {

@@ -6,6 +6,7 @@ context("Payment section of Claim form", { scrollBehavior: "center" }, () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/claim/payment/");
     const paymentInformation = {
+      federal_income_tax_withheld: "no",
       payment_method: "direct_deposit",
       account_type: "checking",
       routing_number: "12345",
