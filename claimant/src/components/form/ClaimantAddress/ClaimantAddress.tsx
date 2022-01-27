@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
+import { isEqual } from "lodash";
 import Address from "../Address/Address";
 import { CheckboxField } from "../fields/CheckboxField/CheckboxField";
 import { ADDRESS_SKELETON } from "../../../utils/claim_form";
@@ -18,11 +19,15 @@ export const ClaimantAddress = () => {
 
   const { values, setFieldValue } = useFormikContext<ClaimantAddressValues>();
 
-  // Reset mailing_address if unchecked
-  useClearFields(!values.LOCAL_mailing_address_same, {
-    fieldName: "mailing_address",
-    value: { ...ADDRESS_SKELETON },
-  });
+  // Reset mailing_address if unchecked and identical
+  useClearFields(
+    !values.LOCAL_mailing_address_same &&
+      isEqual(values.mailing_address, values.residence_address),
+    {
+      fieldName: "mailing_address",
+      value: { ...ADDRESS_SKELETON },
+    }
+  );
 
   // Keep mailing_address synchronized if checked
   useEffect(() => {

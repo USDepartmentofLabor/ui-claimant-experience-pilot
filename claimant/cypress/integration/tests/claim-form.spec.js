@@ -23,6 +23,13 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         state: "CA",
         zipcode: "00000",
       },
+      mailing_address: {
+        address1: faker.address.streetAddress(),
+        address2: "Apt 5",
+        city: faker.address.city(),
+        state: faker.address.stateAbbr(),
+        zipcode: faker.address.zipCode(),
+      },
     });
     cy.click_next();
     cy.complete_contact_information();

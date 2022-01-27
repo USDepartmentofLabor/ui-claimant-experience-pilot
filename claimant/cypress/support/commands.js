@@ -258,7 +258,22 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
   if (!addresses.mailing_address) {
     cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
   } else {
-    // TODO
+    cy.get("[name=mailing_address\\.address1]").type(
+      addresses.mailing_address.address1
+    );
+    cy.get("[name=mailing_address\\.address2]").type(
+      addresses.mailing_address.address2
+    );
+    cy.get("[name=mailing_address\\.city]").type(
+      addresses.mailing_address.city
+    );
+    cy.get("[name=mailing_address\\.state]").select(
+      addresses.mailing_address.state
+    );
+    cy.get("[name=mailing_address\\.zipcode]").type(
+      addresses.mailing_address.zipcode,
+      { force: true }
+    );
   }
 });
 
