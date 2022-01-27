@@ -120,6 +120,15 @@
     "related_to_owner": true,
     "corporation_or_partnership": false
   },
+  "other_pay": [
+    {
+      "pay_type": "severance",
+      "total": 500000,
+      "date_received": "2021-01-15",
+      "note": "All one payment for layoff"
+    }
+  ],
+
   "student_fulltime_in_last_18_months": false,
   "attending_college_or_job_training": false,
   "registered_with_vocational_rehab": true,
