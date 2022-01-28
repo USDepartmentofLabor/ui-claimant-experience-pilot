@@ -2,17 +2,16 @@ import { Fieldset } from "@trussworks/react-uswds";
 import { TFunction, Normalize, useTranslation } from "react-i18next";
 import * as yup from "yup";
 import claimForm from "../../../i18n/en/claimForm";
-import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { CheckboxGroupField } from "../../../components/form/fields/CheckboxGroupField/CheckboxGroupField";
+import { Alert } from "@trussworks/react-uswds";
 
 import formStyles from "../../../components/form/form.module.scss";
 import { IPageDefinition } from "../../PageDefinitions";
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    birthdate: yup.date().required(t("birthdate.required")),
     sex: yup
       .mixed()
       .oneOf(Object.keys(claimForm.sex.options))
@@ -84,15 +83,7 @@ export const DemographicInformation = () => {
 
   return (
     <>
-      <TextField
-        className={formStyles.field}
-        name="birthdate"
-        label={t("birthdate.label")}
-        id="birthdate"
-        type="text"
-        readOnly
-        disabled
-      />
+      <Alert type="info">{t("demographic_information.info_alert")}</Alert>
       <Fieldset legend={t("sex.label")} className={formStyles.field}>
         <RadioField
           id="sex"
@@ -103,6 +94,7 @@ export const DemographicInformation = () => {
               value: option.value,
             };
           })}
+          className="display-inline-block margin-right-7"
         />
       </Fieldset>
       <Fieldset legend={t("ethnicity.label")} className={formStyles.field}>
@@ -145,7 +137,6 @@ export const DemographicInformationPage: IPageDefinition = {
   path: "demographic",
   heading: "demographic",
   initialValues: {
-    birthdate: "",
     sex: undefined,
     ethnicity: undefined,
     race: [],

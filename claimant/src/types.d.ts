@@ -87,7 +87,6 @@ type ClaimantAddressType = {
 type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;
 
 type DemographicInformationType = {
-  birthdate?: string;
   sex?: string;
   ethnicity?: string[];
   race?: string[];

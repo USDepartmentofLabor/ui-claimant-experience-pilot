@@ -17,7 +17,6 @@ jest.mock("react-i18next", () => ({
 
 describe("DemographicInformation component", () => {
   const initialValues = {
-    birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,
     race: [],
     ethnicity: undefined,
@@ -30,9 +29,6 @@ describe("DemographicInformation component", () => {
         <DemographicInformation />
       </Formik>
     );
-
-    const birthdateField = getByLabelText("birthdate.label");
-    expect(birthdateField).toHaveValue(initialValues.birthdate);
 
     Object.keys(claimForm.sex.options).map((option) => {
       const sexRadio = screen.getByRole("radio", {

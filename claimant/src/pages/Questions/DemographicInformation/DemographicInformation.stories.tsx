@@ -17,7 +17,6 @@ const Template: ComponentStory<typeof DemographicInformation> = () => {
   const { t } = useTranslation("claimForm");
   const validationSchema = DemographicInformationPage.pageSchema?.(t);
   const initialValues = {
-    birthdate: new Date(2001, 11, 21).toDateString(),
     sex: undefined,
     ethnicity: undefined,
     race: [],
