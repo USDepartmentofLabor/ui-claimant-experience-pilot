@@ -102,9 +102,9 @@ def login(request):
         request.session.set_test_cookie()
         csrf_token = django.middleware.csrf.get_token(request)
         # stash params for post-login
-        if "redirect_to" in request.GET:
+        if request.GET.get("redirect_to", None):
             request.session["redirect_to"] = request.GET["redirect_to"]
-        if "swa" in request.GET:
+        if request.GET.get("swa", None):
             request.session["swa"] = request.GET["swa"]
         return render(
             None,
@@ -119,7 +119,7 @@ def login(request):
     elif request.method == "POST":
         register_local_login(request)
         redirect_to = "/claimant/"
-        if "redirect_to" in request.session:
+        if request.session.get("redirect_to", None):
             redirect_to = request.session["redirect_to"]
             del request.session["redirect_to"]
         logger.debug("redirect_to={}".format(redirect_to))
