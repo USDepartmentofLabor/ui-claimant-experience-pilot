@@ -1,16 +1,21 @@
-type ClaimantInput = PersonalInformationType &
+type ClaimantInput = {
+  ssn?: string;
+  birthdate?: string;
+} & PersonalInformationType &
   ContactType &
   DemographicInformationType &
+  WorkAuthorizationType &
+  StateCredentialType &
   PaymentInformationType &
   EmployersType &
   SelfEmploymentType &
+  OtherPayType &
   DisabilityStatusType &
   AvailabilityType &
-  EducationVocationalRehabType & { union?: UnionType } & {
-    occupation?: OccupationType;
-  } & SelfEmploymentType & {
-    is_complete?: boolean;
-  };
+  EducationVocationalRehabType &
+  UnionType &
+  OccupationType &
+  CompleteClaimType;
 
 type Claim = ClaimantInput & {
   id?: string;
@@ -93,6 +98,22 @@ type DemographicInformationType = {
   education_level?: string;
 };
 
+type WorkAuthorizationType = {
+  work_authorization?: {
+    authorized_to_work?: boolean;
+    not_authorized_to_work_explanation?: string;
+    authorization_type?: string;
+    alien_registration_number?: string;
+  };
+};
+
+type StateCredentialType = {
+  state_credential?: {
+    drivers_license_or_state_id_number?: string;
+    issuer?: string;
+  };
+};
+
 type EmployerType = {
   name: string;
   days_employed?: number;
@@ -115,18 +136,22 @@ type EmployersType = {
 };
 
 type OccupationType = {
-  job_title: string;
-  job_description: string;
-  bls_code: string;
-  bls_title: string;
-  bls_description: string;
+  occupation?: {
+    job_title: string;
+    job_description: string;
+    bls_code: string;
+    bls_title: string;
+    bls_description: string;
+  };
 };
 
 type UnionType = {
-  is_union_member?: boolean;
-  union_name?: string;
-  union_local_number?: string;
-  required_to_seek_work_through_hiring_hall?: boolean;
+  union?: {
+    is_union_member?: boolean;
+    union_name?: string;
+    union_local_number?: string;
+    required_to_seek_work_through_hiring_hall?: boolean;
+  };
 };
 
 type ContactType = {
@@ -176,6 +201,18 @@ type SelfEmploymentType = DeepPartial<{
   };
 }>;
 
+type OtherPayType = Partial<{
+  LOCAL_pay_types: string[];
+  other_pay: OtherPayDetailType[];
+}>;
+
+type OtherPayDetailType = {
+  pay_type: string;
+  total?: number;
+  date_received?: string;
+  note?: string;
+};
+
 type DisabilityStatusType = DeepPartial<{
   disability: {
     has_collected_disability: boolean;
@@ -192,6 +229,10 @@ type EducationVocationalRehabType = Partial<{
   attending_college_or_job_training: boolean;
   registered_with_vocational_rehab: boolean;
 }>;
+
+type CompleteClaimType = {
+  is_complete?: boolean;
+};
 
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;

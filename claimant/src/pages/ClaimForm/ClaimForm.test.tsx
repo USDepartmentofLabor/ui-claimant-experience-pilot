@@ -208,19 +208,17 @@ describe("the ClaimForm page", () => {
   });
 
   it("navigates between first 2 pages", async () => {
-    const { getByText, getByLabelText, getByRole, getByTestId } = render(
-      <Page />
-    );
+    render(<Page />);
 
     const getPersonalInformationFields = () => {
-      const residenceAddressGroup = getByRole("group", {
+      const residenceAddressGroup = screen.getByRole("group", {
         name: "What is your primary address?",
       });
 
       return {
-        firstName: getByLabelText("First Name"),
-        lastName: getByLabelText("Last Name"),
-        noAdditionalClaimantNames: getByRole("radio", { name: "No" }),
+        firstName: screen.getByLabelText("First Name"),
+        lastName: screen.getByLabelText("Last Name"),
+        noAdditionalClaimantNames: screen.getByRole("radio", { name: "No" }),
         residenceAddress1: within(residenceAddressGroup).getByLabelText(
           "Address 1"
         ),
@@ -232,18 +230,18 @@ describe("the ClaimForm page", () => {
         residenceZIPCode: within(residenceAddressGroup).getByLabelText(
           "ZIP Code"
         ),
-        mailingAddressIsSame: getByTestId("LOCAL_mailing_address_same"),
-        nextLink: getByText("Next", { exact: false }),
+        mailingAddressIsSame: screen.getByTestId("LOCAL_mailing_address_same"),
+        nextLink: screen.getByText("Next", { exact: false }),
       };
     };
 
     const getContactInformationFields = () => ({
-      phoneOne: getByTestId("phones[0].number"),
-      phoneOneType: getByTestId("phones[0].type"),
-      needsInterpreterYes: getByTestId("interpreter_required.yes"),
-      preferredLanguage: getByTestId("preferred_language"),
-      backButton: getByText("Back", { exact: false }),
-      nextButton: getByText("Next", { exact: false }),
+      phoneOne: screen.getByTestId("phones[0].number"),
+      phoneOneType: screen.getByTestId("phones[0].type"),
+      needsInterpreterYes: screen.getByTestId("interpreter_required.yes"),
+      preferredLanguage: screen.getByTestId("preferred_language"),
+      backButton: screen.getByText("Back", { exact: false }),
+      nextButton: screen.getByText("Next", { exact: false }),
     });
 
     const {
@@ -260,22 +258,21 @@ describe("the ClaimForm page", () => {
     } = getPersonalInformationFields();
 
     // Fill out personal
-
-    await userEvent.type(firstName, myPII.first_name);
-    await userEvent.type(lastName, myPII.last_name);
-    await userEvent.click(noAdditionalClaimantNames);
-    await userEvent.type(residenceAddress1, "address1");
-    await userEvent.type(residenceAddress2, "address2");
-    await userEvent.type(residenceCity, "city");
-    await userEvent.selectOptions(residenceState, ["CA"]);
-    await userEvent.type(residenceZIPCode, "00000");
-    await userEvent.click(mailingAddressIsSame);
+    userEvent.type(firstName, myPII.first_name);
+    userEvent.type(lastName, myPII.last_name);
+    userEvent.click(noAdditionalClaimantNames);
+    userEvent.type(residenceAddress1, "address1");
+    userEvent.type(residenceAddress2, "address2");
+    userEvent.type(residenceCity, "city");
+    userEvent.selectOptions(residenceState, ["CA"]);
+    userEvent.type(residenceZIPCode, "00000");
+    userEvent.click(mailingAddressIsSame);
 
     await waitFor(() => {
       expect(noAdditionalClaimantNames).toBeChecked();
     });
 
-    await userEvent.click(nextLink);
+    userEvent.click(nextLink);
 
     await waitFor(() => {
       expect(firstName).not.toBeInTheDocument();
@@ -284,14 +281,14 @@ describe("the ClaimForm page", () => {
     const { backButton: backToPersonalInformation } =
       getContactInformationFields();
 
-    await userEvent.click(backToPersonalInformation);
+    userEvent.click(backToPersonalInformation);
 
     await waitFor(() => {
       const { firstName: firstNameRevisited } = getPersonalInformationFields();
       expect(firstNameRevisited).toBeInTheDocument();
     });
 
-    await userEvent.click(nextLink);
+    userEvent.click(nextLink);
 
     await waitFor(() => {
       expect(firstName).not.toBeInTheDocument();
@@ -305,11 +302,11 @@ describe("the ClaimForm page", () => {
       nextButton,
     } = getContactInformationFields();
 
-    await userEvent.type(phoneOne, "555-555-1234");
-    await userEvent.selectOptions(phoneOneType, ["mobile"]);
-    await userEvent.click(needsInterpreterYes);
-    await userEvent.type(preferredLanguage, "Klingon");
-    await userEvent.click(nextButton);
+    userEvent.type(phoneOne, "555-555-1234");
+    userEvent.selectOptions(phoneOneType, ["mobile"]);
+    userEvent.click(needsInterpreterYes);
+    userEvent.type(preferredLanguage, "Klingon");
+    userEvent.click(nextButton);
 
     await waitFor(() => {
       expect(preferredLanguage).not.toBeInTheDocument();

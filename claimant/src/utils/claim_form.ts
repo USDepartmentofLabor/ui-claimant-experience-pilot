@@ -29,13 +29,6 @@ export const EMPLOYER_SKELETON: EmployerType = {
   fein: "",
 };
 
-// The _entire_ claimant data, even if rendering a subset.
-// These values are empty strings on the first load, but might
-// be persisted somewhere and restored on later visits.
-const CLAIM_FORM_SKELETON: FormValues = {
-  ssn: "",
-};
-
 export const getInitialValuesFromPageDefinitions = (
   pages: ReadonlyArray<IPageDefinition>
 ) =>
@@ -50,10 +43,7 @@ export const initializeClaimFormWithWhoAmI = (
   emptyInitialValues: FormValues,
   whoami: WhoAmI
 ) => {
-  const initializedValues: FormValues = {
-    ...CLAIM_FORM_SKELETON, // TODO: CLAIM_FORM_SKELETON should be removed entirely when email and ssn are incorporated into a component
-    ...emptyInitialValues, //   At that point, we can use emptyInitialValues directly
-  };
+  const initializedValues: FormValues = { ...emptyInitialValues };
   for (const [key, value] of Object.entries(whoami)) {
     if (key === "first_name" || key === "last_name") {
       initializedValues.claimant_name[key] = value;

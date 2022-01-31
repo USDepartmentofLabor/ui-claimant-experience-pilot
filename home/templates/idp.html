@@ -1,25 +1,31 @@
-{% extends "claimant-base.html" %} {% block content %} {% load i18n %}
+{% extends "claimant-base.html" %}
+{% block content %}
+{% load i18n %}
 <main role="main" class="">
   <section class="grid-container usa-section">
   {% if swa %}
     <div>
-      {% translate "You will now be transferred to " %}
-      <img src="https://login.gov/assets/img/logo_sign_in.svg" alt="{% translate "Login.gov, external website" %}" class="logindotgov" />
-      {% translate "to sign in and verify your identity." %}
+      {% translate "You will now be transferred to Login.gov to sign in and verify your identity." %}
     </div>
     <div class="margin-top-2">
-      <a class="usa-button" href="{{ base_url }}/logindotgov/?swa={{ swa }}"
+      <a class="usa-button" id="continue-button" href="{{ base_url }}/logindotgov/?swa={{ swa }}&redirect_to={{ redirect_to }}"
         >{% translate "Continue" %}</a
       >
     </div>
+    {% if show_login_page %}
     {% include "./_local_login_link.html" with show_login_page=show_login_page %}
+    {% else %}
+    <script type="text/javascript">
+      setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
+    </script>
+    {% endif %}
   {% else %}
     <script type="text/javascript">
       function addSwaCode(code) {
         const idpLinks = document.querySelectorAll(".idp-link");
         idpLinks.forEach((el) => {
-          let href = el.getAttribute("href").replace(/\?.*/, "");
-          el.setAttribute("href", href + "?swa=" + code);
+          let href = el.getAttribute("href").replace(/&swa=../, "");
+          el.setAttribute("href", href + "&swa=" + code);
         });
         // show the IdP links
         const idpPicker = document.getElementById("idp-picker");

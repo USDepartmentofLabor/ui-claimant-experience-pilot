@@ -53,23 +53,27 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         label={labels ? labels.address1 : defaultLabels.address1}
         type="text"
         id={`${basename}.address1`}
+        data-testid={`${basename}.address1`}
       />
       <TextField
         name={`${basename}.address2`}
         label={labels ? labels.address2 : defaultLabels.address2}
         type="text"
         id={`${basename}.address2`}
+        data-testid={`${basename}.address2`}
       />
       <TextField
         name={`${basename}.city`}
         label={labels ? labels.city : defaultLabels.city}
         type="text"
         id={`${basename}.city`}
+        data-testid={`${basename}.city`}
       />
       <DropdownField
         name={`${basename}.state`}
         label={labels ? labels.state : defaultLabels.state}
         id={`${basename}.state`}
+        data-testid={`${basename}.state`}
         startEmpty
         options={stateDropdownOptions}
       />
@@ -80,6 +84,7 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         type="text"
         inputMode="numeric"
         id={`${basename}.zipcode`}
+        data-testid={`${basename}.zipcode`}
       />
     </FormGroup>
   );

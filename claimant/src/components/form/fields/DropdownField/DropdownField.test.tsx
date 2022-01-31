@@ -4,6 +4,14 @@ import { Formik } from "formik";
 import DropdownField from "./DropdownField";
 import { noop } from "../../../../testUtils/noop";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (str: string) => str,
+    };
+  },
+}));
+
 describe("dropdownField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByText, getByLabelText } = render(

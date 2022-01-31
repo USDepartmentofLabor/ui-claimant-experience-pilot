@@ -60,7 +60,7 @@ describe("DateInputField Component", () => {
 
   it("accepts and parses an initial value properly", () => {
     const { getByLabelText } = render(
-      <Formik initialValues={{ dateInputField: "1885-10-13" }} onSubmit={noop}>
+      <Formik initialValues={{ dateInputField: "1885-01-13" }} onSubmit={noop}>
         <DateInputField id={"dateInputField"} name={"dateInputField"} />
       </Formik>
     );
@@ -69,7 +69,7 @@ describe("DateInputField Component", () => {
     const dayField = getByLabelText("date.day.label");
     const yearField = getByLabelText("date.year.label");
 
-    expect(monthField).toHaveValue("10");
+    expect(monthField).toHaveValue("01");
     expect(dayField).toHaveValue("13");
     expect(yearField).toHaveValue("1885");
   });
@@ -140,30 +140,26 @@ describe("DateInputField Component", () => {
     const dayField = getByLabelText("date.day.label");
     const yearField = getByLabelText("date.year.label");
 
-    // Focus the month input
+    // Focus the month input and type a month
     userEvent.type(monthField, "01");
-    await waitFor(() => {
-      expect(monthField).toHaveFocus();
-      expect(queryByRole("alert")).not.toBeInTheDocument();
-    });
-
-    // Tab to the day input of the field
-    userEvent.tab();
     await waitFor(() => {
       expect(dayField).toHaveFocus();
       expect(queryByRole("alert")).not.toBeInTheDocument();
     });
 
-    userEvent.type(dayField, "01");
-
-    // Tab to the year input of the field
-    userEvent.tab();
+    // Continue typing a day since the day input has focus
+    userEvent.keyboard("02");
     await waitFor(() => {
       expect(yearField).toHaveFocus();
       expect(queryByRole("alert")).not.toBeInTheDocument();
     });
 
-    userEvent.type(yearField, "2000");
+    // continue typing a year since the year field has focus
+    userEvent.keyboard("2000");
+
+    await waitFor(() => {
+      expect(yearField).toHaveFocus();
+    });
 
     // Tab away from the year field, blurs the entire field. No Error should be present
     userEvent.tab();
@@ -173,10 +169,77 @@ describe("DateInputField Component", () => {
       expect(yearField).not.toHaveFocus();
 
       expect(monthField).toHaveValue("01");
-      expect(dayField).toHaveValue("01");
+      expect(dayField).toHaveValue("02");
       expect(yearField).toHaveValue("2000");
 
       expect(queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
+
+  it("Allows the user erase a date", async () => {
+    const { getByLabelText } = render(
+      <Formik
+        initialValues={{ dateInputField: "" }}
+        validationSchema={yup.object().shape({
+          dateInputField: yup.date().required(),
+        })}
+        onSubmit={noop}
+      >
+        <DateInputField id={"dateInputField"} name={"dateInputField"} />
+      </Formik>
+    );
+
+    const monthField = getByLabelText("date.month.label");
+    const dayField = getByLabelText("date.day.label");
+    const yearField = getByLabelText("date.year.label");
+
+    // Enter a date by typing in the field:
+    userEvent.type(monthField, "01");
+    userEvent.keyboard("02");
+    userEvent.keyboard("2000");
+
+    await waitFor(() => {
+      expect(yearField).toHaveFocus();
+      expect(monthField).toHaveValue("01");
+      expect(dayField).toHaveValue("02");
+      expect(yearField).toHaveValue("2000");
+    });
+
+    // Erase the year
+    userEvent.keyboard("{Backspace}{Backspace}{Backspace}{Backspace}");
+    await waitFor(() => {
+      expect(yearField).toHaveFocus();
+      expect(yearField).toHaveValue("");
+    });
+
+    // The next Backspace moves focus to the day field and erases a character there
+    userEvent.keyboard("{Backspace}");
+    await waitFor(() => {
+      expect(dayField).toHaveFocus();
+      expect(dayField).toHaveValue("0");
+    });
+
+    // Erase the rest of the day field
+    userEvent.keyboard("{Backspace}");
+    await waitFor(() => {
+      expect(dayField).toHaveFocus();
+      expect(dayField).toHaveValue("");
+    });
+
+    // The next Backspace moves focus to the month field and erases a character there
+    userEvent.keyboard("{Backspace}");
+    await waitFor(() => {
+      expect(monthField).toHaveFocus();
+      expect(monthField).toHaveValue("0");
+    });
+
+    // Erase the rest of the month field, leaving the entire date erased
+    userEvent.keyboard("{Backspace}");
+    await waitFor(() => {
+      expect(monthField).toHaveFocus();
+      expect(monthField).toHaveValue("");
+      expect(dayField).toHaveValue("");
+      expect(yearField).toHaveValue("");
     });
   });
 });

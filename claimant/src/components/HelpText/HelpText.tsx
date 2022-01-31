@@ -15,7 +15,7 @@ const HelpText = ({
   withLeftBorder,
 }: HelpTextProps) => {
   const classNames = classnames(
-    "font-body-xs line-height-body-2 text-base-darker display-inline-block",
+    "font-body-xs line-height-body-2 text-base-darker display-inline-block margin-top-2",
     { "border-left-05 border-base-light padding-left-1": withLeftBorder },
     className
   );

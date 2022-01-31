@@ -15,6 +15,11 @@ class HomeTestCase(TestCase):
     def test_idp_page(self):
         response = self.client.get("/idp/?redirect_to=/some/place")
         self.assertContains(response, "Sign in", status_code=200)
+        self.assertContains(response, "redirect_to=/some/place", status_code=200)
+
+        response = self.client.get("/idp/?swa=XX&redirect_to=/some/place")
+        self.assertContains(response, "You will now be transferred", status_code=200)
+        self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
     def test_ial2required_page(self):
         response = self.client.get("/ial2required/?idp=foo")

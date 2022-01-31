@@ -1,16 +1,17 @@
-import { SeparationReason } from "./SeparationReason";
+import * as yup from "yup";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
 import { useTranslation } from "react-i18next";
+
+import { SeparationReason } from "./SeparationReason";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
 import { EmployerInformationPage } from "../../../pages/Questions/EmployerInformation/EmployerInformation";
-import * as yup from "yup";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/Separation Reason",
   component: SeparationReason,
 } as ComponentMeta<typeof SeparationReason>;
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof SeparationReason> = () => {
   const { t } = useTranslation("claimForm");

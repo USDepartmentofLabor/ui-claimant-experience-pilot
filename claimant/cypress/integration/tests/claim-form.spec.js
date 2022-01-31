@@ -1,4 +1,5 @@
 import faker from "faker";
+import { FAKE_BIRTHDATE, FAKE_SSN } from "../../support/commands";
 /* eslint-disable no-undef */
 
 context("Initial Claim form", { scrollBehavior: "center" }, () => {
@@ -104,6 +105,21 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    const identityInformation = {
+      ssn: FAKE_SSN,
+      birthdate: FAKE_BIRTHDATE,
+      idNumber: "123-myId",
+      issuingState: "GA",
+      authorizedToWork: false,
+      notAuthorizedToWorkExplanation: "I can't work in the US because ...",
+      authorizationType: "permanent_resident",
+      alienRegistrationNumber: "111-111-111",
+    };
+
+    cy.complete_identity_information(identityInformation);
+    cy.check_a11y();
+    cy.click_next();
+
     const employer0 = {
       name: "ACME 0",
       first_work_date: "01/01/2020",
@@ -141,6 +157,18 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    const otherPay = [
+      {
+        pay_type: "severance",
+        total: 500000,
+        date_received: "2021-01-15",
+        note: "All one payment for layoff",
+      },
+    ];
+
+    cy.complete_other_pay_information(otherPay);
+    cy.check_a11y();
+    cy.click_next();
     // Occupation page
     cy.complete_occupation_form({
       title: "registered nurse",

@@ -5,6 +5,10 @@ const claimForm = {
     info_alert:
       "We ask for your demographic information only for our reporting requirements. The information you share does not affect your application or your benefit amount. ",
   },
+  ssn: {
+    label: "Social Security Number",
+    required: "Social Security Number is required",
+  },
   sex: {
     label: "What is your sex?",
     options: {
@@ -53,6 +57,46 @@ const claimForm = {
       doctorate: "Doctorate degree (for example, PhD, EdD)",
     },
     required: "At least one education level must be selected",
+  },
+  work_authorization: {
+    authorized_to_work: {
+      label: "Are you legally allowed to work in the United States?",
+      required: "Please indicate whether you are authorized to work",
+    },
+    not_authorized_to_work_explanation: {
+      label:
+        "Please provide more information about why you aren’t able to work in the United States:",
+      required:
+        "Please provide more information about why you aren’t able to work in the United States",
+    },
+    authorization_type: {
+      label: "Select your authorization:",
+      options: {
+        US_citizen_or_national: "U.S. Citizen/National",
+        permanent_resident: "Permanent Resident",
+        temporary_legal_worker: "Temporary Legal Worker",
+      },
+      required: "You must select an authorization status",
+    },
+    alien_registration_number: {
+      label: "Alien Registration Number",
+      required: "Alien Registration Number is required",
+      format:
+        "Please enter a valid Alien Registration Number with format 123-456-789",
+    },
+  },
+  identity: {
+    heading: "Identity",
+  },
+  state_credential: {
+    drivers_license_or_state_id_number: {
+      label: "Drivers License or State ID number",
+      required: "Drivers License or State ID number is required",
+    },
+    issuer: {
+      label: "State that issued your license/ID",
+      required: "Please select the state that issued your license or ID",
+    },
   },
   employers: {
     separation: {
@@ -421,6 +465,66 @@ const claimForm = {
     re_enter_account_number: {
       label: "Re-enter account number",
       errors: { mustMatch: "Must match account number" },
+    },
+  },
+  other_pay_detail: {
+    pay_type: {
+      label:
+        "Have you received any payments from your employer(s) since becoming unemployed?",
+      options: {
+        paid_time_off: {
+          label: "Paid Time Off (PTO) pay",
+          description:
+            "Pay you receive while taking approved time off from your job",
+        },
+        pension_annuity_retirement: {
+          label: "Pension, Annuity or Retirement pay",
+          description:
+            "Different types of pay you may receive once you're retired",
+        },
+        severance: {
+          label: "Severance pay",
+          description:
+            "Pay you receive from your employer when you're dismissed from your job",
+        },
+        vacation: {
+          label: "Vacation pay",
+          description: "Pay you're owed for unused vacation time",
+        },
+        sick: {
+          label: "Sick pay",
+          description: "A paid absence from your job",
+        },
+        profit_sharing: {
+          label: "Profit sharing",
+          description:
+            "A share in your company's profits based on your yearly salary",
+        },
+        other: {
+          label: "Other type of pay",
+          description: "",
+        },
+      },
+    },
+    total: {
+      label: "Total {{ payType }} received",
+      errors: {
+        required: "Total pay is required",
+        min: "Total pay must be greater than 0",
+      },
+    },
+    date_received: {
+      label: "Date {{ payType }} received",
+      errors: {
+        required: "Date received is required",
+        max: "Date must be today or in the past",
+      },
+    },
+    note: {
+      label: "Please provide further detail about {{ payType }}",
+      errors: {
+        required: "Please provide further detail is required",
+      },
     },
   },
   is_complete: { label: "I'm done!", required: "You must check the box" },
