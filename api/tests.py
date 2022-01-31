@@ -79,6 +79,10 @@ class BaseClaim:
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
             "education_level": "some_college",
+            "state_credential": {
+                "drivers_license_or_state_id_number": "111222333",
+                "issuer": "GA",
+            },
             "employers": [
                 {
                     "name": "ACME Stuff",
@@ -895,35 +899,53 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
             list(filter(lambda e: "XX" in e, error_dict.keys()))[0],
         )
 
-        citizen_claim = self.base_claim() | {
-            "us_citizenship": {
-                "is_citizen": False,
+        claim = self.base_claim() | {
+            "work_authorization": {
+                "authorization_type": "permanent_resident",
                 "alien_registration_number": "111-111-111",
-                "alien_registration_type": "permanent_resident",
+                "authorized_to_work": True,
             }
         }
-        cv = ClaimValidator(citizen_claim)
+        cv = ClaimValidator(claim)
+        logger.debug("errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
 
-        citizen_claim = self.base_claim() | {
-            "us_citizenship": {
-                "is_citizen": True,
+        claim = self.base_claim() | {
+            "work_authorization": {
+                "authorization_type": "US_citizen_or_national",
                 "alien_registration_number": "111-111-111",
+                "authorized_to_work": True,
             }
         }
         # schema is valid but non-sensical
-        cv = ClaimValidator(citizen_claim)
+        cv = ClaimValidator(claim)
+        logger.debug("errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
 
-        citizen_claim = self.base_claim() | {"us_citizenship": {"is_citizen": False}}
-        cv = ClaimValidator(citizen_claim)
+        claim = self.base_claim() | {
+            "work_authorization": {
+                "authorization_type": "US_citizen_or_national",
+                "authorized_to_work": False,
+            }
+        }
+        cv = ClaimValidator(claim)
         self.assertFalse(cv.valid)
         error_dict = cv.errors_as_dict()
         logger.debug("errors={}".format(error_dict))
         self.assertIn(
-            "'alien_registration_number' is a required property",
+            "'not_authorized_to_work_explanation' is a required property",
             list(error_dict.keys()),
         )
+
+        claim = self.base_claim() | {
+            "work_authorization": {
+                "authorization_type": "US_citizen_or_national",
+                "authorized_to_work": False,
+                "not_authorized_to_work_explanation": "something is wrong",
+            }
+        }
+        cv = ClaimValidator(claim)
+        self.assertTrue(cv.valid)
 
         # union membership
         union_claim = self.base_claim() | {"union": {"is_union_member": False}}

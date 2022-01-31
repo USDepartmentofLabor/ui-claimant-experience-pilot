@@ -40,6 +40,7 @@ const common = {
   },
   select_one: "-- Select one --",
   page_headings: {
+    identity: "Identity",
     personal: "Personal",
     contact: "Contact",
     demographic: "Demographic",

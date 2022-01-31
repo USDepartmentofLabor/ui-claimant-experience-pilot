@@ -44,7 +44,11 @@ export const TextAreaField = ({
         {hint}
       </div>
 
-      <Textarea {...fieldProps} {...textareaProps} />
+      <Textarea
+        {...fieldProps}
+        value={fieldProps.value || ""}
+        {...textareaProps}
+      />
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
     </FormGroup>

@@ -59,6 +59,7 @@ export const TextField = ({
       <TextInput
         {...fieldProps}
         data-testid={textInputProps.id}
+        value={fieldProps.value || ""}
         {...textInputProps}
       />
 

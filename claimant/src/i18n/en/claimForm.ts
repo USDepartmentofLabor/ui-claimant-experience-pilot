@@ -1,6 +1,10 @@
 // IMPORTANT that the key names and nested structure is consistent with our claim schema
 // so that YupBuilder can accurately pull out the 'errors' messages.
 const claimForm = {
+  ssn: {
+    label: "Social Security Number",
+    required: "Social Security Number is required",
+  },
   birthdate: {
     label: "Date of birth",
     required: "Date of birth is required",
@@ -52,6 +56,46 @@ const claimForm = {
       doctorate: "Doctorate degree (for example, PhD, EdD)",
     },
     required: "At least one education level must be selected",
+  },
+  work_authorization: {
+    authorized_to_work: {
+      label: "Are you legally allowed to work in the United States?",
+      required: "Please indicate whether you are authorized to work",
+    },
+    not_authorized_to_work_explanation: {
+      label:
+        "Please provide more information about why you aren’t able to work in the United States:",
+      required:
+        "Please provide more information about why you aren’t able to work in the United States",
+    },
+    authorization_type: {
+      label: "Select your authorization:",
+      options: {
+        US_citizen_or_national: "U.S. Citizen/National",
+        permanent_resident: "Permanent Resident",
+        temporary_legal_worker: "Temporary Legal Worker",
+      },
+      required: "You must select an authorization status",
+    },
+    alien_registration_number: {
+      label: "Alien Registration Number",
+      required: "Alien Registration Number is required",
+      format:
+        "Please enter a valid Alien Registration Number with format 123-456-789",
+    },
+  },
+  identity: {
+    heading: "Identity",
+  },
+  state_credential: {
+    drivers_license_or_state_id_number: {
+      label: "Drivers License or State ID number",
+      required: "Drivers License or State ID number is required",
+    },
+    issuer: {
+      label: "State that issued your license/ID",
+      required: "Please select the state that issued your license or ID",
+    },
   },
   employers: {
     separation: {

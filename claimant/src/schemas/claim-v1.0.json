@@ -153,65 +153,77 @@
         }
       ]
     },
-    "citizenship": {
-      "$id": "/definitions/citizenship",
+    "work_authorization": {
+      "$id": "/definitions/work_authorization",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "$anchor": "#/definitions/citizenship",
+      "$anchor": "#/definitions/work_authorization",
       "type": "object",
       "properties": {
-        "alien_registration_type": {
+        "authorization_type": {
           "type": "string",
-          "enum": ["permanent_resident", "temporary_legal_worker"]
+          "enum": [
+            "US_citizen_or_national",
+            "permanent_resident",
+            "temporary_legal_worker"
+          ]
         },
         "alien_registration_number": {
           "type": "string",
           "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{3}$"
         },
-        "is_citizen": {
-          "type": "boolean"
-        },
         "authorized_to_work": {
           "type": "boolean"
         },
-        "country_of_origin": {
-          "type": "string",
-          "maxLength": 64
-        },
-        "document_types": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "alien_registration_exp_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "work_authorization_from_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "work_authorization_to_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "alien_registration_name": {
-          "$ref": "#/definitions/person_name"
+        "not_authorized_to_work_explanation": {
+          "type": "string"
         }
       },
-      "required": ["is_citizen"],
-      "if": {
-        "properties": {
-          "is_citizen": {
-            "enum": [false]
+      "required": ["authorization_type", "authorized_to_work"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "authorization_type": {
+                "not": {
+                  "type": "string",
+                  "enum": ["US_citizen_or_national"]
+                }
+              }
+            }
+          },
+          "then": {
+            "required": ["alien_registration_number"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authorized_to_work": {
+                "type": "boolean",
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": ["not_authorized_to_work_explanation"]
           }
         }
+      ]
+    },
+    "state_credential": {
+      "$id": "/definitions/state_credential",
+      "$anchor": "#/definitions/state_credential",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "drivers_license_or_state_id_number": {
+          "type": "string"
+        },
+        "issuer": {
+          "$ref": "#/definitions/state"
+        }
       },
-      "then": {
-        "required": [
-          "is_citizen",
-          "alien_registration_number",
-          "alien_registration_type"
-        ]
-      }
+      "required": ["drivers_license_or_state_id_number", "issuer"]
     },
     "union_membership": {
       "$id": "/definitions/union_membership",
@@ -516,10 +528,8 @@
           "if": {
             "properties": {
               "can_begin_work_immediately": {
-                "not": {
-                  "type": "boolean",
-                  "const": true
-                }
+                "type": "boolean",
+                "const": false
               }
             }
           },
@@ -537,10 +547,8 @@
           "if": {
             "properties": {
               "can_work_full_time": {
-                "not": {
-                  "type": "boolean",
-                  "const": true
-                }
+                "type": "boolean",
+                "const": false
               }
             }
           },
@@ -762,10 +770,13 @@
       "required_for_complete": true,
       "$ref": "#/definitions/address"
     },
-    "us_citizenship": {
-      "description": "",
-      "$ref": "#/definitions/citizenship",
-      "TODO_required_for_complete": true
+    "work_authorization": {
+      "description": "Is the claimant authorized to work, and why",
+      "$ref": "#/definitions/work_authorization"
+    },
+    "state_credential": {
+      "description": "State-specific identity credential",
+      "$ref": "#/definitions/state_credential"
     },
     "union": {
       "$ref": "#/definitions/union_membership",

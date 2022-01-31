@@ -36,22 +36,14 @@
   "dependency_allowance": false,
   "federal_income_tax_withheld": true,
   "worked_in_other_states": ["MN", "KS", "MO"],
-  "us_citizenship": {
-    "is_citizen": false,
-    "alien_registration_type": "permanent_resident",
+  "work_authorization": {
+    "authorization_type": "permanent_resident",
     "alien_registration_number": "000-000-000",
-    "alien_registration_exp_date": "2030-01-01",
-    "work_authorization_from_date": "2022-01-01",
-    "work_authorization_to_date": "2023-12-31",
-    "country_of_origin": "Namibia",
-    "authorized_to_work": true,
-    "document_types": ["Form I-766"],
-    "alien_registration_name": {
-      "first_name": "Joan",
-      "last_name": "Jett",
-      "middle_name": "Musician",
-      "suffix": "Jr."
-    }
+    "authorized_to_work": true
+  },
+  "state_credential": {
+    "drivers_license_or_state_id_number": "111222333",
+    "issuer": "GA"
   },
   "union": {
     "is_union_member": true,

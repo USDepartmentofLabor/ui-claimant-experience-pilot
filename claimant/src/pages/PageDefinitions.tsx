@@ -14,6 +14,7 @@ import { ContactInformationPage } from "./Questions/ContactInformation/ContactIn
 import en from "../i18n/en";
 import { AvailabilityPage } from "./Questions/Availability/Availability";
 import { PaymentInformationPage } from "./Questions/PaymentInformation/PaymentInformation";
+import { IdentityPage } from "./Questions/Identity/Identity";
 
 export interface IPageDefinition {
   path: string;
@@ -33,6 +34,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   PersonalInformationPage,
   ContactInformationPage,
   DemographicInformationPage,
+  IdentityPage,
   EmployerInformationPage,
   SelfEmploymentPage,
   OccupationPage,

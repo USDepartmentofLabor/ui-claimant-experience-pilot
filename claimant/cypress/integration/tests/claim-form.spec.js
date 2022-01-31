@@ -1,4 +1,5 @@
 import faker from "faker";
+import { FAKE_BIRTHDATE, FAKE_SSN } from "../../support/commands";
 /* eslint-disable no-undef */
 
 context("Initial Claim form", { scrollBehavior: "center" }, () => {
@@ -101,6 +102,21 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_next();
 
     cy.complete_demographic_information();
+    cy.check_a11y();
+    cy.click_next();
+
+    const identityInformation = {
+      ssn: FAKE_SSN,
+      birthdate: FAKE_BIRTHDATE,
+      idNumber: "123-myId",
+      issuingState: "GA",
+      authorizedToWork: false,
+      notAuthorizedToWorkExplanation: "I can't work in the US because ...",
+      authorizationType: "permanent_resident",
+      alienRegistrationNumber: "111-111-111",
+    };
+
+    cy.complete_identity_information(identityInformation);
     cy.check_a11y();
     cy.click_next();
 

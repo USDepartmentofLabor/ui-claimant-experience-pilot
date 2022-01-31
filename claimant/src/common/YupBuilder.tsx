@@ -1,5 +1,8 @@
 import { TFunction } from "react-i18next";
 import * as yup from "yup";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { ISO_8601_DATE, USER_FACING_DATE_INPUT_FORMAT } from "../utils/format";
 
 // TODO setLocale to customize min/max/matches errors
 // https://github.com/jquense/yup#error-message-customization
@@ -38,3 +41,17 @@ export const yupAddress = (t: TFunction<"claimForm">) =>
       .matches(/^\d{5}(-\d{4})?$/)
       .required(t("address.zipcode.required")),
   });
+
+export const yupDate = () =>
+  yup
+    .date()
+    .transform((value, originalValue) => {
+      dayjs.extend(customParseFormat);
+      return dayjs(originalValue, ISO_8601_DATE, true).isValid()
+        ? value
+        : yup.date.INVALID_DATE;
+    })
+    .typeError(
+      `Date must be a valid date with format ${USER_FACING_DATE_INPUT_FORMAT}`
+    )
+    .required();

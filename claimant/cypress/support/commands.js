@@ -28,6 +28,9 @@ import "cypress-audit/commands";
 
 /* eslint-disable no-undef */
 
+export const FAKE_SSN = "900-00-1234";
+export const FAKE_BIRTHDATE = "2000-01-01";
+
 // test login uses local form page
 Cypress.Commands.add("login", (email) => {
   if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
@@ -50,16 +53,16 @@ Cypress.Commands.add("real_login", (email) => {
   cy.get("#email")
     .should("be.visible")
     .type(email || "someone@example.com");
-  cy.get("#ssn").should("be.visible").type("900-00-1234");
-  cy.get("#birthdate").should("be.visible").type("2000-01-01");
+  cy.get("#ssn").should("be.visible").type(FAKE_SSN);
+  cy.get("#birthdate").should("be.visible").type(FAKE_BIRTHDATE);
   cy.get("[data-testid='loginbutton']").should("be.visible").click();
 });
 
 Cypress.Commands.add("post_login", (email) => {
   cy.request("POST", "/api/login/", {
     email: email || "someone@example.com",
-    ssn: "900-00-1234",
-    birthdate: "2000-01-01",
+    ssn: FAKE_SSN,
+    birthdate: FAKE_BIRTHDATE,
     IAL: "2",
     swa_code: "XX",
   });
@@ -76,9 +79,9 @@ Cypress.Commands.add("mock_login", () => {
       swa_name: "SomeState",
       swa_claimant_url: "https://some-state.fake.url/",
       claimant_id: "the-claimant-id",
-      ssn: "900-00-1234",
+      ssn: FAKE_SSN,
       IAL: "2",
-      birthdate: "2000-01-01",
+      birthdate: FAKE_BIRTHDATE,
     });
   }).as("api-whoami");
   cy.intercept("GET", "/api/partial-claim/", (req) => {
@@ -126,6 +129,71 @@ Cypress.Commands.add("click_save_and_exit", () => {
       .click();
   }
   cy.wait(1000); // hesitate just a second to let the server do its thing
+});
+
+Cypress.Commands.add("complete_identity_information", (identityInformation) => {
+  const {
+    ssn,
+    birthdate,
+    idNumber,
+    issuingState,
+    authorizedToWork,
+    notAuthorizedToWorkExplanation,
+    authorizationType,
+    alienRegistrationNumber,
+  } = identityInformation;
+
+  cy.get(`[name=ssn]`).should("be.disabled").should("have.value", ssn);
+
+  const [year, month, day] = birthdate.split("-");
+
+  cy.get(`[name=birthdate\\.month]`)
+    .should("be.visible")
+    .should("be.disabled")
+    .should("have.value", month);
+  cy.get(`[name=birthdate\\.day]`)
+    .should("be.visible")
+    .should("be.disabled")
+    .should("have.value", day);
+  cy.get(`[name=birthdate\\.year]`)
+    .should("be.visible")
+    .should("be.disabled")
+    .should("have.value", year);
+
+  cy.get(`[name=state_credential\\.drivers_license_or_state_id_number]`)
+    .should("be.visible")
+    .type(idNumber);
+
+  cy.get(`[name=state_credential\\.issuer]`)
+    .should("be.visible")
+    .select(issuingState);
+
+  if (authorizedToWork) {
+    cy.get(`input[name=work_authorization\\.authorized_to_work\\.yes]`)
+      .should("be.visible")
+      .parent()
+      .click();
+  } else {
+    cy.get(`input[name=work_authorization\\.authorized_to_work\\.no]`)
+      .should("be.visible")
+      .parent()
+      .click();
+    if (notAuthorizedToWorkExplanation) {
+      cy.get(`[name=work_authorization\\.not_authorized_to_work_explanation]`)
+        .should("be.visible")
+        .type(notAuthorizedToWorkExplanation);
+    }
+  }
+
+  cy.get(`[name=work_authorization\\.authorization_type]`)
+    .should("be.visible")
+    .select(authorizationType);
+
+  if (alienRegistrationNumber) {
+    cy.get(`[name=work_authorization\\.alien_registration_number]`)
+      .should("be.visible")
+      .type(alienRegistrationNumber);
+  }
 });
 
 Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
