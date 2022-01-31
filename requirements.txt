@@ -15,7 +15,7 @@ git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu
 git+https://github.com/trussworks/logindotgov-oidc-py.git@ff98d3b#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0
-redis==4.1.1
+redis==4.1.2
 request-id-django-log==0.2.0
 requests==2.27.1
 rfc3339-validator==0.1.4
