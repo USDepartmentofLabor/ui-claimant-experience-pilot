@@ -4,9 +4,11 @@ import { Name } from "../Name/Name";
 import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
+import { useTranslation } from "react-i18next";
 
 export const ClaimantNames = () => {
   const { values } = useFormikContext<Claim>();
+  const { t } = useTranslation("claimForm", { keyPrefix: "name" });
 
   useClearFields(values.LOCAL_claimant_has_alternate_names === false, {
     fieldName: "alternate_names",
@@ -15,11 +17,11 @@ export const ClaimantNames = () => {
 
   return (
     <>
-      <Fieldset legend="Legal Name">
+      <Fieldset legend={t("legal_name")}>
         <Name id="claimant_name" name="claimant_name" />
       </Fieldset>
       <br />
-      <Fieldset legend="In the past 18 months, have you worked under a name different from above?">
+      <Fieldset legend={t("claimant_has_alternate_names.label")}>
         <BooleanRadio
           id="LOCAL_claimant_has_alternate_names"
           name="LOCAL_claimant_has_alternate_names"
@@ -27,7 +29,7 @@ export const ClaimantNames = () => {
       </Fieldset>
       <br />
       {values.LOCAL_claimant_has_alternate_names === true && (
-        <Fieldset legend="Alternate Name">
+        <Fieldset legend={t("alternate_name")}>
           <FieldArray
             name="alternate_names"
             render={() => {

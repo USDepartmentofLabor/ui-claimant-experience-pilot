@@ -3,6 +3,7 @@ const common = {
   logout: "Log out",
   yes: "Yes",
   no: "No",
+  none: "None provided",
   skip_to_main_content: "Skip to main content",
   form_errors: "Please correct errors above",
   provide_more_information: "Please provide more information",
@@ -53,7 +54,7 @@ const common = {
     disability: "Disability",
     availability: "Availability",
     payment: "Payment",
-    submit: "Review",
+    review: "Review",
   },
 };
 

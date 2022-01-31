@@ -5,7 +5,7 @@ import { DemographicInformationPage } from "./Questions/DemographicInformation/D
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
 import { OccupationPage } from "./Questions/Occupation/Occupation";
 import { UnionPage } from "./Questions/Union/Union";
-import { SubmitPage } from "./Questions/Submit/Submit";
+import { ReviewPage } from "./Questions/Review/Review";
 import { FC } from "react";
 import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
@@ -45,7 +45,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   DisabilityStatusPage,
   AvailabilityPage,
   PaymentInformationPage,
-  SubmitPage,
+  ReviewPage,
 ] as const;
 
 export type FormPath = `/claim/${typeof pages[number]["path"]}`;
