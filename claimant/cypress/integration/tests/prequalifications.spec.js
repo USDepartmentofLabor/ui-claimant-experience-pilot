@@ -5,7 +5,7 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
     cy.visit("/prequal/");
     completePrequalFormProceed();
     cy.get("button").contains("Next").click();
-    cy.url().should("contain", "/idp/?redirect_to=");
+    cy.url().should("contain", "/idp/?swa=NJ");
   });
 
   it("redirects to SWA-specific redirection page on unhappy path answers", () => {

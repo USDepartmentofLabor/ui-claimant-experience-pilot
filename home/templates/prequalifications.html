@@ -105,7 +105,7 @@
       if (canProceed) {
         // TODO set cookie to say we passed so that /idp/ page knows it's ok to proceed.
 
-        const loginUrl = `/claimant/?swa=${formData.get("swa_code")}`; // will trigger authn redirect
+        const loginUrl = `/idp/?swa=${formData.get("swa_code")}`;
         window.location = loginUrl;
       } else {
         const swaUrl = `/swa-redirect/${formData.get("swa_code")}/`;

@@ -41,20 +41,18 @@ def swa_index(request, swa_code):
         return handle_404(request, None)
 
 
-# the /idp/ page is our first contact between CDN-cached pages and our per-user session,
-# so never cache it.
-@never_cache
+# our IdP "login" page
+# currently only one IdP offered, but could be multiple.
 def idp(request):
-    if "redirect_to" in request.GET:
-        request.session["redirect_to"] = request.GET["redirect_to"]
     return render(
         None,
         "idp.html",
         {
-            "swa": request.session.get("swa", None),
+            "swa": request.GET.get("swa", None),
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
             "swas": active_swas_ordered_by_name(),
+            "redirect_to": request.GET.get("redirect_to", ""),
         },
     )
 
