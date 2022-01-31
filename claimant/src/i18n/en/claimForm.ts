@@ -9,6 +9,10 @@ const claimForm = {
     label: "Social Security Number",
     required: "Social Security Number is required",
   },
+  birthdate: {
+    label: "Date of birth",
+    required: "Date of birth is required",
+  },
   sex: {
     label: "What is your sex?",
     options: {
