@@ -15,6 +15,8 @@ interface ITextFieldProps extends TextInputProps {
   labelClassName?: string;
   labelHint?: string;
   hint?: ReactNode;
+  inputPrefix?: ReactNode;
+  inputSuffix?: ReactNode;
 }
 
 // TODO consider from https://github.com/transcom/mymove/tree/master/src/components/Hint
@@ -36,6 +38,8 @@ export const TextField = ({
   labelClassName,
   labelHint,
   hint,
+  inputPrefix,
+  inputSuffix,
   ...textInputProps
 }: ITextFieldProps) => {
   const [fieldProps, metaProps] = useField({
@@ -54,15 +58,21 @@ export const TextField = ({
       >
         {label}
       </Label>
-
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <TextInput
-        {...fieldProps}
-        data-testid={textInputProps.id}
-        value={fieldProps.value || ""}
-        {...textInputProps}
-      />
-
+      <div className="usa-input-group">
+        <div className="usa-input-prefix" aria-hidden="true">
+          {inputPrefix}
+        </div>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <TextInput
+          {...fieldProps}
+          data-testid={textInputProps.id}
+          value={fieldProps.value || ""}
+          {...textInputProps}
+        />
+        <div className="usa-input-suffix" aria-hidden="true">
+          {inputSuffix}
+        </div>
+      </div>
       <div className="usa-hint" id={`${textInputProps.name}-hint`}>
         {hint}
       </div>

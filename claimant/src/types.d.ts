@@ -9,6 +9,7 @@ type ClaimantInput = {
   PaymentInformationType &
   EmployersType &
   SelfEmploymentType &
+  OtherPayType &
   DisabilityStatusType &
   AvailabilityType &
   EducationVocationalRehabType &
@@ -199,6 +200,18 @@ type SelfEmploymentType = DeepPartial<{
     corporation_or_partnership: YesNo;
   };
 }>;
+
+type OtherPayType = Partial<{
+  LOCAL_pay_types: string[];
+  other_pay: OtherPayDetailType[];
+}>;
+
+type OtherPayDetailType = {
+  pay_type: string;
+  total?: number;
+  date_received?: string;
+  note?: string;
+};
 
 type DisabilityStatusType = DeepPartial<{
   disability: {

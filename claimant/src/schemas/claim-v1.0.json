@@ -438,7 +438,8 @@
         },
         "note": {
           "description": "Further details about this other pay",
-          "type": "string"
+          "type": "string",
+          "maxLength": 1024
         }
       },
       "required": ["pay_type", "total", "date_received", "note"]

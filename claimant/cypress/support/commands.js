@@ -555,3 +555,24 @@ Cypress.Commands.add("complete_payment_information", (paymentInformation) => {
   cy.get('input[id="payment\\.account_number"]').type(account_number);
   cy.get('input[id="payment\\.re_enter_account_number"]').type(account_number);
 });
+
+Cypress.Commands.add(
+  "complete_other_pay_information",
+  (otherPayInformation) => {
+    otherPayInformation.forEach((detail, i) => {
+      const { pay_type, total, date_received, note } = detail;
+      const [year, month, day] = date_received.split("-");
+
+      cy.get(`input[id="LOCAL_pay_types.${pay_type}"]`).parent().click();
+      cy.get(`input[data-testid="other_pay.${i}.total"]`).type(total);
+      cy.get(`input[id="other_pay.${i}.date_received.month"]`)
+        .clear()
+        .type(month);
+      cy.get(`input[id="other_pay.${i}.date_received.day"]`).clear().type(day);
+      cy.get(`input[id="other_pay.${i}.date_received.year"]`)
+        .clear()
+        .type(year);
+      cy.get(`textarea[id="other_pay.${i}.note"]`).type(note);
+    });
+  }
+);

@@ -466,6 +466,66 @@ const claimForm = {
       errors: { mustMatch: "Must match account number" },
     },
   },
+  other_pay_detail: {
+    pay_type: {
+      label:
+        "Have you received any payments from your employer(s) since becoming unemployed?",
+      options: {
+        paid_time_off: {
+          label: "Paid Time Off (PTO) pay",
+          description:
+            "Pay you receive while taking approved time off from your job",
+        },
+        pension_annuity_retirement: {
+          label: "Pension, Annuity or Retirement pay",
+          description:
+            "Different types of pay you may receive once you're retired",
+        },
+        severance: {
+          label: "Severance pay",
+          description:
+            "Pay you receive from your employer when you're dismissed from your job",
+        },
+        vacation: {
+          label: "Vacation pay",
+          description: "Pay you're owed for unused vacation time",
+        },
+        sick: {
+          label: "Sick pay",
+          description: "A paid absence from your job",
+        },
+        profit_sharing: {
+          label: "Profit sharing",
+          description:
+            "A share in your company's profits based on your yearly salary",
+        },
+        other: {
+          label: "Other type of pay",
+          description: "",
+        },
+      },
+    },
+    total: {
+      label: "Total {{ payType }} received",
+      errors: {
+        required: "Total pay is required",
+        min: "Total pay must be greater than 0",
+      },
+    },
+    date_received: {
+      label: "Date {{ payType }} received",
+      errors: {
+        required: "Date received is required",
+        max: "Date must be today or in the past",
+      },
+    },
+    note: {
+      label: "Please provide further detail about {{ payType }}",
+      errors: {
+        required: "Please provide further detail is required",
+      },
+    },
+  },
   is_complete: { label: "I'm done!", required: "You must check the box" },
   is_complete_description:
     "Checking this box means your claim will be sent to your workforce agency",

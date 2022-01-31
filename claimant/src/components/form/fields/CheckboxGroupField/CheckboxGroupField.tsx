@@ -38,7 +38,7 @@ export const CheckboxGroupField = ({
           name={name}
           label={option.label}
           value={option.value}
-          checked={fieldProps.value.includes(option.value)}
+          checked={!!fieldProps?.value?.includes(option.value)}
           {...option.checkboxProps}
         />
       ))}

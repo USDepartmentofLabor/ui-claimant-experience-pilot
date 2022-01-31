@@ -157,6 +157,18 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    const otherPay = [
+      {
+        pay_type: "severance",
+        total: 500000,
+        date_received: "2021-01-15",
+        note: "All one payment for layoff",
+      },
+    ];
+
+    cy.complete_other_pay_information(otherPay);
+    cy.check_a11y();
+    cy.click_next();
     // Occupation page
     cy.complete_occupation_form({
       title: "registered nurse",
