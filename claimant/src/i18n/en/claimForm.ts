@@ -22,7 +22,7 @@ const claimForm = {
     required: "Sex is a required field",
   },
   race: {
-    label: "What races are you?",
+    label: "What race(s) are you? (Check all that apply)",
     options: {
       american_indian_or_alaskan: "American Indian or Alaskan Native",
       asian: "Asian",

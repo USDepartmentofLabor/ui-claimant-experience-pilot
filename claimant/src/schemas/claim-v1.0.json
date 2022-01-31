@@ -693,10 +693,19 @@
           "asian",
           "black",
           "hawaiian_or_pacific_islander",
-          "white"
+          "white",
+          "opt_out"
         ]
       },
-      "required_for_complete": true
+      "required_for_complete": true,
+      "if": {
+        "contains": {
+          "const": "opt_out"
+        }
+      },
+      "then": {
+        "maxItems": 1
+      }
     },
     "ethnicity": {
       "description": "",
