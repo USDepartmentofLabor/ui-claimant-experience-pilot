@@ -120,7 +120,6 @@ export const DemographicInformation = () => {
             value: raceOption.value,
             checkboxProps: {
               onChange: (e) => {
-                console.log(e.target);
                 if (e.target.value === "opt_out" && e.target.checked) {
                   setFieldValue("race", ["opt_out"], true);
                 }
