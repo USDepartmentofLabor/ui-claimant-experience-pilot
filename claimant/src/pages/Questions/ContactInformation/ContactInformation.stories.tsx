@@ -14,7 +14,7 @@ export default {
 
 const Template: ComponentStory<typeof ContactInformation> = () => {
   const { t } = useTranslation("claimForm");
-  const validationSchema = ContactInformationPage.pageSchema?.(t);
+  const validationSchema = ContactInformationPage.pageSchema(t);
   const initialValues = {
     interpreter_required: undefined,
     preferred_language: "",

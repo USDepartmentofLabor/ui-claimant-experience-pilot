@@ -140,7 +140,7 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     fein: yup
       .string()
       .nullable()
-      .matches(/(^[0-9]{2}-[0-9]{7}$|)/),
+      .matches(/(^[0-9]{2}-?[0-9]{7}$|)/),
     separation_comment: yup.string().max(1024),
   });
 

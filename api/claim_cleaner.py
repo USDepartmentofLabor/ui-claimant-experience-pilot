@@ -3,12 +3,47 @@
 # fix up a Claim payload (as from the /completed-claim/ endpoint)
 # for packaging. E.g. removes all the LOCAL_ properties.
 
+import json
+import re
+
 
 class ClaimCleaner(object):
-    def __init__(self, claim):
-        self.claim = claim
+    def __init__(self, claim_request):
+        self.claim_request = claim_request
 
     def cleaned(self):
+        # serialize/deserialize to make a copy
+        claim = json.loads(json.dumps(self.claim_request.payload))
+
+        # set values we receive from whoami
+        # this is to guarantee that they come directly from the IdP
+        claim["email"] = self.claim_request.whoami.email
+        claim["ssn"] = re.sub(
+            r"^([0-9]{3})-?([0-9]{2})-?([0-9]{4})$",
+            r"\1-\2-\3",
+            self.claim_request.whoami.ssn,
+        )
+        claim["birthdate"] = self.claim_request.whoami.birthdate
+        claim["identity_assurance_level"] = int(self.claim_request.whoami.IAL)
+
+        # Like SSN (above), FEIN and Alien Registration number have optional - delimiter,
+        # but we always use them in packaged claims.
+        if (
+            "work_authorization" in claim
+            and "alien_registration_number" in claim["work_authorization"]
+        ):
+            claim["work_authorization"]["alien_registration_number"] = re.sub(
+                r"^([0-9]{3})-?([0-9]{3})-?([0-9]{3})$",
+                r"\1-\2-\3",
+                claim["work_authorization"]["alien_registration_number"],
+            )
+        if "employers" in claim:
+            for employer in claim["employers"]:
+                if "fein" in employer and employer["fein"]:
+                    employer["fein"] = re.sub(
+                        r"^([0-9]{2})-?([0-9]{7})$", r"\1-\2", employer["fein"]
+                    )
+
         # remove any key that startswith LOCAL_
         # and recurse into any object or array similarly.
         def clean(claim):
@@ -30,4 +65,4 @@ class ClaimCleaner(object):
                     cleaned_claim[key] = value
             return cleaned_claim
 
-        return clean(self.claim)
+        return clean(claim)

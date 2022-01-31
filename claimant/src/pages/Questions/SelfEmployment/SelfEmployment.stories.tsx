@@ -11,7 +11,7 @@ export default {
 
 const Template: ComponentStory<typeof SelfEmployment> = () => {
   const { t } = useTranslation("claimForm");
-  const validationSchema = SelfEmploymentPage.pageSchema?.(t);
+  const validationSchema = SelfEmploymentPage.pageSchema(t);
   const initialValues = { self_employment: {} };
 
   return (

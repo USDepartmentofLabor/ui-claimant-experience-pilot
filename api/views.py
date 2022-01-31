@@ -13,7 +13,7 @@ from api.models.swa import SWA
 from .decorators import verified_claimant_session
 from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
-from .claim_validator import ClaimValidator, CompletedClaimValidator
+from .claim_validator import ClaimValidator
 from .claim_cleaner import ClaimCleaner
 from .models import Claim
 from .whoami import WhoAmI, WhoAmIAddress
@@ -213,8 +213,8 @@ def POST_completed_claim(request):
         )
 
     # validate with complete schema
-    claim_request.payload = ClaimCleaner(claim_request.payload).cleaned()
-    claim_validator = CompletedClaimValidator(claim_request.payload)
+    claim_request.payload = ClaimCleaner(claim_request).cleaned()
+    claim_validator = ClaimValidator(claim_request.payload)
     if not claim_validator.valid:
         return invalid_claim_response(claim_validator)
     elif not claim_validator.validate_against_whoami(claim_request.whoami):

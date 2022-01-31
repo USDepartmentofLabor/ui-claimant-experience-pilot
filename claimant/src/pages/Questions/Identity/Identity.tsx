@@ -154,7 +154,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         then: yup
           .string()
           .matches(
-            /^[0-9]{3}-[0-9]{3}-[0-9]{3}$/,
+            /^[0-9]{3}-?[0-9]{3}-?[0-9]{3}$/,
             t("work_authorization.alien_registration_number.format")
           )
           .required(t("work_authorization.alien_registration_number.required")),

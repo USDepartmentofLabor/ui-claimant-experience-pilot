@@ -62,12 +62,6 @@ class ClaimValidator(object):
 
         return errors
 
-
-class CompletedClaimValidator(ClaimValidator):
-    def read_schema(self, schema_name):
-        schema = super().read_schema(schema_name)
-        return self._clean_schema(schema)
-
     def validate_against_whoami(self, whoami):
         # TODO populate self.errors
         if "email" not in self.claim:
@@ -75,42 +69,3 @@ class CompletedClaimValidator(ClaimValidator):
         if self.claim["email"] != whoami.email:
             return False
         return True
-
-    def _clean_schema(self, schema):
-        props_to_remove = []
-        if "properties" not in schema:  # pragma: no-cover
-            raise Exception("No properties in schema: {}".format(schema))
-
-        for prop_name, prop in schema["properties"].items():
-            if prop_name.startswith("LOCAL_"):
-                props_to_remove.append(prop_name)
-                continue  # do we do not check required_for_swa
-
-            if "$schema" in prop and prop["type"] == "object":
-                # subschema. recurse.
-                prop = self._clean_schema(prop)
-
-            if (
-                prop["type"] == "array"
-                and "$schema" in prop["items"]
-                and prop["items"]["type"] == "object"
-            ):
-                # subschema. recurse.
-                prop["items"] = self._clean_schema(prop["items"])
-
-            if "required_for_swa" in prop and prop["required_for_swa"]:
-                schema["required"].append(prop_name)
-
-            if "required_for_complete" in prop and prop["required_for_complete"]:
-                schema["required"].append(prop_name)
-
-        # no LOCAL_ in required. De-dupe while we're at it.
-        if "required" in schema:
-            schema["required"] = list(
-                filter(lambda k: not k.startswith("LOCAL_"), set(schema["required"]))
-            )
-
-        for prop_name in props_to_remove:
-            del schema["properties"][prop_name]
-
-        return schema
