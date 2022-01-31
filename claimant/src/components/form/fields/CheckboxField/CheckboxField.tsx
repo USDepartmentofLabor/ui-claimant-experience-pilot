@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { useField } from "formik";
 import { Checkbox } from "@trussworks/react-uswds";
 
@@ -12,13 +12,29 @@ import { Checkbox } from "@trussworks/react-uswds";
  * ReactUSWDS components directly.
  */
 
-export const CheckboxField = (
-  checkboxProps: React.ComponentProps<typeof Checkbox>
-) => {
-  const [fieldProps] = useField({ name: checkboxProps.name, type: "checkbox" });
+export const CheckboxField = ({
+  name,
+  onChange,
+  ...inputProps
+}: React.ComponentProps<typeof Checkbox>) => {
+  const [fieldProps] = useField({ name: name, type: "checkbox" });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    fieldProps.onChange(e);
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   /* eslint-disable-next-line react/jsx-props-no-spreading */
-  return <Checkbox {...fieldProps} {...checkboxProps} />;
+  return (
+    <Checkbox
+      {...fieldProps}
+      name={name}
+      onChange={handleChange}
+      {...inputProps}
+    />
+  );
 };
 
 export default CheckboxField;

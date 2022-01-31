@@ -21,6 +21,7 @@ const claimForm = {
       black: "Black or African American",
       hawaiian_or_pacific_islander: "Native Hawaiian or Other Pacific Islander",
       white: "White",
+      opt_out: "Choose not to answer",
     },
     required: "Race is a required field",
   },

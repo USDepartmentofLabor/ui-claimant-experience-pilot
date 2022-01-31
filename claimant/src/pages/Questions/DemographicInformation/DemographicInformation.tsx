@@ -9,6 +9,7 @@ import { Alert } from "@trussworks/react-uswds";
 
 import formStyles from "../../../components/form/form.module.scss";
 import { IPageDefinition } from "../../PageDefinitions";
+import { useFormikContext } from "formik";
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
@@ -80,6 +81,7 @@ const educationLevelOptions: EducationLevelOption[] = Object.keys(
 
 export const DemographicInformation = () => {
   const { t } = useTranslation("claimForm");
+  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
   return (
     <>
@@ -116,6 +118,17 @@ export const DemographicInformation = () => {
           options={raceOptions.map((raceOption) => ({
             label: t(`race.options.${raceOption.translationKey}`),
             value: raceOption.value,
+            checkboxProps: {
+              onChange: (e) => {
+                console.log(e.target);
+                if (e.target.value === "opt_out" && e.target.checked) {
+                  setFieldValue("race", ["opt_out"], true);
+                }
+              },
+              disabled:
+                values.race?.includes("opt_out") &&
+                raceOption.value !== "opt_out",
+            },
           }))}
         />
       </Fieldset>
