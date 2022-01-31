@@ -35,7 +35,7 @@ const claimForm = {
     required: "Ethnicity is a required field",
   },
   education_level: {
-    label: "How many years of education have you finished?",
+    label: "What is the highest level of education you have completed?",
     options: {
       none: "No schooling completed",
       nursery: "Nursery school",
