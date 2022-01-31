@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
 from api.models import SWA
@@ -10,10 +11,12 @@ import logging
 
 import json
 
+from launchdarkly.client import ld_client
+
 logger = logging.getLogger("home")
 
 
-def handle_404(request, exception):
+def handle_404(request, exception=None):
     return render(None, "404.html", {"base_url": base_url(request)}, status=404)
 
 
@@ -88,9 +91,16 @@ def ial2required(request):
 
 @never_cache
 def test(request):  # pragma: no cover
+    ld_flag_set = ld_client.variation(
+        "test-flag-server", {"key": "anonymous-user"}, False
+    )
+    if not ld_flag_set:
+        return handle_404(request)
+
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
     this_session["test_cookie_worked"] = request.session.test_cookie_worked()
+    this_session["test_flag_worked"] = ld_flag_set
     return JsonResponse(this_session)
 
 

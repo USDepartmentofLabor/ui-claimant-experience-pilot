@@ -343,6 +343,28 @@ with `kubectl get pods`.
 % kubectl cp ./KS-public.pem eta-arpa/thepodidentifier:/app/KS-public.pem
 ```
 
+## LaunchDarkly
+
+We use [LaunchDarkly](https://launchdarkly.com/) to manage our feature flags, for both the Django server and React application.
+
+### Django server
+
+The `core/.env-example` file shows that setting `LD_SDK_KEY` and `LD_CLIENT_SDK_KEY` to an empty string value is allowed. The keys must be set,
+but may be empty.
+
+If you want to mimic the LD service locally, copy the `core/ld-config-test.json` file to `core/ld-config.json` and edit it. The `core/ld-config.json`
+file should never be checked into git.
+
+### React
+
+#### Using LaunchDarkly locally
+
+If you want to use the LaunchDarkly service while running the React development server, you will need to set the client key in the node environment. To do so, set `REACT_APP_LD_CLIENT_SDK_KEY` in `claimant/.env` the LaunchDarkly client key.
+
+#### Mimicking the LaunchDarkly service locally
+
+See the `claimant/.env-example file for the `REACT_APP_LD_FLAGS`environment variable. It works similarly to the local`core/ld-config.json` file but must be managed separately.
+
 ## Deployment
 
 To build the Docker container:

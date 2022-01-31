@@ -1,0 +1,16 @@
+{
+  "test-flag-server": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": true,
+    "variation": 0,
+    "trackEvents": false
+  },
+  "test-flag-client": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": true,
+    "variation": 0,
+    "trackEvents": false
+  }
+}

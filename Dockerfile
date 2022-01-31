@@ -67,6 +67,7 @@ COPY start-server.sh .
 COPY home ./home
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
+COPY launchdarkly ./launchdarkly
 COPY api ./api
 COPY swa ./swa
 COPY certs ./certs

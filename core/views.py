@@ -7,6 +7,8 @@ from home.views import base_url
 from django.http import JsonResponse
 from django.db import connection
 from django.core.cache import cache
+
+from . import settings
 from .celery import app as celery_app
 
 
@@ -24,7 +26,14 @@ def claimant(request):
     if "swa" in request.GET:
         request.session["swa"] = request.GET["swa"]
 
-    return render(None, "build/index.html", {"base_url": base_url(request)})
+    return render(
+        None,
+        "build/index.html",
+        {
+            "LD_CLIENT_SDK_KEY": settings.LD_CLIENT_SDK_KEY,
+            "base_url": base_url(request),
+        },
+    )
 
 
 @never_cache

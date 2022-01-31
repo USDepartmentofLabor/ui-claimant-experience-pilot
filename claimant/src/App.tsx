@@ -29,6 +29,7 @@ import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
 import { pages } from "./pages/PageDefinitions";
 import PageLoader from "./common/PageLoader";
+import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -37,6 +38,7 @@ function App() {
   const { t } = useTranslation("common");
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
   const logoutUrl = `${baseUrl}/logout/`;
+  const ldFlags = useFeatureFlags();
 
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
@@ -63,6 +65,11 @@ function App() {
       {t("logout")}
     </ExtLink>,
   ];
+
+  // TODO perhaps a page specifically to display LD flags?
+  if (ldFlags.testFlagClient) {
+    navItems.push(<span>testFlagClient</span>);
+  }
 
   return (
     <>
