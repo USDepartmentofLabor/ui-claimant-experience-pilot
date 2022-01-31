@@ -4,6 +4,7 @@ import { EmployerProfile } from "../../../components/form/EmployerProfile/Employ
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
+import claimForm from "../../../i18n/en/claimForm";
 import { yupPhone, yupAddress } from "../../../common/YupBuilder";
 import * as yup from "yup";
 
@@ -97,6 +98,10 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
       .when("LOCAL_same_phone", {
         is: false,
         then: yup.array().length(2).of(yupPhone(t)),
+      })
+      .when("LOCAL_same_phone", {
+        is: true,
+        then: yup.array().length(1).of(yupPhone(t)),
       }),
     LOCAL_same_phone: yup
       .boolean()
@@ -109,6 +114,7 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
       .when("LOCAL_same_address", { is: false, then: yupAddress(t) }),
     separation_reason: yup
       .string()
+      .oneOf(Object.keys(claimForm.employers.separation.reasons))
       .max(64)
       .required(t("employers.separation.reason.required")),
     separation_option: yup

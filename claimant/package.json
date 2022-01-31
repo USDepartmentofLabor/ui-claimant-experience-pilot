@@ -84,7 +84,7 @@
     "cypress:run:dev": "yarn nyc:clean && ./node_modules/.bin/cypress run --headless --browser chrome --config-file cypress-dev.json",
     "coverage": "yarn test --coverage --watchAll=false",
     "coverage:check": "node src/coverageCheck.js",
-    "test:coverage": "yarn coverage && yarn cypress:run && yarn cypress:reconcile && npx nyc report",
+    "test:coverage": "yarn coverage && yarn cypress:run && npx nyc report && yarn cypress:reconcile && npx nyc report",
     "pretest:coverage": "yarn nyc:clean",
     "posttest:coverage": "yarn report:combined && yarn coverage:check",
     "mkdir:reports": "mkdir reports || true",
