@@ -10,7 +10,6 @@ coverage.xml
 static/
 *.mo
 .DS_Store
-/schemas
 core/ld-config.json
 
 # IDE configurations

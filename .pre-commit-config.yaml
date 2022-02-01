@@ -38,7 +38,7 @@ repos:
       - id: prettier
         exclude: >
           (?x)^(
-            claimant/src/schemas/soc_.*_2018.json|
+            claimant/src/fixtures/soc_.*_2018.json|
           )$
 
   - repo: https://github.com/pre-commit/mirrors-eslint
@@ -95,7 +95,7 @@ repos:
       - id: check-jsonschema
         name: "Check UI schemas"
         language: python
-        files: ^claimant/src/schemas
+        files: ^schemas
         args: ["--schemafile", "https://json-schema.org/draft/2020-12/schema"]
 
   - repo: local

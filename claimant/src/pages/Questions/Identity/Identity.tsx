@@ -3,7 +3,7 @@ import { Fieldset } from "@trussworks/react-uswds";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { DateInputField } from "../../../components/form/fields/DateInputField/DateInputField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
-import states from "../../../schemas/states.json";
+import states from "../../../fixtures/states.json";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import claimForm from "../../../i18n/en/claimForm";
 import { useFormikContext } from "formik";

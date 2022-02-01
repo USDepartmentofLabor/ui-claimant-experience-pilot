@@ -279,7 +279,7 @@ diff-test: ## Fails if there are any local changes, using git diff
 	@changed_files=`git diff --name-only`; if [ "$$changed_files" != "" ]; then echo "Local changes exist:\n$$changed_files" && exit 1; fi
 
 schema-check: ## Validate the example Claim against its JSON Schema
-	python scripts/check-json-schema.py claimant/src/schemas/claim-v1.0.json claimant/src/schemas/claim-v1.0-example.json
+	python scripts/check-json-schema.py schemas/claim-v1.0.json schemas/claim-v1.0-example.json
 
 soc: ## Build the SOC codes from the BLS site
 	curl https://www.bls.gov/soc/2018/soc_structure_2018.xlsx > soc_structure_2018.xlsx
@@ -288,8 +288,8 @@ soc: ## Build the SOC codes from the BLS site
 	curl https://www.bls.gov/soc/2018/major_groups.htm > major_groups.htm
 	python scripts/parse-soc-2018-webpage.py > soc-entries.json
 	python scripts/merge-soc-2018.py soc_structure_2018.json soc-entries.json > merged-soc.json
-	mv merged-soc.json claimant/src/schemas/soc_structure_2018.json
-	mv soc-entries.json claimant/src/schemas/soc_entries_2018.json
+	mv merged-soc.json claimant/src/fixtures/soc_structure_2018.json
+	mv soc-entries.json claimant/src/fixtures/soc_entries_2018.json
 
 soc-clean: ## Clean up the SOC code temp files
 	rm -f soc_structure_2018.xlsx soc_structure_2018.csv soc_structure_2018.json major_groups.htm
