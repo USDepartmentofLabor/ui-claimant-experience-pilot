@@ -4,67 +4,50 @@
 <div class="grid-container">
   <main id="what-to-expect">
     <h1>{% translate "Welcome to a new way to apply for unemployment benefits" %}</h1>
+    {% include './uswds/_alert_error.html' %}
     <section>
       {{ swa.name }} {% translate "and the United States Department of Labor invite you to be among the first to try the new APPNAME HERE" %}
     </section>
     <section>
       {% translate "This process requires access to a computer or smartphone to complete. You will need to be able to:" %}
       <ul class="usa-list">
-        <li>{% translate "Upload a phone of your state-issued ID and a photo of yourself to verify your identity with Login.gov" %}</li>
+        <li>{% translate "Upload an image of your state-issued ID and a photo of yourself to verify your identity with Login.gov" %}</li>
         <li>{% translate "Verify your phone number, email address, and physical address" %}</li>
         <li>{% translate "Fill out an application online, including providing recent work history and employment details" %}</li>
       </ul>
     </section>
 
     <script type="text/javascript">
-      const USDOL = {
-        handleUseAppSelection: () => {
-          const form = document.getElementById("use-app-form");
-          const formData = new FormData(form);
-          const proceed = formData.get("use-app");
-          if (proceed === "no") {
-            form.action = "{{ swa.claimant_url }}";
-          } else {
-            form.action = "{{ base_url }}/prequal/";
-          }
-        },
-        handleNext: () => {
+      if (typeof USDOL === "undefined") { USDOL = {} }
+      USDOL.handleUseAppSelection = () => {
+        const form = document.getElementById("use-app-form");
+        const formData = new FormData(form);
+        const proceed = formData.get("use-app");
+        if (proceed === "no") {
+          form.action = "{{ swa.claimant_url }}";
+        } else {
+          form.action = "{{ base_url }}/prequal/";
+        }
+      };
+      USDOL.handleNext = () => {
+        USDOL.clearErrors();
+        const form = document.getElementById("use-app-form");
+        const formData = new FormData(form);
+        const proceed = formData.get("use-app");
+        if (!proceed) {
+          USDOL.showErrors(["{% translate "Please make a selection" %}"]);
+          USDOL.decorateRequiredFields(["use-app"]);
+          return false;
+        } else {
           USDOL.clearErrors();
-          const form = document.getElementById("use-app-form");
-          const formData = new FormData(form);
-          const proceed = formData.get("use-app");
-          if (!proceed) {
-            USDOL.showErrors(["{% translate "Please make a selection" %}"]);
-            return false;
-          } else {
-            USDOL.clearErrors();
-            return true;
-          }
-        },
-        showErrors: (errors) => {
-          const errorDiv = document.getElementById("form-errors");
-          const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-          errors.forEach((err) => {
-            const errEl = document.createElement("div");
-            const text = document.createTextNode(err);
-            errEl.appendChild(text);
-            errorP.appendChild(errEl);
-          });
-          errorDiv.classList.remove("display-none");
-          errorDiv.scrollIntoView({ behavior: "smooth" });
-        },
-        clearErrors: () => {
-          const errorDiv = document.getElementById("form-errors");
-          const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-          errorDiv.classList.add("display-none");
-          errorP.innerHTML = "";
-        },
+          return true;
+        }
       };
     </script>
 
     <section class="padding-2 bg-accent-cool-lighter">
       <form id="use-app-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
-        <fieldset class="usa-fieldset border-0">
+        <fieldset class="usa-fieldset">
           <legend class="usa-legend">{% translate "Do you wish to apply for unemployment benefits using APPNAME HERE system?" %}</legend>
           <input type="hidden" name="swa" id="swa" value="{{ swa.code }}" />
           <div class="usa-form-group">
@@ -75,6 +58,7 @@
                 type="radio"
                 name="use-app"
                 value="yes"
+                required
                 onchange="USDOL.handleUseAppSelection()"
               />
               <label class="usa-radio__label" for="use-app-yes">
@@ -88,6 +72,7 @@
                 type="radio"
                 name="use-app"
                 value="no"
+                required
                 onchange="USDOL.handleUseAppSelection()"
               />
               <label class="usa-radio__label" for="use-app-no" >
@@ -95,16 +80,10 @@
               </label>
             </div>
           </div>
-          <div class="margin-top-2 text-center">
-            <button class="usa-button" type="submit">{% translate "Next" %}</button>
-          </div>
-          <div class="usa-alert usa-alert--error display-none" id="form-errors" role="alert">
-            <div class="usa-alert__body">
-              <h4 class="usa-alert__heading">{% translate "Form errors" %}</h4>
-              <div class="usa-alert__text"></div>
-            </div>
-          </div>
         </fieldset>
+        <div class="margin-top-2 text-center">
+          <button class="usa-button" type="submit" onclick="USDOL.handleNext()">{% translate "Next" %}</button>
+        </div>
       </form>
     </section>
 

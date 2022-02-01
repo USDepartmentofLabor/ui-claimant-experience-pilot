@@ -30,4 +30,16 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
       .invoke("attr", "action")
       .should("eq", "https://xx.example.gov/");
   });
+
+  it("shows/hides error message(s) on form validation", () => {
+    cy.visit("/start/XX/");
+    cy.get("button").contains("Next").click();
+    cy.contains("Please make a selection");
+    cy.contains("This field is required");
+    cy.get("span").filter(".usa-error-message");
+    cy.get("div").filter(".usa-alert--error");
+    cy.get("input[id=use-app-yes]").click({ force: true });
+    cy.get("span").not(".usa-error-message");
+    cy.get("div").not(".usa-alert--error");
+  });
 });
