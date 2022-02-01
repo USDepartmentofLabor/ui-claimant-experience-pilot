@@ -1,6 +1,10 @@
 // IMPORTANT that the key names and nested structure is consistent with our claim schema
 // so that YupBuilder can accurately pull out the 'errors' messages.
 const claimForm = {
+  demographic_information: {
+    info_alert:
+      "We ask for your demographic information only for our reporting requirements. The information you share does not affect your application or your benefit amount. ",
+  },
   ssn: {
     label: "Social Security Number",
     required: "Social Security Number is required",
@@ -10,7 +14,7 @@ const claimForm = {
     required: "Date of birth is required",
   },
   sex: {
-    label: "Sex",
+    label: "What is your sex?",
     options: {
       female: "Female",
       male: "Male",
@@ -18,27 +22,28 @@ const claimForm = {
     required: "Sex is a required field",
   },
   race: {
-    label: "What races do you identify with?",
+    label: "What race(s) are you? (Check all that apply)",
     options: {
-      american_indian_or_alaskan: "American Indian or Alaska Native",
+      american_indian_or_alaskan: "American Indian or Alaskan Native",
       asian: "Asian",
       black: "Black or African American",
       hawaiian_or_pacific_islander: "Native Hawaiian or Other Pacific Islander",
       white: "White",
+      opt_out: "Choose not to answer",
     },
     required: "Race is a required field",
   },
   ethnicity: {
-    label: "Do you identify as Hispanic or Latino?",
+    label: "Are you Hispanic or Latino?",
     options: {
-      opt_out: "Choose not to answer",
       hispanic: "Yes",
       not_hispanic: "No",
+      opt_out: "Choose not to answer",
     },
     required: "Ethnicity is a required field",
   },
   education_level: {
-    label: "How many years of education have you finished?",
+    label: "What is the highest level of education you have completed?",
     options: {
       none: "No schooling completed",
       nursery: "Nursery school",
