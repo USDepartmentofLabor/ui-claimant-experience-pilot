@@ -33,7 +33,11 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
     hasNumberOfErrors(1);
     // After submitting the page, all errors should show
     cy.click_next();
-    hasNumberOfErrors(16);
+    hasNumberOfErrors(11);
+    // Also displays the error summary at the top of the page
+    cy.contains("Correct the 11 errors on this page to proceed").should(
+      "be.visible"
+    );
     // Fix all the errors and move on
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.complete_claimant_addresses({
@@ -57,6 +61,6 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
 
     // New form submission again shows all errors
     cy.click_next();
-    hasNumberOfErrors(5);
+    hasNumberOfErrors(2);
   });
 });

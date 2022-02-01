@@ -535,6 +535,9 @@ const claimForm = {
   is_complete: { label: "I'm done!", required: "You must check the box" },
   is_complete_description:
     "Checking this box means your claim will be sent to your workforce agency",
+  validation_alert_one: "Correct the error on this page to proceed",
+  validation_alert_other:
+    "Correct the {{ count }} errors on this page to proceed",
 };
 
 export default claimForm;
