@@ -31,6 +31,10 @@ mysql-reset: ## Reset the local database
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "CREATE DATABASE IF NOT EXISTS unemployment"
 
+clean-claims: ## Delete all claims and events in the local environment
+	mysql -h 127.0.0.1 -u user -psecret -D unemployment -e "DELETE from claims"
+	mysql -h 127.0.0.1 -u user -psecret -D unemployment -e "DELETE from events"
+
 schema: ## Dump the MySQL schema to docs/schema.sql (requires mysqldump command)
 	mysqldump --no-data --no-tablespaces -h 127.0.0.1 -u user -psecret  unemployment > docs/schema.sql
 
