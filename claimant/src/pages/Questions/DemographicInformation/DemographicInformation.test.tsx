@@ -93,12 +93,14 @@ describe("DemographicInformation component", () => {
       );
       const black = getByLabelText("race.options.black");
       const white = getByLabelText("race.options.white");
+      const optOut = getByLabelText("race.options.opt_out");
 
       // Checkboxes start unchecked
       expect(asian).not.toBeChecked();
       expect(hawaiianPI).not.toBeChecked();
       expect(black).not.toBeChecked();
       expect(white).not.toBeChecked();
+      expect(optOut).not.toBeChecked();
 
       // User checks a subset
       await act(async () => {
@@ -113,6 +115,22 @@ describe("DemographicInformation component", () => {
       // The checkboxes *not* clicked on remain unchecked
       expect(black).not.toBeChecked();
       expect(white).not.toBeChecked();
+      expect(optOut).not.toBeChecked();
+
+      await act(async () => {
+        await userEvent.click(optOut);
+      });
+
+      expect(optOut).toBeChecked();
+
+      expect(asian).not.toBeChecked();
+      expect(asian).toBeDisabled();
+      expect(hawaiianPI).not.toBeChecked();
+      expect(hawaiianPI).toBeDisabled();
+      expect(black).not.toBeChecked();
+      expect(black).toBeDisabled();
+      expect(white).not.toBeChecked();
+      expect(white).toBeDisabled();
     });
   });
 
