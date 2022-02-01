@@ -667,7 +667,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
 
     def test_login(self):
         self.assertFalse("verified" in self.client.session)
-        response = self.client.post("/api/login/", {"email": "someone@example.com"})
+        response = self.client.post(
+            "/api/login/", {"email": "someone@example.com", "IAL": "2"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["verified"])
 
@@ -675,7 +677,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         self.assertFalse("verified" in self.client.session)
         response = self.client.post(
             "/api/login/",
-            data={"email": "someone@example.com"},
+            data={"email": "someone@example.com", "IAL": "2"},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)

@@ -32,7 +32,12 @@ class HomeTestCase(TestCase):
         self.assertEquals(self.client.session["swa"], "XX")
         response = self.client.post(
             "/login/",
-            {"email": "some@example.com", "first_name": "Some", "last_name": "Body"},
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+            },
         )
         self.assertRedirects(
             response,
@@ -48,7 +53,12 @@ class HomeTestCase(TestCase):
                 "email": "some@example.com",
                 "first_name": "Some",
                 "last_name": "Body",
+                "IAL": "2",
             },
+        )
+        self.assertEquals(claimant.events.last().description, "2")
+        self.assertEquals(
+            claimant.events.last().category, Claimant.EventCategories.LOGGED_IN
         )
 
         # GET or POST only
@@ -58,7 +68,12 @@ class HomeTestCase(TestCase):
     def test_logout_page(self):
         self.client.post(
             "/login/",
-            {"email": "some@example.com", "first_name": "Some", "last_name": "Body"},
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+            },
         )
         response = self.client.get("/logout/")
         self.assertRedirects(

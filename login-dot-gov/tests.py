@@ -5,7 +5,7 @@ from logindotgov.mock_server import OIDC as MockServer
 from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
-from api.models import IdentityProvider
+from api.models import IdentityProvider, Claimant
 import logging
 
 logger = logging.getLogger(__name__)
@@ -55,6 +55,12 @@ class LoginDotGovTestCase(TestCase):
         # the server will redirect to here
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertRedirects(response, "/claimant/", status_code=302)
+
+        claimant = Claimant.objects.last()
+        self.assertEquals(claimant.events.last().description, "2")
+        self.assertEquals(
+            claimant.events.last().category, Claimant.EventCategories.LOGGED_IN
+        )
 
         # confirm our session looks as we expect
         response = self.client.get("/logindotgov/explain")

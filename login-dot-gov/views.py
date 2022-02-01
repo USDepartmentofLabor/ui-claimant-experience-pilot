@@ -161,6 +161,9 @@ def result(request):
     claimant, _ = Claimant.objects.get_or_create(
         idp_user_xid=idp_user_xid, idp=logindotgov_idp
     )
+    claimant.events.create(
+        category=Claimant.EventCategories.LOGGED_IN, description=request.session["IAL"]
+    )
 
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
