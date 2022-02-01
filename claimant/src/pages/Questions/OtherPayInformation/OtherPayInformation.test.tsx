@@ -3,6 +3,14 @@ import { Formik } from "formik";
 import OtherPayInformation from "./OtherPayInformation";
 import { noop } from "../../../testUtils/noop";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (str: string) => str,
+    };
+  },
+}));
+
 describe("OtherPayInformation page", () => {
   it("renders as expected", () => {
     render(
