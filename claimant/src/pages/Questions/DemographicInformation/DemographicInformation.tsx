@@ -5,13 +5,14 @@ import claimForm from "../../../i18n/en/claimForm";
 import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { CheckboxGroupField } from "../../../components/form/fields/CheckboxGroupField/CheckboxGroupField";
+import { Alert } from "@trussworks/react-uswds";
 
 import formStyles from "../../../components/form/form.module.scss";
 import { IPageDefinition } from "../../PageDefinitions";
+import { useFormikContext } from "formik";
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    birthdate: yup.date().required(t("birthdate.required")),
     sex: yup
       .mixed()
       .oneOf(Object.keys(claimForm.sex.options))
@@ -19,6 +20,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     race: yup
       .array()
       .of(yup.mixed().oneOf(Object.keys(claimForm.race.options)))
+      .min(1, t("race.required"))
       .required(t("race.required")),
     ethnicity: yup
       .mixed()
@@ -80,9 +82,11 @@ const educationLevelOptions: EducationLevelOption[] = Object.keys(
 
 export const DemographicInformation = () => {
   const { t } = useTranslation("claimForm");
+  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
   return (
     <>
+      <Alert type="info">{t("demographic_information.info_alert")}</Alert>
       <Fieldset legend={t("sex.label")} className={formStyles.field}>
         <RadioField
           id="sex"
@@ -93,6 +97,7 @@ export const DemographicInformation = () => {
               value: option.value,
             };
           })}
+          className="display-inline-block margin-right-7"
         />
       </Fieldset>
       <Fieldset legend={t("ethnicity.label")} className={formStyles.field}>
@@ -114,6 +119,16 @@ export const DemographicInformation = () => {
           options={raceOptions.map((raceOption) => ({
             label: t(`race.options.${raceOption.translationKey}`),
             value: raceOption.value,
+            checkboxProps: {
+              onChange: (e) => {
+                if (e.target.value === "opt_out" && e.target.checked) {
+                  setFieldValue("race", ["opt_out"], true);
+                }
+              },
+              disabled:
+                values.race?.includes("opt_out") &&
+                raceOption.value !== "opt_out",
+            },
           }))}
         />
       </Fieldset>
