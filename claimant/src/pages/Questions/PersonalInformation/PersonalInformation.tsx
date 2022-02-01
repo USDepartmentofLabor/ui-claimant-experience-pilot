@@ -29,7 +29,10 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     }),
     LOCAL_mailing_address_same: yup.boolean(),
     residence_address: yupAddress(t),
-    mailing_address: yupAddress(t),
+    mailing_address: yup.mixed().when("LOCAL_mailing_address_same", {
+      is: false,
+      then: yupAddress(t),
+    }),
   });
 
 export const PersonalInformationPage: IPageDefinition = {

@@ -19,12 +19,12 @@ import { Link } from "react-router-dom";
 import claimFormStyles from "./ClaimForm.module.scss";
 import {
   Button,
-  ErrorMessage,
   FormGroup,
   StepIndicator,
   StepIndicatorStep,
 } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinitions";
+import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -40,7 +40,6 @@ export const ClaimForm = () => {
   const submitClaim = useSubmitClaim();
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
-  const { t: commonT } = useTranslation("common");
   const { t: formT } = useTranslation("claimForm");
   const navigate = useNavigate();
 
@@ -241,11 +240,21 @@ export const ClaimForm = () => {
             claimForm.submitCount > 0 &&
             Object.keys(claimForm.errors).length > 0 &&
             Object.keys(claimForm.touched).length > 0;
+
+          // Console.log any errors for debugging
+          if (showError) console.log(claimForm.errors);
+
           return (
             <Form>
+              {showError && (
+                <FormErrorSummary
+                  key={claimForm.submitCount}
+                  errors={claimForm.errors}
+                />
+              )}
               <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
-                <FormGroup error={showError}>
+                <FormGroup>
                   <div className="text-center">
                     {previousPageLink()}
                     {nextPageLink()}
@@ -254,16 +263,6 @@ export const ClaimForm = () => {
                     </div>
                   </div>
                 </FormGroup>
-                {showError && (
-                  <>
-                    <ErrorMessage>{commonT("form_errors")}</ErrorMessage>
-                    {Object.keys(claimForm.errors).map((err, idx) => (
-                      <ErrorMessage key={`claim-form-error-${idx}`}>
-                        {JSON.stringify(claimForm.errors[err])}
-                      </ErrorMessage>
-                    ))}
-                  </>
-                )}
               </div>
             </Form>
           );

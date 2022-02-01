@@ -3001,10 +3001,21 @@
     npmlog "^5.0.1"
     pretty-hrtime "^1.0.3"
 
-"@storybook/node-logger@6.4.14", "@storybook/node-logger@^6.4.9":
+"@storybook/node-logger@6.4.14":
   version "6.4.14"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-6.4.14.tgz#2e96f4e3e06c78c3d065e59818515209122d9ae4"
   integrity sha512-mowC0adx4hLtCqGMQKRfNmiRYAL2PYdk3ojc91qzIKNrjSYnE4U8d9qlw5WLx1PKEnZVji3+QiYfNHpA/8PoKw==
+  dependencies:
+    "@types/npmlog" "^4.1.2"
+    chalk "^4.1.0"
+    core-js "^3.8.2"
+    npmlog "^5.0.1"
+    pretty-hrtime "^1.0.3"
+
+"@storybook/node-logger@^6.4.17":
+  version "6.4.17"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-6.4.17.tgz#14fe3091b2030413c2f43f0de3e9408b27591d9c"
+  integrity sha512-gymFKjmOdi9fAJCaM4C8I/5Go4hPsOAcVNixpjAQYsvNQQZ1Yjm2zcSdD+QOuLJ36NTxgOFxT4ESbC2AfSjyqA==
   dependencies:
     "@types/npmlog" "^4.1.2"
     chalk "^4.1.0"
@@ -3520,10 +3531,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trussworks/react-uswds@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-2.7.0.tgz#8aaf6f1535f64f59e8de7c49fe55de7d9a783630"
-  integrity sha512-+jqy6lHYDGuAf4J5g+Vq4WA1I4T9GLhoEFfZihU9zoLt7ZpYLsLhvsEmFHMI4Lel4o86g18PhRjJYK//Pt0idQ==
+"@trussworks/react-uswds@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-2.7.1.tgz#a2622feae6309217680f92bd8e682fdfa815cb8c"
+  integrity sha512-JbHJqoA/g0U/9Z4RGKMf9aaS4U1yGzklCqeGwLyZOT2vo0IranB542Vgw0yBqGvSrDBiZm3vfYVmqWSkrLPEtg==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
