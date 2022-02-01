@@ -1,0 +1,21 @@
+@import "../../../theme";
+
+.review-section {
+  h2 {
+    text-transform: uppercase;
+    @include u-font-size("sans", 8);
+    @include u-font-weight("normal");
+    margin: 0;
+  }
+
+  span {
+    display: block;
+    @include u-font-weight("bold");
+  }
+}
+
+.review-section-header {
+  display: flex;
+  align-items: center;
+  gap: units(2);
+}

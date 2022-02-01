@@ -13,7 +13,7 @@ import { TextAreaField } from "../fields/TextAreaField/TextAreaField";
 import { useField, useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 
-import soc_entries_2018 from "../../../schemas/soc_entries_2018.json";
+import soc_entries_2018 from "../../../fixtures/soc_entries_2018.json";
 
 type OccupationOption = {
   code: string;

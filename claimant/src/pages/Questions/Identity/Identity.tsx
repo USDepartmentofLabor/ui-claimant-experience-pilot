@@ -3,7 +3,7 @@ import { Fieldset } from "@trussworks/react-uswds";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { DateInputField } from "../../../components/form/fields/DateInputField/DateInputField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
-import states from "../../../schemas/states.json";
+import states from "../../../fixtures/states.json";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import claimForm from "../../../i18n/en/claimForm";
 import { useFormikContext } from "formik";
@@ -154,7 +154,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         then: yup
           .string()
           .matches(
-            /^[0-9]{3}-[0-9]{3}-[0-9]{3}$/,
+            /^[0-9]{3}-?[0-9]{3}-?[0-9]{3}$/,
             t("work_authorization.alien_registration_number.format")
           )
           .required(t("work_authorization.alien_registration_number.required")),

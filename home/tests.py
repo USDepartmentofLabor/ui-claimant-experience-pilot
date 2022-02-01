@@ -82,6 +82,10 @@ class HomeTestCase(TestCase):
         response = self.client.get("/swa-redirect/XX/")
         self.assertContains(response, "your state's", status_code=200)
 
+    def test_launchdarkly_flag_received(self):
+        response = self.client.get("/test/")
+        self.assertTrue(response.json()["test_flag_worked"])
+
     def test_swa_start_page(self):
         # with active SWA we get a link to the SWA
         swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")

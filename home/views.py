@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
 from api.models import SWA
@@ -10,10 +11,12 @@ import logging
 
 import json
 
+from launchdarkly.client import ld_client
+
 logger = logging.getLogger("home")
 
 
-def handle_404(request, exception):
+def handle_404(request, exception=None):
     return render(None, "404.html", {"base_url": base_url(request)}, status=404)
 
 
@@ -88,9 +91,16 @@ def ial2required(request):
 
 @never_cache
 def test(request):  # pragma: no cover
+    ld_flag_set = ld_client.variation(
+        "test-flag-server", {"key": "anonymous-user"}, False
+    )
+    if not ld_flag_set:
+        return handle_404(request)
+
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
     this_session["test_cookie_worked"] = request.session.test_cookie_worked()
+    this_session["test_flag_worked"] = ld_flag_set
     return JsonResponse(this_session)
 
 
@@ -102,9 +112,9 @@ def login(request):
         request.session.set_test_cookie()
         csrf_token = django.middleware.csrf.get_token(request)
         # stash params for post-login
-        if "redirect_to" in request.GET:
+        if request.GET.get("redirect_to", None):
             request.session["redirect_to"] = request.GET["redirect_to"]
-        if "swa" in request.GET:
+        if request.GET.get("swa", None):
             request.session["swa"] = request.GET["swa"]
         return render(
             None,
@@ -119,7 +129,7 @@ def login(request):
     elif request.method == "POST":
         register_local_login(request)
         redirect_to = "/claimant/"
-        if "redirect_to" in request.session:
+        if request.session.get("redirect_to", None):
             redirect_to = request.session["redirect_to"]
             del request.session["redirect_to"]
         logger.debug("redirect_to={}".format(redirect_to))

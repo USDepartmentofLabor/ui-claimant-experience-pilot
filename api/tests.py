@@ -19,7 +19,7 @@ from .claim_request import (
     INVALID_CLAIMANT_ID,
     INVALID_CLAIM_ID,
 )
-from .claim_validator import ClaimValidator, CompletedClaimValidator
+from .claim_validator import ClaimValidator
 import uuid
 import logging
 from core.claim_encryption import (
@@ -49,13 +49,23 @@ RESIDENCE_ADDRESS = {
     "zipcode": "00000",
 }
 
+WHOAMI_IAL2 = {
+    "email": "someone@example.com",
+    "IAL": "2",
+    "first_name": "Some",
+    "last_name": "One",
+    "birthdate": "1990-05-04",
+    "ssn": "900001234",  # omit hyphen to test claim cleaner
+    "phone": "555-555-1234",
+}
+
 
 class SessionVerifier:
     def verify_session(self, client=None):
         client = client if client else self.client
         session = client.session
         session["verified"] = True
-        session["whoami"] = {"email": "someone@example.com"}
+        session["whoami"] = WHOAMI_IAL2
         session.save()
         return session
 
@@ -68,6 +78,7 @@ class BaseClaim:
             "is_complete": True,
             "claimant_id": claimant_id or "random-claimaint-string",
             "identity_provider": "test",
+            "identity_assurance_level": 2,
             "swa_code": swa_code or "XX",
             "ssn": "900-00-1234",
             "email": email or "foo@example.com",
@@ -91,7 +102,7 @@ class BaseClaim:
                     "first_work_date": "2020-02-02",
                     "last_work_date": "2020-11-30",
                     "recall_date": "2020-12-13",
-                    "fein": "00-1234567",
+                    "fein": "001234567",
                     "address": {
                         "address1": "999 Acme Way",
                         "address2": "Suite 888",
@@ -153,6 +164,18 @@ class BaseClaim:
                 "routing_number": "12-345678",
                 "account_number": "00983-543=001",
             },
+            "occupation": {
+                "job_title": "nurse",
+                "job_description": "ER nurse",
+                "bls_description": "29-0000  Healthcare Practitioners and Technical Occupations",
+                "bls_code": "29-1141",
+                "bls_title": "Registered Nurses",
+            },
+            "work_authorization": {
+                "authorization_type": "permanent_resident",
+                "alien_registration_number": "111-111-111",
+                "authorized_to_work": True,
+            },
         }
         if id:
             claim["id"] = id
@@ -160,6 +183,8 @@ class BaseClaim:
 
 
 class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
+    maxDiff = None
+
     def setUp(self):
         super().setUp()
         # Empty the test outbox
@@ -296,6 +321,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         response = csrf_client.post(
             url, content_type="application/json", data=payload, **headers
         )
+        logger.debug("🚀 {}".format(response.json()))
         self.assertEqual(response.status_code, 201)
 
         # fetch the completed claim from the archive S3 bucket directly.
@@ -457,7 +483,9 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
             url, content_type="application/json", data=invalid_payload, **headers
         )
         self.assertEqual(response.status_code, 400)
-        self.assertIn("'1234' is not a 'date'", response.json()["errors"])
+        self.assertIn(
+            "'claimant_name' is a required property", response.json()["errors"]
+        )
 
         # failure to write completed claim returns error
         with patch("core.claim_storage.ClaimStore.s3_client") as mocked_client:
@@ -547,9 +575,10 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
             "created_at"
         ).last()  # not the one we started with
         self.assertEqual(response.status_code, 202)
-        self.assertEqual(
-            response.json(), {"status": "accepted", "claim_id": str(claim.uuid)}
-        )
+        self.assertEqual(response.json()["status"], "accepted")
+        self.assertEqual(response.json()["claim_id"], str(claim.uuid))
+        # we expect validation errors. payload is incomplete (not a base_claim)
+        self.assertTrue("validation_errors" in response.json())
 
         # GET partial claim
         response = csrf_client.get(url, content_type="application/json", **headers)
@@ -669,7 +698,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         self.assertFalse(self.client.session.exists(session_key))
 
 
-class ClaimApiTestCase(TestCase, SessionVerifier):
+class ClaimApiTestCase(TestCase, SessionVerifier, BaseClaim):
     def create_api_claim_request(self, body):
         request = RequestFactory().post(
             "/api/claim/", content_type="application/json", data=body
@@ -754,6 +783,40 @@ class ClaimApiTestCase(TestCase, SessionVerifier):
         self.assertEqual(claim2, finder.find())
         claim2.events.create(category=Claim.EventCategories.RESOLVED)
         self.assertEqual(claim, finder.find())
+
+    def test_claim_cleaner(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        self.verify_session()
+
+        body = self.base_claim() | {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "ssn": "666-00-0000",
+            "email": "fake@example.com",
+            "birthdate": "1999-12-12",
+            "identity_assurance_level": 1,
+            "work_authorization": {
+                "authorization_type": "permanent_resident",
+                "alien_registration_number": "111111111",
+                "authorized_to_work": True,
+            },
+        }
+        claim_request = self.create_api_claim_request(body)
+        claim_cleaner = ClaimCleaner(claim_request)
+        cleaned_claim = claim_cleaner.cleaned()
+        logger.debug("🚀 cleaned_claim={}".format(cleaned_claim))
+        # whoami always overrides anything in the request body
+        self.assertEqual(cleaned_claim["ssn"], "900-00-1234")
+        self.assertEqual(cleaned_claim["email"], WHOAMI_IAL2["email"])
+        self.assertEqual(cleaned_claim["birthdate"], WHOAMI_IAL2["birthdate"])
+        self.assertEqual(cleaned_claim["identity_assurance_level"], 2)
+        self.assertEqual(cleaned_claim["employers"][0]["fein"], "00-1234567")
+        self.assertEqual(
+            cleaned_claim["work_authorization"]["alien_registration_number"],
+            "111-111-111",
+        )
 
     def test_claim_request(self):
         idp = create_idp()
@@ -840,26 +903,23 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
             json_str = f.read()
         example_claim = json_decode(json_str)
         cv = ClaimValidator(example_claim)
-        logger.debug("🚀 partial errors={}".format(cv.errors_as_dict()))
+        logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
-        ccv = CompletedClaimValidator(ClaimCleaner(example_claim).cleaned())
-        logger.debug("🚀 complete errors={}".format(ccv.errors_as_dict()))
-        self.assertTrue(ccv.valid)
 
     def test_claim_validator(self):
         claim = self.base_claim()
         cv = ClaimValidator(claim)
+        logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
 
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 3)
+        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
-        logger.debug("errors={}".format(error_dict))
 
         invalid_ssn = {"ssn": "1234"}
         cv = ClaimValidator(invalid_ssn)
@@ -977,15 +1037,15 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         claim = self.base_claim() | {
             "validated_at": timezone.now().isoformat(),
         }
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         logger.debug("🚀 LOCAL_")
         logger.debug(cv.errors_as_dict())
         self.assertTrue(cv.valid)
 
         invalid_claim = {"birthdate": "1234"}
-        cv = CompletedClaimValidator(invalid_claim)
+        cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 22)
+        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
@@ -1001,7 +1061,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
             "validated_at": timezone.now().isoformat(),
         }
         del claim["employers"][0]["last_work_date"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         self.assertFalse(cv.valid)
         error_dict = cv.errors_as_dict()
         self.assertIn("'last_work_date' is a required property", error_dict)
@@ -1011,14 +1071,14 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         }
         claim["employers"][0]["separation_reason"] = "still_employed"
         del claim["employers"][0]["last_work_date"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         self.assertTrue(cv.valid)
 
         claim = self.base_claim() | {
             "validated_at": timezone.now().isoformat(),
         }
         del claim["employers"][0]["separation_option"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         self.assertFalse(cv.valid)
         error_dict = cv.errors_as_dict()
         self.assertIn("'separation_option' is a required property", error_dict)
@@ -1028,7 +1088,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         }
         claim["employers"][0]["separation_reason"] = "retired"
         del claim["employers"][0]["separation_option"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         self.assertTrue(cv.valid)
 
     def test_local_validation_rules(self):
@@ -1038,7 +1098,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         }
         claim["employers"][0]["first_work_date"] = "2022-02-01"
         claim["employers"][0]["last_work_date"] = "2022-01-01"
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         self.assertFalse(cv.valid)
         error_dict = cv.errors_as_dict()
         self.assertIn("first_work_date is later than last_work_date", error_dict)
@@ -1049,17 +1109,17 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         }
         # Delete attribute required by nested conditional
         del claim["disability"]["contacted_last_employer_after_recovery"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         logger.debug(cv.errors_as_dict())
         self.assertFalse(cv.valid)
 
         # Delete attribute requiring previously-deleted conditional
         del claim["disability"]["recovery_date"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         logger.debug(cv.errors_as_dict())
         self.assertTrue(cv.valid)
 
         del claim["payment"]["account_type"]
-        cv = CompletedClaimValidator(claim)
+        cv = ClaimValidator(claim)
         logger.debug(cv.errors_as_dict())
         self.assertFalse(cv.valid)

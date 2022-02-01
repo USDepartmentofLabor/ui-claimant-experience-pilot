@@ -13,3 +13,10 @@ export const formatUserInputDate = (
     ? dayjsValue.format(ISO_8601_DATE)
     : initialValue; // preserve undefined to show validations later
 };
+
+export const addressToString = (address: AddressType) => {
+  const { address1, address2, city, state, zipcode } = address;
+  return [address1, address2, city, `${state} ${zipcode}`]
+    .filter((el) => !!el)
+    .join(", ");
+};

@@ -16,8 +16,9 @@ import logging
 import logging.config
 import base64
 
-
 # our symmetric encryptions keys must be 32 bytes (256 bits) base64-encoded
+
+
 def validate_secret_key(secret, key_name):
     secret_len = len(base64.urlsafe_b64decode(secret))
     if secret_len != 32:  # pragma: no cover
@@ -129,6 +130,7 @@ INSTALLED_APPS = [
     "home",
     "swa",
     "appoptics_apm.djangoware",
+    "launchdarkly.apps.LaunchdarklyConfig",
 ]
 
 # only install in dev/ci
@@ -404,3 +406,6 @@ except Exception:  # pragma: no cover
 DISPLAY_TEST_SITE_BANNER = (
     os.environ.get("DISPLAY_TEST_SITE_BANNER", "true").lower() == "true"
 )
+
+LD_SDK_KEY = env.str("LD_SDK_KEY")
+LD_CLIENT_SDK_KEY = env.str("LD_CLIENT_SDK_KEY")

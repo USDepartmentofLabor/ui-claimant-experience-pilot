@@ -5,6 +5,7 @@ import "./i18n";
 import { BrowserRouter } from "react-router-dom";
 import { Routes as ROUTES } from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
+import FlagsWrapper from "./pages/FlagsWrapper/FlagsWrapper";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,9 +22,11 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter basename={ROUTES.BASE_ROUTE}>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <FlagsWrapper>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </FlagsWrapper>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")

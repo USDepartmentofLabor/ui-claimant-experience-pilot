@@ -15,7 +15,7 @@ export default {
 
 const Template: ComponentStory<typeof DemographicInformation> = () => {
   const { t } = useTranslation("claimForm");
-  const validationSchema = DemographicInformationPage.pageSchema?.(t);
+  const validationSchema = DemographicInformationPage.pageSchema(t);
   const initialValues = {
     sex: undefined,
     ethnicity: undefined,

@@ -88,6 +88,7 @@
       });
       if (unanswered.length > 0){
         USDOL.showErrors(errors);
+        USDOL.decorateRequiredFields(unanswered);
         return;
       }
       if (formData.get("live_in_us") === "no"){
@@ -112,24 +113,6 @@
         window.location = swaUrl;
       }
     },
-    showErrors: (errors) => {
-      const errorDiv = document.getElementById("form-errors");
-      const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-      errors.forEach((err) => {
-        const errEl = document.createElement("div");
-        const text = document.createTextNode(err);
-        errEl.appendChild(text);
-        errorP.appendChild(errEl);
-      });
-      errorDiv.classList.remove("display-none");
-      errorDiv.scrollIntoView({ behavior: "smooth" });
-    },
-    clearErrors: () => {
-      const errorDiv = document.getElementById("form-errors");
-      const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-      errorDiv.classList.add("display-none");
-      errorP.innerHTML = "";
-    },
   };
 </script>
 <!-- prettier-ignore -->
@@ -137,53 +120,47 @@
     <main>
         <h1>{% translate "Prequalification" %}</h1>
         <form method="POST" class="usa-form--large" id="prequalification-form" onsubmit="return false">
-          <!-- placeholder -->
-          <div class="usa-alert usa-alert--error display-none" id="form-errors" role="alert">
-            <div class="usa-alert__body">
-              <h4 class="usa-alert__heading">{% translate "Form errors" %}</h4>
-              <div class="usa-alert__text"></div>
-            </div>
-          </div>
+          {% include './uswds/_alert_error.html' %}
 
           <section>
             <h2>{% translate "State residence" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" required=True %}
             <div class="display-none" id="swa-options">
-              {% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" %}
+              {% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" required=True %}
             </div>
           </section>
 
           <section>
             <h2>{% translate "Recent employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" required=True %}
             <div class="margin-top-4">
-              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" %}
+              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" required=True %}
             </div>
           </section>
 
           <section>
             <h2>{% translate "Disaster" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" required=True %}
           </section>
 
           <section>
             <h2>{% translate "Disability" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" required=True %}
           </section>
 
           <section>
             <h2>{% translate "Military service" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" required=True %}
           </section>
 
           <section>
             <h2>{% translate "Federal employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" required=True %}
           </section>
 
           <section>
             <h2>{% translate "Maritime employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" %}
+            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" required=True %}
           </section>
 
           <section class="text-center">

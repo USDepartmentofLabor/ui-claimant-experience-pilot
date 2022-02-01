@@ -12,7 +12,7 @@ export default {
 const Template: ComponentStory<typeof Availability> = () => {
   const { t } = useTranslation("claimForm");
   const initialValues = AvailabilityPage.initialValues;
-  const validationSchema = AvailabilityPage.pageSchema?.(t);
+  const validationSchema = AvailabilityPage.pageSchema(t);
 
   return (
     <Formik

@@ -1,0 +1,95 @@
+{% load i18n %}
+<div class="usa-alert usa-alert--error display-none" id="form-errors" role="alert">
+  <div class="usa-alert__body">
+    <div class="usa-alert__text"></div>
+  </div>
+</div>
+<script type="text/javascript">
+  if (typeof USDOL === "undefined") { USDOL = {} }
+  USDOL.showErrors = (errors) => {
+    const errorDiv = document.getElementById("form-errors");
+    const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
+    const msgSingular = errors[0]; // "{% translate "Correct the error on this page to proceed" %}";
+    const msgPlural = "{% translate "Correct the {count} errors on this page to proceed" %}".replace("{count}", errors.length);
+    const errEl = document.createElement("div");
+    const text = document.createTextNode(errors.length === 1 ? msgSingular : msgPlural);
+    errEl.appendChild(text);
+    errorP.appendChild(errEl);
+    errorDiv.classList.remove("display-none");
+  };
+  USDOL.clearErrors = () => {
+    const errorDiv = document.getElementById("form-errors");
+    const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
+    errorDiv.classList.add("display-none");
+    errorP.innerHTML = "";
+    const errorMarkedSections = document.getElementsByClassName("usa-form-group--error");
+    Array.from(errorMarkedSections).forEach((section) => {
+      const errs = section.getElementsByClassName("usa-error-message");
+      Array.from(errs).forEach((err) => err.remove());
+      section.classList.remove("usa-form-group--error");
+      Array.from(section.getElementsByTagName("input")).forEach((input) => {
+        input.removeAttribute("aria-invalid");
+      });
+    });
+  };
+  USDOL.clearFieldError = (field) => {
+    const parentSection = field.closest(".usa-form-group--error");
+    Array.from(document.getElementsByName(field.name)).forEach((input) => {
+      input.removeAttribute("aria-invalid");
+      // the visible error message is tied to only one input (the field)
+      // but user may have clicked on its sibling to trigger the clear
+      const err = document.getElementById(`${input.name}-error`);
+      if (err) {
+        err.remove();
+      }
+    });
+    // clear ancestor decorations
+    const sectionErrors = parentSection.getElementsByClassName("usa-error-message");
+    if (!sectionErrors || sectionErrors.length === 0) {
+      parentSection.classList.remove("usa-form-group--error");
+    }
+    if (document.getElementsByClassName("usa-error-message").length === 0) {
+      USDOL.clearErrors();
+    }
+  };
+  USDOL.decorateRequiredFields = (requiredFields) => {
+    requiredFields.forEach((name) => {
+      const fields = document.getElementsByName(name);
+      // use the first one only to get related elements
+      const field = fields[0];
+      const parentSection = field.closest("section");
+      const parentGroup = field.closest(".usa-form-group");
+      const parentFieldset = field.closest("fieldset");
+      const err = document.createElement("span");
+      err.classList.add("usa-error-message");
+      err.classList.add("margin-top-2");
+      err.setAttribute("id", `${name}-error`);
+      err.setAttribute("role", "alert");
+      const errMsg = document.createTextNode("{% translate "This field is required" %}");
+      err.appendChild(errMsg);
+      if (parentFieldset) {
+        parentFieldset.classList.add("usa-form-group--error");
+      } else {
+        parentGroup.classList.add("usa-form-group--error");
+      }
+      parentGroup.appendChild(err);
+      // set aria on all fields
+      Array.from(fields).forEach((f) => {
+        f.setAttribute("aria-required", "true");
+        f.setAttribute("aria-invalid", "true");
+        if (f.tagName === "INPUT") {
+          f.onclick = () => USDOL.clearFieldError(f);
+        } else if (f.tagName === "SELECT") {
+          f.onchange = () => USDOL.clearFieldError(f);
+        }
+      });
+    });
+    // focus on the "first" error
+    const errors = document.getElementsByClassName("usa-form-group--error");
+    if (errors.length) {
+      errors[0].scrollIntoView({ behavior: "smooth" });
+    } else {
+      document.getElementById("form-errors").scrollIntoView({ behavior: "smooth" });
+    }
+  };
+</script>

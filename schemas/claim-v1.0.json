@@ -505,18 +505,15 @@
       "properties": {
         "can_begin_work_immediately": {
           "description": "Is the claimant is able to begin work immediately",
-          "type": "boolean",
-          "TODO_required_for_complete": true
+          "type": "boolean"
         },
         "can_work_full_time": {
           "description": "Is the claimant able to work full time?",
-          "type": "boolean",
-          "TODO_required_for_complete": true
+          "type": "boolean"
         },
         "is_prevented_from_accepting_full_time_work": {
           "description": "Is the claimant prevented from accepting full time work?",
-          "type": "boolean",
-          "TODO_required_for_complete": true
+          "type": "boolean"
         }
       },
       "required": [
@@ -621,28 +618,58 @@
       }
     }
   },
-  "required": ["claimant_name"],
+  "required": [
+    "attending_college_or_job_training",
+    "birthdate",
+    "claimant_id",
+    "claimant_name",
+    "disability",
+    "education_level",
+    "email",
+    "employers",
+    "ethnicity",
+    "id",
+    "identity_assurance_level",
+    "identity_provider",
+    "interpreter_required",
+    "mailing_address",
+    "occupation",
+    "payment",
+    "phones",
+    "race",
+    "registered_with_vocational_rehab",
+    "residence_address",
+    "self_employment",
+    "sex",
+    "ssn",
+    "state_credential",
+    "student_fulltime_in_last_18_months",
+    "swa_code",
+    "union",
+    "work_authorization"
+  ],
   "properties": {
     "id": {
       "description": "Unique identifier for the Claim",
       "type": "string",
-      "format": "uuid",
-      "required_for_complete": true
+      "format": "uuid"
     },
     "claimant_id": {
       "description": "Identifier for the Claimant. Unique to the Identity Provider used.",
-      "type": "string",
-      "required_for_complete": true
+      "type": "string"
     },
     "identity_provider": {
       "description": "Name of the Identity Provider used to authenticate the Claimant",
-      "type": "string",
-      "required_for_complete": true
+      "type": "string"
+    },
+    "identity_assurance_level": {
+      "description": "https://pages.nist.gov/800-63-3-Implementation-Resources/63A/ial2remote/",
+      "type": "integer",
+      "default": 2
     },
     "swa_code": {
       "description": "2-letter code identifying the State Workforce Agency",
-      "type": "string",
-      "required_for_complete": true
+      "type": "string"
     },
     "validated_at": {
       "description": "Datetime of the last time the Claim was validated against this schema",
@@ -654,17 +681,12 @@
       "type": "string"
     },
     "is_complete": {
-      "description": "Meta field to indicate that the required_for_complete attribute should be applied",
+      "description": "Indicates Claimant has reviewed and approved the Claim form",
       "type": "boolean"
     },
     "claimant_name": {
       "description": "Claimant's name",
       "$ref": "#/definitions/person_name"
-    },
-    "LOCAL_claimant_has_alternate_names": {
-      "description": "Whether or not the claimant has used alternate names in the last (n) months",
-      "type": "boolean",
-      "required_for_partial": true
     },
     "alternate_names": {
       "description": "Alternate names used by the claimant in the last (n) months",
@@ -674,14 +696,12 @@
     "birthdate": {
       "description": "Date of birth",
       "type": "string",
-      "format": "date",
-      "required_for_complete": true
+      "format": "date"
     },
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
-      "enum": ["male", "female"],
-      "required_for_complete": true
+      "enum": ["male", "female"]
     },
     "race": {
       "description": "",
@@ -697,7 +717,6 @@
           "opt_out"
         ]
       },
-      "required_for_complete": true,
       "if": {
         "contains": {
           "const": "opt_out"
@@ -710,18 +729,12 @@
     "ethnicity": {
       "description": "",
       "type": "string",
-      "enum": ["opt_out", "hispanic", "not_hispanic"],
-      "required_for_complete": true
+      "enum": ["opt_out", "hispanic", "not_hispanic"]
     },
     "phones": {
       "description": "",
       "type": "array",
-      "items": { "$ref": "#/definitions/phone" },
-      "required_for_complete": true
-    },
-    "LOCAL_more_phones": {
-      "description": "flow control only",
-      "type": "boolean"
+      "items": { "$ref": "#/definitions/phone" }
     },
     "preferred_language": {
       "description": "",
@@ -731,18 +744,17 @@
     "ssn": {
       "description": "Required per 20 CFR 603.3",
       "type": "string",
-      "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$",
-      "TODO_required_for_complete": true
+      "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$"
     },
     "currently_reside_in_us": {
       "description": "Required per 20 CFR Appendix A to Part 625",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "TODO_prequal": true
     },
     "employed_in_last_18_months": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "TODO_prequal": true
     },
     "employers": {
       "description": "Required if employed_in_last_18_months is true",
@@ -752,32 +764,25 @@
     "active_military_in_last_18_months": {
       "description": "Required per 20 CFR 614",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "TODO_prequal": true
     },
     "federal_employment_in_last_18_months": {
       "description": "Required per 20 CFR 609",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "TODO_prequal": true
     },
     "worked_in_other_states": {
       "description": "Required per 20 CFR 616",
       "type": "array",
       "items": { "$ref": "#/definitions/state" },
-      "TODO_required_for_complete": true
+      "TODO_prequal": true
     },
     "residence_address": {
       "description": "",
-      "required_for_complete": true,
       "$ref": "#/definitions/address"
-    },
-    "LOCAL_mailing_address_same": {
-      "description": "Mailing is the same as the residence address",
-      "type": "boolean",
-      "required_for_partial": true
     },
     "mailing_address": {
       "description": "",
-      "required_for_complete": true,
       "$ref": "#/definitions/address"
     },
     "work_authorization": {
@@ -789,16 +794,14 @@
       "$ref": "#/definitions/state_credential"
     },
     "union": {
-      "$ref": "#/definitions/union_membership",
-      "TODO_required_for_complete": true
+      "$ref": "#/definitions/union_membership"
     },
     "email": {
-      "description": "",
+      "description": "Verified via identity_provider",
       "type": "string",
       "format": "email",
       "maxLength": 128,
-      "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them",
-      "required_for_complete": true
+      "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them"
     },
     "education_level": {
       "description": "",
@@ -817,81 +820,55 @@
         "masters",
         "professional",
         "doctorate"
-      ],
-      "required_for_complete": true
+      ]
     },
     "occupation": {
       "description": "https://www.bls.gov/oes/current/oes_stru.htm",
-      "$ref": "#/definitions/occupation",
-      "TODO_required_for_complete": true
+      "$ref": "#/definitions/occupation"
     },
     "ready_willing_able_to_work": {
       "description": "",
       "type": "boolean",
-      "TODO_required_for_complete": true
+      "TODO_": "reconcile with Availability"
     },
     "federal_income_tax_withheld": {
       "description": "Required per UIPL 17-95",
-      "type": "boolean",
-      "TODO_required_for_complete": true
-    },
-    "refused_any_job_since_last_worked": {
-      "description": "",
-      "type": "boolean",
-      "TODO_required_for_complete": true
-    },
-    "primary_wage_earner": {
-      "description": "",
-      "type": "boolean",
-      "TODO_required_for_complete": true
+      "type": "boolean"
     },
     "interpreter_required": {
       "description": "",
-      "type": "boolean",
-      "required_for_complete": true
-    },
-    "dependency_allowance": {
-      "description": "",
-      "type": "boolean",
-      "TODO_required_for_complete": true
+      "type": "boolean"
     },
     "student_fulltime_in_last_18_months": {
       "description": "If the claimant has been a full-time student during the last 18 months",
-      "type": "boolean",
-      "required_for_complete": true
+      "type": "boolean"
     },
     "attending_college_or_job_training": {
       "description": "If the claimant is currently attending college or job training",
-      "type": "boolean",
-      "required_for_complete": true
+      "type": "boolean"
     },
     "registered_with_vocational_rehab": {
       "description": "If the claimant is registered with vocational rehabilitation",
-      "type": "boolean",
-      "required_for_complete": true
+      "type": "boolean"
     },
     "self_employment": {
-      "$ref": "#/definitions/self_employment",
-      "required_for_complete": true
+      "$ref": "#/definitions/self_employment"
     },
     "other_pay": {
       "description": "Different types of other pay and details",
       "type": "array",
       "items": { "$ref": "#/definitions/other_pay_detail" },
-      "maxItems": 7,
-      "required_for_complete": false
+      "maxItems": 7
     },
     "disability": {
-      "$ref": "#/definitions/disability",
-      "required_for_complete": true
+      "$ref": "#/definitions/disability"
     },
     "availability": {
       "$ref": "#/definitions/availability",
-      "required_for_complete": true
+      "TODO_": "reconcile with ready_willing_able_to_work"
     },
     "payment": {
-      "$ref": "#/definitions/payment",
-      "required_for_complete": true
+      "$ref": "#/definitions/payment"
     }
   }
 }

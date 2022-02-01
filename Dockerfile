@@ -67,16 +67,16 @@ COPY start-server.sh .
 COPY home ./home
 COPY core ./core
 COPY login-dot-gov ./login-dot-gov
+COPY launchdarkly ./launchdarkly
 COPY api ./api
 COPY swa ./swa
 COPY certs ./certs
+COPY schemas ./schemas
 
 # copy over just the precompiled react app(s)
 COPY --from=reactapps /app/claimant/build /app/claimant/build
 # copy USWDS static assets for Django to consume
 COPY --from=reactapps /app/claimant/node_modules/uswds/dist /app/home/static
-# copy schemas to serve as static assets
-COPY --from=reactapps /app/claimant/src/schemas /app/schemas
 
 ARG APPLICATION_VERSION=""
 ARG APPLICATION_TIMESTAMP=""

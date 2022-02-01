@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
 import DropdownField from "../fields/DropdownField/DropdownField";
-import states from "../../../schemas/states.json";
+import states from "../../../fixtures/states.json";
 import { FormGroup } from "@trussworks/react-uswds";
 
 export type StateAbbrev = keyof typeof states;

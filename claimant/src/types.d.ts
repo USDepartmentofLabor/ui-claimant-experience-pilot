@@ -87,6 +87,7 @@ type ClaimantNamesType = {
 type ClaimantAddressType = {
   residence_address?: AddressType;
   mailing_address?: AddressType;
+  LOCAL_mailing_address_same?: boolean;
 };
 
 type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;

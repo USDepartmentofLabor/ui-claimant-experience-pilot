@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# usage: python scripts/check-json-schema.py claimant/src/schemas/claim-v1.0.json claimant/src/schemas/claim-v1.0-example.json
+# usage: python scripts/check-json-schema.py schemas/claim-v1.0.json schemas/claim-v1.0-example.json
 
 import json
 import sys

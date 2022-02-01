@@ -13,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof EmployerProfile> = () => {
   const { t } = useTranslation("claimForm");
-  const validationSchema = EmployerInformationPage.pageSchema?.(t);
+  const validationSchema = EmployerInformationPage.pageSchema(t);
   const initialValues = {
     employers: [{ ...EMPLOYER_SKELETON }],
   };

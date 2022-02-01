@@ -7,7 +7,7 @@
 # like https://github.com/dilshod/xlsx2csv
 
 # usage:
-# python scripts/blssoc2json.py soc_structure_2018.csv > claimant/src/schemas/soc_structure_2018.json
+# python scripts/blssoc2json.py soc_structure_2018.csv > claimant/src/fixtures/soc_structure_2018.json
 
 import csv
 import sys

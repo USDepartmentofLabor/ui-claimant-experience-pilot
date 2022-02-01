@@ -277,3 +277,11 @@ class EmailTestCase(CeleryTestCase):
         self.assertIn(
             "Your claim has been forwarded to Some State", mail.outbox[0].body
         )
+
+
+class LaunchDarklyTestCase(TestCase):
+    def test_client_key_populated(self):
+        response = self.client.get("/claimant/")
+        self.assertRegex(
+            response.content.decode("UTF-8"), r'window\.LD_CLIENT_SDK_KEY=".{24}"'
+        )

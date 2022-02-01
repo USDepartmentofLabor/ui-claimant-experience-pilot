@@ -15,6 +15,11 @@ jobs:
         node-version: [14.18]
     steps:
       - uses: actions/checkout@v2
+      - name: Prep env
+        run: |
+          echo LD_CLIENT_SDK_KEY="${{ secrets.CI_LD_CLIENT_SDK_KEY }}" >> core/.env-ci
+          echo LD_SDK_KEY="${{ secrets.CI_LD_SDK_KEY }}" >> core/.env-ci
+          cp core/ld-config-test.json core/ld-config.json
       - name: Start CI docker compose
         run: make ci-start
         env:
@@ -43,7 +48,9 @@ jobs:
       - name: Run JS Tests
         run: make ci-setup-react-tests ci-test-react
       - name: Test nothing has changed
-        run: make diff-test
+        run: |
+          git checkout core/.env-ci
+          make diff-test
       - name: Docker logs
         run: docker logs web --details
         if: failure()

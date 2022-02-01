@@ -435,9 +435,15 @@ const claimForm = {
     type: { required: "Phone type is required" },
   },
   name: {
+    legal_name: "Legal Name",
+    alternate_name: "Alternate Name",
     first_name: { label: "First Name", required: "First Name is required" },
     middle_name: { label: "Middle Name (Optional)" },
     last_name: { label: "Last Name", required: "Last Name is required" },
+    claimant_has_alternate_names: {
+      label:
+        "In the past 18 months, have you worked under a name different from above?",
+    },
   },
   payment: {
     federal_income_tax_withheld: {

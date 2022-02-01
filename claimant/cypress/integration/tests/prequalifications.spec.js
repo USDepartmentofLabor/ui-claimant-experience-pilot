@@ -24,6 +24,18 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/swa-redirect/NJ/");
   });
+
+  it("shows/hides error message(s) on form validation", () => {
+    cy.visit("/prequal/");
+    cy.get("button").contains("Next").click();
+    cy.contains("Correct the 9 errors");
+    cy.contains("This field is required");
+    cy.get("span").filter(".usa-error-message");
+    cy.get("div").filter(".usa-alert--error");
+    completePrequalFormProceed();
+    cy.get("span").not(".usa-error-message");
+    cy.get("div").not(".usa-alert--error");
+  });
 });
 
 const completePrequalFormProceed = () => {

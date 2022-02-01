@@ -25,7 +25,6 @@ import {
   StepIndicatorStep,
 } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinitions";
-import claim_v1_0 from "../../schemas/claim-v1.0.json";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -180,16 +179,8 @@ export const ClaimForm = () => {
       return;
     }
 
-    // Only send the Formik values that map to values in the JSON Schema
-    // TODO recurse for employers and other arrays
-    const schemaValues = Object.keys(currentValues)
-      .filter((key) => Object.keys(claim_v1_0.properties).includes(key))
-      .reduce(
-        (res, key) => Object.assign(res, { [key]: currentValues[key] }),
-        {}
-      );
     const claim: Claim = {
-      ...schemaValues,
+      ...currentValues,
       swa_code: whoami.swa_code,
       claimant_id: whoami.claimant_id,
     };

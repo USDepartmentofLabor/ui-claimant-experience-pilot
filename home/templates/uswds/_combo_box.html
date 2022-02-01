@@ -6,6 +6,14 @@
       class="usa-select usa-combo-box__select"
       name="{{ field_name }}"
       id="{{ field_name }}"
+      {%
+      if
+      required
+      %}
+      required
+      {%
+      endif
+      %}
     >
       <option value>{% translate "--Select--" %}</option>
       {% for key, value in dict_options.items %}

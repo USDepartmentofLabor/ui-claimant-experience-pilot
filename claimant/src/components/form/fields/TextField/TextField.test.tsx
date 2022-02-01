@@ -52,7 +52,23 @@ describe("TextField component", () => {
   });
 
   it("passes a custom className prop to the input element", () => {
-    mockUseField.mockReturnValue([{}, {}]);
+    const mockMeta = {
+      touched: false,
+      error: "",
+      initialError: "",
+      initialTouched: false,
+      initialValue: "",
+      value: "",
+    };
+    const mockField = {
+      value: "",
+      checked: false,
+      onChange: jest.fn(),
+      onBlur: jest.fn(),
+      multiple: undefined,
+      name: "firstName",
+    };
+    mockUseField.mockReturnValue([mockField, mockMeta]);
 
     const { queryByLabelText } = render(
       <TextField

@@ -1,7 +1,10 @@
 {
+  "$schema": "https://unemployment.dol.gov/schemas/claim-v1.0.json",
   "id": "a72549aa-2e4a-488c-ae2f-70db539d7c8d",
   "claimant_id": "opaque-claimaint-string",
   "identity_provider": "test",
+  "identity_assurance_level": 2,
+  "validated_at": "2022-01-26T14:47:02-06:00",
   "swa_code": "XX",
   "birthdate": "2000-01-01",
   "ssn": "900-00-1234",
@@ -12,7 +15,6 @@
     "middle_name": "Rockstar",
     "suffix": "Jr."
   },
-  "LOCAL_claimant_has_alternate_names": false,
   "residence_address": {
     "address1": "456 Main Ave",
     "address2": "Apartment 789",
@@ -20,7 +22,6 @@
     "state": "MO",
     "zipcode": "00000-1234"
   },
-  "LOCAL_mailing_address_same": false,
   "mailing_address": {
     "address1": "123 Any St",
     "city": "Somewhere",
@@ -31,9 +32,7 @@
   "race": ["black", "asian"],
   "ethnicity": "not_hispanic",
   "education_level": "one_year_college_plus",
-  "primary_wage_earner": true,
   "preferred_language": "English",
-  "dependency_allowance": false,
   "federal_income_tax_withheld": true,
   "worked_in_other_states": ["MN", "KS", "MO"],
   "work_authorization": {
@@ -63,7 +62,6 @@
   "employed_in_last_18_months": true,
   "currently_reside_in_us": true,
   "federal_employment_in_last_18_months": false,
-  "refused_any_job_since_last_worked": false,
   "occupation": {
     "job_title": "nurse",
     "job_description": "ER nurse",
