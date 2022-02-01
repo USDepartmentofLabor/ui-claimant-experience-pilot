@@ -20,6 +20,7 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     race: yup
       .array()
       .of(yup.mixed().oneOf(Object.keys(claimForm.race.options)))
+      .min(1, t("race.required"))
       .required(t("race.required")),
     ethnicity: yup
       .mixed()
