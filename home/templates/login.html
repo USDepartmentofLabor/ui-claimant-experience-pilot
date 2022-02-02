@@ -1,6 +1,7 @@
-{% extends "claimant-base.html" %} {% block content %}
+{% extends "base.html" %} {% load i18n %} {% block content %}
 <main role="main">
-  <div class="grid-container usa-section">
+  <div class="grid-container">
+    <h1>{% translate "Test Login" %}</h1>
     <div class="grid-row">
       <form class="usa-form usa-form--large" action="/login/" method="POST">
         <input
@@ -9,7 +10,8 @@
           value="{{ csrf_token }}"
         />
         <fieldset class="usa-fieldset">
-          <legend class="usa-legend usa-legend--large">Test Login</legend>
+          <legend class="usa-legend usa-legend--large"></legend>
+          <div class="clearfix"></div>
 
           <p>
             Required fields are marked with an asterisk (<abbr

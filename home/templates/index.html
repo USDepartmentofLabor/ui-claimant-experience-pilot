@@ -1,16 +1,12 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main">
-  <section class="usa-hero" aria-label="Introduction">
+  <section aria-label="Introduction">
     <div class="grid-container">
-      <div class="usa-hero__callout">
-        <h1 class="usa-hero__heading">
-          {% translate "Unemployment Insurance Claim Application" %}
-        </h1>
-        <p>{% translate "Apply for benefits" %}</p>
-        <a class="usa-button" href="{{base_url}}/prequal/"
-          >{% translate "Get started" %}</a
-        >
-      </div>
+      <h1>{% translate "Unemployment Insurance Claim Application" %}</h1>
+      <p>{% translate "Apply for benefits" %}</p>
+      <a class="usa-button" href="{{base_url}}/prequal/"
+        >{% translate "Get started" %}</a
+      >
     </div>
   </section>
 </main>

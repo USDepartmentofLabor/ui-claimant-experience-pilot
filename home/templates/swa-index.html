@@ -1,4 +1,4 @@
-{% extends "claimant-base.html" %}
+{% extends "base.html" %}
 {% block content %}
 {% load i18n %}
 <div class="grid-container">
@@ -46,7 +46,7 @@
     </script>
 
     <section class="padding-2 bg-accent-cool-lighter">
-      <form id="use-app-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
+      <form id="use-app-form" class="dol-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
         <fieldset class="usa-fieldset">
           <legend class="usa-legend">{% translate "Do you wish to apply for unemployment benefits using APPNAME HERE system?" %}</legend>
           <input type="hidden" name="swa" id="swa" value="{{ swa.code }}" />
