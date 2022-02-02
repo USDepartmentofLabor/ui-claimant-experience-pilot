@@ -39,7 +39,7 @@ export const ClaimantNames = () => {
       <LiveMessage aria-live="polite" message={liveMessageContent} />
       <br />
       {values.LOCAL_claimant_has_alternate_names === true && (
-        <Fieldset legend={t("alternate_name")} id="alternate_names_fieldset">
+        <Fieldset legend={t("alternate_name")}>
           <FieldArray
             name="alternate_names"
             render={() => {
