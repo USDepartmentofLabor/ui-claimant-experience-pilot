@@ -5,6 +5,7 @@ from logindotgov.mock_server import OIDC as MockServer
 from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
+from api.test_utils import create_swa
 from api.models import IdentityProvider, Claimant
 import logging
 
@@ -47,7 +48,12 @@ class LoginDotGovTestCase(TestCase):
 
     @override_settings(DEBUG=True)  # so that /explain works
     def test_oidc_flow(self):
-        response = self.client.get("/logindotgov/")
+        swa, _ = create_swa(is_active=True)
+        # swa= or swa_code= will both work
+        response = self.client.get(f"/logindotgov/?swa_code={swa.code}")
+        self.assertEquals(response.status_code, 302)
+
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
@@ -87,12 +93,13 @@ class LoginDotGovTestCase(TestCase):
 
     @override_settings(DEBUG=True)  # so that /explain works
     def test_ial1(self):
+        swa, _ = create_swa(is_active=True)
         # ial == 2 unless explicitly == 1
-        response = self.client.get("/logindotgov/?ial=0")
+        response = self.client.get(f"/logindotgov/?ial=0&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
         self.assertEquals(self.client.session["IAL"], 2)
 
-        response = self.client.get("/logindotgov/?ial=1")
+        response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
         self.assertEquals(self.client.session["IAL"], 1)
 
@@ -135,7 +142,16 @@ class LoginDotGovTestCase(TestCase):
         )
 
     def test_oidc_errors(self):
+        # missing swa is 403 error
         response = self.client.get("/logindotgov/")
+        self.assertEquals(response.status_code, 403)
+
+        # invalid swa is 404 not found
+        response = self.client.get("/logindotgov/?swa=XX")
+        self.assertEquals(response.status_code, 404)
+
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
@@ -176,11 +192,12 @@ class LoginDotGovTestCase(TestCase):
         )
 
     def test_redirect_to(self):
+        swa, _ = create_swa(is_active=True)
         session = self.client.session
         session["redirect_to"] = "/some/place/else"
         session.save()
 
-        response = self.client.get("/logindotgov/")
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
@@ -209,6 +226,7 @@ class LoginDotGovTestCase(TestCase):
         )
 
     def test_swa_selection(self):
-        response = self.client.get("/logindotgov/?swa=XX")
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.client.session["swa"], "XX")
+        self.assertEquals(self.client.session["swa"], swa.code)

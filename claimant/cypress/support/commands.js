@@ -55,7 +55,10 @@ Cypress.Commands.add("real_login", (email) => {
     .type(email || "someone@example.com");
   cy.get("#ssn").should("be.visible").type(FAKE_SSN);
   cy.get("#birthdate").should("be.visible").type(FAKE_BIRTHDATE);
-  cy.get("[data-testid='loginbutton']").should("be.visible").click();
+  cy.get("[data-testid='loginbutton']")
+    .scrollIntoView()
+    .should("be.visible")
+    .click();
 });
 
 Cypress.Commands.add("post_login", (email) => {

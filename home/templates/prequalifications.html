@@ -1,4 +1,4 @@
-{% extends "claimant-base.html" %} {% block content %}{% load i18n %}
+{% extends "base.html" %} {% block content %}{% load i18n %}
 <!-- prettier-ignore -->
 <script type="text/JavaScript">
   // namespace just so we don't accidentally step on reserved words
@@ -119,7 +119,7 @@
 <div class="grid-container">
     <main>
         <h1>{% translate "Prequalification" %}</h1>
-        <form method="POST" class="usa-form--large" id="prequalification-form" onsubmit="return false">
+        <form method="POST" class="dol-form usa-form--large" id="prequalification-form" onsubmit="return false">
           {% include './uswds/_alert_error.html' %}
 
           <section>
