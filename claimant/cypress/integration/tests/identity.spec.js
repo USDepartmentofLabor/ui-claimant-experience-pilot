@@ -1,4 +1,4 @@
-import faker from "faker";
+import faker from "@faker-js/faker";
 import { FAKE_BIRTHDATE, FAKE_SSN } from "../../support/commands";
 
 /* eslint-disable no-undef */

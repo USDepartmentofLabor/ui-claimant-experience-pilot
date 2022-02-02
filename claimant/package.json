@@ -34,6 +34,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.11",
     "@cypress/instrument-cra": "^1.4.0",
+    "@faker-js/faker": "^6.0.0-alpha.5",
     "@storybook/addon-a11y": "^6.4.18",
     "@storybook/addon-actions": "^6.4.9",
     "@storybook/addon-essentials": "^6.4.17",
@@ -60,7 +61,6 @@
     "eslint": "^8.7.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
-    "faker": "^5.5.3",
     "http-proxy-middleware": "^2.0.1",
     "msw": "^0.36.3",
     "nyc-config-tsx": "^0.1.0",

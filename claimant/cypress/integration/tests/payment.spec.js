@@ -1,4 +1,4 @@
-import faker from "faker";
+import faker from "@faker-js/faker";
 
 /* eslint-disable no-undef */
 context("Payment section of Claim form", { scrollBehavior: "center" }, () => {
