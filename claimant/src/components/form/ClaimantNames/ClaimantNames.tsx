@@ -5,15 +5,24 @@ import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 import { useTranslation } from "react-i18next";
+import { LiveMessage } from "react-aria-live";
 
 export const ClaimantNames = () => {
   const { values } = useFormikContext<Claim>();
   const { t } = useTranslation("claimForm", { keyPrefix: "name" });
+  const { t: commonT } = useTranslation("common");
 
   useClearFields(values.LOCAL_claimant_has_alternate_names === false, {
     fieldName: "alternate_names",
     value: [],
   });
+
+  let liveMessageContent = "";
+  if (values.LOCAL_claimant_has_alternate_names === true) {
+    liveMessageContent = commonT("expanded_content.revealed");
+  } else if (values.LOCAL_claimant_has_alternate_names === false) {
+    liveMessageContent = commonT("expanded_content.collapsed");
+  }
 
   return (
     <>
@@ -27,9 +36,10 @@ export const ClaimantNames = () => {
           name="LOCAL_claimant_has_alternate_names"
         />
       </Fieldset>
+      <LiveMessage aria-live="polite" message={liveMessageContent} />
       <br />
       {values.LOCAL_claimant_has_alternate_names === true && (
-        <Fieldset legend={t("alternate_name")}>
+        <Fieldset legend={t("alternate_name")} id="alternate_names_fieldset">
           <FieldArray
             name="alternate_names"
             render={() => {

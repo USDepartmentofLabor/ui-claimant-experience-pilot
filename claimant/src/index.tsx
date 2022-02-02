@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes as ROUTES } from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import FlagsWrapper from "./pages/FlagsWrapper/FlagsWrapper";
+import { LiveAnnouncer } from "react-aria-live";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,9 @@ ReactDOM.render(
     <BrowserRouter basename={ROUTES.BASE_ROUTE}>
       <FlagsWrapper>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <LiveAnnouncer>
+            <App />
+          </LiveAnnouncer>
         </QueryClientProvider>
       </FlagsWrapper>
     </BrowserRouter>
