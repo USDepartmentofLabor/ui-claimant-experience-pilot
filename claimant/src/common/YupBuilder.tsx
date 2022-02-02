@@ -3,6 +3,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ISO_8601_DATE, USER_FACING_DATE_INPUT_FORMAT } from "../utils/format";
+import states from "../fixtures/states.json";
 
 // TODO setLocale to customize min/max/matches errors
 // https://github.com/jquense/yup#error-message-customization
@@ -34,7 +35,10 @@ export const yupAddress = (t: TFunction<"claimForm">) =>
     address1: yup.string().max(64).required(t("address.address1.required")),
     address2: yup.string().max(64),
     city: yup.string().max(64).required(t("address.city.required")),
-    state: yup.string().max(2).required(t("address.state.required")), // TODO enum?
+    state: yup
+      .string()
+      .oneOf(Object.keys(states))
+      .required(t("address.state.required")),
     zipcode: yup
       .string()
       .max(12)
