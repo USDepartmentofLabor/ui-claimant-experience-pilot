@@ -1,8 +1,9 @@
-import { render } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import { Formik } from "formik";
 
-import { Address, StateAbbrev } from "./Address";
+import { Address } from "./Address";
 import { noop } from "../../../testUtils/noop";
+import { StateAbbrev } from "../StatesDropdown/StatesDropdown";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -52,6 +53,9 @@ describe("Address component", () => {
     expect(stateField).toHaveValue("");
     expect(stateField).toHaveAttribute("id", `${basename}.state`);
     expect(stateField).toHaveAttribute("name", `${basename}.state`);
+    expect(stateField.children.length).toBe(stateSlice.length + 1);
+    expect(within(stateField).getByText("Alabama"));
+    expect(within(stateField).getByText("Wyoming"));
   });
 
   it("renders all states by default", () => {

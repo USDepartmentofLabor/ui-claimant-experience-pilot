@@ -3,7 +3,6 @@ import { Fieldset } from "@trussworks/react-uswds";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { DateInputField } from "../../../components/form/fields/DateInputField/DateInputField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
-import states from "../../../fixtures/states.json";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
 import claimForm from "../../../i18n/en/claimForm";
 import { useFormikContext } from "formik";
@@ -12,6 +11,7 @@ import { useClearFields } from "../../../hooks/useClearFields";
 import { IPageDefinition } from "../../PageDefinitions";
 import * as yup from "yup";
 import { yupDate } from "../../../common/YupBuilder";
+import { StatesDropdown } from "../../../components/form/StatesDropdown/StatesDropdown";
 
 export const Identity = () => {
   const { t } = useTranslation("claimForm");
@@ -59,17 +59,11 @@ export const Identity = () => {
         name="state_credential.drivers_license_or_state_id_number"
         type="text"
       />
-      {/* TODO: States Dropdown reusable component (see Address)? */}
-      {/* TODO: "- Select -" vs "-- Select One --"   */}
-      <DropdownField
+      <StatesDropdown
         label={t("state_credential.issuer.label")}
         id="state_credential.issuer"
         name="state_credential.issuer"
         startEmpty
-        options={Object.entries(states).map(([key, value]) => ({
-          label: value,
-          value: key,
-        }))}
       />
       <Fieldset legend={t("work_authorization.authorized_to_work.label")}>
         <BooleanRadio

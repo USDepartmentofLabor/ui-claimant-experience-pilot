@@ -1,10 +1,7 @@
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
-import DropdownField from "../fields/DropdownField/DropdownField";
-import states from "../../../fixtures/states.json";
 import { FormGroup } from "@trussworks/react-uswds";
-
-export type StateAbbrev = keyof typeof states;
+import { StateAbbrev, StatesDropdown } from "../StatesDropdown/StatesDropdown";
 
 interface IAddressLabels {
   address1: string;
@@ -20,15 +17,6 @@ interface IAddressProps {
   stateSlice?: StateAbbrev[];
 }
 
-interface IStates {
-  [key: string]: string;
-}
-
-const statesByAbbrev: IStates = states;
-const stateOptions: StateType[] = Object.keys(statesByAbbrev).map((abbrev) => {
-  return { value: abbrev, label: statesByAbbrev[abbrev] };
-});
-
 export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
   const { t } = useTranslation("common");
   const defaultLabels: IAddressLabels = {
@@ -38,13 +26,6 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
     state: t("address.state.label"),
     zipcode: t("address.zipcode.label"),
   };
-
-  let stateDropdownOptions: StateType[] = stateOptions;
-  if (stateSlice) {
-    stateDropdownOptions = stateOptions.filter(
-      (opt) => !stateSlice.includes(opt.value as StateAbbrev)
-    );
-  }
 
   return (
     <FormGroup>
@@ -69,13 +50,13 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
         id={`${basename}.city`}
         data-testid={`${basename}.city`}
       />
-      <DropdownField
+      <StatesDropdown
         name={`${basename}.state`}
         label={labels ? labels.state : defaultLabels.state}
         id={`${basename}.state`}
         data-testid={`${basename}.state`}
         startEmpty
-        options={stateDropdownOptions}
+        stateSlice={stateSlice}
       />
       <TextField
         // TODO pass medium
