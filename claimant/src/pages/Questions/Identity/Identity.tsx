@@ -46,9 +46,13 @@ export const Identity = () => {
         readOnly
         disabled
       />
-      <Fieldset legend={t("birthdate.label")}>
-        <DateInputField id="birthdate" name="birthdate" readOnly disabled />
-      </Fieldset>
+      <DateInputField
+        legend={t("birthdate.label")}
+        id="birthdate"
+        name="birthdate"
+        readOnly
+        disabled
+      />
       <TextField
         label={t("state_credential.drivers_license_or_state_id_number.label")}
         id="state_credential.drivers_license_or_state_id_number"
