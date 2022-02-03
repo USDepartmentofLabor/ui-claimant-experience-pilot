@@ -73,11 +73,6 @@ type PhoneType = {
 
 type YesNo = "yes" | "no";
 
-type StateType = {
-  value: string;
-  label: string;
-};
-
 type ClaimantNamesType = {
   claimant_name?: PersonName;
   LOCAL_claimant_has_alternate_names?: boolean;

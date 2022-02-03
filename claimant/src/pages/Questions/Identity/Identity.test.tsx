@@ -1,5 +1,5 @@
 import { Identity, IdentityPage } from "./Identity";
-import { render, waitFor, within } from "@testing-library/react";
+import { screen, render, waitFor, within } from "@testing-library/react";
 import { Formik } from "formik";
 import { noop } from "../../../testUtils/noop";
 import userEvent from "@testing-library/user-event";
@@ -14,29 +14,30 @@ jest.mock("react-i18next", () => ({
 
 describe("Identity Information Page", () => {
   it("renders properly", () => {
-    const { getByLabelText, queryByLabelText, getByRole } = render(
+    render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
         <Identity />
       </Formik>
     );
 
-    const socialSecurityNumber = queryByLabelText("ssn.label");
-    const dateOfBirthFieldset = getByRole("group", {
-      name: "birthdate.label",
-    });
+    const socialSecurityNumber = screen.queryByLabelText("ssn.label");
+    const dateOfBirthLabel = screen.getByText("birthdate.label");
+    const dateOfBirthFields = screen.getByTestId("birthdate.parent-div");
     const dateOfBirthMonth =
-      within(dateOfBirthFieldset).queryByLabelText("date.month.label");
+      within(dateOfBirthFields).queryByLabelText("date.month.label");
     const dateOfBirthDay =
-      within(dateOfBirthFieldset).queryByLabelText("date.day.label");
+      within(dateOfBirthFields).queryByLabelText("date.day.label");
     const dateOfBirthYear =
-      within(dateOfBirthFieldset).queryByLabelText("date.year.label");
-    const idNumber = queryByLabelText(
+      within(dateOfBirthFields).queryByLabelText("date.year.label");
+    const idNumber = screen.queryByLabelText(
       "state_credential.drivers_license_or_state_id_number.label"
     );
 
-    const stateDropdown = queryByLabelText("state_credential.issuer.label");
+    const stateDropdown = screen.queryByLabelText(
+      "state_credential.issuer.label"
+    );
 
-    const authorizedToWorkInUSRadioGroup = getByRole("group", {
+    const authorizedToWorkInUSRadioGroup = screen.getByRole("group", {
       name: "work_authorization.authorized_to_work.label",
     });
     const yesAuthorizedToWorkInUS = within(
@@ -46,7 +47,7 @@ describe("Identity Information Page", () => {
       authorizedToWorkInUSRadioGroup
     ).queryByLabelText("no");
 
-    const alienRegistrationTypeDropdown = getByLabelText(
+    const alienRegistrationTypeDropdown = screen.getByLabelText(
       "work_authorization.authorization_type.label"
     );
     const usCitizenOption = within(alienRegistrationTypeDropdown).queryByText(
@@ -66,6 +67,7 @@ describe("Identity Information Page", () => {
     expect(socialSecurityNumber).toBeInTheDocument();
     expect(socialSecurityNumber).toBeDisabled();
 
+    expect(dateOfBirthLabel).toBeInTheDocument();
     expect(dateOfBirthMonth).toBeInTheDocument();
     expect(dateOfBirthMonth).toBeDisabled();
 
@@ -85,13 +87,13 @@ describe("Identity Information Page", () => {
   });
 
   it("hides and shows explanation field", async () => {
-    const { getByRole, queryByLabelText, findByLabelText } = render(
+    render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
         <Identity />
       </Formik>
     );
 
-    const authorizedToWorkInUSRadioGroup = getByRole("group", {
+    const authorizedToWorkInUSRadioGroup = screen.getByRole("group", {
       name: "work_authorization.authorized_to_work.label",
     });
     const yesAuthorizedToWorkInUS = within(
@@ -105,14 +107,14 @@ describe("Identity Information Page", () => {
     expect(noAuthorizedToWorkInUS).toBeInTheDocument();
     // Field is hidden
     expect(
-      queryByLabelText(
+      screen.queryByLabelText(
         "work_authorization.not_authorized_to_work_explanation.label"
       )
     ).not.toBeInTheDocument();
 
     // Toggle field to show up
     userEvent.click(noAuthorizedToWorkInUS);
-    const notAllowedToWorkInUSExplanationField = await findByLabelText(
+    const notAllowedToWorkInUSExplanationField = await screen.findByLabelText(
       "work_authorization.not_authorized_to_work_explanation.label"
     );
     expect(notAllowedToWorkInUSExplanationField).toBeInTheDocument();
@@ -125,13 +127,13 @@ describe("Identity Information Page", () => {
   });
 
   it("hides and shows alien registration number field", async () => {
-    const { queryByLabelText, getByLabelText, findByLabelText } = render(
+    render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
         <Identity />
       </Formik>
     );
 
-    const alienRegistrationTypeDropdown = getByLabelText(
+    const alienRegistrationTypeDropdown = screen.getByLabelText(
       "work_authorization.authorization_type.label"
     );
     const usCitizenOption = within(alienRegistrationTypeDropdown).getByText(
@@ -150,7 +152,9 @@ describe("Identity Information Page", () => {
 
     // Field is hidden
     expect(
-      queryByLabelText("work_authorization.alien_registration_number.label")
+      screen.queryByLabelText(
+        "work_authorization.alien_registration_number.label"
+      )
     ).not.toBeInTheDocument();
 
     // Toggle field to show up
@@ -158,7 +162,7 @@ describe("Identity Information Page", () => {
       alienRegistrationTypeDropdown,
       permanentResidentOption
     );
-    const alienRegistrationNumberField = await findByLabelText(
+    const alienRegistrationNumberField = await screen.findByLabelText(
       "work_authorization.alien_registration_number.label"
     );
     expect(alienRegistrationNumberField).toBeInTheDocument();

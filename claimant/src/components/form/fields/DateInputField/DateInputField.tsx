@@ -1,10 +1,16 @@
-import { DateInput, ErrorMessage, FormGroup } from "@trussworks/react-uswds";
+import {
+  DateInput,
+  ErrorMessage,
+  FormGroup,
+  Fieldset,
+} from "@trussworks/react-uswds";
 import { useField } from "formik";
 import {
   ChangeEventHandler,
   ComponentProps,
   FocusEventHandler,
   KeyboardEventHandler,
+  ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -37,6 +43,8 @@ type DateFieldProps = {
   monthProps?: DateInputProps;
   dayProps?: DateInputProps;
   yearProps?: DateInputProps;
+  legend?: ReactNode;
+  legendSrOnly?: boolean;
 };
 
 const MONTH_MAX_LENGTH = 2;
@@ -55,6 +63,8 @@ export const DateInputField = ({
   monthProps,
   dayProps,
   yearProps,
+  legend,
+  legendSrOnly,
 }: DateFieldProps) => {
   const { t } = useTranslation("common");
   const [fieldProps, metaProps, fieldHelperProps] = useField<
@@ -163,65 +173,82 @@ export const DateInputField = ({
   const showError = useShowErrors(name);
 
   return (
-    <FormGroup error={showError} className={styles.noMargin}>
-      {hint && (
-        <span className="usa-hint" id={`${id}.hint`}>
-          {hint}
-        </span>
-      )}
-      <div className="usa-memorable-date" ref={dateDivRef}>
-        <DateInput
-          id={`${id}.month`}
-          name={`${name}.month`}
-          value={month}
-          label={t("date.month.label")}
-          unit={"month"}
-          minLength={2}
-          maxLength={MONTH_MAX_LENGTH}
-          onBlur={handleBlur}
-          readOnly={readOnly}
-          disabled={disabled}
-          inputRef={monthInputRef}
-          onKeyPress={handleKeyPress}
-          {...monthProps}
-          onChange={handleMonthChange}
-        />
-        <DateInput
-          id={`${id}.day`}
-          name={`${name}.day`}
-          value={day}
-          label={t("date.day.label")}
-          unit={"day"}
-          minLength={2}
-          maxLength={DAY_MAX_LENGTH}
-          onBlur={handleBlur}
-          readOnly={readOnly}
-          disabled={disabled}
-          inputRef={dayInputRef}
-          onKeyDown={handleDayKeydown}
-          onKeyPress={handleKeyPress}
-          {...dayProps}
-          onChange={handleDayChange}
-        />
-        <DateInput
-          id={`${id}.year`}
-          name={`${name}.year`}
-          value={year}
-          label={t("date.year.label")}
-          unit={"year"}
-          minLength={4}
-          maxLength={YEAR_MAX_LENGTH}
-          onBlur={handleBlur}
-          readOnly={readOnly}
-          disabled={disabled}
-          inputRef={yearInputRef}
-          onKeyDown={handleYearKeydown}
-          onKeyPress={handleKeyPress}
-          {...yearProps}
-          onChange={handleYearChange}
-        />
-      </div>
-      {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
+    <FormGroup error={showError}>
+      <Fieldset
+        className={styles.noTopMarginLegend}
+        legend={
+          showError ? (
+            <span className="usa-label--error">{legend}</span>
+          ) : (
+            legend
+          )
+        }
+        legendSrOnly={legendSrOnly}
+      >
+        {hint && (
+          <span className="usa-hint" id={`${id}.hint`}>
+            {hint}
+          </span>
+        )}
+        <div
+          id={id}
+          className="usa-memorable-date"
+          ref={dateDivRef}
+          data-testid={`${name}.parent-div`}
+        >
+          <DateInput
+            id={`${id}.month`}
+            name={`${name}.month`}
+            value={month}
+            label={t("date.month.label")}
+            unit={"month"}
+            minLength={2}
+            maxLength={MONTH_MAX_LENGTH}
+            onBlur={handleBlur}
+            readOnly={readOnly}
+            disabled={disabled}
+            inputRef={monthInputRef}
+            onKeyPress={handleKeyPress}
+            {...monthProps}
+            onChange={handleMonthChange}
+          />
+          <DateInput
+            id={`${id}.day`}
+            name={`${name}.day`}
+            value={day}
+            label={t("date.day.label")}
+            unit={"day"}
+            minLength={2}
+            maxLength={DAY_MAX_LENGTH}
+            onBlur={handleBlur}
+            readOnly={readOnly}
+            disabled={disabled}
+            inputRef={dayInputRef}
+            onKeyDown={handleDayKeydown}
+            onKeyPress={handleKeyPress}
+            {...dayProps}
+            onChange={handleDayChange}
+          />
+          <DateInput
+            id={`${id}.year`}
+            name={`${name}.year`}
+            value={year}
+            label={t("date.year.label")}
+            unit={"year"}
+            minLength={4}
+            maxLength={YEAR_MAX_LENGTH}
+            onBlur={handleBlur}
+            readOnly={readOnly}
+            disabled={disabled}
+            inputRef={yearInputRef}
+            onKeyDown={handleYearKeydown}
+            onKeyPress={handleKeyPress}
+            {...yearProps}
+            onChange={handleYearChange}
+          />
+        </div>
+        {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
+      </Fieldset>
     </FormGroup>
   );
 };
