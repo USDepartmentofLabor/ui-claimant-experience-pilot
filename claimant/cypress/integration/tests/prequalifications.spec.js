@@ -45,6 +45,29 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
     cy.get("span").not(".usa-error-message");
     cy.get("div").not(".usa-alert--error");
   });
+
+  it("redirects to IdP if prequal has already been completed", () => {
+    cy.visit("/prequal/");
+    completePrequalFormProceed();
+    cy.get("button").contains("Next").click();
+    cy.url().should("contain", "/idp/?swa=NJ");
+    // Redirect part
+    cy.visit("/prequal/");
+    cy.url().should("contain", "/idp/");
+  });
+
+  it("redirects to prequal when trying to visit IdP first", () => {
+    cy.visit("/idp/");
+    cy.url().should("contain", "/prequal/");
+  });
+
+  it("ignores expired prequal cookie", () => {
+    cy.setCookie("prequal_complete", "true", {
+      expiry: new Date().getTime() / 1000 - 10,
+    });
+    cy.visit("/idp/");
+    cy.url().should("contain", "/prequal/");
+  });
 });
 
 const selectState = (state) => {

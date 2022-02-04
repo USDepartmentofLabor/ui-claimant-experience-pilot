@@ -1,0 +1,6 @@
+/* eslint-disable */
+function hasCompletedPrequal() {
+  return !!document.cookie.split("; ").some(function (row) {
+    return row.startsWith("prequal_complete=");
+  });
+}

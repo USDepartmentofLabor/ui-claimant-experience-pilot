@@ -1,6 +1,12 @@
 {% extends "base.html" %} {% block content %}{% load i18n %}
 <!-- prettier-ignore -->
 <script type="text/JavaScript">
+  // Redirect claimant if already completed prequal
+  {% include "_has_completed_prequal.jssnip" %}
+  if (hasCompletedPrequal()) {
+    window.location.replace("/idp/");
+  }
+
   // namespace just so we don't accidentally step on reserved words
   const USDOL = {
     prequalFields: {
@@ -104,7 +110,9 @@
       // TODO GA event
 
       if (canProceed) {
-        // TODO set cookie to say we passed so that /idp/ page knows it's ok to proceed.
+        // Set cookie to say we passed so that /idp/ page knows it's ok to proceed
+        const maxAge = 60 * 60 * 24 * 7;
+        document.cookie = `prequal_complete=true; max-age=${maxAge}; path=/; secure`
 
         const loginUrl = `/idp/?swa=${formData.get("swa_code")}`;
         window.location = loginUrl;
