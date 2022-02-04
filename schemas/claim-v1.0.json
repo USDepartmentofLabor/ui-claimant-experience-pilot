@@ -43,7 +43,7 @@
         "state": { "$ref": "#/definitions/state" },
         "zipcode": {
           "type": "string",
-          "maxLength": 12,
+          "maxLength": 10,
           "pattern": "^\\d{5}(-\\d{4})?$"
         }
       },
@@ -60,7 +60,7 @@
         "state": { "$ref": "#/definitions/state" },
         "zipcode": {
           "type": "string",
-          "maxLength": 12,
+          "maxLength": 10,
           "pattern": "^\\d{5}(-\\d{4})?$"
         }
       },
