@@ -123,6 +123,7 @@ if os.environ.get("COLOR_LOGGING", "false").lower() == "true":  # pragma: no cov
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "api",
     "login-dot-gov",
@@ -273,6 +274,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "claimant", "build", "static"),)
+WHITENOISE_ROOT = STATIC_ROOT
 
 TEMPLATES = [
     {

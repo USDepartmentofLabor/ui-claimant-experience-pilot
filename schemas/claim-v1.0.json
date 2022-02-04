@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ui.dol.gov/schemas/claim-v1.0.json",
+  "$id": "https://unemployment.dol.gov/schemas/claim-v1.0.json",
   "title": "UI Claimant Application Form",
   "description": "Unemployment Insurance claimant application form schema",
   "type": "object",
@@ -43,7 +43,7 @@
         "state": { "$ref": "#/definitions/state" },
         "zipcode": {
           "type": "string",
-          "maxLength": 12,
+          "maxLength": 10,
           "pattern": "^\\d{5}(-\\d{4})?$"
         }
       },
@@ -60,7 +60,7 @@
         "state": { "$ref": "#/definitions/state" },
         "zipcode": {
           "type": "string",
-          "maxLength": 12,
+          "maxLength": 10,
           "pattern": "^\\d{5}(-\\d{4})?$"
         }
       },
@@ -665,6 +665,7 @@
     "identity_assurance_level": {
       "description": "https://pages.nist.gov/800-63-3-Implementation-Resources/63A/ial2remote/",
       "type": "integer",
+      "enum": [1, 2],
       "default": 2
     },
     "swa_code": {

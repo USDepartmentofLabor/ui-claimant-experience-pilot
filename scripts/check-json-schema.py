@@ -5,10 +5,15 @@
 
 import json
 import sys
+import os
 import pprint
 import jsonref
 from jsonschema.validators import validator_for
 from jsonschema import FormatChecker
+
+if len(sys.argv) < 2:
+    print(f"usage: {sys.argv[0]} path/to/schema.json path/to/instance.json")
+    exit(1)
 
 schema_file = sys.argv[1]
 instance_file = sys.argv[2]
@@ -25,5 +30,10 @@ errors = []
 for err in validator.iter_errors(instance=instance):
     errors.append(err)
 
-pprint.pprint(schema)
-pprint.pprint(errors)
+if os.environ.get("DEBUG"):
+    pprint.pprint(schema)
+
+if len(errors) == 0:
+    print("{} ok".format(instance_file))
+else:
+    pprint.pprint(errors)

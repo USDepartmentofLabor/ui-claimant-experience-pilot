@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unemployment.dol.gov/schemas/identity-v1.0.json",
+  "id": "19c05261-db64-4c78-ad54-4e1a75fdc508",
+  "swa_xid": "35188697-18d5-44c0-bc59-0347930095c9",
+  "claimant_id": "opaque-claimaint-string",
+  "identity_provider": "login.gov",
+  "identity_assurance_level": 1,
+  "validated_at": "2022-02-26T14:47:02-06:00",
+  "swa_code": "XX",
+  "email": "someone@example.com",
+  "all_emails": ["someone@example.net"]
+}
