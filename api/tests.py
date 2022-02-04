@@ -908,6 +908,17 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
 
+    def test_example_identity_instances(self):
+        for ial in [1, 2]:
+            example = (
+                settings.BASE_DIR / "schemas" / f"identity-v1.0-example-ial{ial}.json"
+            )
+            with open(example) as f:
+                json_str = f.read()
+            cv = ClaimValidator(json_decode(json_str), schema_name="identity-v1.0")
+            logger.debug("🚀 IAL{} identity errors={}".format(ial, cv.errors_as_dict()))
+            self.assertTrue(cv.valid)
+
     def test_claim_validator(self):
         claim = self.base_claim()
         cv = ClaimValidator(claim)

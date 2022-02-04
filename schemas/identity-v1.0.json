@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unemployment.dol.gov/schemas/claim-v1.0.json",
+  "title": "UI Claimant Identity",
+  "description": "Unemployment Insurance claimant identity",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "email": {
+      "$id": "/definitions/email",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Email address verified via identity_provider",
+      "type": "string",
+      "format": "email",
+      "maxLength": 128,
+      "comment": "Note that JSON Schema validation of email format is notoriously loose but identity providers confirm the email address itself so we trust only what we get from them"
+    }
+  },
+  "required": [
+    "email",
+    "id",
+    "claimant_id",
+    "identity_provider",
+    "identity_assurance_level",
+    "swa_code",
+    "validated_at"
+  ],
+  "properties": {
+    "id": {
+      "description": "Unique identifier",
+      "type": "string",
+      "format": "uuid"
+    },
+    "claimant_id": {
+      "description": "Identifier for the Claimant. Unique to the Identity Provider used.",
+      "type": "string"
+    },
+    "swa_xid": {
+      "description": "Cross-reference ID provided by the SWA at the time of requesting Identity check",
+      "type": "string"
+    },
+    "identity_provider": {
+      "description": "Name of the Identity Provider used to authenticate the Claimant",
+      "type": "string"
+    },
+    "identity_assurance_level": {
+      "description": "https://pages.nist.gov/800-63-3-Implementation-Resources/63A/ial2remote/",
+      "type": "integer",
+      "enum": [1, 2]
+    },
+    "swa_code": {
+      "description": "2-letter code identifying the State Workforce Agency",
+      "type": "string"
+    },
+    "validated_at": {
+      "description": "Datetime of the last time the Claim was validated against this schema",
+      "type": "string",
+      "format": "date-time"
+    },
+    "$schema": {
+      "description": "URL of this schema",
+      "type": "string"
+    },
+    "birthdate": {
+      "description": "Date of birth",
+      "type": "string",
+      "format": "date"
+    },
+    "phone": {
+      "description": "Verified phone number",
+      "type": "string"
+    },
+    "ssn": {
+      "description": "Social Security Number",
+      "type": "string",
+      "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$"
+    },
+    "verified_at": {
+      "description": "Date of IAL2 verification, when known",
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_name": {
+      "description": "Given name",
+      "type": "string"
+    },
+    "last_name": {
+      "description": "Family name",
+      "type": "string"
+    },
+    "address": {
+      "description": "Verified address",
+      "type": "object",
+      "properties": {
+        "address1": { "type": "string", "maxLength": 64 },
+        "address2": { "type": "string", "maxLength": 64 },
+        "city": { "type": "string", "maxLength": 64 },
+        "state": { "type": "string", "maxLength": 2, "minLength": 2 },
+        "zipcode": {
+          "type": "string",
+          "maxLength": 12,
+          "pattern": "^\\d{5}(-\\d{4})?$"
+        }
+      },
+      "required": ["address1", "city", "state", "zipcode"]
+    },
+    "email": {
+      "description": "Verified via identity_provider",
+      "$ref": "#/definitions/email"
+    },
+    "all_emails": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/email" }
+    }
+  }
+}
