@@ -51,6 +51,7 @@ def idp(request):
         None,
         "idp.html",
         {
+            "onchange": False,  # to avoid uninit var warnings
             "swa": request.GET.get("swa", None),
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
@@ -120,6 +121,7 @@ def login(request):
             None,
             "login.html",
             {
+                "required": False,  # to avoid uninit var warnings
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
                 "swa": request.GET.get(

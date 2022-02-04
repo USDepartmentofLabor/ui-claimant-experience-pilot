@@ -56,14 +56,35 @@ class HomeTestCase(TestCase):
                 "IAL": "2",
             },
         )
-        self.assertEquals(claimant.events.last().description, "2")
+        self.assertEquals(claimant.last_login_event().description, "2")
         self.assertEquals(
-            claimant.events.last().category, Claimant.EventCategories.LOGGED_IN
+            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
         )
+        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
+        self.assertEquals(claimant.events.last().description, "1 => 2")
+        self.assertEquals(claimant.IAL, 2)
 
         # GET or POST only
         response = self.client.head("/login/")
         self.assertEquals(response.status_code, 405)
+
+    def test_IAL_bump(self):
+        self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "1",
+            },
+        )
+        claimant = Claimant.objects.last()
+        self.assertEquals(claimant.last_login_event().description, "1")
+        self.assertEquals(
+            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
+        )
+        self.assertEquals(claimant.events.count(), 1)
+        self.assertEquals(claimant.IAL, 1)
 
     def test_logout_page(self):
         self.client.post(
