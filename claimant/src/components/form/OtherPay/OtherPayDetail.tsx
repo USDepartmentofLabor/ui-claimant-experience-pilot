@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Fieldset, FormGroup } from "@trussworks/react-uswds";
+import { FormGroup } from "@trussworks/react-uswds";
 
 import TextAreaField from "../fields/TextAreaField/TextAreaField";
 import TextField from "../fields/TextField/TextField";
@@ -33,16 +33,13 @@ const OtherPayDetail = (props: {
           min="0"
           step=".01"
         />
-        <Fieldset
+        <DateInputField
           legend={t("other_pay_detail.date_received.label", {
             payType: label,
           })}
-        >
-          <DateInputField
-            id={`${name}.date_received`}
-            name={`${name}.date_received`}
-          />
-        </Fieldset>
+          id={`${name}.date_received`}
+          name={`${name}.date_received`}
+        />
         <TextAreaField
           id={`${name}.note`}
           name={`${name}.note`}

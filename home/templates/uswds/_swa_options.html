@@ -1,10 +1,16 @@
 {% load i18n %}
-<label class="usa-label" for="swa_code"
-  >{% translate "Select your state" %}</label
->
-<select name="swa_code" class="usa-select" id="swa_code" {% if onchange %}onchange="{{ onchange }}"{% endif %}>
-  <option disabled {% if not swa %}selected{% endif %} value>-{% translate "Select" %}-</option>
-  {% for s in swas %}
-  <option value="{{s.code}}" {% if swa and swa == s.code %} selected {% endif %}>{{s.name}}</option>
-  {% endfor %}
-</select>
+<div class="usa-form-group">
+  <label class="usa-label" for="swa_code">{% translate "Select your state" %}</label>
+  <select
+    name="swa_code"
+    class="usa-select"
+    id="swa_code"
+    {% if required %}required{% endif %}
+    {% if onchange %}onchange="{{ onchange }}"{% endif %}
+    >
+    <option disabled {% if not swa %}selected{% endif %} value>-{% translate "Select" %}-</option>
+    {% for s in swas %}
+    <option value="{{s.code}}" {% if swa and swa == s.code %} selected {% endif %}>{{s.name}}</option>
+    {% endfor %}
+  </select>
+</div>

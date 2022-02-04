@@ -7,10 +7,10 @@ import secrets
 import os
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
 from core.utils import session_as_dict, hash_idp_user_xid
-from api.models import Claimant, IdentityProvider
+from api.models import Claimant, IdentityProvider, SWA
 from django.conf import settings
 from api.whoami import WhoAmI, WhoAmIAddress
-from home.views import base_url
+from home.views import base_url, handle_404
 
 logger = logging.getLogger("logindotgov")
 
@@ -18,6 +18,9 @@ if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":
     logindotgov_config = None
 else:  # pragma: no cover
     logindotgov_config = LoginDotGovOIDCClient.discover()
+
+DEFAULT_IAL = 2
+ALLOWED_IALS = [1, 2]
 
 
 def logindotgov_client():
@@ -59,10 +62,27 @@ def index(request):
     # stash selection
     if "swa" in request.GET:
         request.session["swa"] = request.GET["swa"]
+    if "swa_code" in request.GET:
+        request.session["swa"] = request.GET["swa_code"]
+    if not request.session.get("swa"):
+        logger.debug("🚀 missing swa or swa_code")
+        return render(
+            None,
+            "auth-error.html",
+            {
+                "error": "missing swa or swa_code parameter",
+                "base_url": base_url(request),
+            },
+            status=403,
+        )
 
-    ial = 2
-    if "ial" in request.GET and int(request.GET["ial"]) == 1:
-        ial = 1
+    if not SWA.active.filter(code=request.session.get("swa")).exists():
+        logger.debug("🚀 invalid SWA code")
+        return handle_404(request, None)
+
+    ial = DEFAULT_IAL
+    if "ial" in request.GET and int(request.GET["ial"]) in ALLOWED_IALS:
+        ial = int(request.GET["ial"])
     request.session["IAL"] = ial
 
     # otherwise, initiate login.gov session

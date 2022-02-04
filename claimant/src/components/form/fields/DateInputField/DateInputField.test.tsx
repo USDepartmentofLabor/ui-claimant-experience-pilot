@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, within } from "@testing-library/react";
 import { Formik } from "formik";
 import { DateInputField } from "./DateInputField";
 import { noop } from "../../../../testUtils/noop";
@@ -39,6 +39,29 @@ describe("DateInputField Component", () => {
     expect(yearField).toHaveAttribute("id", "dateInputField.year");
     expect(yearField).toHaveAttribute("name", "dateInputField.year");
     expect(yearField).toHaveValue("");
+  });
+
+  it("Renders a label", () => {
+    const { getByRole } = render(
+      <Formik initialValues={{ dateInputField: "" }} onSubmit={noop}>
+        <DateInputField
+          id={"dateInputField"}
+          name={"dateInputField"}
+          legend={"legend"}
+        />
+      </Formik>
+    );
+
+    const fieldset = getByRole("group", { name: "legend" });
+    const monthField = within(fieldset).getByLabelText("date.month.label");
+    const dayField = within(fieldset).getByLabelText("date.day.label");
+    const yearField = within(fieldset).getByLabelText("date.year.label");
+
+    expect(fieldset).toBeInTheDocument();
+    expect(fieldset).toBeInstanceOf(HTMLFieldSetElement);
+    expect(monthField).toBeInTheDocument();
+    expect(dayField).toBeInTheDocument();
+    expect(yearField).toBeInTheDocument();
   });
 
   it("renders a hint", () => {

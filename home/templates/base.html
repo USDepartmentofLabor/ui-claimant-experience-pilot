@@ -18,20 +18,7 @@
     <title>
       {% translate "Unemployment Insurance Claim Application | U.S. Department of Labor" %}
     </title>
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        j.async = true;
-        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, "script", "dataLayer", "GTM-W66H9LT");
-    </script>
-    <!-- End Google Tag Manager -->
+    {% include "./_google_tag_manager.html" %}
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
 
@@ -70,71 +57,30 @@
           bottom: 2rem;
         }
       }
-      /* home page */
-      .usa-hero {
-        background-image: url("//www.dol.gov/sites/dolgov/files/OPA/images/hero-20201113-worker-with-face-covering.jpg");
+      #prequalification-form section {
+        margin-top: 3rem;
       }
-      .usa-hero__callout {
-        background-color: #fff;
-        color: #000;
-      }
-      .usa-hero__heading {
-        color: #000;
-      }
-      /* footer */
-      .dol-footer-seal .dol-seal img {
-        width: 120px;
-      }
-      .dol-footer-seal .footer-seal-block .dol-name-and-seal span {
-        font-size: 0.9375rem;
-        font-family: "Source Sans Pro", sans-serif;
-        text-transform: uppercase;
-        font-weight: 700;
-      }
-      .usa-footer__social-links {
-        justify-content: inherit;
-      }
-      .dol-utility-menu {
-        text-align: right;
-        padding-top: 20px;
-      }
-      .dol-utility-menu a {
-        color: #212121;
-        text-decoration: none;
-        padding: 0 20px;
-        height: -webkit-fit-content;
-        height: -moz-fit-content;
-        height: fit-content;
-        font-family: "Source Sans Pro", sans-serif;
-        font-size: 0.8125rem;
-        line-height: 17px;
-      }
-      .dol-utility-menu a + a {
-        border-left: 1px solid #a9a9a9;
-      }
-      .address-block {
+      #prequalification-form #swa-options {
         margin-top: 1rem;
-        margin-bottom: 1rem;
       }
-      #dol-footer-nav2 {
-        background-color: #fff;
+      img.logindotgov {
+        height: 1rem;
+        vertical-align: text-bottom;
       }
-      #dol-footer-nav li + li {
-        border-left: 1px solid #aeb0b5;
-        border-top: 0;
+      #what-to-expect section {
+        margin-top: 2rem;
       }
-      #dol-footer-nav ul {
-        flex-direction: row;
-        justify-content: flex-start;
-        padding: 15px 15px 15px 0;
+      .dol-form .usa-form-group {
+        margin-top: 0;
+        clear: both;
       }
-      #dol-footer-nav nav {
-        padding-top: 0;
-        margin-left: 4rem;
+      .dol-form .usa-form-group--error .usa-legend {
+        font-weight: bold;
       }
-      #dol-footer-nav a {
-        margin-bottom: 1rem;
-        margin-top: 1rem;
+      .dol-form .usa-legend {
+        float: left;
+        max-width: none;
+        margin-top: 0;
       }
     </style>
   </head>

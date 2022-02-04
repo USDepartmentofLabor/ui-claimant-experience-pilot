@@ -1,19 +1,26 @@
-{% extends "claimant-base.html" %}
+{% extends "base.html" %}
 {% block content %}
 {% load i18n %}
-<main role="main" class="">
-  <section class="grid-container usa-section">
+<main role="main">
+  <section class="grid-container">
+    <h1>{% translate "Create account or sign in" %}</h1>
   {% if swa %}
     <div>
       {% translate "You will now be transferred to Login.gov to sign in and verify your identity." %}
     </div>
     <div class="margin-top-2">
-      <a class="usa-button" id="continue-button" href="{{ base_url }}/logindotgov/?swa={{ swa }}&redirect_to={{ redirect_to }}"
+      <a class="usa-button"
+        id="continue-button"
+        href="{{ base_url }}/logindotgov/?swa={{ swa }}&redirect_to={{ redirect_to }}"
         >{% translate "Continue" %}</a
       >
     </div>
     {% if show_login_page %}
-    {% include "./_local_login_link.html" with show_login_page=show_login_page %}
+      <p>
+        <a class="usa-button usa-button--outline"
+          href="{{ base_url }}/login/?redirect_to={{ redirect_to }}&swa={{ swa }}"
+          >Test login</a>
+      </p>
     {% else %}
     <script type="text/javascript">
       setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
@@ -21,20 +28,56 @@
     {% endif %}
   {% else %}
     <script type="text/javascript">
-      function addSwaCode(code) {
-        const idpLinks = document.querySelectorAll(".idp-link");
-        idpLinks.forEach((el) => {
-          let href = el.getAttribute("href").replace(/&swa=../, "");
-          el.setAttribute("href", href + "&swa=" + code);
-        });
-        // show the IdP links
-        const idpPicker = document.getElementById("idp-picker");
-        idpPicker.classList.remove("display-none");
-      }
+      if (typeof USDOL === "undefined") { USDOL = {} }
+      USDOL.clickLogin = (btn) => {
+        const form = document.getElementById("idp-picker");
+        if (btn.id === "login-dot-gov") {
+          form.action = "{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}";
+        } else if (btn.id === "test-login") {
+          form.action = "{{ base_url }}/login/?redirect_to={{ redirect_to }}";
+        }
+        return true;
+      };
+      USDOL.handleSubmit = () => {
+        USDOL.clearErrors();
+        const form = document.getElementById("idp-picker");
+        const formData = new FormData(form);
+        const proceed = formData.get("swa_code");
+        if (!proceed) {
+          USDOL.showErrors(["{% translate "Please make a selection" %}"]);
+          USDOL.decorateRequiredFields(["swa_code"]);
+          return false;
+        } else {
+          USDOL.clearErrors();
+          return true;
+        }
+      };
     </script>
-    {% include "uswds/_swa_options.html" with swas=swas onchange="addSwaCode(this.value)" %}
-    {% include "./_logindotgov_link.html" %}
-    {% include "./_local_login_link.html" with show_login_page=show_login_page %}
+    <form id="idp-picker" method="GET" action="#" onsubmit="return USDOL.handleSubmit()">
+      {% include './uswds/_alert_error.html' %}
+
+      <section>
+        {% include "uswds/_swa_options.html" with required=True swas=swas %}
+        <div class="margin-top-2">
+          <button
+            onclick="USDOL.clickLogin(this) && USDOL.handleSubmit()"
+            id="login-dot-gov"
+            class="usa-button"
+            type="submit"
+            >{% translate "Sign in with Login.gov" %}</button>
+          {% if show_login_page %}
+            <p>
+              <button
+                onclick="USDOL.clickLogin(this) && USDOL.handleSubmit()"
+                id="test-login"
+                class="usa-button usa-button--outline"
+                type="submit"
+                >{% translate "Test Login" %}</button>
+            </p>
+          {% endif %}
+        </div>
+      </section>
+    </form>
   {% endif %}
   </section>
 </main>
