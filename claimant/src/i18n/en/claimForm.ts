@@ -443,6 +443,8 @@ const claimForm = {
     claimant_has_alternate_names: {
       label:
         "In the past 18 months, have you worked under a name different from above?",
+      required:
+        "You must indicate if you have worked under a different name in the past 18 months",
     },
   },
   payment: {

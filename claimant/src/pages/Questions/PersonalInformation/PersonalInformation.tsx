@@ -22,10 +22,12 @@ const PersonalInformation = () => {
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     claimant_name: yupName(t),
-    LOCAL_claimant_has_alternate_names: yup.boolean().required(),
+    LOCAL_claimant_has_alternate_names: yup
+      .boolean()
+      .required(t("name.claimant_has_alternate_names.required")),
     alternate_names: yup.mixed().when("LOCAL_claimant_has_alternate_names", {
       is: true,
-      then: yup.array().of(yupName(t)).required(),
+      then: yup.array().of(yupName(t)).min(1).required(),
     }),
     LOCAL_mailing_address_same: yup.boolean(),
     residence_address: yupAddress(t),
