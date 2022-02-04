@@ -14,7 +14,11 @@ const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     // email is not editable, so omit required() but include the schema def just in case.
     email: yup.string().email(),
-    phones: yup.array().of(yupPhone(t)).required(),
+    phones: yup.array().of(yupPhone(t)).min(1).required(),
+    "phones[1]": yup.mixed().when("LOCAL_more_phones", {
+      is: true,
+      then: yupPhone(t).required(),
+    }),
     interpreter_required: yup
       .boolean()
       .required(t("contact_information.interpreter_required.required")),
@@ -66,12 +70,14 @@ export const ContactInformation = () => {
       <Fieldset legend={t("interpreter_required.label")}>
         <BooleanRadio id="interpreter_required" name="interpreter_required" />
       </Fieldset>
-      <TextField
-        label={t("preferred_language.label")}
-        id={"preferred_language"}
-        name={"preferred_language"}
-        type="text"
-      />
+      {values.interpreter_required && (
+        <TextField
+          label={t("preferred_language.label")}
+          id={"preferred_language"}
+          name={"preferred_language"}
+          type="text"
+        />
+      )}
     </>
   );
 };
