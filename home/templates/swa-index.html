@@ -54,28 +54,28 @@
             <div class="usa-radio display-inline-block margin-right-8">
               <input
                 class="usa-radio__input"
-                id="use-app-yes"
+                id="use-app.yes"
                 type="radio"
                 name="use-app"
                 value="yes"
                 required
                 onchange="USDOL.handleUseAppSelection()"
               />
-              <label class="usa-radio__label" for="use-app-yes">
+              <label class="usa-radio__label" for="use-app.yes">
                 <strong>{% translate "Yes" %}</strong>, {% translate "I want to apply with APPNAME HERE" %}
               </label>
             </div>
             <div class="usa-radio display-inline-block">
               <input
                 class="usa-radio__input"
-                id="use-app-no"
+                id="use-app.no"
                 type="radio"
                 name="use-app"
                 value="no"
                 required
                 onchange="USDOL.handleUseAppSelection()"
               />
-              <label class="usa-radio__label" for="use-app-no" >
+              <label class="usa-radio__label" for="use-app.no" >
                 <strong>{% translate "No" %}</strong>, {% blocktranslate with swa_name=swa.name %}I want to use the regular {{swa_name}} application{% endblocktranslate %}
               </label>
             </div>
