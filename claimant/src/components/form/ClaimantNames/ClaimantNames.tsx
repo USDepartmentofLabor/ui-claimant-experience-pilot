@@ -5,7 +5,7 @@ import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 import { useTranslation } from "react-i18next";
-import { LiveMessage } from "react-aria-live";
+import { LiveMessenger } from "react-aria-live";
 
 export const ClaimantNames = () => {
   const { values } = useFormikContext<Claim>();
@@ -17,26 +17,28 @@ export const ClaimantNames = () => {
     value: [],
   });
 
-  let liveMessageContent = "";
-  if (values.LOCAL_claimant_has_alternate_names === true) {
-    liveMessageContent = commonT("expanded_content.revealed");
-  } else if (values.LOCAL_claimant_has_alternate_names === false) {
-    liveMessageContent = commonT("expanded_content.collapsed");
-  }
-
   return (
     <>
       <Fieldset legend={t("legal_name")}>
         <Name id="claimant_name" name="claimant_name" />
       </Fieldset>
       <br />
-      <Fieldset legend={t("claimant_has_alternate_names.label")}>
-        <BooleanRadio
-          id="LOCAL_claimant_has_alternate_names"
-          name="LOCAL_claimant_has_alternate_names"
-        />
-      </Fieldset>
-      <LiveMessage aria-live="polite" message={liveMessageContent} />
+      <LiveMessenger>
+        {({ announcePolite }) => (
+          <Fieldset legend={t("claimant_has_alternate_names.label")}>
+            <BooleanRadio
+              id="LOCAL_claimant_has_alternate_names"
+              name="LOCAL_claimant_has_alternate_names"
+              onChange={(e) => {
+                e.currentTarget.value === "yes"
+                  ? announcePolite(commonT("expanded_content.revealed"))
+                  : announcePolite(commonT("expanded_content.collapsed"));
+              }}
+            />
+          </Fieldset>
+        )}
+      </LiveMessenger>
+
       <br />
       {values.LOCAL_claimant_has_alternate_names === true && (
         <Fieldset legend={t("alternate_name")}>
