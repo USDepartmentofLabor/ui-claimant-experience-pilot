@@ -6,7 +6,7 @@
       <!-- prettier-ignore -->
       <input
                   class="usa-radio__input"
-                  id="{{ field_name }}-yes"
+                  id="{{ field_name }}.yes"
                   type="radio"
                   name="{{field_name}}"
                   value="yes"
@@ -17,7 +17,7 @@
                   onchange="{{ onchange }}()"
                   {% endif %}
               />
-      <label class="usa-radio__label" for="{{ field_name }}-yes"
+      <label class="usa-radio__label" for="{{ field_name }}.yes"
         >{% translate "Yes" %}</label
       >
     </div>
@@ -25,7 +25,7 @@
       <!-- prettier-ignore -->
       <input
                   class="usa-radio__input"
-                  id="{{ field_name }}-no"
+                  id="{{ field_name }}.no"
                   type="radio"
                   name="{{ field_name }}"
                   value="no"
@@ -36,7 +36,7 @@
                   onchange="{{ onchange }}()"
                   {% endif %}
               />
-      <label class="usa-radio__label" for="{{ field_name }}-no"
+      <label class="usa-radio__label" for="{{ field_name }}.no"
         >{% translate "No" %}</label
       >
     </div>

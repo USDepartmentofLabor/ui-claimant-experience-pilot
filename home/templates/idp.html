@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 {% load i18n %}
+<script>
+  {% include "_has_completed_prequal.jssnip" %}
+  if (!hasCompletedPrequal()) {
+    window.location.replace("/prequal/")
+  }
+</script>
 <main role="main">
   <section class="grid-container">
     <h1>{% translate "Create account or sign in" %}</h1>

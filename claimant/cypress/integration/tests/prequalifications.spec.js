@@ -3,6 +3,7 @@
 context("Prequalifications page", { scrollBehavior: "center" }, () => {
   it("redirects to IdP on happy path answers", () => {
     cy.visit("/prequal/");
+    cy.check_a11y();
     completePrequalFormProceed();
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/idp/?swa=NJ");
@@ -11,7 +12,7 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
   it("redirects to SWA-specific redirection page on unhappy path answers", () => {
     cy.visit("/prequal/");
     completePrequalFormProceed();
-    cy.get("input[id=worked_other_state-yes]").click({ force: true });
+    cy.click_yes("worked_other_state");
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/swa-redirect/NJ/");
     cy.contains("You may be asked to provide some of this information");
@@ -20,32 +21,67 @@ context("Prequalifications page", { scrollBehavior: "center" }, () => {
   it("redirects to SWA-specific if not worked in last 18 months", () => {
     cy.visit("/prequal/");
     completePrequalFormProceed();
-    cy.get("input[id=job_last_18mo-no]").click({ force: true });
+    cy.click_no("job_last_18mo");
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/swa-redirect/NJ/");
   });
 
   it("shows/hides error message(s) on form validation", () => {
     cy.visit("/prequal/");
-    cy.get("button").contains("Next").click();
+    cy.click_next();
     cy.contains("Correct the 9 errors");
     cy.contains("This field is required");
-    cy.get("span").filter(".usa-error-message");
-    cy.get("div").filter(".usa-alert--error");
+    cy.get("span.usa-error-message").should("have.length", 9);
+    cy.get(".usa-alert--error").should("have.length", 1);
+    cy.check_a11y();
+
+    // click one answer, confirm error count changes
+    cy.click_yes("live_in_us");
+    cy.get("span.usa-error-message").should("have.length", 8);
+    cy.get(".usa-alert--error").should("have.length", 1);
+    cy.contains("Correct the 8 errors");
+
     completePrequalFormProceed();
     cy.get("span").not(".usa-error-message");
     cy.get("div").not(".usa-alert--error");
   });
+
+  it("redirects to IdP if prequal has already been completed", () => {
+    cy.visit("/prequal/");
+    completePrequalFormProceed();
+    cy.get("button").contains("Next").click();
+    cy.url().should("contain", "/idp/?swa=NJ");
+    // Redirect part
+    cy.visit("/prequal/");
+    cy.url().should("contain", "/idp/");
+  });
+
+  it("redirects to prequal when trying to visit IdP first", () => {
+    cy.visit("/idp/");
+    cy.url().should("contain", "/prequal/");
+  });
+
+  it("ignores expired prequal cookie", () => {
+    cy.setCookie("prequal_complete", "true", {
+      expiry: new Date().getTime() / 1000 - 10,
+    });
+    cy.visit("/idp/");
+    cy.url().should("contain", "/prequal/");
+  });
 });
 
+const selectState = (state) => {
+  cy.get("select[name=swa_code]").select(state, { force: true }); // id attribute is removed by uswds.js
+};
+
 const completePrequalFormProceed = () => {
-  cy.get("input[id=live_in_us-yes]").click({ force: true });
-  cy.get("select[name=swa_code]").select("NJ", { force: true }); // for some reason id is not found
-  cy.get("input[id=job_last_18mo-yes]").click({ force: true });
-  cy.get("input[id=worked_other_state-no]").click({ force: true });
-  cy.get("input[id=disabled-no]").click({ force: true });
-  cy.get("input[id=recent_disaster-no]").click({ force: true });
-  cy.get("input[id=military_service-no]").click({ force: true });
-  cy.get("input[id=federal_employment-no]").click({ force: true });
-  cy.get("input[id=maritime_employment-no]").click({ force: true });
+  cy.click_yes("live_in_us");
+  selectState("NJ");
+  cy.click_yes("job_last_18mo");
+  cy.click_no("worked_other_state");
+  cy.click_no("disabled");
+  cy.click_no("recent_disaster");
+  cy.click_no("military_service");
+  cy.click_no("federal_employment");
+  cy.click_no("maritime_employment");
 };

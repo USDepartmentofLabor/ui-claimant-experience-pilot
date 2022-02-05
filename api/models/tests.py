@@ -115,6 +115,17 @@ class ApiModelsTestCase(TransactionTestCase):
         claimant_copy = Claimant.objects.get(id=claimant.id)
         self.assertEqual(claimant_copy.idp, idp)
 
+    def test_claimant_IAL(self):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+
+        self.assertFalse(claimant.bump_IAL_if_necessary("3"))
+        self.assertFalse(claimant.bump_IAL_if_necessary("1"))
+        self.assertTrue(
+            claimant.bump_IAL_if_necessary("2")
+        )  # only the first results in a change
+        self.assertFalse(claimant.bump_IAL_if_necessary("2"))
+
     def test_claim(self):
         ks_swa, _ = create_swa()
         idp = create_idp()

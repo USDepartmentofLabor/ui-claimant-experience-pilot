@@ -278,8 +278,10 @@ security: ## Run all security scans
 diff-test: ## Fails if there are any local changes, using git diff
 	@changed_files=`git diff --name-only`; if [ "$$changed_files" != "" ]; then echo "Local changes exist:\n$$changed_files" && exit 1; fi
 
-schema-check: ## Validate the example Claim against its JSON Schema
+schema-check: ## Validate the examples JSON instances against relevant JSON Schema
 	python scripts/check-json-schema.py schemas/claim-v1.0.json schemas/claim-v1.0-example.json
+	python scripts/check-json-schema.py schemas/identity-v1.0.json schemas/identity-v1.0-example-ial1.json
+	python scripts/check-json-schema.py schemas/identity-v1.0.json schemas/identity-v1.0-example-ial2.json
 
 soc: ## Build the SOC codes from the BLS site
 	curl https://www.bls.gov/soc/2018/soc_structure_2018.xlsx > soc_structure_2018.xlsx

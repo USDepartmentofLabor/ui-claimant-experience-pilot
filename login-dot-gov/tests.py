@@ -63,10 +63,13 @@ class LoginDotGovTestCase(TestCase):
         self.assertRedirects(response, "/claimant/", status_code=302)
 
         claimant = Claimant.objects.last()
-        self.assertEquals(claimant.events.last().description, "2")
+        self.assertEquals(claimant.last_login_event().description, "2")
         self.assertEquals(
-            claimant.events.last().category, Claimant.EventCategories.LOGGED_IN
+            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
         )
+        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
+        self.assertEquals(claimant.events.last().description, "1 => 2")
+        self.assertEquals(claimant.IAL, 2)
 
         # confirm our session looks as we expect
         response = self.client.get("/logindotgov/explain")

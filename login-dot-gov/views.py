@@ -2,6 +2,7 @@
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
+from django.db import transaction
 import logging
 import secrets
 import os
@@ -176,14 +177,17 @@ def result(request):
 
     userinfo = client.get_userinfo(tokens["access_token"])
 
-    logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
-    idp_user_xid = hash_idp_user_xid(userinfo["sub"])
-    claimant, _ = Claimant.objects.get_or_create(
-        idp_user_xid=idp_user_xid, idp=logindotgov_idp
-    )
-    claimant.events.create(
-        category=Claimant.EventCategories.LOGGED_IN, description=request.session["IAL"]
-    )
+    with transaction.atomic():
+        logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
+        idp_user_xid = hash_idp_user_xid(userinfo["sub"])
+        claimant, _ = Claimant.objects.get_or_create(
+            idp_user_xid=idp_user_xid, idp=logindotgov_idp
+        )
+        claimant.events.create(
+            category=Claimant.EventCategories.LOGGED_IN,
+            description=request.session["IAL"],
+        )
+        claimant.bump_IAL_if_necessary(request.session["IAL"])
 
     request.session["verified"] = True
     request.session["logindotgov"]["userinfo"] = userinfo

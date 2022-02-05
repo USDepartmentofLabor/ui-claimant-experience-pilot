@@ -1,27 +1,36 @@
 {% load i18n %}
-<div class="usa-alert usa-alert--error display-none" id="form-errors" role="alert">
-  <div class="usa-alert__body">
-    <div class="usa-alert__text"></div>
-  </div>
-</div>
+<div id="form-errors"></div>
 <script type="text/javascript">
   if (typeof USDOL === "undefined") { USDOL = {} }
   USDOL.showErrors = (errors) => {
     const errorDiv = document.getElementById("form-errors");
-    const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-    const msgSingular = errors[0]; // "{% translate "Correct the error on this page to proceed" %}";
+    // always start fresh
+    errorDiv.innerHTML = "";
+    // create alert div
+    const alertDiv = document.createElement("div");
+    alertDiv.classList.add("usa-alert", "usa-alert--error", "usa-alert--slim");
+    alertDiv.setAttribute("role", "alert");
+    alertDiv.dataset.testid = "form-errors-alert";
+    const alertBody = document.createElement("div");
+    alertBody.classList.add("usa-alert__body");
+    const alertText = document.createElement("div");
+    alertText.classList.add("usa-alert__text");
+    const msgSingular = "{% translate "Correct the error on this page to proceed" %}";
     const msgPlural = "{% translate "Correct the {count} errors on this page to proceed" %}".replace("{count}", errors.length);
     const errEl = document.createElement("div");
     const text = document.createTextNode(errors.length === 1 ? msgSingular : msgPlural);
     errEl.appendChild(text);
-    errorP.appendChild(errEl);
-    errorDiv.classList.remove("display-none");
+    alertText.appendChild(errEl);
+    alertBody.appendChild(alertText);
+    alertDiv.appendChild(alertBody);
+    errorDiv.appendChild(alertDiv);
   };
   USDOL.clearErrors = () => {
     const errorDiv = document.getElementById("form-errors");
-    const errorP = errorDiv.getElementsByClassName("usa-alert__text")[0];
-    errorDiv.classList.add("display-none");
-    errorP.innerHTML = "";
+    const alertDiv = errorDiv.getElementsByClassName("usa-alert")[0];
+    if (alertDiv) {
+      alertDiv.remove();
+    }
     const errorMarkedSections = document.getElementsByClassName("usa-form-group--error");
     Array.from(errorMarkedSections).forEach((section) => {
       const errs = section.getElementsByClassName("usa-error-message");
@@ -44,12 +53,22 @@
       }
     });
     // clear ancestor decorations
-    const sectionErrors = parentSection.getElementsByClassName("usa-error-message");
-    if (!sectionErrors || sectionErrors.length === 0) {
-      parentSection.classList.remove("usa-form-group--error");
+    if (parentSection) {
+      const sectionErrors = parentSection.getElementsByClassName("usa-error-message");
+      if (!sectionErrors || sectionErrors.length === 0) {
+        parentSection.classList.remove("usa-form-group--error");
+      }
     }
     if (document.getElementsByClassName("usa-error-message").length === 0) {
       USDOL.clearErrors();
+    } else {
+      // redraw for updated count
+      const newCount = document.getElementsByClassName("usa-error-message").length;
+      const errorStubs = []; // we just need a placeholder for counting
+      for (let i = 0; i < newCount; i++) {
+        errorStubs.push("error");
+      }
+      USDOL.showErrors(errorStubs);
     }
   };
   USDOL.decorateRequiredFields = (requiredFields) => {

@@ -3,6 +3,7 @@ import json
 import hashlib
 from api.models import Claimant, IdentityProvider
 from api.whoami import WhoAmI
+from django.db import transaction
 
 
 def session_as_dict(request):
@@ -25,12 +26,15 @@ def register_local_login(request):
     request.session["whoami"] = whoami
     if "email" in whoami and len(whoami["email"]):
         xid = hash_idp_user_xid(whoami["email"])
-        claimant, _ = Claimant.objects.get_or_create(
-            idp_user_xid=xid, idp=local_identity_provider()
-        )
-        claimant.events.create(
-            category=Claimant.EventCategories.LOGGED_IN, description=whoami["IAL"]
-        )
+        with transaction.atomic():
+            claimant, _ = Claimant.objects.get_or_create(
+                idp_user_xid=xid, idp=local_identity_provider()
+            )
+            claimant.events.create(
+                category=Claimant.EventCategories.LOGGED_IN, description=whoami["IAL"]
+            )
+            claimant.bump_IAL_if_necessary(whoami["IAL"])
+
         whoami["claimant_id"] = xid
     return WhoAmI(**whoami)
 

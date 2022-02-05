@@ -172,15 +172,9 @@ Cypress.Commands.add("complete_identity_information", (identityInformation) => {
     .select(issuingState);
 
   if (authorizedToWork) {
-    cy.get(`input[name=work_authorization\\.authorized_to_work\\.yes]`)
-      .should("be.visible")
-      .parent()
-      .click();
+    cy.click_yes("work_authorization\\.authorized_to_work");
   } else {
-    cy.get(`input[name=work_authorization\\.authorized_to_work\\.no]`)
-      .should("be.visible")
-      .parent()
-      .click();
+    cy.click_no("work_authorization\\.authorized_to_work");
     if (notAuthorizedToWorkExplanation) {
       cy.get(`[name=work_authorization\\.not_authorized_to_work_explanation]`)
         .should("be.visible")
@@ -579,3 +573,11 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add("click_yes", (fieldName) => {
+  cy.get(`input[id=${fieldName}\\.yes]`).click({ force: true });
+});
+
+Cypress.Commands.add("click_no", (fieldName) => {
+  cy.get(`input[id=${fieldName}\\.no]`).click({ force: true });
+});
