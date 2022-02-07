@@ -17,12 +17,20 @@ export const Identity = () => {
   const { t } = useTranslation("claimForm");
   const { values } = useFormikContext<ClaimantInput>();
 
+  const showWorkAuthorizationFields =
+    values.work_authorization?.authorized_to_work;
+
   const showNotAllowedToWorkInUSExplanation =
     values.work_authorization?.authorized_to_work === false;
 
   const showAlienRegistrationNumber =
     values.work_authorization?.authorization_type &&
     values.work_authorization.authorization_type !== "US_citizen_or_national";
+
+  useClearFields(!showWorkAuthorizationFields, [
+    "work_authorization.authorization_type",
+    "work_authorization.alien_registration_number",
+  ]);
 
   useClearFields(
     !showNotAllowedToWorkInUSExplanation,
@@ -79,31 +87,35 @@ export const Identity = () => {
           name="work_authorization.not_authorized_to_work_explanation"
         />
       )}
-      <DropdownField
-        label={t("work_authorization.authorization_type.label")}
-        id="work_authorization.authorization_type"
-        name="work_authorization.authorization_type"
-        startEmpty
-        options={Object.keys(
-          claimForm.work_authorization.authorization_type.options
-        ).map((optionKey) => ({
-          label: t(
-            `work_authorization.authorization_type.options.${
-              optionKey as Normalize<
-                typeof claimForm.work_authorization.authorization_type.options
-              >
-            }`
-          ),
-          value: optionKey,
-        }))}
-      />
-      {showAlienRegistrationNumber && (
-        <TextField
-          label={t("work_authorization.alien_registration_number.label")}
-          id="work_authorization.alien_registration_number"
-          name="work_authorization.alien_registration_number"
-          type="text"
-        />
+      {showWorkAuthorizationFields && (
+        <>
+          <DropdownField
+            label={t("work_authorization.authorization_type.label")}
+            id="work_authorization.authorization_type"
+            name="work_authorization.authorization_type"
+            startEmpty
+            options={Object.keys(
+              claimForm.work_authorization.authorization_type.options
+            ).map((optionKey) => ({
+              label: t(
+                `work_authorization.authorization_type.options.${
+                  optionKey as Normalize<
+                    typeof claimForm.work_authorization.authorization_type.options
+                  >
+                }`
+              ),
+              value: optionKey,
+            }))}
+          />
+          {showAlienRegistrationNumber && (
+            <TextField
+              label={t("work_authorization.alien_registration_number.label")}
+              id="work_authorization.alien_registration_number"
+              name="work_authorization.alien_registration_number"
+              type="text"
+            />
+          )}
+        </>
       )}
     </>
   );
@@ -139,15 +151,16 @@ const pageSchema = (t: TFunction<"claimForm">) =>
               )
             ),
         }),
-      authorization_type: yup
-        .string()
-        .required(t("work_authorization.authorization_type.required")),
+      authorization_type: yup.string().when("authorized_to_work", {
+        is: true,
+        then: yup
+          .string()
+          .required(t("work_authorization.authorization_type.required")),
+      }),
       alien_registration_number: yup.string().when("authorization_type", {
         is: (alienRegistrationType: string) =>
           alienRegistrationType &&
-          alienRegistrationType !==
-            claimForm.work_authorization.authorization_type.options
-              .US_citizen_or_national,
+          alienRegistrationType !== "US_citizen_or_national",
         then: yup
           .string()
           .matches(

@@ -175,16 +175,19 @@ Cypress.Commands.add("complete_identity_information", (identityInformation) => {
     cy.click_yes("work_authorization\\.authorized_to_work");
   } else {
     cy.click_no("work_authorization\\.authorized_to_work");
-    if (notAuthorizedToWorkExplanation) {
-      cy.get(`[name=work_authorization\\.not_authorized_to_work_explanation]`)
-        .should("be.visible")
-        .type(notAuthorizedToWorkExplanation);
-    }
   }
 
-  cy.get(`[name=work_authorization\\.authorization_type]`)
-    .should("be.visible")
-    .select(authorizationType);
+  if (notAuthorizedToWorkExplanation) {
+    cy.get(`[name=work_authorization\\.not_authorized_to_work_explanation]`)
+      .should("be.visible")
+      .type(notAuthorizedToWorkExplanation);
+  }
+
+  if (authorizationType) {
+    cy.get(`[name=work_authorization\\.authorization_type]`)
+      .should("be.visible")
+      .select(authorizationType);
+  }
 
   if (alienRegistrationNumber) {
     cy.get(`[name=work_authorization\\.alien_registration_number]`)

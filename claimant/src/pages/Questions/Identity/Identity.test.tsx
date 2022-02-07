@@ -47,23 +47,6 @@ describe("Identity Information Page", () => {
       authorizedToWorkInUSRadioGroup
     ).queryByLabelText("no");
 
-    const alienRegistrationTypeDropdown = screen.getByLabelText(
-      "work_authorization.authorization_type.label"
-    );
-    const usCitizenOption = within(alienRegistrationTypeDropdown).queryByText(
-      "work_authorization.authorization_type.options.US_citizen_or_national"
-    );
-    const permanentResidentOption = within(
-      alienRegistrationTypeDropdown
-    ).queryByText(
-      "work_authorization.authorization_type.options.permanent_resident"
-    );
-    const temporaryLegalWorkerOption = within(
-      alienRegistrationTypeDropdown
-    ).queryByText(
-      "work_authorization.authorization_type.options.temporary_legal_worker"
-    );
-
     expect(socialSecurityNumber).toBeInTheDocument();
     expect(socialSecurityNumber).toBeDisabled();
 
@@ -81,9 +64,6 @@ describe("Identity Information Page", () => {
     expect(stateDropdown).toBeInTheDocument();
     expect(yesAuthorizedToWorkInUS).toBeInTheDocument();
     expect(noAuthorizedToWorkInUS).toBeInTheDocument();
-    expect(usCitizenOption).toBeInTheDocument();
-    expect(permanentResidentOption).toBeInTheDocument();
-    expect(temporaryLegalWorkerOption).toBeInTheDocument();
   });
 
   it("hides and shows explanation field", async () => {
@@ -126,29 +106,51 @@ describe("Identity Information Page", () => {
     });
   });
 
-  it("hides and shows alien registration number field", async () => {
+  it("hides and shows work authorization fields", async () => {
     render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
         <Identity />
       </Formik>
     );
 
-    const alienRegistrationTypeDropdown = screen.getByLabelText(
+    const authorizedToWorkInUSRadioGroup = screen.getByRole("group", {
+      name: "work_authorization.authorized_to_work.label",
+    });
+    const yesAuthorizedToWorkInUS = within(
+      authorizedToWorkInUSRadioGroup
+    ).getByLabelText("yes");
+    const noAuthorizedToWorkInUS = within(
+      authorizedToWorkInUSRadioGroup
+    ).getByLabelText("no");
+
+    expect(yesAuthorizedToWorkInUS).toBeInTheDocument();
+    expect(noAuthorizedToWorkInUS).toBeInTheDocument();
+
+    // Dropdown is hidden
+    expect(
+      screen.queryByLabelText("work_authorization.authorization_type.label")
+    ).not.toBeInTheDocument();
+
+    // Toggle the field to show up
+    userEvent.click(yesAuthorizedToWorkInUS);
+    const authorizationTypeDropdown = await screen.findByLabelText(
       "work_authorization.authorization_type.label"
     );
-    const usCitizenOption = within(alienRegistrationTypeDropdown).getByText(
+    const usCitizenOption = within(authorizationTypeDropdown).getByText(
       "work_authorization.authorization_type.options.US_citizen_or_national"
     );
-    const permanentResidentOption = within(
-      alienRegistrationTypeDropdown
-    ).getByText(
+    const permanentResidentOption = within(authorizationTypeDropdown).getByText(
       "work_authorization.authorization_type.options.permanent_resident"
     );
     const temporaryLegalWorkerOption = within(
-      alienRegistrationTypeDropdown
+      authorizationTypeDropdown
     ).getByText(
       "work_authorization.authorization_type.options.temporary_legal_worker"
     );
+
+    expect(usCitizenOption).toBeInTheDocument();
+    expect(permanentResidentOption).toBeInTheDocument();
+    expect(temporaryLegalWorkerOption).toBeInTheDocument();
 
     // Field is hidden
     expect(
@@ -157,11 +159,16 @@ describe("Identity Information Page", () => {
       )
     ).not.toBeInTheDocument();
 
+    // Field stays hidden
+    userEvent.selectOptions(authorizationTypeDropdown, usCitizenOption);
+    expect(
+      screen.queryByLabelText(
+        "work_authorization.alien_registration_number.label"
+      )
+    ).not.toBeInTheDocument();
+
     // Toggle field to show up
-    userEvent.selectOptions(
-      alienRegistrationTypeDropdown,
-      permanentResidentOption
-    );
+    userEvent.selectOptions(authorizationTypeDropdown, permanentResidentOption);
     const alienRegistrationNumberField = await screen.findByLabelText(
       "work_authorization.alien_registration_number.label"
     );
@@ -169,14 +176,15 @@ describe("Identity Information Page", () => {
 
     // Field stays shown for this option
     userEvent.selectOptions(
-      alienRegistrationTypeDropdown,
+      authorizationTypeDropdown,
       temporaryLegalWorkerOption
     );
     expect(alienRegistrationNumberField).toBeInTheDocument();
 
-    // Toggle field to hidden
-    userEvent.selectOptions(alienRegistrationTypeDropdown, usCitizenOption);
+    // Toggle field and dropdown to hidden
+    userEvent.click(noAuthorizedToWorkInUS);
     await waitFor(() => {
+      expect(authorizationTypeDropdown).not.toBeInTheDocument();
       expect(alienRegistrationNumberField).not.toBeInTheDocument();
     });
   });

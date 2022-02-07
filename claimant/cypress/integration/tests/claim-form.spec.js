@@ -112,10 +112,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       birthdate: FAKE_BIRTHDATE,
       idNumber: "123-myId",
       issuingState: "GA",
-      authorizedToWork: false,
-      notAuthorizedToWorkExplanation: "I can't work in the US because ...",
-      authorizationType: "permanent_resident",
-      alienRegistrationNumber: "111-111-111",
+      authorizedToWork: true,
+      authorizationType: "US_citizen_or_national",
     };
 
     cy.complete_identity_information(identityInformation);
