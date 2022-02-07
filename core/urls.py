@@ -15,18 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import include, path, re_path
-from django.conf.urls.i18n import i18n_patterns
 
 from core.views import claimant as claimant_app, live, raise_error
 
 handler404 = "home.views.handle_404"
 handler500 = "home.views.handle_500"
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
     path("", include(("home.urls", "home"), namespace="home")),
     path("500/", raise_error),
-    prefix_default_language=False,
-) + [
     # wildcard pattern for react apps so that any path under that app is matched.
     re_path(r"claimant/.*$", claimant_app, name="claimant"),
     path("logindotgov/", include("login-dot-gov.urls")),
