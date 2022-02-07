@@ -27,7 +27,7 @@ def create_swa(is_active=False, code="KS", name=None, claimant_url=None):
 
 
 def create_claimant(idp, **kwargs):
-    claimant_options = {"xid": "my idp id"}
+    claimant_options = {"xid": "my-idp-id"}
     claimant_options.update(kwargs)
     claimant = Claimant(
         idp_user_xid=claimant_options["xid"],

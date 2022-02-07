@@ -55,7 +55,7 @@ Example JWT token generation:
 
 # example
 # TOKEN=`python scripts/generate-swa-auth-token.py KS-private.pem secret KS` && \
-#     curl -X GET -H "Authorization: JWT $TOKEN" https://ui.dol.gov/swa/
+#     curl -X GET -H "Authorization: JWT $TOKEN" https://unemployment.dol.gov/swa/
 
 import sys
 import time
@@ -99,10 +99,10 @@ print(token.serialize())
 To get a list of all unprocessed Claims, issue a `GET` request to the `/swa/claims/` endpoint:
 
 ```sh
-% curl -X GET https://ui.dol.gov/swa/v1/claims/
+% curl -X GET https://unemployment.dol.gov/swa/v1/claims/
 {
   "total_claims": 50,
-  "next": "https://ui.dol.gov/swa/v1/claims/?page=2",
+  "next": "https://unemployment.dol.gov/swa/v1/claims/?page=2",
   "claims": [
     {
       "public_kid": "BS0Qv8Lz4Uk.SaVE2YkNFSbXu6KxBhx3",
@@ -139,7 +139,7 @@ claim = json_decode(jwetoken.payload.decode("utf-8"))
 To remove a Claim from the queue, indicating that the SWA now owns it:
 
 ```sh
-% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+% curl -X PATCH https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
        --data '{"fetched":true}'
 {"status": "ok"}
 ```
@@ -149,7 +149,7 @@ To remove a Claim from the queue, indicating that the SWA now owns it:
 To get the details about a specific claim, use its id (UUID):
 
 ```sh
-% curl -X GET https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
+% curl -X GET https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
 {
   "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
   "created_at": "2021-11-05T16:54:15-0500",
@@ -166,7 +166,7 @@ When a Claim is processed within the SWA system of record, and the SWA wants to 
 as a Claimant might see it:
 
 ```sh
-% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+% curl -X PATCH https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
        --data '{"status":"established"}'
 {"status": "ok"}
 ```
@@ -180,7 +180,7 @@ one completed Claim to exist per claimant and will disallow starting a new Claim
 The `resolved` parameter takes an optional "reason" that will be stored as the description on the Claim `RESOLVED` event.
 
 ```sh
-% curl -X PATCH https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
+% curl -X PATCH https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd \
        --data '{"resolved":"the claim was closed"}'
 {"status": "ok"}
 ```
@@ -192,7 +192,7 @@ data to exist on the DOL site, it's a good idea to remove it from the US DOL ser
 the record history of the Claim, only what the Claimant submitted (sensitive PII).
 
 ```sh
-% curl -X DELETE https://ui.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
+% curl -X DELETE https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
 {"status": "ok"}
 ```
 
@@ -205,7 +205,7 @@ To upload the 1099-G:
 
 ```sh
 % FORM=`base64 < path/to/1099G-file.pdf` \
-  curl -X POST https://ui.dol.gov/swa/v1/claimant/1d0a0ccc77d551f806d0e99740c1d9607c5f1da1/1099G \
+  curl -X POST https://unemployment.dol.gov/swa/v1/claimants/1d0a0ccc77d551f806d0e99740c1d9607c5f1da1/1099G \
        --data "{\"file\":\"$FORM\", \"year\":\"2022\", \"type\":\"PDF\"}"
 {
   "status": "ok",
