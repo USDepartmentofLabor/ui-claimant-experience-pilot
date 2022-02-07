@@ -79,6 +79,7 @@ class ClaimWriter(object):
             with transaction.atomic():
                 self.claim_store.write(self.path, self.payload)
                 self.claim.create_stored_event(self.claim_store.bucket_name)
+                self.claim.save()  # updates claim.updated_at
         except ClientError as e:
             logger.exception(e)
             return False
