@@ -315,7 +315,7 @@ For example, create a new SWA record for Kansas in your local development area, 
 ```sh
 % make ec-keys PREFIX=KS
 % make login
-> make create-swa SWA=KS NAME=Kansas
+> make create-swa SWA=KS NAME=Kansas URL=https://kansas.gov
 > make activate-swa SWA=KS
 > make add-swa-key SWA=KS PEM=KS-public.pem
 ```
