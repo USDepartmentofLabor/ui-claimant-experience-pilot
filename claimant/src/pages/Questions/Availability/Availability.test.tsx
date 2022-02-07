@@ -15,13 +15,12 @@ jest.mock("react-i18next", () => ({
 
 describe("Availability Component", () => {
   it("Renders properly", () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <Formik initialValues={AvailabilityPage.initialValues} onSubmit={noop}>
         <Availability />
       </Formik>
     );
 
-    const heading = getByText("heading");
     const canBeginWorkImmediatelyFieldset = getByRole("group", {
       name: "can_begin_work_immediately.label",
     });
@@ -54,7 +53,6 @@ describe("Availability Component", () => {
       isPreventedFromAcceptingFullTimeWorkFieldset
     ).getByRole("radio", { name: "no" });
 
-    expect(heading).toBeInTheDocument();
     expect(yesCanBeginWorkImmediately).toBeInTheDocument();
     expect(canBeginWorkImmediatelyFieldset).toBeInTheDocument();
     expect(noCanBeginWorkImmediately).toBeInTheDocument();

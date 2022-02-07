@@ -36,7 +36,6 @@ export const Identity = () => {
 
   return (
     <>
-      <h3>{t("identity.heading")}</h3>
       {/*TODO: number? format validations? auto-hyphen?*/}
       <TextField
         label={t("ssn.label")}

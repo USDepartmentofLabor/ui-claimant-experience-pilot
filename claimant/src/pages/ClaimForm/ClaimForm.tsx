@@ -25,6 +25,7 @@ import {
 } from "@trussworks/react-uswds";
 import { pages } from "../PageDefinitions";
 import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
+import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -302,9 +303,19 @@ const ClaimFormPage = () => {
     return undefined;
   };
 
+  const step = currentPageIndex + 1;
+  const totalSteps = pages.length;
+
   return (
-    <main data-testid="claim-form-page" className="margin-top-5">
-      <StepIndicator counters="small" headingLevel="h1">
+    <>
+      <StepIndicator
+        counters="small"
+        headingLevel="h2"
+        divProps={{
+          role: "region",
+          "aria-label": `progress - step ${step} of ${totalSteps}`,
+        }}
+      >
         {pages.map((page, i) => (
           <StepIndicatorStep
             key={page.path}
@@ -313,10 +324,17 @@ const ClaimFormPage = () => {
           />
         ))}
       </StepIndicator>
-      <RequestErrorBoundary>
-        <ClaimForm />
-      </RequestErrorBoundary>
-    </main>
+      <main id="main-content" className="margin-top-5">
+        <RequestErrorBoundary>
+          <ClaimFormPageHeading
+            pageHeading={t(`${pages[currentPageIndex].heading}`)}
+            step={step}
+            totalSteps={totalSteps}
+          />
+          <ClaimForm />
+        </RequestErrorBoundary>
+      </main>
+    </>
   );
 };
 
