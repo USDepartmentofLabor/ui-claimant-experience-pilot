@@ -6,6 +6,7 @@ from api.models import SWA, IdentityProvider, Claimant, Claim
 from api.models.claim import SUCCESS, FAILURE
 import datetime
 from datetime import timedelta
+import time_machine
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
@@ -19,7 +20,6 @@ from core.test_utils import (
     delete_s3_bucket,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +29,7 @@ class ApiModelsManagerTestCase(TestCase):
         swas = SWA.active.all()
         for swa in swas:
             logger.debug("SWA: {} {}".format(swa.code, swa.get_status_display()))
-        # 2 default + filters out ks_swa becase not active
+        # 2 default + filters out ks_swa because not active
         self.assertEqual(len(swas), 2)
 
         ks_swa.status = SWA.StatusOptions.ACTIVE
@@ -40,6 +40,117 @@ class ApiModelsManagerTestCase(TestCase):
         self.assertEqual(
             list(map(lambda swa: swa.code, swas)), ["AA", "AR", "KS", "NJ"]
         )
+
+    def test_expired_claim_manager(self):
+        claim_lifespan = 7  # TODO: to be retrieved from env var
+        ks_swa, _ = create_swa()
+        idp = create_idp()
+
+        expired_claim_uuid = "0a5cf608-0c72-4d37-8695-85497ad53d34"
+        test_data_cases = [
+            {
+                "xid": 1,
+                "uuid": expired_claim_uuid,
+                "days_ago_created": claim_lifespan + 1,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 1,
+                    }
+                ],
+            },
+            {
+                "xid": 2,
+                "uuid": "b2edb136-d166-4e28-8e83-b0ea48eef7e0",
+                "days_ago_created": claim_lifespan + 3,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 3,
+                    },
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 2,
+                    },
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 4,
+                    },
+                ],
+            },
+            {
+                "xid": 3,
+                "uuid": "5060ee6f-8ae0-4056-ad5e-5d10fa0b5d59",
+                "days_ago_created": claim_lifespan + 3,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 3,
+                    },
+                    {
+                        "category": Claim.EventCategories.COMPLETED,
+                        "days_ago_happened": claim_lifespan + 2,
+                    },
+                ],
+            },
+            {
+                "xid": 4,
+                "uuid": "4912139b-71bc-4c69-ac6e-5564f2f1091c",
+                "days_ago_created": claim_lifespan + 3,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 3,
+                    },
+                    {
+                        "category": Claim.EventCategories.DELETED,
+                        "days_ago_happened": claim_lifespan + 2,
+                    },
+                ],
+            },
+            {
+                "xid": 5,
+                "uuid": "9656b523-151e-482d-9c4b-2aec21764547",
+                "days_ago_created": claim_lifespan - 3,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 3,
+                    }
+                ],
+            },
+        ]
+
+        for case in test_data_cases:
+            claimant = create_claimant(idp, xid=case["xid"])
+
+            claim = Claim(
+                uuid=case["uuid"],
+                swa=ks_swa,
+                claimant=claimant,
+                status="something",
+            )
+            claim.save()
+
+            for event in case["events"]:
+                claim.events.create(
+                    category=event["category"],
+                    happened_at=timezone.now()
+                    - timedelta(days=event["days_ago_happened"]),
+                    description="some other thing",
+                )
+            traveller = time_machine.travel(
+                timezone.now() - timedelta(days=case["events"][-1]["days_ago_happened"])
+            )
+            traveller.start()
+            claim.save()  # updates claim.updated_at to the last event date
+            traveller.stop()
+
+        claims = Claim.expired_partial_claims.all()
+        claim_ids = list(map(lambda c: str(c.uuid), claims))
+        self.assertEqual(claim_ids, [expired_claim_uuid])
+        self.assertEqual(claims.count(), 1)
+        self.assertEqual(str(claims[0].uuid), expired_claim_uuid)
 
 
 class ApiModelsTestCase(TransactionTestCase):
