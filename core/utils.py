@@ -16,7 +16,7 @@ def session_as_dict(request):
 
 
 def register_local_login(request):
-    request.session["verified"] = True
+    request.session["authenticated"] = True
     whoami = {}
     if request.content_type == "application/json":
         whoami = json.loads(request.body)
