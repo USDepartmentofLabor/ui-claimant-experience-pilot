@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, RequestFactory
+from django.conf import settings
 from unittest.mock import MagicMock, patch
 from jwcrypto import jwt, jws, jwk
-from jwcrypto.common import json_decode, json_encode
+from jwcrypto.common import json_decode, json_encode, base64url_encode, base64url_decode
 import logging
 from core.test_utils import (
     generate_auth_token,
@@ -10,10 +11,15 @@ from core.test_utils import (
     create_s3_bucket,
     delete_s3_bucket,
 )
-from core.claim_storage import ClaimWriter
+from core.claim_storage import ClaimWriter, ClaimReader
 from api.test_utils import create_swa, create_idp, create_claimant
 from api.models import Claim
 from .middleware.jwt_authorizer import JwtAuthorizer
+from .claimant_1099G_uploader import Claimant1099GUploader
+from core.claim_encryption import (
+    SymmetricClaimDecryptor,
+    symmetric_encryption_key,
+)
 import uuid
 
 logger = logging.getLogger("swa.tests")
@@ -586,6 +592,91 @@ class SwaTestCase(TestCase):
         }
         self.assertEqual(response.json(), expected_response)
 
+    def test_v1_POST_1099G(self):
+        idp = create_idp()
+        swa, private_key_jwk = create_swa(True)
+        claimant = create_claimant(idp)
+
+        # happy path
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        example_1099G_file = settings.BASE_DIR / "swa" / "f1099g-recipient-example.pdf"
+        with open(example_1099G_file, "rb") as fh:
+            file_bytes = fh.read()
+        response = self.client.post(
+            f"/swa/v1/claimants/{claimant.idp_user_xid}/1099G/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={
+                "file": base64url_encode(file_bytes),
+                "filename": "path/to/f1099g-recipient-example.pdf",
+                "year": "2022",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+
+        claimant_file = claimant.claimantfile_set.last()
+        self.assertEqual(
+            response.json(), {"status": "ok", "1099G": str(claimant_file.uuid)}
+        )
+        claim_reader = ClaimReader(claimant_file)
+        encrypted_claimant_file = claim_reader.read()
+        cd = SymmetricClaimDecryptor(
+            encrypted_claimant_file, symmetric_encryption_key()
+        )
+        decrypted_claimant_file = cd.decrypt()
+        decoded_file = base64url_decode(decrypted_claimant_file["file"])
+        self.assertEqual(decoded_file, file_bytes)
+
+        # bad request - just one missing param here, we test the Uploader class indepedently.
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.post(
+            f"/swa/v1/claimants/{claimant.idp_user_xid}/1099G/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={
+                "filename": "path/to/f1099g-recipient-example.pdf",
+                "year": "2022",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # no such claimant
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.post(
+            "/swa/v1/claimants/no-such-claimant/1099G/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={
+                "filename": "path/to/f1099g-recipient-example.pdf",
+                "year": "2022",
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
+        # error saving
+        with patch("swa.views.Claimant1099GUploader") as mocked_uploader_class:
+            mocked_uploader = MagicMock()
+            mocked_uploader.save.return_value = False
+            mocked_uploader.invalid = False
+            mocked_uploader.error = "oops!"
+            mocked_uploader_class.return_value = mocked_uploader
+            header_token = generate_auth_token(private_key_jwk, swa.code)
+            response = self.client.post(
+                f"/swa/v1/claimants/{claimant.idp_user_xid}/1099G/",
+                content_type="application/json",
+                HTTP_AUTHORIZATION=format_jwt(header_token),
+                data={
+                    "file": base64url_encode(file_bytes),
+                    "filename": "path/to/f1099g-recipient-example.pdf",
+                    "year": "2022",
+                },
+            )
+            self.assertEqual(
+                response.json(),
+                {"status": "error", "error": "oops!"},
+            )
+            self.assertEqual(response.status_code, 500)
+
     def test_v1_act_on_claim_PATCH_fetched(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa(True)
@@ -654,3 +745,90 @@ class SwaTestCase(TestCase):
                 self.assertEqual(response.status_code, 500)
                 # the -2 means our logging exception is the 2nd to last in the list
                 self.assertIn("ERROR:swa.views:db error!", cm.output[-2])
+
+
+class Claimant1099GUploaderTestCase(TestCase):
+    def setUp(self):
+        super().setUp()
+        idp = create_idp()
+        self.claimant = create_claimant(idp)
+        self.swa, _ = create_swa(True)
+
+    def create_uploader(self, body):
+        request = RequestFactory().post(
+            f"/swa/v1/claimants/{self.claimant.idp_user_xid}/1099G/",
+            content_type="application/json",
+            data=body,
+        )
+        request.session = self.client.session
+        request.user = self.swa
+        uploader = Claimant1099GUploader(request, self.claimant)
+        return uploader
+
+    def test_uploader_params(self):
+        body = {
+            "file": base64url_encode("pretend-file"),
+            "filename": "path/to/file.pdf",
+            "year": "2022",
+        }
+        uploader = self.create_uploader(body)
+        self.assertTrue(uploader.validate())
+        self.assertFalse(uploader.invalid)
+
+        body = {
+            "file": base64url_encode("pretend-file"),
+            "filename": "path/to/file.pdf",
+        }
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "missing year")
+
+        body = {"filename": "path/to/file.pdf", "year": "2022"}
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "missing file")
+
+        body = {"file": "=", "filename": "path/to/file.pdf", "year": "2022"}
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "file is not properly Base64-encoded")
+
+        body = {"file": "", "filename": "path/to/file.pdf", "year": "2022"}
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "file is empty or improperly encoded")
+
+        body = {"file": base64url_encode("pretend-file"), "year": "2022"}
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "missing filename")
+
+        body = {
+            "file": base64url_encode("pretend-file"),
+            "filename": "path/to/file",
+            "year": "2022",
+        }
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "missing filename extension")
+
+        body = {
+            "file": base64url_encode("pretend-file"),
+            "filename": "path/to/file.FOO",
+            "year": "2022",
+        }
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(
+            uploader.invalid,
+            "foo is not an accepted file type. Try one of pdf, png, jpg",
+        )
+
+        body = {
+            "file": base64url_encode("pretend-file"),
+            "filename": "path/to/file.pdf",
+            "year": "22",
+        }
+        uploader = self.create_uploader(body)
+        self.assertFalse(uploader.validate())
+        self.assertEquals(uploader.invalid, "4-digit year required")

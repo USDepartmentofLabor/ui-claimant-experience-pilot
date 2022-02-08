@@ -99,10 +99,16 @@ function App() {
         </div>
       </Header>
 
-      <section className="usa-section" id="main-content">
+      <section className="usa-section">
         <GridContainer>
           <AuthContainer>
-            <Suspense fallback={<PageLoader />}>
+            <Suspense
+              fallback={
+                <main id="main-content">
+                  <PageLoader />
+                </main>
+              }
+            >
               <Routes>
                 <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
                 <Route

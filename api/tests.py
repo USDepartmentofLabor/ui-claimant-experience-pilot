@@ -60,11 +60,11 @@ WHOAMI_IAL2 = {
 }
 
 
-class SessionVerifier:
-    def verify_session(self, client=None):
+class SessionAuthenticator:
+    def authenticate_session(self, client=None):
         client = client if client else self.client
         session = client.session
-        session["verified"] = True
+        session["authenticated"] = True
         session["whoami"] = WHOAMI_IAL2
         session.save()
         return session
@@ -182,7 +182,7 @@ class BaseClaim:
         return claim
 
 
-class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
+class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
     maxDiff = None
 
     def setUp(self):
@@ -211,7 +211,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
     def csrf_client(self, claimant=None, swa=None):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
         c = Client(enforce_csrf_checks=True)
-        self.verify_session(c)
+        self.authenticate_session(c)
         if swa and claimant:
             session = c.session
             session["swa"] = swa.code
@@ -220,7 +220,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         return c
 
     def test_whoami(self):
-        self.verify_session()
+        self.authenticate_session()
         response = self.client.get("/api/whoami/")
         whoami = response.json()
         self.assertEqual(whoami["email"], "someone@example.com")
@@ -229,7 +229,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         self.assertEqual(response.status_code, 405)
 
     def test_whoami_swa(self):
-        session = self.verify_session()
+        session = self.authenticate_session()
         session["swa"] = "XX"
         session.save()
 
@@ -239,10 +239,10 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         self.assertEqual(whoami["swa_name"], "SomeState")
         self.assertEqual(whoami["swa_claimant_url"], "https://somestate.gov")
 
-    def test_whoami_unverified(self):
+    def test_whoami_no_authentication(self):
         response = self.client.get("/api/whoami/")
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json(), {"error": "un-verified session"})
+        self.assertEqual(response.json(), {"error": "un-authenticated session"})
 
     def test_index(self):
         response = self.client.get("/api/")
@@ -252,10 +252,10 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         response = self.client.post("/api/")
         self.assertEqual(response.status_code, 405)
 
-    def test_claim_unverified(self):
+    def test_claim_no_authentication(self):
         response = self.client.get("/api/whoami/")
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json(), {"error": "un-verified session"})
+        self.assertEqual(response.json(), {"error": "un-authenticated session"})
 
     def test_claim_without_csrf(self):
         csrf_client = self.csrf_client()
@@ -666,22 +666,22 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
             )
 
     def test_login(self):
-        self.assertFalse("verified" in self.client.session)
+        self.assertFalse("authenticated" in self.client.session)
         response = self.client.post(
             "/api/login/", {"email": "someone@example.com", "IAL": "2"}
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.client.session["verified"])
+        self.assertTrue(self.client.session["authenticated"])
 
     def test_login_json(self):
-        self.assertFalse("verified" in self.client.session)
+        self.assertFalse("authenticated" in self.client.session)
         response = self.client.post(
             "/api/login/",
             data={"email": "someone@example.com", "IAL": "2"},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.client.session["verified"])
+        self.assertTrue(self.client.session["authenticated"])
 
     def test_logout(self):
         csrf_client = self.csrf_client()
@@ -700,7 +700,7 @@ class ApiTestCase(CeleryTestCase, SessionVerifier, BaseClaim):
         self.assertFalse(self.client.session.exists(session_key))
 
 
-class ClaimApiTestCase(TestCase, SessionVerifier, BaseClaim):
+class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
     def create_api_claim_request(self, body):
         request = RequestFactory().post(
             "/api/claim/", content_type="application/json", data=body
@@ -790,7 +790,7 @@ class ClaimApiTestCase(TestCase, SessionVerifier, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        self.verify_session()
+        self.authenticate_session()
 
         body = self.base_claim() | {
             "claimant_id": claimant.idp_user_xid,
@@ -824,7 +824,7 @@ class ClaimApiTestCase(TestCase, SessionVerifier, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        self.verify_session()
+        self.authenticate_session()
 
         # happy path
         body = {"claimant_id": claimant.idp_user_xid, "swa_code": swa.code}

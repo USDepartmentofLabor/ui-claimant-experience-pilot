@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 
 from api.models.swa import SWA
-from .decorators import verified_claimant_session
+from .decorators import authenticated_claimant_session
 from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator
@@ -34,7 +34,7 @@ def login(request):
 
 
 @require_http_methods(["POST"])
-@verified_claimant_session
+@authenticated_claimant_session
 @never_cache
 def logout(request):
     """testing only"""
@@ -43,7 +43,7 @@ def logout(request):
 
 
 @require_http_methods(["GET"])
-@verified_claimant_session
+@authenticated_claimant_session
 @never_cache
 def whoami(request):
     """
@@ -87,7 +87,7 @@ def index(request):
 
 
 @require_http_methods(["GET", "POST"])
-@verified_claimant_session
+@authenticated_claimant_session
 @never_cache
 def partial_claim(request):
     """GET or POST a partial claim. This method routes according to HTTP method."""
@@ -100,7 +100,7 @@ def partial_claim(request):
 
 
 @require_http_methods(["GET", "POST"])
-@verified_claimant_session
+@authenticated_claimant_session
 @never_cache
 def completed_claim(request):
     """GET or POST a completed claim. This method routes according to HTTP method."""

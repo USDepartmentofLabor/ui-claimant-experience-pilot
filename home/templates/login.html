@@ -28,10 +28,45 @@
           <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=False %}
 
+          <script type="text/javascript">
+            function toggleRequiredFields(ial) {
+              const ssn = document.getElementById("ssn");
+              const ssnLabel = ssn.labels[0];
+              const birthdate = document.getElementById("birthdate");
+              const birthdateLabel = birthdate.labels[0];
+              if (ial === "1") {
+                ssn.required = false;
+                birthdate.required = false;
+                ssnLabel.classList.remove("required");
+                birthdateLabel.classList.remove("required");
+                ssnLabel
+                  .getElementsByTagName("abbr")[0]
+                  .classList.add("display-none");
+                birthdateLabel
+                  .getElementsByTagName("abbr")[0]
+                  .classList.add("display-none");
+              } else if (ial === "2") {
+                ssn.required = true;
+                birthdate.required = true;
+                ssnLabel.classList.add("required");
+                birthdateLabel.classList.add("required");
+                ssnLabel
+                  .getElementsByTagName("abbr")[0]
+                  .classList.remove("display-none");
+                birthdateLabel
+                  .getElementsByTagName("abbr")[0]
+                  .classList.remove("display-none");
+              }
+            }
+          </script>
           <label class="usa-label" for="IAL"
             >Identity Assurance Level (IAL)</label
           >
-          <select name="IAL" class="usa-select">
+          <select
+            name="IAL"
+            class="usa-select"
+            onchange="toggleRequiredFields(this.value)"
+          >
             <option selected value="2">2</option>
             <option value="1">1</option>
           </select>

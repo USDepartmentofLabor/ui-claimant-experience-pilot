@@ -21,7 +21,22 @@ else:  # pragma: no cover
     logindotgov_config = LoginDotGovOIDCClient.discover()
 
 DEFAULT_IAL = 2
-ALLOWED_IALS = [1, 2]
+ALLOWED_IALS = Claimant.IALOptions.values
+IAL1_SCOPES = [
+    "openid",
+    "email",
+    "profile:verified_at",
+    "all_emails",
+]
+IAL2_SCOPES = [
+    "openid",
+    "email",
+    "phone",
+    "address",
+    "profile",
+    "social_security_number",
+    "all_emails",
+]
 
 
 def logindotgov_client():
@@ -47,17 +62,17 @@ def explain(request):
 # if for any reason the claimant could not reach IAL2, they are redirected here.
 @never_cache
 def ial2required(request):
-    # if we already have a verified session, redirect to frontend app
-    if request.session.get("verified"):
-        return redirect("/")
+    # if we already have an authenticated session, redirect to frontend app
+    if request.session.get("authenticated"):
+        return redirect("/claimant/")
 
     return redirect("/ial2required/?idp=logindotgov")
 
 
 @never_cache
 def index(request):
-    # if we already have a verified session, redirect to frontend app
-    if request.session.get("verified"):
+    # if we already have an authenticated session, redirect to frontend app
+    if request.session.get("authenticated"):
         return redirect("/claimant/")
 
     # stash selection
@@ -92,10 +107,10 @@ def index(request):
     nonce = secrets.token_hex(11)
     client = logindotgov_client()
     if ial == 2:
-        scopes = settings.LOGIN_DOT_GOV_SCOPES
+        scopes = IAL2_SCOPES
         acrs = IAL2
     else:
-        scopes = ["openid", "email"]  # the most we can get
+        scopes = IAL1_SCOPES
         acrs = IAL1
 
     login_url = client.build_authorization_url(
@@ -177,6 +192,10 @@ def result(request):
 
     userinfo = client.get_userinfo(tokens["access_token"])
 
+    # if we made an IAL1 initial request, but the claimant has a "verified_at" attribute,
+    # that means their account at login.gov is capable already at IAL2. Remember that.
+    claimant_IAL = 2 if userinfo.get("verified_at", None) else 1
+
     with transaction.atomic():
         logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
         idp_user_xid = hash_idp_user_xid(userinfo["sub"])
@@ -185,15 +204,15 @@ def result(request):
         )
         claimant.events.create(
             category=Claimant.EventCategories.LOGGED_IN,
-            description=request.session["IAL"],
+            description=request.session["IAL"],  # the level they logged in at
         )
-        claimant.bump_IAL_if_necessary(request.session["IAL"])
+        claimant.bump_IAL_if_necessary(claimant_IAL)
 
-    request.session["verified"] = True
+    request.session["authenticated"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
     address = userinfo.get("address", {})
     whoami = WhoAmI(
-        IAL=request.session["IAL"],
+        IAL=claimant_IAL,
         first_name=userinfo.get("given_name", ""),
         last_name=userinfo.get("family_name", ""),
         birthdate=userinfo.get("birthdate", ""),

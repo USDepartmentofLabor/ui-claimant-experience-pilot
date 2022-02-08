@@ -29,7 +29,6 @@ export const Availability = () => {
 
   return (
     <>
-      <h3>{t("heading")}</h3>
       <Fieldset legend={t("can_begin_work_immediately.label")}>
         <BooleanRadio
           id="availability.can_begin_work_immediately"

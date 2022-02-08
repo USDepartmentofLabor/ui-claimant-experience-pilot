@@ -5,6 +5,7 @@ import { ClaimantNames } from "./ClaimantNames";
 import userEvent from "@testing-library/user-event";
 import { noop } from "../../../testUtils/noop";
 import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
+import { LiveAnnouncer } from "react-aria-live";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -26,9 +27,11 @@ describe("ClaimantNames component", () => {
     };
 
     const { getByLabelText } = render(
-      <Formik initialValues={initialValues} onSubmit={noop}>
-        <ClaimantNames />
-      </Formik>
+      <LiveAnnouncer>
+        <Formik initialValues={initialValues} onSubmit={noop}>
+          <ClaimantNames />
+        </Formik>
+      </LiveAnnouncer>
     );
 
     const claimantFirstNameField = getByLabelText("name.first_name.label");
@@ -78,9 +81,11 @@ describe("ClaimantNames component", () => {
       };
 
       const { getByRole, getAllByLabelText } = render(
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          <ClaimantNames />
-        </Formik>
+        <LiveAnnouncer>
+          <Formik initialValues={initialValues} onSubmit={noop}>
+            <ClaimantNames />
+          </Formik>
+        </LiveAnnouncer>
       );
 
       const yesAlternateNames = getByRole("radio", { name: "yes" });
@@ -177,9 +182,11 @@ describe("ClaimantNames component", () => {
       };
 
       const { getByRole, queryAllByLabelText } = render(
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          <ClaimantNames />
-        </Formik>
+        <LiveAnnouncer>
+          <Formik initialValues={initialValues} onSubmit={noop}>
+            <ClaimantNames />
+          </Formik>
+        </LiveAnnouncer>
       );
 
       const yesAlternateNames = getByRole("radio", { name: "yes" });
