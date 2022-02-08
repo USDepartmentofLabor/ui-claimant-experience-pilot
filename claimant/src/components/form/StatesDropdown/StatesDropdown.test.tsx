@@ -4,6 +4,14 @@ import { StateAbbrev, StatesDropdown } from "./StatesDropdown";
 import { Formik } from "formik";
 import { noop } from "../../../testUtils/noop";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (str: string) => str,
+    };
+  },
+}));
+
 describe("StatesDropdown Component", () => {
   it("renders properly", () => {
     render(
