@@ -56,6 +56,10 @@ const common = {
     payment: "Payment",
     review: "Review",
   },
+  expanded_content: {
+    revealed: "revealed content",
+    collapsed: "collapsed",
+  },
 };
 
 export default common;
