@@ -238,8 +238,7 @@ describe("the ClaimForm page", () => {
     const getContactInformationFields = () => ({
       phoneOne: screen.getByTestId("phones[0].number"),
       phoneOneType: screen.getByTestId("phones[0].type"),
-      needsInterpreterYes: screen.getByTestId("interpreter_required.yes"),
-      preferredLanguage: screen.getByTestId("preferred_language"),
+      needsInterpreterNo: screen.getByTestId("interpreter_required.no"),
       backButton: screen.getByText("Back", { exact: false }),
       nextButton: screen.getByText("Next", { exact: false }),
     });
@@ -294,22 +293,16 @@ describe("the ClaimForm page", () => {
       expect(firstName).not.toBeInTheDocument();
     });
 
-    const {
-      phoneOne,
-      phoneOneType,
-      needsInterpreterYes,
-      preferredLanguage,
-      nextButton,
-    } = getContactInformationFields();
+    const { phoneOne, phoneOneType, needsInterpreterNo, nextButton } =
+      getContactInformationFields();
 
     userEvent.type(phoneOne, "555-555-1234");
     userEvent.selectOptions(phoneOneType, ["mobile"]);
-    userEvent.click(needsInterpreterYes);
-    userEvent.type(preferredLanguage, "Klingon");
+    userEvent.click(needsInterpreterNo);
     userEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(preferredLanguage).not.toBeInTheDocument();
+      expect(phoneOne).not.toBeInTheDocument();
     });
   });
 });
