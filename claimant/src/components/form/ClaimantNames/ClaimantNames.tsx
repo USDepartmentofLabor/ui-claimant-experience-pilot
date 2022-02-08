@@ -22,7 +22,6 @@ export const ClaimantNames = () => {
       <Fieldset legend={t("legal_name")}>
         <Name id="claimant_name" name="claimant_name" />
       </Fieldset>
-      <br />
       <LiveMessenger>
         {({ announcePolite }) => (
           <Fieldset legend={t("claimant_has_alternate_names.label")}>
@@ -39,7 +38,6 @@ export const ClaimantNames = () => {
         )}
       </LiveMessenger>
 
-      <br />
       {values.LOCAL_claimant_has_alternate_names === true && (
         <Fieldset legend={t("alternate_name")}>
           <FieldArray
