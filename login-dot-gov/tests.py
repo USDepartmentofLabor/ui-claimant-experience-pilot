@@ -76,7 +76,7 @@ class LoginDotGovTestCase(TestCase):
         explained = response.json()
         whoami = explained["whoami"]
         logger.debug("whoami={}".format(whoami))
-        self.assertEquals(explained["verified"], True)
+        self.assertEquals(explained["authenticated"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
         self.assertEquals(whoami["IAL"], 2)
         self.assertTrue(whoami["first_name"])
@@ -114,18 +114,19 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get("/logindotgov/explain")
         explained = response.json()
         whoami = explained["whoami"]
-        self.assertEquals(explained["verified"], True)
+        self.assertEquals(explained["authenticated"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
-        self.assertEquals(whoami["IAL"], 1)
+        # the MockServer will return a verified_at value so that triggers "2"
+        self.assertEquals(whoami["IAL"], 2)
         self.assertFalse(whoami["first_name"])
         self.assertFalse(whoami["last_name"])
         self.assertFalse(whoami["ssn"])
         self.assertFalse(whoami["birthdate"])
         self.assertFalse(whoami["phone"])
 
-    def test_session_verified(self):
+    def test_session_authenticated(self):
         session = self.client.session
-        session["verified"] = True
+        session["authenticated"] = True
         session.save()
 
         response = self.client.get("/logindotgov/")
@@ -221,11 +222,11 @@ class LoginDotGovTestCase(TestCase):
         )
 
         session = self.client.session
-        session["verified"] = True
+        session["authenticated"] = True
         session.save()
         response = self.client.get("/logindotgov/ial2required")
         self.assertRedirects(
-            response, "/", status_code=302, fetch_redirect_response=False
+            response, "/claimant/", status_code=302, fetch_redirect_response=False
         )
 
     def test_swa_selection(self):

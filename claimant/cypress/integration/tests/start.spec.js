@@ -3,16 +3,16 @@
 context("SWA start page", { scrollBehavior: "center" }, () => {
   it("redirects to /prequal on happy path answers", () => {
     cy.visit("/start/XX/");
-    cy.get("input[id=use-app-yes]").click({ force: true });
-    cy.get("button").contains("Next").click();
+    cy.click_yes("use-app");
+    cy.click_next();
     cy.url().should("contain", "/prequal/");
     cy.url().should("contain", "swa=XX");
   });
 
   it("requires radio selection to proceed", () => {
     cy.visit("/start/XX/");
-    cy.get("button").contains("Next").click();
-    cy.contains("Please make a selection");
+    cy.click_next();
+    cy.contains("Correct the error on this page");
     cy.url().should("contain", "/start/XX/");
   });
 
@@ -24,7 +24,7 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
 
   it("redirects to SWA site redirection page on unhappy path answers", () => {
     cy.visit("/start/XX/");
-    cy.get("input[id=use-app-no]").click({ force: true });
+    cy.click_no("use-app");
     // cypress cannot access other domains so do not click Next, just check that form.action has changed
     cy.get("#use-app-form")
       .invoke("attr", "action")
@@ -33,12 +33,12 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
 
   it("shows/hides error message(s) on form validation", () => {
     cy.visit("/start/XX/");
-    cy.get("button").contains("Next").click();
-    cy.contains("Please make a selection");
+    cy.click_next();
+    cy.contains("Correct the error on this page");
     cy.contains("This field is required");
     cy.get("span").filter(".usa-error-message");
     cy.get("div").filter(".usa-alert--error");
-    cy.get("input[id=use-app-yes]").click({ force: true });
+    cy.click_yes("use-app");
     cy.get("span").not(".usa-error-message");
     cy.get("div").not(".usa-alert--error");
   });

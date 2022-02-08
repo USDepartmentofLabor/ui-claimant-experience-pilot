@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import TimeStampedModel
+from datetime import timedelta
 from .swa import SWA
 from .claimant import Claimant
 from .event import Event
@@ -7,6 +8,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 import uuid
 from django.db import transaction
+from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
 from core.claim_encryption import (
@@ -23,12 +25,33 @@ from core.claim_storage import (
     ClaimWriter,
 )
 
-
 logger = logging.getLogger(__name__)
 
 NOOP = -1
 SUCCESS = 1
 FAILURE = 0
+
+
+class ExpiredPartialClaimManager(models.Manager):
+    def get_queryset(self):
+        days_to_keep_inactive_partial_claim = 7  # TODO: put into env var
+        threshold_date = timezone.now() - timedelta(
+            days=days_to_keep_inactive_partial_claim
+        )
+
+        claims = (
+            super()
+            .get_queryset()
+            .filter(
+                updated_at__lt=threshold_date,
+                events__category=Claim.EventCategories.STORED,
+            )
+            .exclude(events__category=Claim.EventCategories.COMPLETED)
+            .exclude(events__category=Claim.EventCategories.DELETED)
+            .distinct()
+        )
+
+        return claims
 
 
 class Claim(TimeStampedModel):
@@ -52,6 +75,9 @@ class Claim(TimeStampedModel):
     events = GenericRelation(
         Event, content_type_field="model_name", object_id_field="model_id"
     )
+
+    objects = models.Manager()
+    expired_partial_claims = ExpiredPartialClaimManager()
 
     def create_stored_event(self, bucket_name):
         return self.events.create(

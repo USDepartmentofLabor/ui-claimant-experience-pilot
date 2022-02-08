@@ -37,7 +37,7 @@ export const WhoAmI = () => {
 const WhoAmIPage = () => {
   const { t } = useTranslation("whoami");
   return (
-    <main data-testid="who-am-i-page">
+    <main id="main-content" data-testid="who-am-i-page">
       <h1>{t("heading")}</h1>
       <p className="usa-intro">{t("intro")}</p>
       <RequestErrorBoundary>

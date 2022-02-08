@@ -7,7 +7,8 @@ from django.views.decorators.http import require_http_methods
 from home.views import base_url
 from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
-from api.models import Claim
+from api.models import Claim, Claimant
+from .claimant_1099G_uploader import Claimant1099GUploader
 import logging
 import uuid
 
@@ -173,3 +174,38 @@ def DELETE_v1_claim(claim):
     except Exception as err:
         logger.exception(err)
         return error_response
+
+
+"""
+upload a 1099-G file
+"""
+
+
+@require_http_methods(["POST"])
+@never_cache
+def v1_act_on_claimant_1099G(request, claimant_id):
+    if request.method == "POST":
+        return v1_POST_1099G(request, claimant_id)
+
+    # in theory we never get here but some defensiveness in case someone fails to sync require_http_methods
+    return JsonResponse(
+        {"status": "error", "error": "unknown action"}, status=400
+    )  # pragma: no cover
+
+
+def v1_POST_1099G(request, claimant_id):
+    try:
+        claimant = Claimant.objects.get(idp_user_xid=claimant_id)
+    except Claimant.DoesNotExist:
+        logger.debug("🚀 no claimant for claimant_id {}".format(claimant_id))
+        return JsonResponse(
+            {"status": "error", "error": "no such Claimant"}, status=404
+        )
+
+    uploader = Claimant1099GUploader(request, claimant)
+    if uploader.invalid:
+        return JsonResponse({"status": "error", "error": uploader.invalid}, status=400)
+    if uploader.save():
+        return JsonResponse({"status": "ok", "1099G": uploader.form_uuid()}, status=200)
+    else:
+        return JsonResponse({"status": "error", "error": uploader.error}, status=500)

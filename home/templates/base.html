@@ -18,6 +18,17 @@
     <title>
       {% translate "Unemployment Insurance Claim Application | U.S. Department of Labor" %}
     </title>
+    <style id="antiClickjack">
+      body{display:none !important;}
+    </style>
+    <script type="text/javascript">
+        if (self === top) {
+            var antiClickjack = document.getElementById("antiClickjack");
+            antiClickjack.parentNode.removeChild(antiClickjack);
+        } else {
+            top.location = self.location;
+        }
+    </script>
     {% include "./_google_tag_manager.html" %}
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />

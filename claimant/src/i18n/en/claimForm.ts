@@ -1,6 +1,7 @@
 // IMPORTANT that the key names and nested structure is consistent with our claim schema
 // so that YupBuilder can accurately pull out the 'errors' messages.
 const claimForm = {
+  step_progress: "step {{step}} of {{totalSteps}}",
   demographic_information: {
     info_alert:
       "We ask for your demographic information only for our reporting requirements. The information you share does not affect your application or your benefit amount. ",
@@ -88,9 +89,6 @@ const claimForm = {
       format:
         "Please enter a valid Alien Registration Number with format 123-456-789",
     },
-  },
-  identity: {
-    heading: "Identity",
   },
   state_credential: {
     drivers_license_or_state_id_number: {
@@ -305,7 +303,6 @@ const claimForm = {
     search: "Search",
     choose_the_occupation:
       "Choose the occupation that best matches your selection above. If nothing matches, please try another search.",
-    heading: "Your occupation",
     what_is_your_occupation: {
       label: "What is your occupation?",
       required: "Occupation is required",
@@ -387,7 +384,6 @@ const claimForm = {
     },
   },
   availability: {
-    heading: "Your availability to work",
     can_begin_work_immediately: {
       label: "Can you begin work immediately?",
       required: "You must indicate whether you can begin work immediately",

@@ -315,14 +315,6 @@ EMAIL_REPLY_TO = env.str("EMAIL_REPLY_TO", default="no-reply@dol.gov")
 
 # Identity Providers
 LOGIN_DOT_GOV_REDIRECT_URI = os.environ.get("LOGIN_DOT_GOV_REDIRECT_URI")
-LOGIN_DOT_GOV_SCOPES = [
-    "openid",
-    "email",
-    "phone",
-    "address",
-    "profile",
-    "social_security_number",
-]
 LOGIN_DOT_GOV_CLIENT_ID = os.environ.get("LOGIN_DOT_GOV_CLIENT_ID")
 
 if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":

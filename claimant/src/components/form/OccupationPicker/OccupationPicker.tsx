@@ -209,7 +209,6 @@ export const OccupationPicker = () => {
 
   return (
     <div className="usa-search usa-search--small">
-      <h3>{t("heading")}</h3>
       <FormGroup error={showJobTitleError}>
         <Label error={showJobTitleError} htmlFor={jobTitleName}>
           {t("what_is_your_occupation.label")}
