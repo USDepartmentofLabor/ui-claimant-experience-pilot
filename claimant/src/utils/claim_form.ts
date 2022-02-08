@@ -8,6 +8,10 @@ export const PERSON_NAME_SKELETON: PersonName = {
   last_name: "",
 };
 
+export const PHONE_SKELETON: PhoneType = {
+  number: "",
+};
+
 export const ADDRESS_SKELETON: AddressType = {
   address1: "",
   address2: "",

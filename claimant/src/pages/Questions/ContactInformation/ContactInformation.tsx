@@ -1,6 +1,6 @@
 import { Fieldset } from "@trussworks/react-uswds";
 import { TFunction, useTranslation } from "react-i18next";
-import { useFormikContext } from "formik";
+import { FieldArray, useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { IPageDefinition } from "../../PageDefinitions";
 import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
@@ -9,15 +9,16 @@ import { PhoneNumberField } from "../../../components/form/PhoneNumberField/Phon
 import { yupPhone } from "../../../common/YupBuilder";
 import * as yup from "yup";
 import { useClearFields } from "../../../hooks/useClearFields";
+import { PHONE_SKELETON } from "../../../utils/claim_form";
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     // email is not editable, so omit required() but include the schema def just in case.
     email: yup.string().email(),
-    phones: yup.array().of(yupPhone(t)).min(1).required(),
-    "phones[1]": yup.mixed().when("LOCAL_more_phones", {
+    phones: yup.array().when("LOCAL_more_phones", {
       is: true,
-      then: yupPhone(t).required(),
+      then: yup.array().of(yupPhone(t)).min(2).required(),
+      otherwise: yup.array().of(yupPhone(t)).min(1).required(),
     }),
     interpreter_required: yup
       .boolean()
@@ -47,18 +48,36 @@ export const ContactInformation = () => {
 
   return (
     <>
-      <Fieldset legend={t("what_is_your_contact_information")}>
-        <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
-        <CheckboxField
-          id="LOCAL_more_phones"
-          name="LOCAL_more_phones"
-          data-testid="LOCAL_more_phones"
-          label={t("more_phones")}
-        />
-        {values.LOCAL_more_phones && (
-          <PhoneNumberField id="phones[1]" name="phones[1]" showSMS={false} />
+      <FieldArray
+        name="phones"
+        render={(arrayHelpers) => (
+          <Fieldset legend={t("what_is_your_contact_information")}>
+            <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
+            <CheckboxField
+              id="LOCAL_more_phones"
+              name="LOCAL_more_phones"
+              data-testid="LOCAL_more_phones"
+              label={t("more_phones")}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  values.phones?.length === 1 &&
+                    arrayHelpers.push({ ...PHONE_SKELETON });
+                } else {
+                  (values.phones?.length || 0) >= 2 && arrayHelpers.remove(1);
+                }
+              }}
+            />
+            {values.LOCAL_more_phones && (
+              <PhoneNumberField
+                id="phones[1]"
+                name="phones[1]"
+                showSMS={false}
+              />
+            )}
+          </Fieldset>
         )}
-      </Fieldset>
+      />
+
       <TextField
         name="email"
         id="email"
@@ -87,7 +106,7 @@ export const ContactInformationPage: IPageDefinition = {
   heading: "contact",
   initialValues: {
     email: undefined, // whoami will populate
-    phones: [{ number: "" }],
+    phones: [{ ...PHONE_SKELETON }],
     LOCAL_more_phones: undefined,
     interpreter_required: undefined,
     preferred_language: "",

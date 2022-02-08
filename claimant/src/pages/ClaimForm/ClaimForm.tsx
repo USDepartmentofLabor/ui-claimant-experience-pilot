@@ -242,7 +242,7 @@ export const ClaimForm = () => {
             Object.keys(claimForm.touched).length > 0;
 
           // Console.log any errors for debugging
-          if (showError) console.log(claimForm.errors);
+          // if (showError) console.log(claimForm.errors);
 
           return (
             <Form>
