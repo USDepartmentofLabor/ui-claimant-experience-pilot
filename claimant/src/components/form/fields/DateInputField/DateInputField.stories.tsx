@@ -5,6 +5,7 @@ import * as yup from "yup";
 import { DateInputField } from "./DateInputField";
 import { noop } from "../../../../testUtils/noop";
 import { yupDate } from "../../../../common/YupBuilder";
+import { useTranslation } from "react-i18next";
 
 export default {
   title: "Components/Form/Fields/Date Input Field",
@@ -47,9 +48,10 @@ const WithFormikValueTemplate: ComponentStory<typeof DateInputField> = (
   const initialValues = {
     [args.name]: "",
   };
+  const { t } = useTranslation("home");
 
   const validationSchema = yup.object().shape({
-    [args.name]: yupDate(),
+    [args.name]: yupDate(t),
   });
 
   return (

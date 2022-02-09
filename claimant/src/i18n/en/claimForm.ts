@@ -430,6 +430,10 @@ const claimForm = {
     number: { required: "Phone number is required" },
     type: { required: "Phone type is required" },
   },
+  date: {
+    typeError: "Date must be a valid date with format {{ dateFormat }}",
+    required: "Date is required",
+  },
   name: {
     legal_name: "Legal Name",
     alternate_name: "Alternate Name",
