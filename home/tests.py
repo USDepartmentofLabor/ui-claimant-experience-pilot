@@ -104,9 +104,9 @@ class HomeTestCase(TestCase):
             fetch_redirect_response=False,
         )
 
-    def test_prequalifications_page(self):
-        response = self.client.get("/prequal/")
-        self.assertContains(response, "Prequalifications", status_code=200)
+    def test_start_page(self):
+        response = self.client.get("/start/")
+        self.assertContains(response, "Let's get started", status_code=200)
 
     def test_swa_redirect_page(self):
         # with active SWA we get a link to the SWA

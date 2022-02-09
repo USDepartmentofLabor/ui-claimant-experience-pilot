@@ -61,7 +61,7 @@ def idp(request):
     )
 
 
-# some unhappy-path answer on the /prequal page results in redirect to here
+# some unhappy-path answer on the /start/ page results in redirect to here
 def swa_redirect(request, swa_code):
     try:
         swa = SWA.active.get(code=swa_code)
@@ -142,7 +142,7 @@ def login(request):
         return HttpResponse("GET or POST", status=405)
 
 
-def prequalifications(request):
+def start(request):
     state_json_data = open(settings.BASE_DIR / "schemas" / "states.json")
     states = json.load(state_json_data)
     state_json_data.close()
@@ -152,7 +152,7 @@ def prequalifications(request):
 
     return render(
         None,
-        "prequalifications.html",
+        "start.html",
         {
             "base_url": base_url(request),
             "swas": states,

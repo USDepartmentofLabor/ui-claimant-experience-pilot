@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-13 16:46-0500\n"
+"POT-Creation-Date: 2022-02-09 15:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE &lt;LL@li.org>\n"
@@ -18,71 +18,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: home/templates/404.html:5
+#: templates/404.html:5
 msgid "Sorry, we could not find that page."
 msgstr ""
 
-#: home/templates/500.html:4
+#: templates/500.html:4
 msgid "Sorry, we had a problem."
 msgstr ""
 
-#: home/templates/_header.html:10
+#: templates/_header.html:10
 msgid "United States Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:13
+#: templates/_header.html:13
 msgid "U.S. Department of Labor"
 msgstr ""
 
-#: home/templates/_header.html:17
+#: templates/_header.html:17
 msgid "Menu"
 msgstr "Menú"
 
-#: home/templates/_header.html:24
+#: templates/_header.html:24
 msgid "Close"
 msgstr ""
 
-#: home/templates/_header.html:33
+#: templates/_header.html:33
 msgid "Current section"
 msgstr "&lt;Sección actual &gt;"
 
-#: home/templates/_header.html:38
+#: templates/_header.html:38
 msgid "&lt;Navigation link&lt;"
 msgstr "&lt;Navigación&gt;"
 
-#: home/templates/_header.html:41 home/templates/_header.html:44
-#: home/templates/_header.html:59 home/templates/_header.html:62
-#: home/templates/_header.html:65
+#: templates/_header.html:41 templates/_header.html:44
+#: templates/_header.html:59 templates/_header.html:62
+#: templates/_header.html:65
 msgid "&lt;Navigation link&gt;"
 msgstr "&lt;Navigación &gt;"
 
-#: home/templates/_header.html:54
+#: templates/_header.html:54
 msgid "&lt;Section&gt;"
 msgstr "&lt;Sección&gt;"
 
-#: home/templates/_header.html:71
-msgid "&lt;Simple link&gt;"
-msgstr "&lt;Enlace&gt;"
+#: templates/_header.html:71
+msgid "Sign in"
+msgstr ""
 
-#: home/templates/_header.html:78
-msgid "&lt;Secondary link&gt;"
-msgstr "&lt;Enlace segondario&gt;"
-
-#: home/templates/_header.html:81
-msgid "&lt;Another secondary link&gt;"
-msgstr "&lt;Otro enlace segundario&gt;"
-
-#: home/templates/_header.html:87 home/templates/_header.html:96
-msgid "Search"
-msgstr "Buscar"
-
-#: home/templates/base.html:19 home/templates/claimant-base.html:9
+#: templates/base.html:19
 #, fuzzy
 #| msgid "Unemployment Insurance Claim Application"
 msgid "Unemployment Insurance Claim Application | U.S. Department of Labor"
 msgstr "Solicitud de reclamo del seguro de desempleo"
 
-#: home/templates/emails/claim_confirmation_email.txt:2
+#: templates/emails/claim_confirmation_email.txt:2
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
@@ -103,12 +91,12 @@ msgstr ""
 "Su reclamo ha sido reenviado a %(name)s.  Todas las preguntas sobre su "
 "reclamo debe ser redirigido a: "
 
-#: home/templates/emails/claim_confirmation_email.txt:8
+#: templates/emails/claim_confirmation_email.txt:8
 #, python-format
 msgid "%(name)s's workforce agency"
 msgstr "%(name)s's workforce agency"
 
-#: home/templates/emails/claim_confirmation_email.txt:9
+#: templates/emails/claim_confirmation_email.txt:9
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
@@ -125,196 +113,338 @@ msgstr ""
 "Su numero do reclamo: %(claim_id)s\n"
 "Gracias. \n"
 
-#: home/templates/ial2required.html:7
+#: templates/ial2required.html:7
 msgid "Apply and verify later"
 msgstr ""
 
-#: home/templates/ial2required.html:13
+#: templates/ial2required.html:13
 msgid ""
 "If you could not reach IAL2, you can proceed with the form and try again "
 "later."
 msgstr ""
 
-#: home/templates/ial2required.html:17
+#: templates/ial2required.html:17
 msgid "Click here to apply"
 msgstr ""
 
-#: home/templates/idp.html:19
-msgid "Select a State"
+#: templates/idp.html:12
+msgid "Create account or sign in"
 msgstr ""
 
-#: home/templates/idp.html:38
-msgid "Log In or Sign Up"
-msgstr "Iniciar sessión o Registrar"
-
-#: home/templates/idp.html:45
-msgid "Sign in with Login.gov, external website"
+#: templates/idp.html:15
+msgid ""
+"You will now be transferred to Login.gov to sign in and verify your identity."
 msgstr ""
 
-#: home/templates/idp.html:52
+#: templates/idp.html:21
+msgid "Continue"
+msgstr ""
+
+#: templates/idp.html:53 templates/swa-index.html:38
+msgid "Please make a selection"
+msgstr ""
+
+#: templates/idp.html:73
+msgid "Sign in with Login.gov"
+msgstr ""
+
+#: templates/idp.html:81 templates/login.html:4
 msgid "Test Login"
 msgstr ""
 
-#: home/templates/index.html:7
+#: templates/index.html:5
 msgid "Unemployment Insurance Claim Application"
 msgstr "Solicitud de reclamo del seguro de desempleo"
 
-#: home/templates/index.html:9
+#: templates/index.html:6
 msgid "Apply for benefits"
 msgstr "Solicitar beneficios"
 
-#: home/templates/index.html:11
+#: templates/index.html:8
 msgid "Get started"
 msgstr "Empezar"
 
-#: home/templates/prequalifications.html:75
-msgid "Must answer all questions"
-msgstr ""
-
-#: home/templates/prequalifications.html:102
-msgid "PREQUALIFICATION"
-msgstr ""
-
-#: home/templates/prequalifications.html:106
+#: templates/start.html:13 templates/start.html:134
 msgid "State residence"
 msgstr ""
 
-#: home/templates/prequalifications.html:108
-msgid "Do you currently live in the United States?"
+#: templates/start.html:14
+msgid "State"
 msgstr ""
 
-#: home/templates/prequalifications.html:109
-#: home/templates/uswds/_swa_options.html:3
-msgid "Select your state"
-msgstr ""
-
-#: home/templates/prequalifications.html:112
+#: templates/start.html:15 templates/start.html:142
 msgid "Recent employment"
 msgstr ""
 
-#: home/templates/prequalifications.html:114
+#: templates/start.html:16 templates/start.html:155
+msgid "Disability"
+msgstr ""
+
+#: templates/start.html:17 templates/start.html:160
+msgid "Military service"
+msgstr ""
+
+#: templates/start.html:18 templates/start.html:165
+msgid "Federal employment"
+msgstr ""
+
+#: templates/start.html:19 templates/start.html:170
+msgid "Maritime employment"
+msgstr ""
+
+#: templates/start.html:20 templates/start.html:150
+msgid "Disaster"
+msgstr ""
+
+#: templates/start.html:21
+msgid "Worked in another state"
+msgstr ""
+
+#: templates/start.html:93
+msgid "is required"
+msgstr ""
+
+#: templates/start.html:129
+#, fuzzy
+#| msgid "Get started"
+msgid "Let's get started"
+msgstr "Empezar"
+
+#: templates/start.html:135
+msgid "Do you currently live in the United States?"
+msgstr ""
+
+#: templates/start.html:137 templates/uswds/_swa_options.html:3
+msgid "Select your state"
+msgstr ""
+
+#: templates/start.html:143
 msgid "Have you had a job during the last 18 months?"
 msgstr ""
 
-#: home/templates/prequalifications.html:116
+#: templates/start.html:145
 msgid ""
 "Have you worked in any state other than the state you currently live in the "
 "last 18 months (not including military service)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:120
-msgid "Disaster"
-msgstr ""
-
-#: home/templates/prequalifications.html:122
+#: templates/start.html:151
 msgid ""
 "Have you been impacted by a recent natural disaster (like a hurricane or "
 "wildfire)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:124
-msgid "Disability"
-msgstr ""
-
-#: home/templates/prequalifications.html:126
+#: templates/start.html:156
 msgid "Are you currently disabled and unable to work?"
 msgstr ""
 
-#: home/templates/prequalifications.html:129
-msgid "Military service"
-msgstr ""
-
-#: home/templates/prequalifications.html:131
+#: templates/start.html:161
 msgid "Have you served in the United States military in the last 18 months?"
 msgstr ""
 
-#: home/templates/prequalifications.html:134
-msgid "Federal employment"
-msgstr ""
-
-#: home/templates/prequalifications.html:136
+#: templates/start.html:166
 msgid ""
 "Have you worked for the federal government in the last 18 months (not "
 "including military service)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:139
-msgid "Maritime employment"
-msgstr ""
-
-#: home/templates/prequalifications.html:141
+#: templates/start.html:171
 msgid ""
 "Have you worked for a maritime employer in the last 18 months (for example, "
 "did you work on a ship or in a harbor)?"
 msgstr ""
 
-#: home/templates/prequalifications.html:145
+#: templates/start.html:175
+msgid "Back"
+msgstr ""
+
+#: templates/start.html:176 templates/swa-index.html:85
+#: templates/swa-redirect.html:29 templates/swa-redirect.html:31
 msgid "Next"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:3
+#: templates/swa-index.html:6
+msgid "Welcome to a new way to apply for unemployment benefits"
+msgstr ""
+
+#: templates/swa-index.html:9
+msgid ""
+"and the United States Department of Labor invite you to be among the first "
+"to try the new APPNAME HERE"
+msgstr ""
+
+#: templates/swa-index.html:12
+msgid ""
+"This process requires access to a computer or smartphone to complete. You "
+"will need to be able to:"
+msgstr ""
+
+#: templates/swa-index.html:14
+msgid ""
+"Upload an image of your state-issued ID and a photo of yourself to verify "
+"your identity with Login.gov"
+msgstr ""
+
+#: templates/swa-index.html:15
+msgid "Verify your phone number, email address, and physical address"
+msgstr ""
+
+#: templates/swa-index.html:16
+msgid ""
+"Fill out an application online, including providing recent work history and "
+"employment details"
+msgstr ""
+
+#: templates/swa-index.html:51
+msgid ""
+"Do you wish to apply for unemployment benefits using APPNAME HERE system?"
+msgstr ""
+
+#: templates/swa-index.html:65 templates/uswds/_yes_no_radio.html:21
+msgid "Yes"
+msgstr ""
+
+#: templates/swa-index.html:65
+msgid "I want to apply with APPNAME HERE"
+msgstr ""
+
+#: templates/swa-index.html:79 templates/uswds/_yes_no_radio.html:40
+msgid "No"
+msgstr ""
+
+#: templates/swa-index.html:79
+#, python-format
+msgid "I want to use the regular %(swa_name)s application"
+msgstr ""
+
+#: templates/swa-index.html:91
+msgid ""
+"Using APPNAME HERE will not affect your ability to receive unemployment "
+"benefits and does not imply preferential treatment for your application."
+msgstr ""
+
+#: templates/swa-redirect.html:4
+msgid "Apply through"
+msgstr ""
+
+#: templates/swa-redirect.html:4
+msgid "your state unemployment system"
+msgstr ""
+
+#: templates/swa-redirect.html:6
+#, python-format
+msgid ""
+"\n"
+"      It looks like you'll need to complete your application on %(name)s's "
+"existing unemployment insurance system\n"
+"      based on the information you provided.\n"
+"      "
+msgstr ""
+
+#: templates/swa-redirect.html:11
+msgid ""
+"It looks like you'll need to complete your application on your state's "
+"existing unemployment insurance system based on the information you provided."
+msgstr ""
+
+#: templates/swa-redirect.html:16
+msgid ""
+"You may be asked to provide some of this information again once you have "
+"created your account."
+msgstr ""
+
+#: templates/swa-redirect.html:22
+#, python-format
+msgid "Click next to go to %(name)s's online application."
+msgstr ""
+
+#: templates/swa-redirect.html:24
+msgid "Click next to find unemployment resources for your state."
+msgstr ""
+
+#: templates/uswds/_alert_error.html:18
+msgid "Correct the error on this page to proceed"
+msgstr ""
+
+#: templates/uswds/_alert_error.html:19
+#, python-brace-format
+msgid "Correct the {count} errors on this page to proceed"
+msgstr ""
+
+#: templates/uswds/_alert_error.html:87
+msgid "This field is required"
+msgstr ""
+
+#: templates/uswds/_banner.html:3
 msgid "Skip to main content"
 msgstr "Saltar al contento principal"
 
-#: home/templates/uswds/_banner.html:9
+#: templates/uswds/_banner.html:9
 msgid ""
 "TEST SITE - Do not use real personal information (demo purposes only) - TEST "
 "SITE"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:25
+#: templates/uswds/_banner.html:25
 msgid "U.S. flag"
 msgstr "Bandera de los Estados Unidos"
 
-#: home/templates/uswds/_banner.html:32
+#: templates/uswds/_banner.html:32
 msgid "An official website of the United States government"
 msgstr "Un sitio web del gobierno de los Estados Unidos"
 
-#: home/templates/uswds/_banner.html:35 home/templates/uswds/_banner.html:44
+#: templates/uswds/_banner.html:35 templates/uswds/_banner.html:44
 msgid "Here’s how you know"
 msgstr "Cómo se sabe"
 
-#: home/templates/uswds/_banner.html:61
+#: templates/uswds/_banner.html:61
 msgid "Official websites use .gov"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:63
+#: templates/uswds/_banner.html:63
 msgid ""
 "A <strong>.gov</strong> website belongs to an official government "
 "organization in the United States."
 msgstr ""
 
-#: home/templates/uswds/_banner.html:79
+#: templates/uswds/_banner.html:79
 msgid "Secure .gov websites use HTTPS"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:81
+#: templates/uswds/_banner.html:81
 msgid "A <strong>lock</strong>"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:93
+#: templates/uswds/_banner.html:93
 msgid "Lock"
 msgstr ""
 
-#: home/templates/uswds/_banner.html:95
+#: templates/uswds/_banner.html:95
 msgid "A locked padlock"
 msgstr ""
 
-#: home/templates/uswds/_combo_box.html:10
+#: templates/uswds/_combo_box.html:18
 msgid "--Select--"
 msgstr ""
 
-#: home/templates/uswds/_swa_options.html:6
+#: templates/uswds/_swa_options.html:11
 msgid "Select"
 msgstr ""
 
-#: home/templates/uswds/_yes_no_radio.html:18
-msgid "Yes"
-msgstr ""
+#~ msgid "&lt;Simple link&gt;"
+#~ msgstr "&lt;Enlace&gt;"
 
-#: home/templates/uswds/_yes_no_radio.html:34
-msgid "No"
-msgstr ""
+#~ msgid "&lt;Secondary link&gt;"
+#~ msgstr "&lt;Enlace segondario&gt;"
+
+#~ msgid "&lt;Another secondary link&gt;"
+#~ msgstr "&lt;Otro enlace segundario&gt;"
+
+#~ msgid "Search"
+#~ msgstr "Buscar"
+
+#~ msgid "Log In or Sign Up"
+#~ msgstr "Iniciar sessión o Registrar"
 
 #, fuzzy
 #~| msgid "Here’s how you know"

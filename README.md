@@ -194,10 +194,10 @@ When using `git commit` to change or add files, the pre-commit hooks run. Some h
 I18n for the static templates served by Django uses the built-in [Translation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/) feature of Django.
 
 To apply translations for simple cases, use the `{% translation <string> %}` within the template. Be sure to translate `alt` text for screen readers. The default language is English, `en`, so an `en` translation file is not necessary.
-Translation messages are applied in `home/locale/<locale code>/LC_MESSAGES` in a `.po` file. After making changes to plain language in the template, in the `home` directory inside the container run:
+Translation messages are applied in `home/locale/<locale code>/LC_MESSAGES` in a `.po` file. After making changes to plain language in the template, in the container run:
 
 ```
-django-admin makemessages -l <locale code>
+make update-translations
 ```
 
 This will create or update a `.po` file.
@@ -208,7 +208,7 @@ The `.po` files must be compiled into binary `.mo` files. To see your `.po` file
 make build-translations
 ```
 
-This step is performed automatically during container build. You need to run it only during active local development
+This `build-translations` step is performed automatically during container build. You need to run it only during active local development
 to confirm any translation changes.
 
 #### Client-side
