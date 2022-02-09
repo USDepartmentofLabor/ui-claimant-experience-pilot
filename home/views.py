@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+from django.template.exceptions import TemplateDoesNotExist
 
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
@@ -40,6 +41,29 @@ def swa_index(request, swa_code):
         return render(
             None, "swa-index.html", {"swa": swa, "base_url": base_url(request)}
         )
+    except SWA.DoesNotExist:
+        return handle_404(request, None)
+
+
+# Contact us per-SWA
+def swa_contact(request, swa_code):
+    try:
+        swa = SWA.active.get(code=swa_code)
+        return render(
+            None,
+            "swa-contact.html",
+            {
+                "swa": swa,
+                "swa_hours_of_operation": f"_swa/{swa.code}/hours_of_operation.html",
+                "swa_weekly_benefits": f"_swa/{swa.code}/weekly_benefits.html",
+                "swa_new_claim": f"_swa/{swa.code}/new_claim.html",
+                "swa_general_information": f"_swa/{swa.code}/general_information.html",
+                "swa_help_finding_work": f"_swa/{swa.code}/help_finding_work.html",
+                "base_url": base_url(request),
+            },
+        )
+    except TemplateDoesNotExist:
+        return handle_404(request, None)
     except SWA.DoesNotExist:
         return handle_404(request, None)
 

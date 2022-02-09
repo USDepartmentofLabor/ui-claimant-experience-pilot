@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<div class="grid-container">
+  <main>
+    <h1>{% translate "Contact us" %}</h1>
+    <section>
+      {% translate "Here's how to reach us if you have questions about unemployment insurance or need help with an application or claim:" %}
+    </section>
+    <section>
+      <h2>{% translate "Hours of operation" %}</h2>
+      <div>{% include swa_hours_of_operation %}</div>
+    </section>
+    <section class="dol-swa-contact">
+      <div class="usa-accordion" aria-multiselectable="true">
+        <h2 class="usa-accordion__heading">
+          <button
+            class="usa-accordion__button"
+            aria-expanded="false"
+            aria-controls="m-a1"
+          >
+            {% translate "To file for weekly benefits" %}
+          </button>
+        </h2>
+        <div id="m-a1" class="usa-accordion__content usa-prose">
+          <p>{% include swa_weekly_benefits %}</p>
+        </div>
+
+        <h2 class="usa-accordion__heading">
+          <button
+            class="usa-accordion__button"
+            aria-expanded="false"
+            aria-controls="m-a2"
+          >
+            {% translate "To start a new claim" %}
+          </button>
+        </h2>
+        <div id="m-a2" class="usa-accordion__content usa-prose">
+          <p>{% include swa_new_claim %}</p>
+        </div>
+
+        <h2 class="usa-accordion__heading">
+          <button
+            class="usa-accordion__button"
+            aria-expanded="false"
+            aria-controls="m-a3"
+          >
+            {% translate "For general information" %}
+          </button>
+        </h2>
+        <div id="m-a3" class="usa-accordion__content usa-prose">
+          <p>{% include swa_general_information %}</p>
+        </div>
+
+        <h2 class="usa-accordion__heading">
+          <button
+            class="usa-accordion__button"
+            aria-expanded="false"
+            aria-controls="m-a4"
+          >
+            {% translate "For help finding work" %}
+          </button>
+        </h2>
+        <div id="m-a4" class="usa-accordion__content usa-prose">
+          <p>{% include swa_help_finding_work %}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}
