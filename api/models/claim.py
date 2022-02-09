@@ -8,6 +8,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 import uuid
 from django.db import transaction
+from django.conf import settings
 from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
@@ -34,7 +35,7 @@ FAILURE = 0
 
 class ExpiredPartialClaimManager(models.Manager):
     def get_queryset(self):
-        days_to_keep_inactive_partial_claim = 7  # TODO: put into env var
+        days_to_keep_inactive_partial_claim = settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
         threshold_date = timezone.now() - timedelta(
             days=days_to_keep_inactive_partial_claim
         )
