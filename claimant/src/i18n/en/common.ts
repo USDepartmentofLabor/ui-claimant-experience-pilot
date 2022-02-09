@@ -17,6 +17,8 @@ const common = {
   phone: {
     number: {
       label: "Phone number",
+      matches: "Please enter a phone number like (555) 555-1234",
+      required: "Phone number is required",
     },
     type: {
       label: "Type",

@@ -235,9 +235,8 @@ const claimForm = {
     phones: {
       number: {
         label: "Employer phone number",
-        errors: {
-          required: "Employer phone number is a required field",
-        },
+        required: "Employer phone number is a required field",
+        matches: "Please enter a phone number like (555) 555-1234",
       },
     },
     alt_employer_phone: "Work location phone number",
@@ -427,7 +426,10 @@ const claimForm = {
     zipcode: { required: "ZIP code is required" },
   },
   phone: {
-    number: { required: "Phone number is required" },
+    number: {
+      required: "Phone number is required",
+      matches: "Please enter a phone number like (555) 555-1234",
+    },
     type: { required: "Phone type is required" },
   },
   name: {

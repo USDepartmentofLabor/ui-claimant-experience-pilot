@@ -10,7 +10,15 @@ import states from "../fixtures/states.json";
 
 export const yupPhone = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    number: yup.string().required(t("phone.number.required")),
+    number: yup
+      .string()
+      .matches(
+        /[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4}/,
+        t("phone.number.matches")
+      )
+      .min(10)
+      .max(32)
+      .required(t("phone.number.required")),
     type: yup.string(),
     sms: yup.boolean(),
   });
