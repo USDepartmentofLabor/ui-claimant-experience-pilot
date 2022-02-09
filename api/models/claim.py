@@ -193,6 +193,8 @@ class Claim(TimeStampedModel):
                 cw = ClaimWriter(
                     self, packaged_payload, path=self.completed_payload_path()
                 )
+                if not cw.write():
+                    raise Exception("Failed to write completed claim")
                 archiveCw = ClaimWriter(
                     self,
                     json_encode(validated_payload),
@@ -201,8 +203,8 @@ class Claim(TimeStampedModel):
                         claim_bucket=ClaimBucket(BUCKET_TYPE_ARCHIVE)
                     ),
                 )
-                if not cw.write() or not archiveCw.write():
-                    raise Exception("Failed to write completed claim")
+                if not archiveCw.write():
+                    raise Exception("Failed to write completed claim to archive")
             logger.debug("🚀 wrote completed claim")
             return True
         except Exception as error:
