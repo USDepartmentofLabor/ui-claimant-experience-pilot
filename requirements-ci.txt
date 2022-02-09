@@ -1,5 +1,5 @@
-coverage==6.3
+coverage==6.3.1
 django-extensions
 graphviz
-pytest==6.2.5
+pytest==7.0.0
 time_machine==2.6.0

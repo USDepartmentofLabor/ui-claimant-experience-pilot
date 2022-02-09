@@ -59,9 +59,11 @@ export const TextField = ({
         {label}
       </Label>
       <div className="usa-input-group">
-        <div className="usa-input-prefix" aria-hidden="true">
-          {inputPrefix}
-        </div>
+        {inputPrefix && (
+          <div className="usa-input-prefix" aria-hidden="true">
+            {inputPrefix}
+          </div>
+        )}
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <TextInput
           {...fieldProps}
@@ -69,9 +71,11 @@ export const TextField = ({
           value={fieldProps.value || ""}
           {...textInputProps}
         />
-        <div className="usa-input-suffix" aria-hidden="true">
-          {inputSuffix}
-        </div>
+        {inputSuffix && (
+          <div className="usa-input-suffix" aria-hidden="true">
+            {inputSuffix}
+          </div>
+        )}
       </div>
       <div className="usa-hint" id={`${textInputProps.name}-hint`}>
         {hint}

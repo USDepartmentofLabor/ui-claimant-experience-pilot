@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Formik } from "formik";
 
@@ -14,15 +14,17 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("OtherPay", () => {
-  it("renders properly", () => {
+  it("renders properly", async () => {
     render(
       <Formik initialValues={{ other_pay: [] }} onSubmit={noop}>
         <OtherPay />
       </Formik>
     );
-    expect(
-      screen.getByRole("group", { name: "pay_type.label" })
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("group", { name: "pay_type.label" })
+      ).toBeInTheDocument();
+    });
   });
 
   it("opens additional fields based on pay type selection", async () => {

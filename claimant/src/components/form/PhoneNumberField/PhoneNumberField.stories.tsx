@@ -1,9 +1,10 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form, Formik } from "formik";
-import * as yup from "yup";
 import { useTranslation } from "react-i18next";
-import { Fieldset } from "@trussworks/react-uswds";
+import { Button, Fieldset } from "@trussworks/react-uswds";
 import { PhoneNumberField } from "./PhoneNumberField";
+import { yupPhone } from "../../../common/YupBuilder";
+import * as yup from "yup";
 
 export default {
   title: "Components/Form/PhoneNumberField",
@@ -13,15 +14,7 @@ export default {
 const noop = () => undefined;
 
 const Template: ComponentStory<typeof PhoneNumberField> = (args) => {
-  const { t } = useTranslation("home");
-
-  const validationSchema = yup.object().shape({
-    [args.name]: yup.object().shape({
-      type: yup.string().optional(),
-      number: yup.string().required(t("validation.required")),
-      sms: yup.string().optional(),
-    }),
-  });
+  const { t } = useTranslation("common");
 
   const initialValues = {
     [args.name]: {
@@ -30,6 +23,8 @@ const Template: ComponentStory<typeof PhoneNumberField> = (args) => {
       sms: false,
     },
   };
+
+  const validationSchema = yup.object().shape({ [args.name]: yupPhone(t) });
 
   return (
     <Formik
@@ -41,6 +36,7 @@ const Template: ComponentStory<typeof PhoneNumberField> = (args) => {
         <Fieldset>
           <PhoneNumberField {...args} />
         </Fieldset>
+        <Button type="submit">Validate me</Button>
       </Form>
     </Formik>
   );

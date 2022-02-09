@@ -2,11 +2,11 @@
 from django.test import TransactionTestCase, TestCase
 from django.db import IntegrityError
 from django.db.models import ProtectedError
+from django.conf import settings
 from api.models import SWA, IdentityProvider, Claimant, Claim
 from api.models.claim import SUCCESS, FAILURE
 import datetime
 from datetime import timedelta
-import time_machine
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
@@ -19,6 +19,7 @@ from core.test_utils import (
     create_s3_bucket,
     delete_s3_bucket,
 )
+from api.test_utils import build_claim_updated_by_event
 
 logger = logging.getLogger(__name__)
 
@@ -42,14 +43,13 @@ class ApiModelsManagerTestCase(TestCase):
         )
 
     def test_expired_claim_manager(self):
-        claim_lifespan = 7  # TODO: to be retrieved from env var
-        ks_swa, _ = create_swa()
+        claim_lifespan = settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
+        swa, _ = create_swa()
         idp = create_idp()
-
         expired_claim_uuid = "0a5cf608-0c72-4d37-8695-85497ad53d34"
         test_data_cases = [
             {
-                "xid": 1,
+                "idp_user_xid": 1,
                 "uuid": expired_claim_uuid,
                 "days_ago_created": claim_lifespan + 1,
                 "events": [
@@ -60,7 +60,7 @@ class ApiModelsManagerTestCase(TestCase):
                 ],
             },
             {
-                "xid": 2,
+                "idp_user_xid": 2,
                 "uuid": "b2edb136-d166-4e28-8e83-b0ea48eef7e0",
                 "days_ago_created": claim_lifespan + 3,
                 "events": [
@@ -79,7 +79,7 @@ class ApiModelsManagerTestCase(TestCase):
                 ],
             },
             {
-                "xid": 3,
+                "idp_user_xid": 3,
                 "uuid": "5060ee6f-8ae0-4056-ad5e-5d10fa0b5d59",
                 "days_ago_created": claim_lifespan + 3,
                 "events": [
@@ -94,7 +94,7 @@ class ApiModelsManagerTestCase(TestCase):
                 ],
             },
             {
-                "xid": 4,
+                "idp_user_xid": 4,
                 "uuid": "4912139b-71bc-4c69-ac6e-5564f2f1091c",
                 "days_ago_created": claim_lifespan + 3,
                 "events": [
@@ -109,7 +109,7 @@ class ApiModelsManagerTestCase(TestCase):
                 ],
             },
             {
-                "xid": 5,
+                "idp_user_xid": 5,
                 "uuid": "9656b523-151e-482d-9c4b-2aec21764547",
                 "days_ago_created": claim_lifespan - 3,
                 "events": [
@@ -122,29 +122,13 @@ class ApiModelsManagerTestCase(TestCase):
         ]
 
         for case in test_data_cases:
-            claimant = create_claimant(idp, xid=case["xid"])
-
-            claim = Claim(
+            build_claim_updated_by_event(
+                idp=idp,
+                swa=swa,
+                idp_user_xid=case["idp_user_xid"],
                 uuid=case["uuid"],
-                swa=ks_swa,
-                claimant=claimant,
-                status="something",
+                events=case["events"],
             )
-            claim.save()
-
-            for event in case["events"]:
-                claim.events.create(
-                    category=event["category"],
-                    happened_at=timezone.now()
-                    - timedelta(days=event["days_ago_happened"]),
-                    description="some other thing",
-                )
-            traveller = time_machine.travel(
-                timezone.now() - timedelta(days=case["events"][-1]["days_ago_happened"])
-            )
-            traveller.start()
-            claim.save()  # updates claim.updated_at to the last event date
-            traveller.stop()
 
         claims = Claim.expired_partial_claims.all()
         claim_ids = list(map(lambda c: str(c.uuid), claims))

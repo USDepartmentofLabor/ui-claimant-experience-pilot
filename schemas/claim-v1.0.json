@@ -25,7 +25,13 @@
       "$anchor": "#/definitions/phone",
       "type": "object",
       "properties": {
-        "number": { "type": "string", "maxLength": 32 },
+        "number": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 32,
+          "comment": "We do not enforce ^$ anchors to allow for international prefix, extra space, extension, etc",
+          "pattern": "[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4}"
+        },
         "type": { "type": "string" },
         "sms": { "type": "boolean" }
       },

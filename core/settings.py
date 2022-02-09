@@ -132,6 +132,7 @@ INSTALLED_APPS = [
     "swa",
     "appoptics_apm.djangoware",
     "launchdarkly.apps.LaunchdarklyConfig",
+    "django_celery_beat",
 ]
 
 # only install in dev/ci
@@ -403,3 +404,5 @@ DISPLAY_TEST_SITE_BANNER = (
 
 LD_SDK_KEY = env.str("LD_SDK_KEY")
 LD_CLIENT_SDK_KEY = env.str("LD_CLIENT_SDK_KEY")
+
+DELETE_PARTIAL_CLAIM_AFTER_DAYS = env.int("DELETE_PARTIAL_CLAIM_AFTER_DAYS", 7)
