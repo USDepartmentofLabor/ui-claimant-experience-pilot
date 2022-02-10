@@ -1,4 +1,4 @@
-import { render, waitFor, within } from "@testing-library/react";
+import { render, waitFor, within, screen } from "@testing-library/react";
 import { Formik } from "formik";
 import { DateInputField } from "./DateInputField";
 import { noop } from "../../../../testUtils/noop";
@@ -106,7 +106,16 @@ describe("DateInputField Component", () => {
         })}
         onSubmit={noop}
       >
-        <DateInputField id={"dateInputField"} name={"dateInputField"} />
+        {({ submitForm }) => {
+          return (
+            <>
+              <DateInputField id={"dateInputField"} name={"dateInputField"} />
+              <button type="submit" onClick={submitForm}>
+                Submit
+              </button>
+            </>
+          );
+        }}
       </Formik>
     );
 
@@ -135,8 +144,8 @@ describe("DateInputField Component", () => {
       expect(queryByRole("alert")).not.toBeInTheDocument();
     });
 
+    userEvent.click(screen.getByRole("button"));
     // Tab away from the year field, blurs the entire field and triggers validation as a result
-    userEvent.tab();
     await waitFor(() => {
       expect(monthField).not.toHaveFocus();
       expect(dayField).not.toHaveFocus();

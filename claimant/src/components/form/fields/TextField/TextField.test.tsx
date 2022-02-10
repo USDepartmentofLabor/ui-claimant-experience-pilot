@@ -117,7 +117,7 @@ describe("TextField component", () => {
       expect(queryByText("This field is required")).not.toBeInTheDocument();
     });
 
-    it("shows the error message if the input is touched", () => {
+    it("shows the error message if the form is submitted", () => {
       const mockMeta = {
         touched: true,
         error: "This field is required",
@@ -136,6 +136,7 @@ describe("TextField component", () => {
         name: "firstName",
       };
 
+      mockUseFormikContext.mockReturnValue({ submitCount: 1 });
       mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
