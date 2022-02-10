@@ -122,6 +122,9 @@ def test(request):  # pragma: no cover
     if not ld_flag_set:
         return handle_404(request)
 
+    ldflags = ld_client.all_flags_state({"key": "anonymous-user"}).to_json_dict()
+    logger.debug("LD flags: {}".format(ldflags))
+
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
     this_session["test_cookie_worked"] = request.session.test_cookie_worked()

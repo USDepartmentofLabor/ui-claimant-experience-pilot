@@ -12,6 +12,8 @@ from .claimant_1099G_uploader import Claimant1099GUploader
 import logging
 import uuid
 
+from launchdarkly.client import ld_client
+
 logger = logging.getLogger(__name__)
 
 
@@ -184,6 +186,13 @@ upload a 1099-G file
 @require_http_methods(["POST"])
 @never_cache
 def v1_act_on_claimant_1099G(request, claimant_id):
+    ld_flag_set = ld_client.variation(
+        "allow-1099g-upload", {"key": "anonymous-user"}, False
+    )
+    if not ld_flag_set:
+        logger.debug("allow-1099g-upload off")
+        return JsonResponse({"status": "error", "error": "route not found"}, status=404)
+
     if request.method == "POST":
         return v1_POST_1099G(request, claimant_id)
 
