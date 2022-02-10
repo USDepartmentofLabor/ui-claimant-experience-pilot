@@ -7,6 +7,7 @@ import {
   IconLaunch,
   IconSearch,
   TextInput,
+  InputSuffix,
 } from "@trussworks/react-uswds";
 import { RadioField } from "../fields/RadioField/RadioField";
 import { TextAreaField } from "../fields/TextAreaField/TextAreaField";
@@ -14,6 +15,7 @@ import { useField, useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 
 import soc_entries_2018 from "../../../fixtures/soc_entries_2018.json";
+import classnames from "classnames";
 
 type OccupationOption = {
   code: string;
@@ -161,6 +163,7 @@ const searchSOCEntries = (searchString: string) => {
 export const OccupationPicker = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "occupation" });
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const [occupationOptions, setOccupationOptions] = useState(
     [] as OccupationOption[]
@@ -223,6 +226,15 @@ export const OccupationPicker = () => {
 
   const noResultsFlag = hasNoResults();
 
+  const searchGroupClasses = classnames(
+    "usa-input-group",
+    "usa-input-group--sm",
+    {
+      "is-focused": searchFocused,
+      "usa-input-group--error": showJobTitleError && !searchFocused,
+    }
+  );
+
   return (
     <div className="usa-search usa-search--small">
       <FormGroup error={showJobTitleError || noResultsFlag}>
@@ -232,7 +244,7 @@ export const OccupationPicker = () => {
         >
           {t("what_is_your_occupation.label")}
         </Label>
-        <div className="usa-input-group usa-input-group--sm">
+        <div className={searchGroupClasses}>
           <TextInput
             {...occupationJobTitleFieldProps}
             id={jobTitleName}
@@ -240,10 +252,12 @@ export const OccupationPicker = () => {
             name={jobTitleName}
             autoCapitalize="off"
             autoComplete="off"
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
           />
-          <div className="usa-input-suffix" aria-hidden="true">
+          <InputSuffix>
             <IconSearch />
-          </div>
+          </InputSuffix>
         </div>
         {noResultsFlag && <ErrorMessage>{t("no_results")}</ErrorMessage>}
         {showJobTitleError && (
