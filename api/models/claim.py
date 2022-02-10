@@ -6,16 +6,16 @@ from .claimant import Claimant
 from .event import Event
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
+from django.conf import settings
 import uuid
 from django.db import transaction
-from django.conf import settings
 from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
 from core.claim_encryption import (
     AsymmetricClaimEncryptor,
     SymmetricClaimEncryptor,
-    SymmetricClaimDecryptor,
+    RotatableSymmetricClaimDecryptor,
     symmetric_encryption_key,
 )
 from core.claim_storage import (
@@ -216,5 +216,7 @@ class Claim(TimeStampedModel):
         if not claim_reader.exists():
             return False
         packaged_claim_str = claim_reader.read()
-        cd = SymmetricClaimDecryptor(packaged_claim_str, symmetric_encryption_key())
+        cd = RotatableSymmetricClaimDecryptor(
+            packaged_claim_str, settings.CLAIM_SECRET_KEY
+        )
         return cd.decrypt()

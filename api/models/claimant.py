@@ -9,6 +9,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 class Claimant(TimeStampedModel):
     class Meta:
         db_table = "claimants"
+        indexes = [models.Index(fields=["encryption_key_hash"])]
 
     class EventCategories(models.IntegerChoices):
         LOGGED_IN = 1
@@ -21,6 +22,7 @@ class Claimant(TimeStampedModel):
     idp = models.ForeignKey(IdentityProvider, on_delete=models.PROTECT)
     idp_user_xid = models.CharField(max_length=255, unique=True)
     IAL = models.IntegerField(choices=IALOptions.choices, default=IALOptions.IAL1)
+    encryption_key_hash = models.CharField(max_length=64, null=True)
     events = GenericRelation(
         Event, content_type_field="model_name", object_id_field="model_id"
     )

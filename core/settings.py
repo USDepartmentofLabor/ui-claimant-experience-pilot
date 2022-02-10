@@ -389,12 +389,17 @@ TEST_ARCHIVE_BUCKET_NAME = env.str(
 ARCHIVE_BUCKET_NAME = env.str("S3_ARCHIVE_BUCKET_URL", "usdol-ui-archive")
 
 # CLAIM_SECRET_KEY is what we use to symmetrically encrypt claims-in-progress
-try:
-    CLAIM_SECRET_KEY = env.str("CLAIM_SECRET_KEY")
-    validate_secret_key(CLAIM_SECRET_KEY, "CLAIM_SECRET_KEY")
-except Exception:  # pragma: no cover
-    logger.warn("Re-using REDIS_SECRET_KEY as CLAIM_SECRET_KEY")
-    CLAIM_SECRET_KEY = redis_secret_key
+# and Claimant files.
+# Note that it can be a JSON array of keys, to allow for rotation.
+claim_secret_key = env.str("CLAIM_SECRET_KEY")
+if claim_secret_key.startswith("["):
+    claim_secret_keys = env.json("CLAIM_SECRET_KEY")
+    for idx, key in enumerate(claim_secret_keys):
+        validate_secret_key(key, f"CLAIM_SECRET_KEY[{idx}]")
+    CLAIM_SECRET_KEY = claim_secret_keys
+else:
+    validate_secret_key(claim_secret_key, "CLAIM_SECRET_KEY")
+    CLAIM_SECRET_KEY = [claim_secret_key]
 
 # all sites except production should have this turned on, as policy.
 # we make it an env var so that we can test locally w/o it

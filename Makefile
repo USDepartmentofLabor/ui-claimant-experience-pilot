@@ -191,6 +191,9 @@ bucket: ## Create S3 bucket in localstack service (run inside container)
 dol-bucket: ## Create DOL S3 bucket in localstack service (run inside container)
 	python manage.py create_bucket --dol
 
+rotate-claim-secrets: ## Rotate the symmetrical encryption Claim keys. Requires OLD_KEY=str NEW_KEY=str
+	python manage.py rotate_claim_keys $(OLD_KEY) $(NEW_KEY)
+
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 
