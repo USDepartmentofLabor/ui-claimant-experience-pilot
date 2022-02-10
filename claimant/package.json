@@ -14,7 +14,7 @@
     "classnames": "^2.3.1",
     "dayjs": "^1.10.7",
     "formik": "^2.2.9",
-    "i18next": "^21.6.10",
+    "i18next": "^21.6.11",
     "i18next-browser-languagedetector": "^6.1.2",
     "launchdarkly-react-client-sdk": "^2.24.0",
     "lodash": "^4.17.21",
