@@ -34,6 +34,15 @@ FAILURE = 0
 
 
 class ExpiredPartialClaimManager(models.Manager):
+    def delete_artifacts(self):
+        count = 0
+        for claim in self.all():
+            status = claim.delete_artifacts()
+            if status == SUCCESS:
+                count += 1
+            logger.info(f"Total expired partial claims deleted: {count}")
+        return count
+
     def get_queryset(self):
         days_to_keep_inactive_partial_claim = settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
         threshold_date = timezone.now() - timedelta(

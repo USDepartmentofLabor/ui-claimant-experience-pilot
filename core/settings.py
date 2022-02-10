@@ -132,7 +132,6 @@ INSTALLED_APPS = [
     "swa",
     "appoptics_apm.djangoware",
     "launchdarkly.apps.LaunchdarklyConfig",
-    "django_celery_beat",
 ]
 
 # only install in dev/ci

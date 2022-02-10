@@ -166,5 +166,5 @@ class CoreTasksTestCase(CeleryTestCase):
             claim_store = ClaimStore()
             claim_store.write(claim.partial_payload_path(), "test")
 
-        count = tasks.delete_partial_claims()
+        count = Claim.expired_partial_claims.delete_artifacts()
         self.assertEqual(count, 2)

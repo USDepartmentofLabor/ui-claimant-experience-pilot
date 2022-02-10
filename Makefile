@@ -302,6 +302,9 @@ soc: ## Build the SOC codes from the BLS site
 soc-clean: ## Clean up the SOC code temp files
 	rm -f soc_structure_2018.xlsx soc_structure_2018.csv soc_structure_2018.json major_groups.htm
 
+hourly-tasks: ## runs named tasks to be called on an hourly schedule
+	python manage.py delete_expired_partial_claims
+
 default: help
 
 .PHONY: services-start services-stop services-logs ci-start ci-stop
