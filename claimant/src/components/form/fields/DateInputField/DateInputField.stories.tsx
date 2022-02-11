@@ -51,7 +51,7 @@ const WithFormikValueTemplate: ComponentStory<typeof DateInputField> = (
   const { t } = useTranslation("home");
 
   const validationSchema = yup.object().shape({
-    [args.name]: yupDate(t),
+    [args.name]: yupDate(t, args.legend),
   });
 
   return (

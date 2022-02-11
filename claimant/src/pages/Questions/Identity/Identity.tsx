@@ -125,7 +125,7 @@ export const Identity = () => {
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     ssn: yup.string().required(t("ssn.required")),
-    birthdate: yupDate(t),
+    birthdate: yupDate(t, t("birthdate.label")),
 
     state_credential: yup.object().shape({
       drivers_license_or_state_id_number: yup
