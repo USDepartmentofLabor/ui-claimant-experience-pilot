@@ -347,7 +347,12 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
 
 Cypress.Commands.add("complete_occupation_form", (occupation) => {
   cy.get("[name=occupation\\.job_title]").clear().type(occupation.title);
-  cy.get(`input[id=occupation\\.bls_code\\.${occupation.bls_code}`)
+  cy.get(
+    `input[id=occupation\\.bls_code\\.${occupation.bls_code.replace(
+      /\./,
+      "\\."
+    )}`
+  )
     .parent()
     .click();
   cy.get("[name=occupation\\.job_description]")

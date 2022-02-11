@@ -25,7 +25,7 @@ const nurseInitialValues = {
     job_description: "ER nurse",
     bls_description:
       'Assess patient health problems and needs, develop and implement nursing care plans, and maintain medical records. Administer nursing care to ill, injured, convalescent, or disabled patients. May advise patients on health maintenance and disease prevention or provide case management. Licensing or registration required. Includes Clinical Nurse Specialists. Excludes "Nurse Anesthetists" (29-1151), "Nurse Midwives" (29-1161), and "Nurse Practitioners" (29-1171).',
-    bls_code: "29-1141",
+    bls_code: "29-1141.00",
     bls_title: "Registered Nurses",
   },
 };
@@ -58,16 +58,18 @@ describe("OccupationPicker component", () => {
     });
     const jobTitle = screen.getByLabelText("what_is_your_occupation.label");
     const jobDescription = screen.getByLabelText("short_description.label");
-    const selectedBlsCode = screen.getByTestId("occupation.bls_code.29-1141");
+    const selectedBlsCode = screen.getByTestId(
+      "occupation.bls_code.29-1141.00"
+    );
     const matchingBlsCodes = screen.getAllByRole("radio");
     expect(jobTitle).toHaveValue("nurse");
     expect(jobDescription).toHaveValue("ER nurse");
     expect(selectedBlsCode).toHaveAttribute(
       "id",
-      "occupation.bls_code.29-1141"
+      "occupation.bls_code.29-1141.00"
     );
     expect(selectedBlsCode).toBeChecked();
-    expect(matchingBlsCodes.length).toEqual(8);
+    expect(matchingBlsCodes.length).toEqual(12);
     matchingBlsCodes.forEach((radio) => {
       expect(radio).toHaveAttribute("name", "occupation.bls_code");
     });
@@ -80,7 +82,7 @@ describe("OccupationPicker component", () => {
         job_description: "ER nurse",
         bls_description:
           "Administer anesthesia, monitor patient's vital signs, and oversee patient recovery from anesthesia. May assist anesthesiologists, surgeons, other physicians, or dentists. Must be registered nurses who have specialized graduate education.",
-        bls_code: "29-1151",
+        bls_code: "29-1151.00",
         bls_title: "Nurse Anesthetists",
       },
     };
@@ -100,7 +102,9 @@ describe("OccupationPicker component", () => {
 
     const jobTitle = screen.getByLabelText("what_is_your_occupation.label");
     expect(jobTitle).toHaveValue("nurse");
-    const alternateBlsCode = screen.getByTestId("occupation.bls_code.29-1151");
+    const alternateBlsCode = screen.getByTestId(
+      "occupation.bls_code.29-1151.00"
+    );
     expect(alternateBlsCode).not.toBeChecked();
 
     await act(async () => {
@@ -132,7 +136,7 @@ describe("OccupationPicker component", () => {
       userEvent.type(jobTitle, "software designer");
     });
     const matchingBlsCodes = await screen.findAllByRole("radio");
-    expect(matchingBlsCodes.length).toEqual(29);
+    expect(matchingBlsCodes.length).toEqual(30);
   });
 
   it("Displays error-like message if there are zero search results", async () => {

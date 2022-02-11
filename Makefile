@@ -124,7 +124,7 @@ celery-status: ## Display status of celery worker(s) (inside the container)
 	celery -A core status
 
 dev-deps: ## Install local development environment dependencies
-	pip install pre-commit black bandit safety jsonschema xlsx2csv git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
+	pip install pre-commit black bandit safety jsonschema git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
 
 dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
@@ -290,17 +290,14 @@ schema-check: ## Validate the examples JSON instances against relevant JSON Sche
 	python scripts/check-json-schema.py schemas/identity-v1.0.json schemas/identity-v1.0-example-ial2.json
 
 soc: ## Build the SOC codes from the BLS site
-	curl https://www.bls.gov/soc/2018/soc_structure_2018.xlsx > soc_structure_2018.xlsx
-	xlsx2csv soc_structure_2018.xlsx > soc_structure_2018.csv
-	python scripts/blssoc2json.py soc_structure_2018.csv > soc_structure_2018.json
 	curl https://www.bls.gov/soc/2018/major_groups.htm > major_groups.htm
 	python scripts/parse-soc-2018-webpage.py > soc-entries.json
-	python scripts/merge-soc-2018.py soc_structure_2018.json soc-entries.json > merged-soc.json
-	mv merged-soc.json claimant/src/fixtures/soc_structure_2018.json
-	mv soc-entries.json claimant/src/fixtures/soc_entries_2018.json
+	curl https://www.onetcenter.org/dl_files/database/db_26_1_text/Occupation%20Data.txt > onet-occupation.txt
+	python scripts/parse-onet-occupations.py onet-occupation.txt > onet-occupation.json
+	python scripts/merge-onet-soc-2018.py onet-occupation.json soc-entries.json > claimant/src/fixtures/soc_entries_2018.json
 
 soc-clean: ## Clean up the SOC code temp files
-	rm -f soc_structure_2018.xlsx soc_structure_2018.csv soc_structure_2018.json major_groups.htm
+	rm -f major_groups.htm onet-occupation.txt onet-occupation.json soc-entries.json
 
 hourly-tasks: ## runs named tasks to be called on an hourly schedule
 	python manage.py delete_expired_partial_claims

@@ -12,7 +12,7 @@ context(
       cy.complete_occupation_form({
         title: "registered nurse",
         description: "I am a nurse",
-        bls_code: "29-1141",
+        bls_code: "29-1141.00",
       });
       cy.click_next();
       cy.contains("Progress saved").should("be.visible");
