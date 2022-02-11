@@ -1,5 +1,4 @@
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
-import { Fieldset } from "@trussworks/react-uswds";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import TextAreaField from "../../../components/form/fields/TextAreaField/TextAreaField";
 import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
@@ -29,11 +28,11 @@ export const Availability = () => {
 
   return (
     <>
-      <Fieldset legend={t("can_begin_work_immediately.label")}>
-        <BooleanRadio
-          id="availability.can_begin_work_immediately"
-          name="availability.can_begin_work_immediately"
-        />
+      <YesNoQuestion
+        question={t("can_begin_work_immediately.label")}
+        id="availability.can_begin_work_immediately"
+        name="availability.can_begin_work_immediately"
+      >
         {values.availability?.can_begin_work_immediately === false && (
           <TextAreaField
             id="availability.cannot_begin_work_immediately_reason"
@@ -41,12 +40,12 @@ export const Availability = () => {
             label={tCommon("provide_more_information")}
           />
         )}
-      </Fieldset>
-      <Fieldset legend={t("can_work_full_time.label")}>
-        <BooleanRadio
-          id="availability.can_work_full_time"
-          name="availability.can_work_full_time"
-        />
+      </YesNoQuestion>
+      <YesNoQuestion
+        question={t("can_work_full_time.label")}
+        id="availability.can_work_full_time"
+        name="availability.can_work_full_time"
+      >
         {values.availability?.can_work_full_time === false && (
           <TextAreaField
             id="availability.cannot_work_full_time_reason"
@@ -54,12 +53,12 @@ export const Availability = () => {
             label={tCommon("provide_more_information")}
           />
         )}
-      </Fieldset>
-      <Fieldset legend={t("is_prevented_from_accepting_full_time_work.label")}>
-        <BooleanRadio
-          id="availability.is_prevented_from_accepting_full_time_work"
-          name="availability.is_prevented_from_accepting_full_time_work"
-        />
+      </YesNoQuestion>
+      <YesNoQuestion
+        question={t("is_prevented_from_accepting_full_time_work.label")}
+        id="availability.is_prevented_from_accepting_full_time_work"
+        name="availability.is_prevented_from_accepting_full_time_work"
+      >
         {values.availability?.is_prevented_from_accepting_full_time_work && (
           <TextAreaField
             id="availability.is_prevented_from_accepting_full_time_work_reason"
@@ -67,7 +66,7 @@ export const Availability = () => {
             label={tCommon("provide_more_information")}
           />
         )}
-      </Fieldset>
+      </YesNoQuestion>
     </>
   );
 };

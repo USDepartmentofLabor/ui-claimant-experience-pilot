@@ -1,8 +1,7 @@
-import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 import TextField from "../../../components/form/fields/TextField/TextField";
-import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../YesNoQuestion/YesNoQuestion";
 import { useClearFields } from "../../../hooks/useClearFields";
 
 export const UnionProfile = () => {
@@ -22,9 +21,11 @@ export const UnionProfile = () => {
 
   return (
     <>
-      <Fieldset legend={t("is_union_member.label")}>
-        <BooleanRadio id="union.is_union_member" name="union.is_union_member" />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("is_union_member.label")}
+        id="union.is_union_member"
+        name="union.is_union_member"
+      />
       {formData.is_union_member === true && (
         <>
           <TextField
@@ -39,14 +40,11 @@ export const UnionProfile = () => {
             id="union.union_local_number"
             name="union.union_local_number"
           />
-          <Fieldset
-            legend={t("required_to_seek_work_through_hiring_hall.label")}
-          >
-            <BooleanRadio
-              id="union.required_to_seek_work_through_hiring_hall"
-              name="union.required_to_seek_work_through_hiring_hall"
-            />
-          </Fieldset>
+          <YesNoQuestion
+            question={t("required_to_seek_work_through_hiring_hall.label")}
+            id="union.required_to_seek_work_through_hiring_hall"
+            name="union.required_to_seek_work_through_hiring_hall"
+          />
         </>
       )}
     </>

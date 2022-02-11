@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { TFunction, useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { DatePicker } from "../../../components/form/fields/DatePicker/DatePicker";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { formatUserInputDate } from "../../../utils/format";
@@ -46,20 +46,18 @@ export const DisabilityStatus = () => {
 
   return (
     <Fieldset legend={t("disability.heading")}>
-      <Fieldset legend={t("disability.has_collected_disability.label")}>
-        <BooleanRadio
-          id="disability.has_collected_disability"
-          name="disability.has_collected_disability"
-        />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("disability.has_collected_disability.label")}
+        id="disability.has_collected_disability"
+        name="disability.has_collected_disability"
+      />
       {values.disability?.has_collected_disability && (
         <>
-          <Fieldset legend={t("disability.disabled_immediately_before.label")}>
-            <BooleanRadio
-              id="disability.disabled_immediately_before"
-              name="disability.disabled_immediately_before"
-            />
-          </Fieldset>
+          <YesNoQuestion
+            question={t("disability.disabled_immediately_before.label")}
+            id="disability.disabled_immediately_before"
+            name="disability.disabled_immediately_before"
+          />
           <DropdownField
             id="disability.type_of_disability"
             name="disability.type_of_disability"
@@ -100,14 +98,11 @@ export const DisabilityStatus = () => {
             }}
           />
           {values.disability.recovery_date && (
-            <Fieldset
-              legend={t("disability.contact_employer_after_recovering.label")}
-            >
-              <BooleanRadio
-                id="disability.contacted_last_employer_after_recovery"
-                name="disability.contacted_last_employer_after_recovery"
-              />
-            </Fieldset>
+            <YesNoQuestion
+              question={t("disability.contact_employer_after_recovering.label")}
+              id="disability.contacted_last_employer_after_recovery"
+              name="disability.contacted_last_employer_after_recovery"
+            />
           )}
         </>
       )}

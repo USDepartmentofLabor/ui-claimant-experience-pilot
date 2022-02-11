@@ -1,9 +1,8 @@
 import { Normalize, TFunction, useTranslation } from "react-i18next";
-import { Fieldset } from "@trussworks/react-uswds";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { DateInputField } from "../../../components/form/fields/DateInputField/DateInputField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import claimForm from "../../../i18n/en/claimForm";
 import { useFormikContext } from "formik";
 import TextAreaField from "../../../components/form/fields/TextAreaField/TextAreaField";
@@ -73,12 +72,11 @@ export const Identity = () => {
         name="state_credential.issuer"
         startEmpty
       />
-      <Fieldset legend={t("work_authorization.authorized_to_work.label")}>
-        <BooleanRadio
-          id="work_authorization.authorized_to_work"
-          name="work_authorization.authorized_to_work"
-        />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("work_authorization.authorized_to_work.label")}
+        id="work_authorization.authorized_to_work"
+        name="work_authorization.authorized_to_work"
+      />
       {showNotAllowedToWorkInUSExplanation && (
         <TextAreaField
           label={t(

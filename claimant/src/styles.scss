@@ -75,6 +75,12 @@
   padding-left: 0;
 }
 
+@media all and (min-width: 1024px) {
+  .dol-fieldset.usa-form-group--error .usa-form-group--error {
+    padding-left: 1.25rem;
+  }
+}
+
 .usa-link svg {
   margin-left: 2px;
   vertical-align: middle;

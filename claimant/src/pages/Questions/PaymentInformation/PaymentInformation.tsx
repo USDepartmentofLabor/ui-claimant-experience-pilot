@@ -8,7 +8,7 @@ import { TextField } from "../../../components/form/fields/TextField/TextField";
 import claimForm from "../../../i18n/en/claimForm";
 import { IPageDefinition } from "../../PageDefinitions";
 import { useFormikContext } from "formik";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import HelpText from "../../../components/HelpText/HelpText";
 
 type PaymentMethodOption = {
@@ -66,15 +66,15 @@ export const PaymentInformation = () => {
 
   return (
     <>
-      <Fieldset legend={t("federal_income_tax_withheld.label")}>
-        <BooleanRadio
-          id="federal_income_tax_withheld"
-          name="federal_income_tax_withheld"
-        />
+      <YesNoQuestion
+        question={t("federal_income_tax_withheld.label")}
+        id="federal_income_tax_withheld"
+        name="federal_income_tax_withheld"
+      >
         <HelpText withLeftBorder={true}>
           {t("federal_income_tax_withheld.help_text")}
         </HelpText>
-      </Fieldset>
+      </YesNoQuestion>
       <Fieldset legend={t("payment_method.label")}>
         <RadioField
           id="payment.payment_method"

@@ -3,7 +3,7 @@ import { TFunction, useTranslation } from "react-i18next";
 import { FieldArray, useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
 import { IPageDefinition } from "../../PageDefinitions";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { CheckboxField } from "../../../components/form/fields/CheckboxField/CheckboxField";
 import { PhoneNumberField } from "../../../components/form/PhoneNumberField/PhoneNumberField";
 import { yupPhone } from "../../../common/YupBuilder";
@@ -86,9 +86,11 @@ export const ContactInformation = () => {
         disabled
         readOnly
       />
-      <Fieldset legend={t("interpreter_required.label")}>
-        <BooleanRadio id="interpreter_required" name="interpreter_required" />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("interpreter_required.label")}
+        id="interpreter_required"
+        name="interpreter_required"
+      />
       {values.interpreter_required && (
         <TextField
           label={t("preferred_language.label")}
