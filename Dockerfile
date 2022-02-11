@@ -72,6 +72,9 @@ COPY api ./api
 COPY swa ./swa
 COPY certs ./certs
 COPY schemas ./schemas
+# settings.py will ignore this copy for FIXTURE_DIR
+# but we need it for "ci" and "deployed" images.
+COPY claimant/src/fixtures/ ./api/fixtures/
 
 # copy over just the precompiled react app(s)
 COPY --from=reactapps /app/claimant/build /app/claimant/build

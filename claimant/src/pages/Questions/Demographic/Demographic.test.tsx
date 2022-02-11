@@ -3,9 +3,14 @@ import { Formik } from "formik";
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import { DemographicInformation } from "./DemographicInformation";
+import { Demographic, DemographicPage } from "./Demographic";
 import claimForm from "../../../i18n/en/claimForm";
 import { noop } from "../../../testUtils/noop";
+import { useTranslation } from "react-i18next";
+import {
+  getInvalidClaimFormFixtures,
+  getValidClaimFormFixtures,
+} from "../../../testUtils/fixtures";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -15,7 +20,7 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-describe("DemographicInformation component", () => {
+describe("Demographic component", () => {
   const initialValues = {
     sex: undefined,
     race: [],
@@ -26,7 +31,7 @@ describe("DemographicInformation component", () => {
   it("renders properly", () => {
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <DemographicInformation />
+        <Demographic />
       </Formik>
     );
 
@@ -61,7 +66,7 @@ describe("DemographicInformation component", () => {
     it("Can check one radio button at a time", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={noop}>
-          <DemographicInformation />
+          <Demographic />
         </Formik>
       );
       const radio1 = screen.getByLabelText("sex.options.female");
@@ -83,7 +88,7 @@ describe("DemographicInformation component", () => {
     it("Allows selection of multiple races", async () => {
       const { getByLabelText } = render(
         <Formik initialValues={initialValues} onSubmit={noop}>
-          <DemographicInformation />
+          <Demographic />
         </Formik>
       );
 
@@ -138,7 +143,7 @@ describe("DemographicInformation component", () => {
     it("Allows selection of ethnicity", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={noop}>
-          <DemographicInformation />
+          <Demographic />
         </Formik>
       );
 
@@ -161,7 +166,7 @@ describe("DemographicInformation component", () => {
     it("Allows selection of an education level", async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={noop}>
-          <DemographicInformation />
+          <Demographic />
         </Formik>
       );
 
@@ -181,6 +186,32 @@ describe("DemographicInformation component", () => {
       });
       expect(educationLevelDropdown).toHaveValue("grade_12");
       expect(educationLevelDropdown).not.toHaveValue("none");
+    });
+  });
+
+  describe("validations", () => {
+    describe("valid answers", () => {
+      it.concurrent.each(getValidClaimFormFixtures("demographic"))(
+        "passes with valid values: %o",
+        (formData) => {
+          const { t } = useTranslation("claimForm");
+          const schema = DemographicPage.pageSchema(t);
+
+          expect(schema.isValidSync(formData)).toBeTruthy();
+        }
+      );
+    });
+
+    describe("invalid answers", () => {
+      it.concurrent.each(getInvalidClaimFormFixtures("demographic"))(
+        "fails with invalid values: %o",
+        (formData) => {
+          const { t } = useTranslation("claimForm");
+          const schema = DemographicPage.pageSchema(t);
+
+          expect(schema.isValidSync(formData)).toBeFalsy();
+        }
+      );
     });
   });
 });

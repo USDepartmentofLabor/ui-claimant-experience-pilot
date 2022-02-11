@@ -20,8 +20,15 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     race: yup
       .array()
       .of(yup.mixed().oneOf(Object.keys(claimForm.race.options)))
-      .min(1, t("race.required"))
-      .required(t("race.required")),
+      .when({
+        is: (
+          raceValue: Normalize<typeof claimForm.race.options>[] | undefined
+        ) => raceValue?.includes("opt_out"),
+        then: yup.array().max(1, t("race.errors.opt_out_only")),
+        otherwise: yup.array().min(1, t("race.errors.required")),
+      })
+      .required(t("race.errors.required")),
+
     ethnicity: yup
       .mixed()
       .oneOf(Object.keys(claimForm.ethnicity.options))
@@ -80,7 +87,7 @@ const educationLevelOptions: EducationLevelOption[] = Object.keys(
   translationKey: option as Normalize<typeof claimForm.education_level.options>,
 }));
 
-export const DemographicInformation = () => {
+export const Demographic = () => {
   const { t } = useTranslation("claimForm");
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
@@ -146,7 +153,7 @@ export const DemographicInformation = () => {
   );
 };
 
-export const DemographicInformationPage: IPageDefinition = {
+export const DemographicPage: IPageDefinition = {
   path: "demographic",
   heading: "demographic",
   initialValues: {
@@ -155,6 +162,6 @@ export const DemographicInformationPage: IPageDefinition = {
     race: [],
     education_level: undefined,
   },
-  Component: DemographicInformation,
+  Component: Demographic,
   pageSchema,
 };

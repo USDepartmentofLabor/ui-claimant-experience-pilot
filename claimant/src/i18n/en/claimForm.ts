@@ -32,7 +32,10 @@ const claimForm = {
       white: "White",
       opt_out: "Choose not to answer",
     },
-    required: "Race is a required field",
+    errors: {
+      opt_out_only: "You may not choose a race if you opt out",
+      required: "Race is a required field",
+    },
   },
   ethnicity: {
     label: "Are you Hispanic or Latino?",

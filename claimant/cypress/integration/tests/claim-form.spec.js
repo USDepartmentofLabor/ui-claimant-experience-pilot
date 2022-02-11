@@ -103,7 +103,12 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
-    cy.complete_demographic_information();
+    cy.complete_demographic({
+      sex: "female",
+      ethnicity: "not_hispanic",
+      races: ["asian", "hawaiian_or_pacific_islander"],
+      educationLevel: "bachelors",
+    });
     cy.check_a11y();
     cy.click_next();
 

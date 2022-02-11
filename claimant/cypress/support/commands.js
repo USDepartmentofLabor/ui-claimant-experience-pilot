@@ -367,12 +367,16 @@ Cypress.Commands.add("complete_contact_information", () => {
   cy.get("input[id=preferred_language]").clear().type("Klingon");
 });
 
-Cypress.Commands.add("complete_demographic_information", () => {
-  cy.get("input[id=sex\\.female]").parent().click();
-  cy.get("input[id=ethnicity\\.not_hispanic]").parent().click();
-  cy.get("input[id=race\\.asian]").parent().click();
-  cy.get("input[id=race\\.hawaiian_or_pacific_islander]").parent().click();
-  cy.get("[name=education_level]").select("bachelors");
+Cypress.Commands.add("complete_demographic", (demographic) => {
+  const { sex, ethnicity, races, educationLevel } = demographic;
+  cy.get(`input[id=sex\\.${sex}]`).parent().click();
+  cy.get(`input[id=ethnicity\\.${ethnicity}]`).parent().click();
+
+  races.forEach((race) => {
+    cy.get(`input[id=race\\.${race}]`).parent().click();
+  });
+
+  cy.get("[name=education_level]").select(educationLevel);
 });
 
 Cypress.Commands.add("complete_union_form", (union) => {

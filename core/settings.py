@@ -35,6 +35,11 @@ def validate_secret_key(secret, key_name):
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Form data test fixtures live in React dir for local development only
+FIXTURE_DIR = BASE_DIR / "api" / "fixtures" / "claim-form"
+if os.environ.get("ENV_NAME") == "devlocal":
+    FIXTURE_DIR = BASE_DIR / "claimant" / "src" / "fixtures" / "claim-form"
+
 # populate os.environ with .env settings
 env = environ.Env()
 env.read_env(env.str("ENV_PATH", "core/.env"))

@@ -1,7 +1,7 @@
 import { AnySchema } from "yup";
 import { TFunction } from "react-i18next";
 import { PersonalInformationPage } from "./Questions/PersonalInformation/PersonalInformation";
-import { DemographicInformationPage } from "./Questions/DemographicInformation/DemographicInformation";
+import { DemographicPage } from "./Questions/Demographic/Demographic";
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
 import { OccupationPage } from "./Questions/Occupation/Occupation";
 import { UnionPage } from "./Questions/Union/Union";
@@ -34,7 +34,7 @@ export interface IPageDefinition {
 export const pages: ReadonlyArray<IPageDefinition> = [
   PersonalInformationPage,
   ContactInformationPage,
-  DemographicInformationPage,
+  DemographicPage,
   IdentityPage,
   EmployerInformationPage,
   SelfEmploymentPage,

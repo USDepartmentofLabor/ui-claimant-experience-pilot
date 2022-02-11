@@ -2,20 +2,17 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { useTranslation } from "react-i18next";
 import { Formik, Form } from "formik";
 
-import {
-  DemographicInformation,
-  DemographicInformationPage,
-} from "./DemographicInformation";
+import { Demographic, DemographicPage } from "./Demographic";
 import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Pages/Demographic Information",
-  component: DemographicInformation,
-} as ComponentMeta<typeof DemographicInformation>;
+  component: Demographic,
+} as ComponentMeta<typeof Demographic>;
 
-const Template: ComponentStory<typeof DemographicInformation> = () => {
+const Template: ComponentStory<typeof Demographic> = () => {
   const { t } = useTranslation("claimForm");
-  const validationSchema = DemographicInformationPage.pageSchema(t);
+  const validationSchema = DemographicPage.pageSchema(t);
   const initialValues = {
     sex: undefined,
     ethnicity: undefined,
@@ -30,7 +27,7 @@ const Template: ComponentStory<typeof DemographicInformation> = () => {
       onSubmit={noop}
     >
       <Form>
-        <DemographicInformation />
+        <Demographic />
       </Form>
     </Formik>
   );

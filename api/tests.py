@@ -38,7 +38,8 @@ from core.claim_storage import (
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI
 from .claim_cleaner import ClaimCleaner
-
+from os import listdir
+from os.path import isfile, join, isdir
 
 logger = logging.getLogger("api.tests")
 
@@ -956,6 +957,29 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
             cv = ClaimValidator(json_decode(json_str), schema_name="identity-v1.0")
             logger.debug("🚀 IAL{} identity errors={}".format(ial, cv.errors_as_dict()))
             self.assertTrue(cv.valid)
+
+    def test_claim_permutations(self):
+        dirlist = settings.FIXTURE_DIR
+        fixtures = [f for f in listdir(dirlist) if isdir(join(dirlist, f))]
+        for fixture in fixtures:
+            for validity in ["valid", "invalid"]:
+                fixture_dir = dirlist / fixture / validity
+                cases = [
+                    f for f in listdir(fixture_dir) if isfile(join(fixture_dir, f))
+                ]
+                for case in cases:
+                    claim = self.base_claim()
+                    with open(fixture_dir / case) as f:
+                        json = json_decode(f.read())
+                    for key in json:
+                        claim[key] = json[key]
+                    cv = ClaimValidator(claim)
+                    logger.debug(f"Checking fixture {fixture} / {validity} / {case}")
+                    self.assertEqual(
+                        cv.valid,
+                        validity == "valid",
+                        f"{fixture} / {validity} / {case}",
+                    )
 
     def test_claim_validator(self):
         claim = self.base_claim()
