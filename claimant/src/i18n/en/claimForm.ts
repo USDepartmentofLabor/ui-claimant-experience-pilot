@@ -315,7 +315,7 @@ const claimForm = {
     bls_code: {
       required: "Please select the occupation that best matches your selection",
     },
-    no_results: "", // TODO?
+    no_results: "No results. Try another word.",
     opens_in_a_new_tab: "opens in a new tab",
   },
   disability: {

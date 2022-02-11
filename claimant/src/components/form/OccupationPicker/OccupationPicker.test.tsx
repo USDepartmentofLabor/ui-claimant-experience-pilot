@@ -134,4 +134,23 @@ describe("OccupationPicker component", () => {
     const matchingBlsCodes = await screen.findAllByRole("radio");
     expect(matchingBlsCodes.length).toEqual(29);
   });
+
+  it("Displays error-like message if there are zero search results", async () => {
+    await act(async () => {
+      render(
+        <Formik initialValues={defaultInitialValues} onSubmit={noop}>
+          <OccupationPicker />
+        </Formik>
+      );
+    });
+
+    const jobTitle = screen.getByLabelText("what_is_your_occupation.label");
+    await act(async () => {
+      // must clear first -- this is a hack, unsure why necessary
+      await userEvent.clear(jobTitle);
+      userEvent.type(jobTitle, "asdfasdf");
+    });
+    const noResultsMessage = await screen.getByText("no_results");
+    expect(noResultsMessage).toBeInTheDocument();
+  });
 });

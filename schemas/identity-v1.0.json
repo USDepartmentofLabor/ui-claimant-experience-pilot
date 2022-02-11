@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unemployment.dol.gov/schemas/claim-v1.0.json",
+  "$id": "https://unemployment.dol.gov/schemas/identity-v1.0.json",
   "title": "UI Claimant Identity",
   "description": "Unemployment Insurance claimant identity",
   "type": "object",

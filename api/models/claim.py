@@ -6,16 +6,16 @@ from .claimant import Claimant
 from .event import Event
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
+from django.conf import settings
 import uuid
 from django.db import transaction
-from django.conf import settings
 from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
 from core.claim_encryption import (
     AsymmetricClaimEncryptor,
     SymmetricClaimEncryptor,
-    SymmetricClaimDecryptor,
+    RotatableSymmetricClaimDecryptor,
     symmetric_encryption_key,
 )
 from core.claim_storage import (
@@ -34,6 +34,15 @@ FAILURE = 0
 
 
 class ExpiredPartialClaimManager(models.Manager):
+    def delete_artifacts(self):
+        count = 0
+        for claim in self.all():
+            status = claim.delete_artifacts()
+            if status == SUCCESS:
+                count += 1
+            logger.info(f"Total expired partial claims deleted: {count}")
+        return count
+
     def get_queryset(self):
         days_to_keep_inactive_partial_claim = settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
         threshold_date = timezone.now() - timedelta(
@@ -193,6 +202,8 @@ class Claim(TimeStampedModel):
                 cw = ClaimWriter(
                     self, packaged_payload, path=self.completed_payload_path()
                 )
+                if not cw.write():
+                    raise Exception("Failed to write completed claim")
                 archiveCw = ClaimWriter(
                     self,
                     json_encode(validated_payload),
@@ -201,8 +212,8 @@ class Claim(TimeStampedModel):
                         claim_bucket=ClaimBucket(BUCKET_TYPE_ARCHIVE)
                     ),
                 )
-                if not cw.write() or not archiveCw.write():
-                    raise Exception("Failed to write completed claim")
+                if not archiveCw.write():
+                    raise Exception("Failed to write completed claim to archive")
             logger.debug("🚀 wrote completed claim")
             return True
         except Exception as error:
@@ -214,5 +225,7 @@ class Claim(TimeStampedModel):
         if not claim_reader.exists():
             return False
         packaged_claim_str = claim_reader.read()
-        cd = SymmetricClaimDecryptor(packaged_claim_str, symmetric_encryption_key())
+        cd = RotatableSymmetricClaimDecryptor(
+            packaged_claim_str, settings.CLAIM_SECRET_KEY
+        )
         return cd.decrypt()

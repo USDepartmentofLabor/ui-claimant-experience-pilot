@@ -1,7 +1,7 @@
 import { Formik } from "formik";
 import { act, render } from "@testing-library/react";
 
-import { YesNoRadio } from "./YesNoRadio";
+import { YesNoQuestion } from "./YesNoQuestion";
 import userEvent from "@testing-library/user-event";
 import { noop } from "../../../testUtils/noop";
 
@@ -13,7 +13,7 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-describe("YesNoRadio Component", () => {
+describe("YesNoQuestion Component", () => {
   it("renders properly", () => {
     const { getByLabelText } = render(
       <Formik
@@ -22,7 +22,11 @@ describe("YesNoRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <YesNoRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <YesNoQuestion
+          question="yes or no?"
+          id="my_yes_no_button"
+          name="my_yes_no_button"
+        />
       </Formik>
     );
 
@@ -43,7 +47,11 @@ describe("YesNoRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <YesNoRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <YesNoQuestion
+          question="yes or no?"
+          id="my_yes_no_button"
+          name="my_yes_no_button"
+        />
       </Formik>
     );
 
@@ -72,11 +80,15 @@ describe("YesNoRadio Component", () => {
     const { getByLabelText } = render(
       <Formik
         initialValues={{
-          my_yes_no_button: "yes",
+          my_yes_no_button: true,
         }}
         onSubmit={noop}
       >
-        <YesNoRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <YesNoQuestion
+          question="yes or no?"
+          id="my_yes_no_button"
+          name="my_yes_no_button"
+        />
       </Formik>
     );
 
@@ -93,11 +105,12 @@ describe("YesNoRadio Component", () => {
     const { getByLabelText } = render(
       <Formik
         initialValues={{
-          my_yes_no_button: "yes",
+          my_yes_no_button: true,
         }}
         onSubmit={noop}
       >
-        <YesNoRadio
+        <YesNoQuestion
+          question="yes or no?"
           id="my_yes_no_button"
           name="my_yes_no_button"
           onChange={onChange}

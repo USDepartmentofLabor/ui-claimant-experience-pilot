@@ -6,6 +6,9 @@ from .swa import SWA
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 import uuid
+from core.claim_storage import (
+    ClaimReader,
+)
 
 
 class ClaimantFile(TimeStampedModel):
@@ -41,3 +44,7 @@ class ClaimantFile(TimeStampedModel):
 
     def payload_path(self):
         return f"{self.claimant.idp_user_xid}/{self.uuid}.{self.fileext}"
+
+    def get_encrypted_package(self):
+        claim_reader = ClaimReader(self)
+        return claim_reader.read()
