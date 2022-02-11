@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { Formik } from "formik";
 import * as yup from "yup";
 import userEvent from "@testing-library/user-event";
@@ -106,7 +106,12 @@ describe("Name component", () => {
         validationSchema={validationSchema}
         onSubmit={noop}
       >
-        <Name id={claimantName} name={claimantName} />
+        {({ submitForm }) => (
+          <>
+            <Name id={claimantName} name={claimantName} />
+            <button onClick={submitForm}>Submit</button>
+          </>
+        )}
       </Formik>
     );
 
@@ -125,7 +130,15 @@ describe("Name component", () => {
       lastNameField.blur();
     });
 
-    expect(queryByText("First Name is required")).toBeInTheDocument();
-    expect(queryByText("Last Name is required")).toBeInTheDocument();
+    // Don't validate on blur before submit
+    expect(queryByText("First Name is required")).not.toBeInTheDocument();
+    expect(queryByText("Last Name is required")).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(queryByText("First Name is required")).toBeInTheDocument();
+      expect(queryByText("Last Name is required")).toBeInTheDocument();
+    });
   });
 });

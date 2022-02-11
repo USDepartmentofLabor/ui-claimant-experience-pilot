@@ -7,6 +7,7 @@ import {
   IconLaunch,
   IconSearch,
   TextInput,
+  InputSuffix,
 } from "@trussworks/react-uswds";
 import { RadioField } from "../fields/RadioField/RadioField";
 import { TextAreaField } from "../fields/TextAreaField/TextAreaField";
@@ -14,6 +15,7 @@ import { useField, useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 
 import soc_entries_2018 from "../../../fixtures/soc_entries_2018.json";
+import classnames from "classnames";
 
 type OccupationOption = {
   code: string;
@@ -28,6 +30,8 @@ type SOCEntry = {
   d: string; // description
   e: string | null; // examples
 };
+
+const MIN_JOB_TITLE_LENGTH = 2;
 
 const SOCEntries = soc_entries_2018 as { [key: string]: SOCEntry };
 
@@ -66,9 +70,7 @@ const OccupationList = (props: OccupationListProps) => {
         })}
       />
     </>
-  ) : (
-    <div>{t("no_results")}</div>
-  );
+  ) : null;
 };
 
 type OccMatch = {
@@ -161,13 +163,14 @@ const searchSOCEntries = (searchString: string) => {
 export const OccupationPicker = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "occupation" });
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const [occupationOptions, setOccupationOptions] = useState(
     [] as OccupationOption[]
   );
   const searchSOC = (input: string) => {
     // one or two characters renders too many results
-    if (!input || input.length < 3) {
+    if (!input || input.length <= MIN_JOB_TITLE_LENGTH) {
       setOccupationOptions([]);
       return;
     }
@@ -207,13 +210,41 @@ export const OccupationPicker = () => {
     searchSOC(values.occupation?.job_title as string);
   }, [values.occupation?.job_title]);
 
+  // no results behavior. We want it to present just like a form validation error,
+  // but it's dependent on search results, which is not a yup-testable thing.
+  const hasNoResults = () => {
+    if (occupationOptions && occupationOptions.length) {
+      return false;
+    } else if (
+      (values.occupation?.job_title?.length || 0) > MIN_JOB_TITLE_LENGTH
+    ) {
+      return true;
+    } else if (values.occupation?.job_title?.length === 0) {
+      return false;
+    }
+  };
+
+  const noResultsFlag = hasNoResults();
+
+  const searchGroupClasses = classnames(
+    "usa-input-group",
+    "usa-input-group--sm",
+    {
+      "is-focused": searchFocused,
+      "usa-input-group--error": showJobTitleError && !searchFocused,
+    }
+  );
+
   return (
     <div className="usa-search usa-search--small">
-      <FormGroup error={showJobTitleError}>
-        <Label error={showJobTitleError} htmlFor={jobTitleName}>
+      <FormGroup error={showJobTitleError || noResultsFlag}>
+        <Label
+          error={showJobTitleError || noResultsFlag}
+          htmlFor={jobTitleName}
+        >
           {t("what_is_your_occupation.label")}
         </Label>
-        <div className="usa-input-group usa-input-group--sm">
+        <div className={searchGroupClasses}>
           <TextInput
             {...occupationJobTitleFieldProps}
             id={jobTitleName}
@@ -221,11 +252,17 @@ export const OccupationPicker = () => {
             name={jobTitleName}
             autoCapitalize="off"
             autoComplete="off"
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
           />
-          <div className="usa-input-suffix" aria-hidden="true">
+          <InputSuffix>
             <IconSearch />
-          </div>
+          </InputSuffix>
         </div>
+        {noResultsFlag && <ErrorMessage>{t("no_results")}</ErrorMessage>}
+        {showJobTitleError && (
+          <ErrorMessage>{occupationJobTitleMetaProps.error}</ErrorMessage>
+        )}
         <div className="usa-hint" id="occupation-hint">
           {t("hint")}{" "}
           <Link
@@ -242,11 +279,8 @@ export const OccupationPicker = () => {
           </Link>
           .
         </div>
-        {showJobTitleError && (
-          <ErrorMessage>{occupationJobTitleMetaProps.error}</ErrorMessage>
-        )}
       </FormGroup>
-      <div className="occupation-options">
+      <div className="occupation-options margin-top-2">
         <OccupationList occupationOptions={occupationOptions} />
       </div>
       <TextAreaField

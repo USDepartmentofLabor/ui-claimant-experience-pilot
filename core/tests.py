@@ -21,10 +21,17 @@ from .claim_encryption import (
     AsymmetricClaimDecryptor,
     SymmetricClaimEncryptor,
     SymmetricClaimDecryptor,
+    RotatableSymmetricClaimDecryptor,
+    SymmetricKeyRotator,
+    symmetric_encryption_key,
 )
-from .test_utils import create_s3_bucket, delete_s3_bucket, generate_keypair
+from .test_utils import (
+    create_s3_bucket,
+    delete_s3_bucket,
+    generate_keypair,
+    generate_symmetric_encryption_key,
+)
 import logging
-from django.conf import settings
 from core.email import Email, InitialClaimConfirmationEmail
 
 
@@ -111,7 +118,7 @@ class CoreClaimStorageTestCase(TestCase):
         self.assertEqual(bucket_asset, "test path")
 
     def test_claim_writer_with_sym_encryption(self):
-        key = jwk.JWK(kty="oct", k=settings.CLAIM_SECRET_KEY)
+        key = symmetric_encryption_key()
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
@@ -243,6 +250,50 @@ class CoreClaimEncryptionTestCase(TestCase):
         cd = SymmetricClaimDecryptor(packaged_claim.as_json(), key)
         decrypted_claim = cd.decrypt()
         self.assertEqual(decrypted_claim, claim)
+
+    def test_symmetric_key_rotation(self):
+        old_key = symmetric_encryption_key()
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        rotator = SymmetricKeyRotator(old_key=old_key, new_key=new_key)
+
+        claim = {"id": "123-abc", "foo": "something-really-private-and-sensitive"}
+
+        ce = SymmetricClaimEncryptor(claim, old_key)
+        packaged_claim = ce.packaged_claim()
+        repackaged_claim = rotator.rotate(packaged_claim)
+        self.assertNotEqual(packaged_claim, repackaged_claim)
+
+        cd = SymmetricClaimDecryptor(repackaged_claim.as_json(), new_key)
+        decrypted_repackaged_claim = cd.decrypt()
+        self.assertEqual(decrypted_repackaged_claim, claim)
+
+    def test_transparent_key_rotation_decryption(self):
+        list_of_keys = [
+            generate_symmetric_encryption_key(),
+            generate_symmetric_encryption_key(),
+        ]
+        claim = {"id": "123-abc", "foo": "something-really-private-and-sensitive"}
+        ce = SymmetricClaimEncryptor(claim, symmetric_encryption_key(list_of_keys[1]))
+        packaged_claim = ce.packaged_claim()
+
+        rotable_decryptor = RotatableSymmetricClaimDecryptor(
+            packaged_claim.as_json(), list_of_keys
+        )
+        decrypted_packaged_claim = rotable_decryptor.decrypt()
+        self.assertEqual(decrypted_packaged_claim, claim)
+
+        # wrong key should raise error
+        with self.assertRaises(ValueError):
+            sd = SymmetricClaimDecryptor(
+                packaged_claim.as_json(), symmetric_encryption_key(list_of_keys[0])
+            )
+            sd.decrypt()
+
+        with self.assertRaises(ValueError):
+            rotable_decryptor = RotatableSymmetricClaimDecryptor(
+                packaged_claim.as_json(), [generate_symmetric_encryption_key()]
+            )
+            rotable_decryptor.decrypt()
 
 
 class EmailTestCase(CeleryTestCase):

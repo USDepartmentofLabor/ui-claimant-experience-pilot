@@ -1,7 +1,9 @@
 home/templates/idp.html
 home/templates/uswds/_swa_options.html
 home/templates/uswds/_alert_error.html
+home/templates/swa-contact.html
 home/templates/swa-redirect.html
 home/templates/swa-index.html
+home/templates/_swa/*
 home/templates/_google_tag_manager.html
 home/templates/base.html

@@ -4,6 +4,7 @@ from jwcrypto.common import json_decode
 from .claim_storage import BUCKET_TYPE_ARCHIVE, ClaimBucket, ClaimStore
 import secrets
 import time
+import base64
 
 
 def generate_keypair():
@@ -45,3 +46,7 @@ def generate_auth_token(private_key, swa_code):
     token = jwt.JWT(header=headers, claims=claims, algs=["ES256"])
     token.make_signed_token(private_key)
     return token.serialize()
+
+
+def generate_symmetric_encryption_key():
+    return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("utf-8")

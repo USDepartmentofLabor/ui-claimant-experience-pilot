@@ -194,10 +194,10 @@ When using `git commit` to change or add files, the pre-commit hooks run. Some h
 I18n for the static templates served by Django uses the built-in [Translation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/) feature of Django.
 
 To apply translations for simple cases, use the `{% translation <string> %}` within the template. Be sure to translate `alt` text for screen readers. The default language is English, `en`, so an `en` translation file is not necessary.
-Translation messages are applied in `home/locale/<locale code>/LC_MESSAGES` in a `.po` file. After making changes to plain language in the template, in the `home` directory inside the container run:
+Translation messages are applied in `home/locale/<locale code>/LC_MESSAGES` in a `.po` file. After making changes to plain language in the template, in the container run:
 
 ```
-django-admin makemessages -l <locale code>
+make update-translations
 ```
 
 This will create or update a `.po` file.
@@ -208,7 +208,7 @@ The `.po` files must be compiled into binary `.mo` files. To see your `.po` file
 make build-translations
 ```
 
-This step is performed automatically during container build. You need to run it only during active local development
+This `build-translations` step is performed automatically during container build. You need to run it only during active local development
 to confirm any translation changes.
 
 #### Client-side
@@ -341,6 +341,25 @@ with `kubectl get pods`.
 ```sh
 % kubectl cp ./KS-public.pem eta-arpa/thepodidentifier:/app/KS-public.pem
 ```
+
+## Rotating symmetric encryption keys
+
+The `CLAIM_SECRET_KEY` environment variable can hold an array of base64-encoded encryption keys. These are used to symmetrically
+encrypt Claims and ClaimantFiles in our S3 bucket. The first in the array is always used for encrypting. All the keys in the array
+can be used for decrypting, tried one-at-a-time until the thumbprints match.
+
+In order to remove an old key from the `CLAIM_SECRET_KEY` array, you must first rotate the keys so that older artifacts are re-encrypted
+using a newer key. You can perform that rotation in this suggested order.
+
+- Deploy the container with `CLAIM_SECRET_KEY` including all the keys, in order of newest to oldest.
+- Run `make rotate-claim-secrets OLD_KEY=base64str NEW_KEY=base64str` within a running container. It will report at the end how many
+  artifacts were rotated (re-encrypted). You may choose to put the app into maintenance mode during the key rotation, to avoid the possible
+  race condition where a Claimant has artifacts encrypted with multiple different keys.
+- Remove the `OLD_KEY` value from the `CLAIM_SECRET_KEY` env var and re-deploy.
+
+NOTE that Redis symmetric encryption does not support key rotation. However, the time-to-live in Redis is short (30 minutes) so this
+is deemed an acceptable risk. The effect of changing the `REDIS_SECRET_KEY` value is effectively removing all active authenticated
+sessions from the app, so if you must do that, perform it during a non-peak traffic time and/or put the app into maintenance mode.
 
 ## LaunchDarkly
 

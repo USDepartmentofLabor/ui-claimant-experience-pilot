@@ -191,6 +191,9 @@ bucket: ## Create S3 bucket in localstack service (run inside container)
 dol-bucket: ## Create DOL S3 bucket in localstack service (run inside container)
 	python manage.py create_bucket --dol
 
+rotate-claim-secrets: ## Rotate the symmetrical encryption Claim keys. Requires OLD_KEY=str NEW_KEY=str
+	python manage.py rotate_claim_keys $(OLD_KEY) $(NEW_KEY)
+
 # this env var just so that settings.py can determine how it was invoked
 build-static: export BUILD_STATIC=true
 
@@ -206,6 +209,9 @@ build-static: ## Build the static assets (intended for during container-build (i
 
 build-translations: ## Compiles .po (translation) files into binary files
 	python manage.py compilemessages
+
+update-translations: ## Update the .po files (run manually inside the container)
+	python manage.py makemessages -a --ignore=claimant/*
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
 	rm -f requirements*.txt
@@ -295,6 +301,9 @@ soc: ## Build the SOC codes from the BLS site
 
 soc-clean: ## Clean up the SOC code temp files
 	rm -f soc_structure_2018.xlsx soc_structure_2018.csv soc_structure_2018.json major_groups.htm
+
+hourly-tasks: ## runs named tasks to be called on an hourly schedule
+	python manage.py delete_expired_partial_claims
 
 default: help
 

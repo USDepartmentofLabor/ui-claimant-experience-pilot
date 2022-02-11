@@ -21,16 +21,16 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
       .clear()
       .type("1234567890".repeat(4))
       .blur();
+    cy.click_next();
     cy.contains("36 characters").should("be.visible");
   });
 
   it("shows validation messages intuitively", () => {
-    // Shows a validation message on blur
+    // Does not show a validation message on blur
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/");
     cy.get("[name=claimant_name\\.first_name]").clear().blur();
-    // No other fields should be displaying error messages yet
-    hasNumberOfErrors(1);
+    hasNumberOfErrors(0);
     // After submitting the page, all errors should show
     cy.click_next();
     hasNumberOfErrors(11);
@@ -57,7 +57,7 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
     cy.get("[name=phones\\[0\\]\\.number").type("2028675309").blur();
     hasNumberOfErrors(0);
     cy.get("[name=phones\\[0\\]\\.number").clear().blur();
-    hasNumberOfErrors(1);
+    hasNumberOfErrors(0);
 
     // New form submission again shows all errors
     cy.click_next();

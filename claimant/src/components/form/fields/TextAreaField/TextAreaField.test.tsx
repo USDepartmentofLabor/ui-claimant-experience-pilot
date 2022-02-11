@@ -106,9 +106,10 @@ describe("TextAreaField component", () => {
       expect(queryByText("This field is required")).not.toBeInTheDocument();
     });
 
-    it("shows the error message if the input is touched", () => {
+    it("shows the error message if the input has been submitted", () => {
       const mockMeta = {
         touched: true,
+        submitCount: 1,
         error: "This field is required",
         initialError: "",
         initialTouched: false,
@@ -126,6 +127,7 @@ describe("TextAreaField component", () => {
       };
 
       mockUseField.mockReturnValue([mockField, mockMeta]);
+      mockUseFormikContext.mockReturnValue({ submitCount: 1 });
 
       const { queryByText } = render(
         <TextAreaField name="firstName" label="First Name" id="firstName" />

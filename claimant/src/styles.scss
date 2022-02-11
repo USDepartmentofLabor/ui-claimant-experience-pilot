@@ -56,6 +56,25 @@
   margin-bottom: units(3);
 }
 
+.dol-fieldset .usa-legend {
+  float: left;
+  margin-top: 0;
+}
+
+.dol-fieldset .usa-form-group {
+  clear: both;
+}
+
+.dol-fieldset.usa-form-group--error .usa-legend {
+  font-weight: bold;
+}
+
+.dol-fieldset.usa-form-group--error .usa-form-group--error {
+  border: none;
+  margin-top: 1.5rem;
+  padding-left: 0;
+}
+
 .usa-link svg {
   margin-left: 2px;
   vertical-align: middle;

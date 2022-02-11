@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
-from api.models import Claimant
+from api.models import Claimant, SWA
 from api.test_utils import create_swa
 import logging
 
@@ -104,9 +104,9 @@ class HomeTestCase(TestCase):
             fetch_redirect_response=False,
         )
 
-    def test_prequalifications_page(self):
-        response = self.client.get("/prequal/")
-        self.assertContains(response, "Prequalifications", status_code=200)
+    def test_start_page(self):
+        response = self.client.get("/start/")
+        self.assertContains(response, "Let's get started", status_code=200)
 
     def test_swa_redirect_page(self):
         # with active SWA we get a link to the SWA
@@ -131,3 +131,24 @@ class HomeTestCase(TestCase):
         # not found or inactive SWA, we get 404
         response = self.client.get("/start/XX/")
         self.assertContains(response, "Sorry", status_code=404)
+
+    def test_swa_contact_page(self):
+        nj_swa = SWA.active.get(code="NJ")
+        response = self.client.get(f"/contact/{nj_swa.code}/")
+        self.assertContains(response, "Contact us", status_code=200)
+
+        # active SWA, but no template
+        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
+        response = self.client.get(f"/contact/{swa.code}/")
+        self.assertEqual(response.status_code, 404)
+
+        # inactive SWA
+        swa, _ = create_swa(
+            is_active=False, code="NO", claimant_url="https://example.swa.gov/"
+        )
+        response = self.client.get(f"/contact/{swa.code}/")
+        self.assertEqual(response.status_code, 404)
+
+        # no such SWA
+        response = self.client.get("/contact/foobar/")
+        self.assertEqual(response.status_code, 404)

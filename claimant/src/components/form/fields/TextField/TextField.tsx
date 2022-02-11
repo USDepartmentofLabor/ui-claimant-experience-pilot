@@ -1,12 +1,15 @@
-import React, { ReactNode } from "react";
+import React, { FocusEventHandler, ReactNode, useState } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
   Label,
   TextInput,
   ErrorMessage,
+  InputPrefix,
+  InputSuffix,
 } from "@trussworks/react-uswds";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
+import classnames from "classnames";
 
 type TextInputProps = React.ComponentProps<typeof TextInput>;
 
@@ -46,7 +49,26 @@ export const TextField = ({
     name: textInputProps.name,
     type: textInputProps.type,
   });
+  const [focused, setFocused] = useState(false);
   const showError = useShowErrors(textInputProps.name);
+  const showErrorOutline = showError && !focused;
+
+  const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
+    setFocused(false);
+    fieldProps.onBlur(e);
+  };
+
+  const textInput = (
+    <TextInput
+      {...fieldProps}
+      data-testid={textInputProps.id}
+      value={fieldProps.value || ""}
+      validationStatus={showErrorOutline ? "error" : undefined}
+      onFocus={() => setFocused(true)}
+      onBlur={handleBlur}
+      {...textInputProps}
+    />
+  );
 
   return (
     <FormGroup error={showError}>
@@ -58,25 +80,21 @@ export const TextField = ({
       >
         {label}
       </Label>
-      <div className="usa-input-group">
-        {inputPrefix && (
-          <div className="usa-input-prefix" aria-hidden="true">
-            {inputPrefix}
-          </div>
-        )}
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <TextInput
-          {...fieldProps}
-          data-testid={textInputProps.id}
-          value={fieldProps.value || ""}
-          {...textInputProps}
-        />
-        {inputSuffix && (
-          <div className="usa-input-suffix" aria-hidden="true">
-            {inputSuffix}
-          </div>
-        )}
-      </div>
+      {inputSuffix || inputPrefix ? (
+        <div
+          className={classnames("usa-input-group", {
+            "usa-input-group--error": showErrorOutline,
+            "is-focused": focused,
+          })}
+          data-testid={`${textInputProps.name}-input-group`}
+        >
+          {inputPrefix && <InputPrefix>{inputPrefix}</InputPrefix>}
+          {textInput}
+          {inputSuffix && <InputSuffix>{inputSuffix}</InputSuffix>}
+        </div>
+      ) : (
+        textInput
+      )}
       <div className="usa-hint" id={`${textInputProps.name}-hint`}>
         {hint}
       </div>

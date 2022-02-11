@@ -24,10 +24,17 @@ import uuid
 import logging
 from core.claim_encryption import (
     AsymmetricClaimDecryptor,
+    SymmetricClaimEncryptor,
     SymmetricClaimDecryptor,
     symmetric_encryption_key,
 )
-from core.claim_storage import BUCKET_TYPE_ARCHIVE, ClaimBucket, ClaimReader, ClaimStore
+from core.claim_storage import (
+    BUCKET_TYPE_ARCHIVE,
+    ClaimBucket,
+    ClaimReader,
+    ClaimStore,
+    ClaimWriter,
+)
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI
 from .claim_cleaner import ClaimCleaner
@@ -379,6 +386,37 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
         self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
+
+    def test_rotation_encrypted_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        payload = {
+            "claimant_id": claimant.idp_user_xid,
+            "swa_code": swa.code,
+            "id": str(claim.uuid),
+        }
+
+        # encrypt with an old key
+        sym_encryptor = SymmetricClaimEncryptor(
+            payload, symmetric_encryption_key(settings.CLAIM_SECRET_KEY[1])
+        )
+        packaged_claim = sym_encryptor.packaged_claim()
+        packaged_payload = packaged_claim.as_json()
+        cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
+        self.assertTrue(cw.write())
+
+        # then validate we can fetch with the newer key.
+        csrf_client = self.csrf_client(claimant, swa)
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/partial-claim/"
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        logger.debug("🚀 {}".format(response.json()))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), payload)
 
     def test_completed_claim_with_csrf(self):
         idp = create_idp()
