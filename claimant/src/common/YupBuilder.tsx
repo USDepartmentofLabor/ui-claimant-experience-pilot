@@ -54,7 +54,7 @@ export const yupAddress = (t: TFunction<"claimForm">) =>
       .required(t("address.zipcode.required")),
   });
 
-export const yupDate = () =>
+export const yupDate = (t: TFunction<"claimForm">, fieldName: string) =>
   yup
     .date()
     .transform((value, originalValue) => {
@@ -64,6 +64,9 @@ export const yupDate = () =>
         : yup.date.INVALID_DATE;
     })
     .typeError(
-      `Date must be a valid date with format ${USER_FACING_DATE_INPUT_FORMAT}`
+      t("date.typeError", {
+        fieldName: fieldName,
+        dateFormat: USER_FACING_DATE_INPUT_FORMAT,
+      })
     )
-    .required();
+    .required(t("date.required", { fieldName: fieldName }));

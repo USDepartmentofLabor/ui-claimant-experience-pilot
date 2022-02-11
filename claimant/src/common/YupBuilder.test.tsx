@@ -93,7 +93,7 @@ describe("YupBuilder", () => {
 
   describe("yupDate", () => {
     it("validates", () => {
-      const schema = yupDate();
+      const schema = yupDate(t, "My Date");
       const date = "1999-02-02";
       expect(schema.validateSync(date)).toEqual(schema.cast(date));
     });

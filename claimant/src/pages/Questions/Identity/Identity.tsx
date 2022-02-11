@@ -12,6 +12,7 @@ import { IPageDefinition } from "../../PageDefinitions";
 import * as yup from "yup";
 import { yupDate } from "../../../common/YupBuilder";
 import { StatesDropdown } from "../../../components/form/StatesDropdown/StatesDropdown";
+import states from "../../../fixtures/states.json";
 
 export const Identity = () => {
   const { t } = useTranslation("claimForm");
@@ -124,7 +125,7 @@ export const Identity = () => {
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     ssn: yup.string().required(t("ssn.required")),
-    birthdate: yupDate(), // TODO "common" translations? Might need multiple...
+    birthdate: yupDate(t, t("birthdate.label")),
 
     state_credential: yup.object().shape({
       drivers_license_or_state_id_number: yup
@@ -132,7 +133,10 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         .required(
           t("state_credential.drivers_license_or_state_id_number.required")
         ),
-      issuer: yup.string().required(t("state_credential.issuer.required")),
+      issuer: yup
+        .string()
+        .oneOf(Object.keys(states))
+        .required(t("state_credential.issuer.required")),
     }),
 
     work_authorization: yup.object().shape({
@@ -155,6 +159,9 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         is: true,
         then: yup
           .string()
+          .oneOf(
+            Object.keys(claimForm.work_authorization.authorization_type.options)
+          )
           .required(t("work_authorization.authorization_type.required")),
       }),
       alien_registration_number: yup.string().when("authorization_type", {

@@ -432,6 +432,11 @@ const claimForm = {
     },
     type: { required: "Phone type is required" },
   },
+  date: {
+    typeError:
+      "{{ fieldName}} must be a valid date with format {{ dateFormat }}",
+    required: "{{ fieldName }} is required",
+  },
   name: {
     legal_name: "Legal Name",
     alternate_name: "Alternate Name",
