@@ -4,7 +4,7 @@ import { TFunction, useTranslation } from "react-i18next";
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { IPageDefinition } from "../../PageDefinitions";
 import { useClearFields } from "../../../hooks/useClearFields";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import * as yup from "yup";
 
 export const SelfEmployment = () => {
@@ -35,18 +35,16 @@ export const SelfEmployment = () => {
   return (
     <>
       <Fieldset legend={t("self_employment.label")}>
-        <Fieldset legend={t("self_employment.self_employed.label")}>
-          <BooleanRadio
-            id="self_employment.is_self_employed"
-            name="self_employment.is_self_employed"
-          />
-        </Fieldset>
-        <Fieldset legend={t("self_employment.business_ownership.label")}>
-          <BooleanRadio
-            id="self_employment.ownership_in_business"
-            name="self_employment.ownership_in_business"
-          />
-        </Fieldset>
+        <YesNoQuestion
+          question={t("self_employment.self_employed.label")}
+          id="self_employment.is_self_employed"
+          name="self_employment.is_self_employed"
+        />
+        <YesNoQuestion
+          question={t("self_employment.business_ownership.label")}
+          id="self_employment.ownership_in_business"
+          name="self_employment.ownership_in_business"
+        />
         {data.ownership_in_business && (
           <TextField
             label={t("self_employment.business_name.label")}
@@ -57,12 +55,11 @@ export const SelfEmployment = () => {
         )}
       </Fieldset>
       <Fieldset legend={t("self_employment.business_interests.label")}>
-        <Fieldset legend={t("self_employment.corporate_officer.label")}>
-          <BooleanRadio
-            id="self_employment.is_corporate_officer"
-            name="self_employment.is_corporate_officer"
-          />
-        </Fieldset>
+        <YesNoQuestion
+          question={t("self_employment.corporate_officer.label")}
+          id="self_employment.is_corporate_officer"
+          name="self_employment.is_corporate_officer"
+        />
         {data.is_corporate_officer && (
           <TextField
             label={t("self_employment.corporation_name.label")}
@@ -71,21 +68,17 @@ export const SelfEmployment = () => {
             name="self_employment.name_of_corporation"
           />
         )}
-        <Fieldset legend={t("self_employment.related_to_owner.label")}>
-          <BooleanRadio
-            id="self_employment.related_to_owner"
-            name="self_employment.related_to_owner"
-          />
-        </Fieldset>
+        <YesNoQuestion
+          question={t("self_employment.related_to_owner.label")}
+          id="self_employment.related_to_owner"
+          name="self_employment.related_to_owner"
+        />
         {data.related_to_owner && (
-          <Fieldset
-            legend={t("self_employment.corporation_or_partnership.label")}
-          >
-            <BooleanRadio
-              id="self_employment.corporation_or_partnership"
-              name="self_employment.corporation_or_partnership"
-            />
-          </Fieldset>
+          <YesNoQuestion
+            question={t("self_employment.corporation_or_partnership.label")}
+            id="self_employment.corporation_or_partnership"
+            name="self_employment.corporation_or_partnership"
+          />
         )}
       </Fieldset>
     </>

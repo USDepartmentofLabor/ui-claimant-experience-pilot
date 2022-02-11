@@ -1,7 +1,7 @@
 import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
 import { Fieldset } from "@trussworks/react-uswds";
 import { useShowErrors } from "../../../hooks/useShowErrors";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, PropsWithChildren } from "react";
 
 interface IYesNoQuestionProps {
   id: string;
@@ -14,8 +14,9 @@ interface IYesNoQuestionProps {
 
 export const YesNoQuestion = ({
   question,
+  children,
   ...inputProps
-}: IYesNoQuestionProps) => {
+}: PropsWithChildren<IYesNoQuestionProps>) => {
   const showError = useShowErrors(inputProps.name);
 
   return (
@@ -26,6 +27,7 @@ export const YesNoQuestion = ({
       }
     >
       <BooleanRadio {...inputProps} />
+      {children}
     </Fieldset>
   );
 };

@@ -1,7 +1,7 @@
 import { TFunction, Trans, useTranslation } from "react-i18next";
-import { Alert, Button, Fieldset } from "@trussworks/react-uswds";
+import { Alert, Button } from "@trussworks/react-uswds";
 import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
-import { BooleanRadio } from "../../../components/form/BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { useFormikContext } from "formik";
 import { IPageDefinition } from "../../PageDefinitions";
 import claimForm from "../../../i18n/en/claimForm";
@@ -75,12 +75,11 @@ export const EmployerInformation = (props: PageProps) => {
         </Trans>
       </Alert>
       <EmployerProfile segment={segment} />
-      <Fieldset legend={t("employers.more_employers.label")}>
-        <BooleanRadio
-          id={`LOCAL_more_employers[${segment}]`}
-          name={`LOCAL_more_employers[${segment}]`}
-        />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("employers.more_employers.label")}
+        id={`LOCAL_more_employers[${segment}]`}
+        name={`LOCAL_more_employers[${segment}]`}
+      />
     </>
   );
 };

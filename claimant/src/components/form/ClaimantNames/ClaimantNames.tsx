@@ -3,7 +3,7 @@ import { FieldArray, useFormikContext } from "formik";
 import { Name } from "../Name/Name";
 import { PERSON_NAME_SKELETON } from "../../../utils/claim_form";
 import { useClearFields } from "../../../hooks/useClearFields";
-import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../YesNoQuestion/YesNoQuestion";
 import { useTranslation } from "react-i18next";
 import { LiveMessenger } from "react-aria-live";
 
@@ -24,17 +24,16 @@ export const ClaimantNames = () => {
       </Fieldset>
       <LiveMessenger>
         {({ announcePolite }) => (
-          <Fieldset legend={t("claimant_has_alternate_names.label")}>
-            <BooleanRadio
-              id="LOCAL_claimant_has_alternate_names"
-              name="LOCAL_claimant_has_alternate_names"
-              onChange={(e) => {
-                e.currentTarget.value === "yes"
-                  ? announcePolite(commonT("expanded_content.revealed"))
-                  : announcePolite(commonT("expanded_content.collapsed"));
-              }}
-            />
-          </Fieldset>
+          <YesNoQuestion
+            question={t("claimant_has_alternate_names.label")}
+            id="LOCAL_claimant_has_alternate_names"
+            name="LOCAL_claimant_has_alternate_names"
+            onChange={(e) => {
+              e.currentTarget.value === "yes"
+                ? announcePolite(commonT("expanded_content.revealed"))
+                : announcePolite(commonT("expanded_content.collapsed"));
+            }}
+          />
         )}
       </LiveMessenger>
 

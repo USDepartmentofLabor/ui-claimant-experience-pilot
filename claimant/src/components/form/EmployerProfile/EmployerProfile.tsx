@@ -3,7 +3,7 @@ import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
-import { BooleanRadio } from "../BooleanRadio/BooleanRadio";
+import { YesNoQuestion } from "../YesNoQuestion/YesNoQuestion";
 import { DatePicker } from "../fields/DatePicker/DatePicker";
 import Address from "../Address/Address";
 import { SeparationReason } from "../SeparationReason/SeparationReason";
@@ -61,13 +61,12 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         }}
         basename={`employers[${segment}].address`}
       />
-      <Fieldset legend={t("same_address.label")}>
-        <BooleanRadio
-          id={`employers[${segment}].LOCAL_same_address`}
-          name={`employers[${segment}].LOCAL_same_address`}
-          noLabel={t("no_different_address")}
-        />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("same_address.label")}
+        id={`employers[${segment}].LOCAL_same_address`}
+        name={`employers[${segment}].LOCAL_same_address`}
+        noLabel={t("no_different_address")}
+      />
       {employer.LOCAL_same_address === false && (
         <Fieldset legend={t("work_site_address.heading")}>
           <Address
@@ -88,13 +87,12 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         type="tel"
         id={`employers[${segment}].phones[0].number`}
       />
-      <Fieldset legend={t("same_phone.label")}>
-        <BooleanRadio
-          id={`employers[${segment}].LOCAL_same_phone`}
-          name={`employers[${segment}].LOCAL_same_phone`}
-          noLabel={t("no_different_phone")}
-        />
-      </Fieldset>
+      <YesNoQuestion
+        question={t("same_phone.label")}
+        id={`employers[${segment}].LOCAL_same_phone`}
+        name={`employers[${segment}].LOCAL_same_phone`}
+        noLabel={t("no_different_phone")}
+      />
       {employer.LOCAL_same_phone === false && (
         <TextField
           name={`employers[${segment}].phones[1].number`}
