@@ -423,7 +423,10 @@ const claimForm = {
     address1: { required: "Address is required" },
     city: { required: "City is required" },
     state: { required: "State is required" },
-    zipcode: { required: "ZIP code is required" },
+    zipcode: {
+      required: "ZIP code is required",
+      format: "ZIP code must be five digits",
+    },
   },
   phone: {
     number: {

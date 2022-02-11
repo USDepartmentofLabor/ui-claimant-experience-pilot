@@ -49,8 +49,7 @@ export const yupAddress = (t: TFunction<"claimForm">) =>
       .required(t("address.state.required")),
     zipcode: yup
       .string()
-      .max(10)
-      .matches(/^\d{5}(-\d{4})?$/)
+      .matches(/^\d{5}(-\d{4})?$/, t("address.zipcode.format"))
       .required(t("address.zipcode.required")),
   });
 
