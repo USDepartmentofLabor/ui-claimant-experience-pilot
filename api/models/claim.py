@@ -32,6 +32,15 @@ NOOP = -1
 SUCCESS = 1
 FAILURE = 0
 
+# see Claim.status_for_claimant
+# this is a pseudo-enum (derived from events, not a column)
+CLAIMANT_STATUS_IN_PROCESS = "in_process"
+CLAIMANT_STATUS_CANCELLED = "cancelled"
+CLAIMANT_STATUS_PROCESSING = "processing"
+CLAIMANT_STATUS_ACTIVE = "active"
+CLAIMANT_STATUS_RESOLVED = "resolved"
+CLAIMANT_STATUS_UNKNOWN = "unknown"
+
 
 class ExpiredPartialClaimManager(models.Manager):
     def delete_artifacts(self):
@@ -121,11 +130,59 @@ class Claim(TimeStampedModel):
     def is_completed(self):
         return self.events.filter(category=Claim.EventCategories.COMPLETED).count() > 0
 
+    def completed_at(self):
+        if not self.is_completed():
+            return None
+        return (
+            self.events.filter(category=Claim.EventCategories.COMPLETED)
+            .first()
+            .happened_at
+        )
+
     def is_resolved(self):
         return self.events.filter(category=Claim.EventCategories.RESOLVED).count() > 0
 
+    def resolved_at(self):
+        if not self.is_resolved():
+            return None
+        return (
+            self.events.filter(category=Claim.EventCategories.RESOLVED)
+            .first()
+            .happened_at
+        )
+
+    def resolution_description(self):
+        if not self.is_resolved():
+            return None
+        return (
+            self.events.filter(category=Claim.EventCategories.RESOLVED)
+            .first()
+            .description
+        )
+
     def is_deleted(self):
         return self.events.filter(category=Claim.EventCategories.DELETED).count() > 0
+
+    def deleted_at(self):
+        if not self.is_deleted():
+            return None
+        return (
+            self.events.filter(category=Claim.EventCategories.DELETED)
+            .first()
+            .happened_at
+        )
+
+    def is_fetched(self):
+        return self.events.filter(category=Claim.EventCategories.FETCHED).count() > 0
+
+    def fetched_at(self):
+        if not self.is_fetched():
+            return None
+        return (
+            self.events.filter(category=Claim.EventCategories.FETCHED)
+            .first()
+            .happened_at
+        )
 
     def public_events(self):
         return list(
@@ -229,3 +286,17 @@ class Claim(TimeStampedModel):
             packaged_claim_str, settings.CLAIM_SECRET_KEY
         )
         return cd.decrypt()
+
+    # returns a constant that reflects the status of the claim from the Claimant's perspective
+    def status_for_claimant(self):
+        if not self.is_completed() and not self.is_deleted() and not self.is_resolved():
+            return CLAIMANT_STATUS_IN_PROCESS
+        if not self.is_completed() and self.is_deleted():
+            return CLAIMANT_STATUS_CANCELLED
+        if self.is_completed() and not self.is_fetched():
+            return CLAIMANT_STATUS_PROCESSING
+        if self.is_completed() and self.is_fetched() and not self.is_resolved():
+            return CLAIMANT_STATUS_ACTIVE
+        if self.is_resolved():
+            return CLAIMANT_STATUS_RESOLVED
+        return CLAIMANT_STATUS_UNKNOWN

@@ -144,7 +144,11 @@ class RotatableSymmetricClaimDecryptor(object):
             if jwkey.thumbprint() == package_thumbprint:
                 sd = SymmetricClaimDecryptor(self.packaged_claim_str, jwkey)
                 return sd.decrypt()
-        raise ValueError("No key found matching packaged_claim public_kid")
+        raise ValueError(
+            "No key found matching packaged_claim public_kid: {}".format(
+                package_thumbprint
+            )
+        )
 
 
 class PackagedClaim(object):

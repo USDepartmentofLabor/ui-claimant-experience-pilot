@@ -8,6 +8,7 @@ from home.views import base_url
 from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
 from api.models import Claim, Claimant
+from api.claim_serializer import ClaimSerializer
 from .claimant_1099G_uploader import Claimant1099GUploader
 import logging
 import uuid
@@ -110,17 +111,8 @@ def v1_act_on_claim(request, claim_uuid):
 
 
 def GET_v1_claim_details(claim):
-    events = claim.public_events()
-    response_claim = {
-        "id": str(claim.uuid),
-        "created_at": str(claim.created_at),
-        "updated_at": str(claim.updated_at),
-        "claimant_id": claim.claimant_id,
-        "events": events,
-        "status": claim.status,
-    }
-
-    return JsonResponse(response_claim, status=200)
+    serializer = ClaimSerializer(claim)
+    return JsonResponse(serializer.for_swa(), status=200)
 
 
 def PATCH_v1_claim_status(claim, new_status):

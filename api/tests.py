@@ -7,9 +7,11 @@ from unittest.mock import patch
 import boto3
 from jwcrypto.common import json_decode
 from botocore.stub import Stubber
+from dacite import from_dict
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
 from .models import Claim, Claimant
+from .models.claim import CLAIMANT_STATUS_PROCESSING
 from core.test_utils import create_s3_bucket, delete_s3_bucket
 from .claim_request import (
     ClaimRequest,
@@ -224,6 +226,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             session = c.session
             session["swa"] = swa.code
             session["whoami"]["claimant_id"] = claimant.idp_user_xid
+            session["whoami"]["swa_code"] = swa.code
             session.save()
         return c
 
@@ -387,6 +390,40 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
         self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
+
+    def test_get_claims(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+
+        # we don't really care about CSRF we just want whoami to reflect claimant+swa
+        client = self.csrf_client(claimant, swa)
+        response = client.get("/api/claims/")
+        self.assertEqual(len(response.json()["claims"]), 0)
+
+        claim = Claim(swa=swa, claimant=claimant, status="groovy")
+        claim.save()
+        claim2 = Claim(swa=swa, claimant=claimant)
+        claim2.save()
+        claim2.events.create(category=Claim.EventCategories.COMPLETED)
+        response = client.get("/api/claims/")
+        self.assertEqual(len(response.json()["claims"]), 2)
+        self.assertEqual(response.json()["claims"][0]["id"], str(claim2.uuid))
+        self.assertEqual(
+            response.json()["claims"][0]["status"], CLAIMANT_STATUS_PROCESSING
+        )
+        self.assertTrue(response.json()["claims"][0]["completed_at"])
+        self.assertFalse(response.json()["claims"][0]["deleted_at"])
+        self.assertFalse(response.json()["claims"][0]["fetched_at"])
+        self.assertFalse(response.json()["claims"][0]["resolved_at"])
+        self.assertFalse(response.json()["claims"][0]["resolution"])
+        self.assertEqual(response.json()["claims"][1]["id"], str(claim.uuid))
+        self.assertEqual(response.json()["claims"][1]["status"], "groovy")
+        self.assertFalse(response.json()["claims"][1]["completed_at"])
+        self.assertFalse(response.json()["claims"][1]["deleted_at"])
+        self.assertFalse(response.json()["claims"][1]["fetched_at"])
+        self.assertFalse(response.json()["claims"][1]["resolved_at"])
+        self.assertFalse(response.json()["claims"][1]["resolution"])
 
     def test_rotation_encrypted_partial_claim(self):
         idp = create_idp()
@@ -825,6 +862,16 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim2.events.create(category=Claim.EventCategories.RESOLVED)
         self.assertEqual(claim, finder.find())
 
+        # .all returns everything regardless of events
+        finder = ClaimFinder(
+            WhoAmI(
+                email="foo@example.com",
+                claimant_id=claimant.idp_user_xid,
+                swa_code=swa.code,
+            )
+        )
+        self.assertEqual(finder.all().count(), 2)
+
     def test_claim_cleaner(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -1198,3 +1245,16 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         cv = ClaimValidator(claim)
         logger.debug(cv.errors_as_dict())
         self.assertFalse(cv.valid)
+
+
+class WhoAmITestCase(TestCase):
+    def test_whoami_address(self):
+        attrs = WHOAMI_IAL2 | {"address": {"address1": "123 Any St", "state": "XX"}}
+        whoami = from_dict(data_class=WhoAmI, data=attrs)
+        self.assertEqual(whoami.address.state, "XX")
+
+    def test_whoami_optional_attributes(self):
+        whoami = from_dict(
+            data_class=WhoAmI, data={"email": "foo@example.com", "claimant_id": None}
+        )
+        self.assertEqual(whoami.claimant_id, None)

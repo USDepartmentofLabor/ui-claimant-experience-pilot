@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -18,18 +19,18 @@ class WhoAmIAddress:
 class WhoAmI:
     email: str
     IAL: str = "2"
-    csrfmiddlewaretoken: str = None
-    first_name: str = None
-    last_name: str = None
-    birthdate: str = None
-    ssn: str = None
-    phone: str = None
-    claimant_id: str = None
-    claim_id: str = None
-    swa_code: str = None
-    swa_name: str = None
-    swa_claimant_url: str = None
-    address: WhoAmIAddress = None
+    csrfmiddlewaretoken: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    birthdate: Optional[str] = None
+    ssn: Optional[str] = None
+    phone: Optional[str] = None
+    claimant_id: Optional[str] = None
+    claim_id: Optional[str] = None
+    swa_code: Optional[str] = None
+    swa_name: Optional[str] = None
+    swa_claimant_url: Optional[str] = None
+    address: Optional[WhoAmIAddress] = None
 
     def as_dict(self):
         serialized = self.__dict__

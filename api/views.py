@@ -15,10 +15,12 @@ from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator
 from .claim_cleaner import ClaimCleaner
+from .claim_serializer import ClaimSerializer
 from .models import Claim
-from .whoami import WhoAmI, WhoAmIAddress
+from .whoami import WhoAmI
 from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
+from dacite import from_dict
 
 
 logger = logging.getLogger("api")
@@ -52,9 +54,7 @@ def whoami(request):
     401 response means the session has either not yet been created
     or still requires IdP AAL2 login.
     """
-    whoami = WhoAmI(**request.session.get("whoami"))
-    if whoami.address and isinstance(whoami.address, dict):
-        whoami.address = WhoAmIAddress(**whoami.address)
+    whoami = from_dict(data_class=WhoAmI, data=request.session.get("whoami"))
     if "swa" in request.session and not (
         whoami.swa_code and whoami.swa_name and whoami.swa_claimant_url
     ):
@@ -83,6 +83,23 @@ def index(request):
             if settings.BASE_URL
             else f"{request.scheme}://{request.get_host()}",
         }
+    )
+
+
+@require_http_methods(["GET"])
+@authenticated_claimant_session
+@never_cache
+def claims(request):
+    """
+    returns JSON about all the Claims associated with the current Claimant
+    """
+    whoami = WhoAmI(**request.session["whoami"])
+    claims = ClaimFinder(whoami).all()
+    if not claims:
+        return JsonResponse({"claims": []}, status=200)
+    return JsonResponse(
+        {"claims": list(map(lambda c: ClaimSerializer(c).for_claimant(), claims))},
+        status=200,
     )
 
 

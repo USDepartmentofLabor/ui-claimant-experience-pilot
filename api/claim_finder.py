@@ -9,6 +9,24 @@ logger = logging.getLogger(__name__)
 class ClaimFinder(object):
     def __init__(self, whoami: WhoAmI):
         self.whoami = whoami
+        self.ok = self.__find_swa_and_claimant()
+
+    def __find_swa_and_claimant(self):
+        if not self.whoami.claimant_id:
+            logger.debug("🚀 missing whoami.claimant_id")
+            return False
+        if not self.whoami.swa_code:
+            logger.debug("🚀 missing whoami.swa_code")
+            return False
+        try:
+            self.claimant = Claimant.objects.get(idp_user_xid=self.whoami.claimant_id)
+        except Claimant.DoesNotExist:
+            return False
+        try:
+            self.swa = SWA.objects.get(code=self.whoami.swa_code)
+        except SWA.DoesNotExist:
+            return False
+        return True
 
     def find(self):
         logger.debug("🚀 whoami: {}".format(self.whoami))
@@ -18,23 +36,15 @@ class ClaimFinder(object):
                 return Claim.objects.get(uuid=self.whoami.claim_id)
             except Claim.DoesNotExist:
                 return False
-        if not self.whoami.claimant_id or not self.whoami.swa_code:
-            logger.debug("🚀 missing one of: claimant_id or swa_code")
-            return False
-        try:
-            claimant = Claimant.objects.get(idp_user_xid=self.whoami.claimant_id)
-        except Claimant.DoesNotExist:
-            return False
-        try:
-            swa = SWA.objects.get(code=self.whoami.swa_code)
-        except SWA.DoesNotExist:
+
+        if not self.ok:
             return False
 
         # get the most recent regardless of status
         # TODO is this what consumers expect?
         # revisit once we have multiple claims per claimant.
         return (
-            Claim.objects.filter(swa=swa, claimant=claimant)
+            Claim.objects.filter(swa=self.swa, claimant=self.claimant)
             .exclude(
                 events__category__in=[
                     Claim.EventCategories.FETCHED,
@@ -43,4 +53,12 @@ class ClaimFinder(object):
             )
             .order_by("created_at")
             .last()
+        )
+
+    def all(self):
+        if not self.ok:
+            return False
+
+        return Claim.objects.filter(swa=self.swa, claimant=self.claimant).order_by(
+            "-created_at"
         )
