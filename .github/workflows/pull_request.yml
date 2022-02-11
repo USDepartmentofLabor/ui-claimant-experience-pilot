@@ -88,3 +88,5 @@ jobs:
         run: make lint
       - name: Check outdated dependencies
         run: make list-outdated
+      - name: Security check
+        run: make security
