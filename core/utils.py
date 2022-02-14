@@ -4,6 +4,7 @@ import hashlib
 from api.models import Claimant, IdentityProvider
 from api.whoami import WhoAmI
 from django.db import transaction
+from dacite import from_dict
 
 
 def session_as_dict(request):
@@ -36,7 +37,7 @@ def register_local_login(request):
             claimant.bump_IAL_if_necessary(whoami["IAL"])
 
         whoami["claimant_id"] = xid
-    return WhoAmI(**whoami)
+    return from_dict(data_class=WhoAmI, data=whoami)
 
 
 def hash_idp_user_xid(user_xid):

@@ -5,11 +5,11 @@ from typing import Optional
 
 @dataclass
 class WhoAmIAddress:
-    address1: str = None
-    address2: str = None
-    city: str = None
-    state: str = None
-    zipcode: str = None
+    address1: Optional[str] = None
+    address2: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zipcode: Optional[str] = None
 
     def as_dict(self):
         return self.__dict__

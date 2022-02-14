@@ -212,7 +212,7 @@ def result(request):
     request.session["logindotgov"]["userinfo"] = userinfo
     address = userinfo.get("address", {})
     whoami = WhoAmI(
-        IAL=claimant_IAL,
+        IAL=str(claimant_IAL),
         first_name=userinfo.get("given_name", ""),
         last_name=userinfo.get("family_name", ""),
         birthdate=userinfo.get("birthdate", ""),

@@ -78,7 +78,7 @@ class LoginDotGovTestCase(TestCase):
         logger.debug("whoami={}".format(whoami))
         self.assertEquals(explained["authenticated"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
-        self.assertEquals(whoami["IAL"], 2)
+        self.assertEquals(whoami["IAL"], "2")
         self.assertTrue(whoami["first_name"])
         self.assertTrue(whoami["last_name"])
         self.assertTrue(whoami["ssn"])
@@ -117,7 +117,7 @@ class LoginDotGovTestCase(TestCase):
         self.assertEquals(explained["authenticated"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
         # the MockServer will return a verified_at value so that triggers "2"
-        self.assertEquals(whoami["IAL"], 2)
+        self.assertEquals(whoami["IAL"], "2")
         self.assertFalse(whoami["first_name"])
         self.assertFalse(whoami["last_name"])
         self.assertFalse(whoami["ssn"])
