@@ -9,6 +9,8 @@
   "swa_code": "XX",
   "email": "someone@example.com",
   "all_emails": ["someone@example.net"],
+  "first_name": "Some",
+  "last_name": "One",
   "birthdate": "2000-01-01",
   "ssn": "900-00-1234",
   "address": {
