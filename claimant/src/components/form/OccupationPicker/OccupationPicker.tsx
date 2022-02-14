@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDebounce from "../../../hooks/useDebounce";
 import {
   ErrorMessage,
   Label,
@@ -163,6 +164,12 @@ const searchSOCEntries = (searchString: string) => {
 export const OccupationPicker = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "occupation" });
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+
+  const [searchString, setSearchString] = useState<string>("");
+  // debouncing means we introduce a little pause to when we initiate a search,
+  // to allow for the user to stop typing, rather than initiating on every keystroke.
+  const debouncedSearchString: string = useDebounce<string>(searchString, 500);
+
   const [searchFocused, setSearchFocused] = useState(false);
 
   const [occupationOptions, setOccupationOptions] = useState(
@@ -207,7 +214,11 @@ export const OccupationPicker = () => {
   }, [values.occupation, occupationOptions]);
 
   useEffect(() => {
-    searchSOC(values.occupation?.job_title as string);
+    searchSOC(debouncedSearchString);
+  }, [debouncedSearchString]);
+
+  useEffect(() => {
+    setSearchString(values.occupation?.job_title || "");
   }, [values.occupation?.job_title]);
 
   // no results behavior. We want it to present just like a form validation error,
@@ -215,11 +226,9 @@ export const OccupationPicker = () => {
   const hasNoResults = () => {
     if (occupationOptions && occupationOptions.length) {
       return false;
-    } else if (
-      (values.occupation?.job_title?.length || 0) > MIN_JOB_TITLE_LENGTH
-    ) {
+    } else if (debouncedSearchString.length > MIN_JOB_TITLE_LENGTH) {
       return true;
-    } else if (values.occupation?.job_title?.length === 0) {
+    } else if (debouncedSearchString.length === 0) {
       return false;
     }
   };
@@ -259,7 +268,9 @@ export const OccupationPicker = () => {
             <IconSearch />
           </InputSuffix>
         </div>
-        {noResultsFlag && <ErrorMessage>{t("no_results")}</ErrorMessage>}
+        <div aria-live="polite">
+          {noResultsFlag && <ErrorMessage>{t("no_results")}</ErrorMessage>}
+        </div>
         {showJobTitleError && (
           <ErrorMessage>{occupationJobTitleMetaProps.error}</ErrorMessage>
         )}

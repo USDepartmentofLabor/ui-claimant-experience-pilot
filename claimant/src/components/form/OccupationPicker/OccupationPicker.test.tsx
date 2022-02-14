@@ -13,6 +13,8 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
+jest.useFakeTimers();
+
 const defaultInitialValues = {
   occupation: {
     job_title: "",
@@ -55,6 +57,7 @@ describe("OccupationPicker component", () => {
           <OccupationPicker />
         </Formik>
       );
+      jest.runAllTimers();
     });
     const jobTitle = screen.getByLabelText("what_is_your_occupation.label");
     const jobDescription = screen.getByLabelText("short_description.label");
@@ -98,6 +101,7 @@ describe("OccupationPicker component", () => {
           </Form>
         </Formik>
       );
+      jest.runAllTimers();
     });
 
     const jobTitle = screen.getByLabelText("what_is_your_occupation.label");
@@ -153,6 +157,7 @@ describe("OccupationPicker component", () => {
       // must clear first -- this is a hack, unsure why necessary
       await userEvent.clear(jobTitle);
       userEvent.type(jobTitle, "asdfasdf");
+      jest.runAllTimers();
     });
     const noResultsMessage = await screen.getByText("no_results");
     expect(noResultsMessage).toBeInTheDocument();
