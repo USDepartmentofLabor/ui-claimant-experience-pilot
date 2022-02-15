@@ -136,62 +136,47 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     federal_income_tax_withheld: yup
       .mixed()
       .oneOf([true, false])
-      .label(t("payment.federal_income_tax_withheld.label"))
-      .required(),
+      .required(t("payment.federal_income_tax_withheld.errors.required")),
     payment: yup.object().shape({
       payment_method: yup
         .mixed()
         .oneOf(paymentMethodOptions.map(({ value }) => value))
-        .label(t("payment.payment_method.label"))
-        .required(),
+        .required(t("payment.payment_method.errors.required")),
       account_type: yup
         .mixed()
         .oneOf(accountTypeOptions.map(({ value }) => value))
-        .label(t("payment.account_type.label"))
         .when("payment_method", {
           is: "direct_deposit",
-          then: yup.mixed().required(),
+          then: yup.mixed().required(t("payment.account_type.errors.required")),
         }),
-      routing_number: yup
-        .mixed()
-        .label(t("payment.routing_number.label"))
-        .when("payment_method", {
-          is: "direct_deposit",
-          then: yup.mixed().required(),
-        }),
-      LOCAL_re_enter_routing_number: yup
-        .mixed()
-        .label(t("payment.re_enter_routing_number.label"))
-        .when("payment_method", {
-          is: "direct_deposit",
-          then: yup
-            .mixed()
-            .oneOf(
-              [yup.ref("routing_number"), null],
-              t("payment.re_enter_routing_number.errors.mustMatch")
-            )
-            .required(),
-        }),
-      account_number: yup
-        .mixed()
-        .label(t("payment.account_number.label"))
-        .when("payment_method", {
-          is: "direct_deposit",
-          then: yup.mixed().required(),
-        }),
-      LOCAL_re_enter_account_number: yup
-        .mixed()
-        .label(t("payment.re_enter_routing_number.label"))
-        .when("payment_method", {
-          is: "direct_deposit",
-          then: yup
-            .mixed()
-            .oneOf(
-              [yup.ref("account_number"), null],
-              t("payment.re_enter_account_number.errors.mustMatch")
-            )
-            .required(),
-        }),
+      routing_number: yup.mixed().when("payment_method", {
+        is: "direct_deposit",
+        then: yup.mixed().required(t("payment.routing_number.errors.required")),
+      }),
+      LOCAL_re_enter_routing_number: yup.mixed().when("payment_method", {
+        is: "direct_deposit",
+        then: yup
+          .mixed()
+          .oneOf(
+            [yup.ref("routing_number"), null],
+            t("payment.re_enter_routing_number.errors.mustMatch")
+          )
+          .required(t("payment.re_enter_routing_number.errors.required")),
+      }),
+      account_number: yup.mixed().when("payment_method", {
+        is: "direct_deposit",
+        then: yup.mixed().required(t("payment.account_number.errors.required")),
+      }),
+      LOCAL_re_enter_account_number: yup.mixed().when("payment_method", {
+        is: "direct_deposit",
+        then: yup
+          .mixed()
+          .oneOf(
+            [yup.ref("account_number"), null],
+            t("payment.re_enter_account_number.errors.mustMatch")
+          )
+          .required(t("payment.re_enter_account_number.errors.required")),
+      }),
     }),
   });
 

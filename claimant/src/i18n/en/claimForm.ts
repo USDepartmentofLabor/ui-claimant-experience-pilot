@@ -462,12 +462,18 @@ const claimForm = {
         "Would you like to have 10% Federal Income Tax withheld from your benefits?",
       help_text:
         "Federal tax withholding will only be made after amounts are deducted and withheld for any unemployment overpayments, child support obligations, or any other amounts required to be deducted and withheld by law.",
+      errors: {
+        required: "Your tax withholding preference is required",
+      },
     },
     payment_method: {
       label: "How would you like to receive your benefit payment?",
       options: {
         debit: "Debit card mailed to me",
         direct_deposit: "Direct deposit to my bank account",
+      },
+      errors: {
+        required: "Your payment preference is required",
       },
     },
     account_type: {
@@ -476,16 +482,31 @@ const claimForm = {
         checking: "Checking",
         savings: "Savings",
       },
+      errors: {
+        required: "Account type is required",
+      },
     },
-    routing_number: { label: "Routing number" },
+    routing_number: {
+      label: "Routing number",
+      errors: { required: "Routing number is required" },
+    },
     re_enter_routing_number: {
       label: "Re-enter routing number",
-      errors: { mustMatch: "Must match routing number" },
+      errors: {
+        mustMatch: "Must match routing number",
+        required: "Re-enter routing number is required",
+      },
     },
-    account_number: { label: "Account number" },
+    account_number: {
+      label: "Account number",
+      errors: { required: "Account number is required" },
+    },
     re_enter_account_number: {
       label: "Re-enter account number",
-      errors: { mustMatch: "Must match account number" },
+      errors: {
+        mustMatch: "Must match account number",
+        required: "Re-enter account number is required",
+      },
     },
   },
   other_pay_detail: {
@@ -532,6 +553,7 @@ const claimForm = {
       errors: {
         required: "Total pay is required",
         min: "Total pay must be greater than 0",
+        number: "Total must be a number",
       },
     },
     date_received: {

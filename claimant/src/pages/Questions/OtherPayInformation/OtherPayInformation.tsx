@@ -18,7 +18,8 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         pay_type: yup.mixed().oneOf(payTypeOptions.map(({ value }) => value)),
         total: yup
           .number()
-          .min(0)
+          .typeError(t("other_pay_detail.total.errors.number"))
+          .min(0, "other_pay_detail.total.errors.min")
           .required(t("other_pay_detail.total.errors.required")),
         date_received: yup
           .date()
