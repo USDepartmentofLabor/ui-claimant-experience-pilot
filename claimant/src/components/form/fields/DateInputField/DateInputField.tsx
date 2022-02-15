@@ -50,7 +50,6 @@ type DateFieldProps = {
 const MONTH_MAX_LENGTH = 2;
 const DAY_MAX_LENGTH = 2;
 const YEAR_MAX_LENGTH = 4;
-const BACKSPACE = "Backspace";
 const VALID_KEYS_REGEXP = /[0-9/]+/;
 const INPUT_VALUE_REGEXP = /^\d{0,4}-\d{0,2}-\d{0,2}$/;
 
@@ -95,9 +94,19 @@ export const DateInputField = ({
   const yearInputRef = useRef<HTMLInputElement>(null);
 
   const updateFormik = () => {
-    const inputValue = day || month || year ? `${year}-${month}-${day}` : "";
-
-    fieldHelperProps.setValue(inputValue);
+    if (day || month || year) {
+      const paddedMonth =
+        month && month.length < MONTH_MAX_LENGTH
+          ? month.padStart(MONTH_MAX_LENGTH, "0")
+          : month;
+      const paddedDay =
+        day && day.length < DAY_MAX_LENGTH
+          ? day.padStart(DAY_MAX_LENGTH, "0")
+          : day;
+      fieldHelperProps.setValue(`${year}-${paddedMonth}-${paddedDay}`);
+    } else {
+      fieldHelperProps.setValue("");
+    }
   };
 
   // Update formik value when state values change.
@@ -122,22 +131,12 @@ export const DateInputField = ({
     if (monthProps?.onChange) {
       monthProps.onChange(e);
     }
-
-    // Automatically proceed to day input when the month field is filled
-    if (e.target.value.length === MONTH_MAX_LENGTH) {
-      dayInputRef.current?.focus();
-    }
   };
 
   const handleDayChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setDay(e.currentTarget.value);
     if (dayProps?.onChange) {
       dayProps.onChange(e);
-    }
-
-    // Automatically proceed to year input when the day field is filled
-    if (e.target.value.length === DAY_MAX_LENGTH) {
-      yearInputRef.current?.focus();
     }
   };
 
@@ -148,23 +147,8 @@ export const DateInputField = ({
     }
   };
 
-  const handleDayKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // Pressing Backspace on an empty day input focuses the month input
-    if (e.currentTarget.value.length === 0 && e.key === BACKSPACE) {
-      monthInputRef.current?.focus();
-    }
-  };
-
-  const handleYearKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // Pressing Backspace on an empty year input focuses the day input
-    if (e.currentTarget.value.length === 0 && e.key === BACKSPACE) {
-      dayInputRef.current?.focus();
-    }
-  };
-
   const handleKeyPress: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // ReactUSWDS sets input type to "text" for DateInputs.
-    // This cannot be overridden (without publishing a breaking release to ReactUSWDS), so for now...
+    // Only allow numeric entry without the use of `type="number"`
     if (!VALID_KEYS_REGEXP.test(e.key)) {
       e.preventDefault();
     }
@@ -202,7 +186,7 @@ export const DateInputField = ({
             value={month}
             label={t("date.month.label")}
             unit={"month"}
-            minLength={2}
+            minLength={1}
             maxLength={MONTH_MAX_LENGTH}
             onBlur={handleBlur}
             readOnly={readOnly}
@@ -218,13 +202,12 @@ export const DateInputField = ({
             value={day}
             label={t("date.day.label")}
             unit={"day"}
-            minLength={2}
+            minLength={1}
             maxLength={DAY_MAX_LENGTH}
             onBlur={handleBlur}
             readOnly={readOnly}
             disabled={disabled}
             inputRef={dayInputRef}
-            onKeyDown={handleDayKeydown}
             onKeyPress={handleKeyPress}
             {...dayProps}
             onChange={handleDayChange}
@@ -241,7 +224,6 @@ export const DateInputField = ({
             readOnly={readOnly}
             disabled={disabled}
             inputRef={yearInputRef}
-            onKeyDown={handleYearKeydown}
             onKeyPress={handleKeyPress}
             {...yearProps}
             onChange={handleYearChange}
