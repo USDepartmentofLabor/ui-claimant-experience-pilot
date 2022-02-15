@@ -737,7 +737,12 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
     def test_login(self):
         self.assertFalse("authenticated" in self.client.session)
         response = self.client.post(
-            "/api/login/", {"email": "someone@example.com", "IAL": "2"}
+            "/api/login/",
+            {
+                "email": "someone@example.com",
+                "IAL": "2",
+                "address.address1": "123 Main St",
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["authenticated"])

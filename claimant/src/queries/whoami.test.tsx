@@ -5,6 +5,7 @@ import httpclient from "../utils/httpclient";
 import { useWhoAmI } from "./whoami";
 
 const whoIsYou: WhoAmI = {
+  IAL: "2",
   claim_id: "123",
   claimant_id: "321",
   first_name: "Hermione",

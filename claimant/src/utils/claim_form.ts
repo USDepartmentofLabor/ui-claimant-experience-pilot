@@ -51,6 +51,14 @@ export const initializeClaimFormWithWhoAmI = (
   for (const [key, value] of Object.entries(whoami)) {
     if (key === "first_name" || key === "last_name") {
       initializedValues.claimant_name[key] = value;
+    } else if (key == "address" && value) {
+      initializedValues.residence_address = { ...whoami.address };
+      // no nulls, just empty strings
+      Object.keys(initializedValues.residence_address).forEach((k) => {
+        if (!initializedValues.residence_address[k]) {
+          initializedValues.residence_address[k] = "";
+        }
+      });
     } else if (value && key in initializedValues && !initializedValues[key]) {
       initializedValues[key] = value;
     }

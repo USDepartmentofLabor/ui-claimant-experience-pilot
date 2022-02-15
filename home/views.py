@@ -151,6 +151,7 @@ def login(request):
                 "required": False,  # to avoid uninit var warnings
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
+                "states": get_states(),
                 "swa": request.GET.get(
                     "swa", request.GET.get("swa_code", request.session.get("swa", None))
                 ),
@@ -169,10 +170,15 @@ def login(request):
         return HttpResponse("GET or POST", status=405)
 
 
-def start(request):
+def get_states():
     state_json_data = open(settings.BASE_DIR / "schemas" / "states.json")
     states = json.load(state_json_data)
     state_json_data.close()
+    return states
+
+
+def start(request):
+    states = get_states()
     states_without_swa = ["AS", "FM", "GU", "MH", "MP", "PW"]
     for state in states_without_swa:
         states.pop(state)

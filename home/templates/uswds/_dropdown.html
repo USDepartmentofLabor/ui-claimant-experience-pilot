@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="usa-form-group">
+  <label class="usa-label" for="{{ id }}">
+    {{ label }}
+    {% if required %}
+    <abbr title="required" class="usa-hint usa-hint--required">*</abbr>
+    {% endif %}
+  </label>
+  <select
+    name="{{ id }}"
+    class="usa-select"
+    id="{{ id }}"
+    {% if required %}required{% endif %}
+    {% if onchange %}onchange="{{ onchange }}"{% endif %}
+    >
+    <option disabled {% if not default_option %}selected{% endif %} value>-{% translate "Select" %}-</option>
+    {% for opt_key, opt_value in options.items %}
+    <option value="{{opt_key}}" {% if default_option and default_option == opt_key %} selected {% endif %}>{{opt_value}}</option>
+    {% endfor %}
+  </select>
+</div>

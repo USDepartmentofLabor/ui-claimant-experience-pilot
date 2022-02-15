@@ -26,6 +26,12 @@ from dacite import from_dict
 logger = logging.getLogger("api")
 
 
+def whoami_from_session(request):
+    whoami_dict = request.session.get("whoami")
+    logger.debug("🚀 whoami_dict: {}".format(whoami_dict))
+    return from_dict(data_class=WhoAmI, data=whoami_dict)
+
+
 @require_http_methods(["POST"])
 @csrf_exempt
 @never_cache
@@ -54,7 +60,7 @@ def whoami(request):
     401 response means the session has either not yet been created
     or still requires IdP AAL2 login.
     """
-    whoami = from_dict(data_class=WhoAmI, data=request.session.get("whoami"))
+    whoami = whoami_from_session(request)
     if "swa" in request.session and not (
         whoami.swa_code and whoami.swa_name and whoami.swa_claimant_url
     ):
@@ -93,7 +99,7 @@ def claims(request):
     """
     returns JSON about all the Claims associated with the current Claimant
     """
-    whoami = WhoAmI(**request.session["whoami"])
+    whoami = whoami_from_session(request)
     claims = ClaimFinder(whoami).all()
     if not claims:
         return JsonResponse({"claims": []}, status=200)
@@ -191,7 +197,7 @@ def GET_partial_claim(request):
     if "partial_claim" in request.session:
         return JsonResponse(request.session["partial_claim"], status=200)
 
-    whoami = WhoAmI(**request.session["whoami"])
+    whoami = whoami_from_session(request)
     claim = ClaimFinder(whoami).find()
     claim_not_found_response = JsonResponse(
         {
@@ -265,7 +271,7 @@ def POST_completed_claim(request):
 
 
 def GET_completed_claim(request):
-    whoami = WhoAmI(**request.session["whoami"])
+    whoami = whoami_from_session(request)
     claim = ClaimFinder(whoami).find()
     if not claim or not claim.is_completed() or claim.is_resolved():
         logger.debug("🚀 not found {}".format(claim))

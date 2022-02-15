@@ -33,9 +33,9 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
     hasNumberOfErrors(0);
     // After submitting the page, all errors should show
     cy.click_next();
-    hasNumberOfErrors(11);
+    hasNumberOfErrors(6);
     // Also displays the error summary at the top of the page
-    cy.contains("Correct the 11 errors on this page to proceed").should(
+    cy.contains("Correct the 6 errors on this page to proceed").should(
       "be.visible"
     );
     // Fix all the errors and move on

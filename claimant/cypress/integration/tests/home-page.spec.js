@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-context("Home page", { scrollBehavior: false }, () => {
+context("Home page", { scrollBehavior: "center" }, () => {
   it("Passes pa11y checks", () => {
     cy.visit("/");
     cy.pa11y({

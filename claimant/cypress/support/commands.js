@@ -30,6 +30,17 @@ import "cypress-audit/commands";
 
 export const FAKE_SSN = "900-00-1234";
 export const FAKE_BIRTHDATE = "2000-01-01";
+export const FAKE_LOGIN = {
+  ssn: FAKE_SSN,
+  birthdate: FAKE_BIRTHDATE,
+  ["address.address1"]: "123 Main St",
+  ["address.city"]: "Anywhere",
+  ["address.state"]: "KS",
+  ["address.zipcode"]: "00000",
+  first_name: "Some",
+  last_name: "One",
+  phone: "555-555-1234",
+};
 
 // test login uses local form page
 Cypress.Commands.add("login", (email) => {
@@ -50,11 +61,23 @@ Cypress.Commands.add("logout", () => {
 
 Cypress.Commands.add("real_login", (email) => {
   cy.visit("https://sandbox.ui.dol.gov:4430/login/?swa=XX");
+  Object.keys(FAKE_LOGIN).forEach((field) => {
+    if (field === "address.state") {
+      cy.get("#address\\.state")
+        .scrollIntoView()
+        .should("be.visible")
+        .select(FAKE_LOGIN[field]);
+    } else {
+      cy.get(`#${field.replace(/\./, "\\.")}`)
+        .scrollIntoView()
+        .should("be.visible")
+        .clear()
+        .type(FAKE_LOGIN[field]);
+    }
+  });
   cy.get("#email")
     .should("be.visible")
     .type(email || "someone@example.com");
-  cy.get("#ssn").should("be.visible").type(FAKE_SSN);
-  cy.get("#birthdate").should("be.visible").type(FAKE_BIRTHDATE);
   cy.get("[data-testid='loginbutton']")
     .scrollIntoView()
     .should("be.visible")
@@ -64,27 +87,22 @@ Cypress.Commands.add("real_login", (email) => {
 Cypress.Commands.add("post_login", (email) => {
   cy.request("POST", "/api/login/", {
     email: email || "someone@example.com",
-    ssn: FAKE_SSN,
-    birthdate: FAKE_BIRTHDATE,
     IAL: "2",
     swa_code: "XX",
+    ...FAKE_LOGIN,
   });
 });
 
 Cypress.Commands.add("mock_login", () => {
   cy.intercept("GET", "/api/whoami/", (req) => {
     req.reply({
-      form_id: "abc123",
       email: "someone@example.com",
-      first_name: "Some",
-      last_name: "One",
       swa_code: "XX",
       swa_name: "SomeState",
       swa_claimant_url: "https://some-state.fake.url/",
       claimant_id: "the-claimant-id",
-      ssn: FAKE_SSN,
       IAL: "2",
-      birthdate: FAKE_BIRTHDATE,
+      ...FAKE_LOGIN,
     });
   }).as("api-whoami");
   cy.intercept("GET", "/api/partial-claim/", (req) => {
@@ -299,8 +317,8 @@ Cypress.Commands.add("navigate_to_form", (props) => {
 });
 
 Cypress.Commands.add("complete_claimant_names", (claimant) => {
-  cy.get("[name=claimant_name\\.first_name]").type(claimant.first_name);
-  cy.get("[name=claimant_name\\.last_name]").type(claimant.last_name);
+  cy.get("[name=claimant_name\\.first_name]").clear().type(claimant.first_name);
+  cy.get("[name=claimant_name\\.last_name]").clear().type(claimant.last_name);
   if (claimant.alternate_names) {
     cy.get("input[id=LOCAL_claimant_has_alternate_names\\.yes")
       .parent()
@@ -312,41 +330,39 @@ Cypress.Commands.add("complete_claimant_names", (claimant) => {
 });
 
 Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
-  cy.get("[name=residence_address\\.address1]").type(
-    addresses.residence_address.address1
-  );
-  cy.get("[name=residence_address\\.address2]").type(
-    addresses.residence_address.address2
-  );
-  cy.get("[name=residence_address\\.city]").type(
-    addresses.residence_address.city
-  );
+  cy.get("[name=residence_address\\.address1]")
+    .clear()
+    .type(addresses.residence_address.address1);
+  cy.get("[name=residence_address\\.address2]")
+    .clear()
+    .type(addresses.residence_address.address2);
+  cy.get("[name=residence_address\\.city]")
+    .clear()
+    .type(addresses.residence_address.city);
   cy.get("[name=residence_address\\.state]").select(
     addresses.residence_address.state
   );
-  cy.get("[name=residence_address\\.zipcode]").type(
-    addresses.residence_address.zipcode,
-    { force: true }
-  );
+  cy.get("[name=residence_address\\.zipcode]")
+    .clear()
+    .type(addresses.residence_address.zipcode, { force: true });
   if (!addresses.mailing_address) {
     cy.get("[name=LOCAL_mailing_address_same]").check({ force: true });
   } else {
-    cy.get("[name=mailing_address\\.address1]").type(
-      addresses.mailing_address.address1
-    );
-    cy.get("[name=mailing_address\\.address2]").type(
-      addresses.mailing_address.address2
-    );
-    cy.get("[name=mailing_address\\.city]").type(
-      addresses.mailing_address.city
-    );
+    cy.get("[name=mailing_address\\.address1]")
+      .clear()
+      .type(addresses.mailing_address.address1);
+    cy.get("[name=mailing_address\\.address2]")
+      .clear()
+      .type(addresses.mailing_address.address2);
+    cy.get("[name=mailing_address\\.city]")
+      .clear()
+      .type(addresses.mailing_address.city);
     cy.get("[name=mailing_address\\.state]").select(
       addresses.mailing_address.state
     );
-    cy.get("[name=mailing_address\\.zipcode]").type(
-      addresses.mailing_address.zipcode,
-      { force: true }
-    );
+    cy.get("[name=mailing_address\\.zipcode]")
+      .clear()
+      .type(addresses.mailing_address.zipcode, { force: true });
   }
 });
 

@@ -21,44 +21,28 @@
             >).
           </p>
 
-          <!-- prettier-ignore -->
-          {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
-          <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=False %}
-          <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=False %}
-
           <script type="text/javascript">
+            const IAL2_REQUIRED = ["phone", "ssn", "birthdate", "first_name", "last_name", "address.address1", "address.city", "address.state", "address.zipcode"];
             function toggleRequiredFields(ial) {
-              const ssn = document.getElementById("ssn");
-              const ssnLabel = ssn.labels[0];
-              const birthdate = document.getElementById("birthdate");
-              const birthdateLabel = birthdate.labels[0];
-              if (ial === "1") {
-                ssn.required = false;
-                birthdate.required = false;
-                ssnLabel.classList.remove("required");
-                birthdateLabel.classList.remove("required");
-                ssnLabel
-                  .getElementsByTagName("abbr")[0]
-                  .classList.add("display-none");
-                birthdateLabel
-                  .getElementsByTagName("abbr")[0]
-                  .classList.add("display-none");
-              } else if (ial === "2") {
-                ssn.required = true;
-                birthdate.required = true;
-                ssnLabel.classList.add("required");
-                birthdateLabel.classList.add("required");
-                ssnLabel
-                  .getElementsByTagName("abbr")[0]
-                  .classList.remove("display-none");
-                birthdateLabel
-                  .getElementsByTagName("abbr")[0]
-                  .classList.remove("display-none");
-              }
+              IAL2_REQUIRED.forEach((field) => {
+                const input = document.getElementById(field);
+                const label = input.labels[0];
+                if (ial === "1") {
+                  input.required = false;
+                  label.classList.remove("required");
+                  label.getElementsByTagName("abbr")[0].classList.add("display-none");
+                } else if (ial === "2") {
+                  input.required = true;
+                  label.classList.add("required");
+                  label.getElementsByTagName("abbr")[0].classList.remove("display-none");
+                }
+              });
             }
           </script>
+
+          {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
+          {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=True %}
+          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
           <label class="usa-label" for="IAL"
             >Identity Assurance Level (IAL)</label
           >
@@ -71,14 +55,15 @@
             <option value="1">1</option>
           </select>
 
-          <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" %}
-          <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate (YYYY-MM-DD)" type="text" required=True %}
-          <!-- prettier-ignore -->
           {% include "uswds/_text_field.html" with id="ssn" label="SSN" type="text" required=True %}
-          <!-- prettier-ignore -->
-          {% include "uswds/_text_field.html" with id="phone" label="Phone" type="text" required=False %}
+          {% include "uswds/_text_field.html" with id="phone" label="Phone" type="text" required=True %}
+          {% include "uswds/_text_field.html" with id="address.address1" label="Address (1)" type="text" required=True %}
+          {% include "uswds/_text_field.html" with id="address.address2" label="Address (2)" type="text" required=False %}
+          {% include "uswds/_text_field.html" with id="address.city" label="City" type="text" required=True %}
+          {% include "uswds/_dropdown.html" with options=states label=_("Select your state") default_option=None id="address.state" required=True %}
+          {% include "uswds/_text_field.html" with id="address.zipcode" label="ZIP code" type="text" required=True %}
 
           <div>
             <button class="usa-button" type="submit" data-testid="loginbutton">

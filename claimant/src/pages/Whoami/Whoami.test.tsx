@@ -36,6 +36,7 @@ describe("the Whoami page", () => {
 
 describe("component WhoAmI", () => {
   const myPII: WhoAmI = {
+    IAL: "2",
     claim_id: "123",
     claimant_id: "321",
     first_name: "Hermione",
@@ -44,6 +45,12 @@ describe("component WhoAmI", () => {
     ssn: "555-55-5555",
     email: "test@example.com",
     phone: "555-555-5555",
+    address: {
+      address1: "123 Main St",
+      city: "Anywhere",
+      state: "KS",
+      zipcode: "00000",
+    },
     swa_code: "MD",
     swa_name: "Maryland",
     swa_claimant_url: "https://some-test-url.gov",
@@ -80,7 +87,7 @@ describe("component WhoAmI", () => {
     render(whoAmI);
     const list = screen.getByRole("list");
     const { getAllByRole } = within(list);
-    expect(list.childElementCount).toBe(10);
+    expect(list.childElementCount).toBe(15);
 
     const items = getAllByRole("listitem");
     const piiItems = items.map((item) => item.textContent);
@@ -92,6 +99,11 @@ describe("component WhoAmI", () => {
         "info.email",
         "info.ssn",
         "info.phone",
+        "info.address1",
+        "info.address2",
+        "info.city",
+        "info.state",
+        "info.zipcode",
         "info.SWA",
         "info.SWAName",
         "info.SWAClaimantUrl",

@@ -24,6 +24,11 @@ export const WhoAmI = () => {
       <li>{t("info.email", { email: whoami.email })}</li>
       <li>{t("info.ssn", { ssn: whoami.ssn })}</li>
       <li>{t("info.phone", { phone: whoami.phone })}</li>
+      <li>{t("info.address1", { address1: whoami.address?.address1 })}</li>
+      <li>{t("info.address2", { address2: whoami.address?.address2 })}</li>
+      <li>{t("info.city", { city: whoami.address?.city })}</li>
+      <li>{t("info.state", { state: whoami.address?.state })}</li>
+      <li>{t("info.zipcode", { zipcode: whoami.address?.zipcode })}</li>
       <li>{t("info.SWA", { SWA: whoami.swa_code })}</li>
       <li>{t("info.SWAName", { SWAName: whoami.swa_name })}</li>
       <li>

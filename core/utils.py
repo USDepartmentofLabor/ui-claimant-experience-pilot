@@ -20,10 +20,19 @@ def register_local_login(request):
     request.session["authenticated"] = True
     whoami = {}
     if request.content_type == "application/json":
-        whoami = json.loads(request.body)
+        payload = json.loads(request.body)
     else:
-        for k in request.POST.keys():
-            whoami[k] = request.POST[k]
+        payload = request.POST
+
+    for k in payload.keys():
+        if "." in k:
+            k_parts = k.split(".")
+            if k_parts[0] not in whoami:
+                whoami[k_parts[0]] = {}
+            whoami[k_parts[0]][k_parts[1]] = payload[k]
+        else:
+            whoami[k] = payload[k]
+
     request.session["whoami"] = whoami
     if "email" in whoami and len(whoami["email"]):
         xid = hash_idp_user_xid(whoami["email"])

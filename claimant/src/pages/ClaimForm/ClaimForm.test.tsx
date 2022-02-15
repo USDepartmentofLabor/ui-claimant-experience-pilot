@@ -32,6 +32,7 @@ const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 
 const myPII: WhoAmI = {
+  IAL: "2",
   claim_id: "123",
   claimant_id: "321",
   first_name: "Hermione",
@@ -43,6 +44,12 @@ const myPII: WhoAmI = {
   swa_code: "MD",
   swa_name: "Maryland",
   swa_claimant_url: "https://some-test-url.gov",
+  address: {
+    address1: "123 Main St",
+    city: "Anywhere",
+    state: "KS",
+    zipcode: "00000",
+  },
 };
 
 describe("the ClaimForm page", () => {
@@ -152,6 +159,12 @@ describe("the ClaimForm page", () => {
       middle_name: "",
       last_name: myPII.last_name,
     });
+    expect(initialValues.residence_address).toEqual({
+      address1: "123 Main St",
+      city: "Anywhere",
+      state: "KS",
+      zipcode: "00000",
+    });
   });
 
   it("merges form values with restored partial claim", async () => {
@@ -257,6 +270,18 @@ describe("the ClaimForm page", () => {
     } = getPersonalInformationFields();
 
     // Fill out personal
+    await waitFor(() => {
+      [
+        firstName,
+        lastName,
+        residenceAddress1,
+        residenceCity,
+        residenceZIPCode,
+      ].forEach((el) => {
+        // clear to re-enter text
+        userEvent.clear(el);
+      });
+    });
     userEvent.type(firstName, myPII.first_name);
     userEvent.type(lastName, myPII.last_name);
     userEvent.click(noAdditionalClaimantNames);

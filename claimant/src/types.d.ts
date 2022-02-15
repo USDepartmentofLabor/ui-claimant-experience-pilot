@@ -36,6 +36,7 @@ type WhoAmI = {
   swa_code: string;
   swa_name: string;
   swa_claimant_url: string;
+  address?: AddressType;
 };
 
 type FormValues = {
