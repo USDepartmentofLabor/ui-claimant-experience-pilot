@@ -24,6 +24,7 @@ type Claim = ClaimantInput & {
 };
 
 type WhoAmI = {
+  IAL?: "1" | "2";
   claim_id?: string;
   claimant_id: string;
   first_name: string;

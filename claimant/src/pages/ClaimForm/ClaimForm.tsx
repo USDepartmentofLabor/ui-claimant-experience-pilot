@@ -2,17 +2,13 @@ import { useQueryClient } from "react-query";
 import { Formik, Form, FormikHelpers } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
-import {
-  useSubmitClaim,
-  useGetPartialClaim,
-  useGetCompletedClaim,
-} from "../../queries/claim";
+import { useSubmitClaim, useGetPartialClaim } from "../../queries/claim";
 import {
   getInitialValuesFromPageDefinitions,
   initializeClaimFormWithWhoAmI,
   mergeClaimFormValues,
 } from "../../utils/claim_form";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -26,13 +22,11 @@ import {
 import { pages } from "../PageDefinitions";
 import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
 import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
+import { Routes } from "../../routes";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
   process.env.REACT_APP_BYPASS_PARTIAL_CLAIM_RESTORE === "true";
-const BYPASS_COMPLETED_CHECK =
-  process.env.NODE_ENV === "development" &&
-  process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
 
 // ClaimForm == /claimant/claim/
 export const ClaimForm = () => {
@@ -44,9 +38,6 @@ export const ClaimForm = () => {
   const { t: formT } = useTranslation("claimForm");
   const navigate = useNavigate();
 
-  const { data: completedClaim, isFetched: completedClaimIsFetched } =
-    useGetCompletedClaim();
-
   const {
     data: partialClaim,
     error: partialClaimError,
@@ -55,7 +46,7 @@ export const ClaimForm = () => {
 
   const currentPageIndex = pages.findIndex((p) => p.path === page);
 
-  if (!whoamiIsFetched || !completedClaimIsFetched) {
+  if (!whoamiIsFetched) {
     return <PageLoader />;
   }
 
@@ -127,24 +118,6 @@ export const ClaimForm = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
   };
 
-  if (!BYPASS_COMPLETED_CHECK && completedClaim?.status === 200) {
-    return (
-      <Trans
-        t={t}
-        i18nKey="claimAlreadySubmitted"
-        values={{
-          swaName: whoami.swa_name,
-          swaClaimantUrl: whoami.swa_claimant_url,
-        }}
-        components={[
-          <a href={whoami.swa_claimant_url} key={whoami.swa_code}>
-            {whoami.swa_claimant_url}
-          </a>,
-        ]}
-      />
-    );
-  }
-
   if (partialClaimIsLoading) {
     return <PageLoader />;
   }
@@ -193,6 +166,9 @@ export const ClaimForm = () => {
         ...whoami,
         claim_id: r.data.claim_id,
       });
+    }
+    if (claim.is_complete) {
+      navigate(`${Routes.SUCCESS_PAGE_JUST_FINISHED}`);
     }
   };
 

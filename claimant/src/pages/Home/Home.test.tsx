@@ -1,15 +1,28 @@
-import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useWhoAmI } from "../../queries/whoami";
 import HomePage from "./Home";
 import { MemoryRouter } from "react-router-dom";
-import { I18nextProvider } from "react-i18next";
-import i18n from "../../i18n";
+
+import { render, screen, within } from "@testing-library/react";
+import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (str: string) => str,
+    };
+  },
+  Trans: ({ i18nKey }: { i18nKey: string }) => <>{i18nKey}</>,
+}));
 
 jest.mock("../../queries/whoami");
-const mockedUseWhoAmI = useWhoAmI as any; // jest.MockedFunction<typeof useWhoAmI>;
+jest.mock("../../queries/claim");
+const mockedUseWhoAmI = useWhoAmI as jest.Mock;
+const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
+const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 
 const myPII: WhoAmI = {
+  IAL: "2",
   claim_id: "123",
   claimant_id: "321",
   first_name: "Hermione",
@@ -23,58 +36,94 @@ const myPII: WhoAmI = {
   swa_claimant_url: "https://some-test-url.gov",
 };
 
-describe("the Home page", () => {
-  beforeEach(() => {
-    jest.spyOn(console, "error");
-    (console.error as jest.Mock).mockImplementation(jest.fn());
-  });
-
-  afterEach(() => {
-    (console.error as jest.Mock).mockRestore();
-  });
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    mockedUseWhoAmI.mockImplementation(() => ({
-      data: myPII,
-      isLoading: false,
-      error: null,
-      isError: false,
-    }));
-  });
+const renderWithMocks = (
+  IAL: WhoAmI["IAL"],
+  appStatus: "notStarted" | "inProgress" | "ready"
+) => {
+  mockedUseWhoAmI.mockImplementation(() => ({
+    data: { ...myPII, IAL },
+    isLoading: false,
+    error: null,
+    isError: false,
+  }));
+  mockedUseGetCompletedClaim.mockImplementation(() => ({
+    data: {},
+    status: appStatus === "ready" ? "success" : "error",
+    isFetched: true,
+    error: null,
+    isError: appStatus !== "ready",
+    isSuccess: appStatus === "ready",
+  }));
+  mockedUseGetPartialClaim.mockImplementation(() => ({
+    data: appStatus === "inProgress" ? { some: "data" } : {},
+    isLoading: false,
+    error: false,
+    isError: false,
+  }));
   const queryClient = new QueryClient();
-  const Page = (
+  render(
     <MemoryRouter initialEntries={["/"]}>
-      <I18nextProvider i18n={i18n}>
-        <QueryClientProvider client={queryClient}>
-          <HomePage />
-        </QueryClientProvider>
-      </I18nextProvider>
+      <QueryClientProvider client={queryClient}>
+        <HomePage />
+      </QueryClientProvider>
     </MemoryRouter>
   );
-  it("renders without error", async () => {
-    render(Page);
-    expect(await screen.findByRole("heading")).toHaveTextContent("Welcome");
-  });
+};
 
-  it("shows the loader when loading", () => {
-    mockedUseWhoAmI.mockReturnValueOnce({
-      isLoading: true,
+describe("the Home page", () => {
+  describe("with IAL2", () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
     });
-    render(Page);
-    expect(screen.queryByTestId("page-loading")).toBeInTheDocument();
-    expect(screen.queryByTestId("claim-submission")).not.toBeInTheDocument();
-  });
-
-  it("throws an error if there is an error returned", () => {
-    mockedUseWhoAmI.mockReturnValue({
-      error: { message: "Error getting your PII" },
+    it("shows ID verification not started", () => {
+      renderWithMocks("1", "notStarted");
+      const verified = screen.getByText("identity.not_started.title");
+      expect(verified).toBeInTheDocument();
+      const verifiedContainer = verified.parentElement;
+      if (!verifiedContainer) throw new Error("No container");
+      expect(
+        within(verifiedContainer).getByText("status.not_started")
+      ).toBeInTheDocument();
     });
-
-    expect(() => render(Page)).toThrow("Error getting your PII");
-    expect(console.error).toHaveBeenCalled();
-    expect((console.error as jest.Mock).mock.calls[0][0]).toContain(
-      "Error: Uncaught { message: 'Error getting your PII' }"
-    );
+    it("shows ID verification complete", () => {
+      renderWithMocks("2", "notStarted");
+      const verified = screen.getByText("identity.complete.title");
+      expect(verified).toBeInTheDocument();
+      const verifiedContainer = verified.parentElement;
+      if (!verifiedContainer) throw new Error("No container");
+      expect(
+        within(verifiedContainer).getByText("status.complete")
+      ).toBeInTheDocument();
+    });
+    it("shows app not started", () => {
+      renderWithMocks("1", "notStarted");
+      const app = screen.getByText("application.not_ready_to_submit.title");
+      expect(app).toBeInTheDocument();
+      const appContainer = app.parentElement;
+      if (!appContainer) throw new Error("No container");
+      expect(
+        within(appContainer).getByText("status.not_started")
+      ).toBeInTheDocument();
+    });
+    it("shows app in progress", () => {
+      renderWithMocks("1", "inProgress");
+      const app = screen.getByText("application.not_ready_to_submit.title");
+      expect(app).toBeInTheDocument();
+      const appContainer = app.parentElement;
+      if (!appContainer) throw new Error("No container");
+      expect(
+        within(appContainer).getByText("status.in_progress")
+      ).toBeInTheDocument();
+    });
+    it("shows app ready to submit", () => {
+      renderWithMocks("1", "ready");
+      const app = screen.getByText("application.ready_to_submit.title");
+      expect(app).toBeInTheDocument();
+      const appContainer = app.parentElement;
+      if (!appContainer) throw new Error("No container");
+      expect(
+        within(appContainer).getByText("status.ready_to_submit")
+      ).toBeInTheDocument();
+    });
   });
 });

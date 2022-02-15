@@ -16,7 +16,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
   it("saves partial claim", () => {
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.complete_claimant_addresses({
       residence_address: {
@@ -43,7 +43,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
   it("saves and exits and restores", () => {
     const email = faker.internet.exampleEmail();
     cy.login(email);
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.complete_claimant_addresses({
       residence_address: {
@@ -57,14 +57,14 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_save_and_exit();
 
     cy.login(email);
-    cy.visit("/claimant/");
+    cy.navigate_to_form({ inProgress: true });
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
   it("restores partial claim", () => {
     const email = faker.internet.exampleEmail();
     cy.login(email);
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.complete_claimant_addresses({
       residence_address: {
@@ -79,13 +79,13 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.logout();
 
     cy.login(email);
-    cy.visit("/claimant/");
+    cy.navigate_to_form({ inProgress: true });
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
   it("saves completed claim (also checks a11y on each page)", () => {
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
     cy.complete_claimant_addresses({
       residence_address: {
@@ -246,10 +246,10 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_is_complete();
     cy.check_a11y();
     cy.click_final_submit();
-    cy.contains("Claim submitted").should("be.visible");
+    cy.contains("Success!").should("be.visible");
     // Should no longer allow the claim form to be accessed
     cy.visit("/claimant/");
-    cy.contains("Sorry, you have a Claim currently being processed").should(
+    cy.contains("Welcome back message for completed claim").should(
       "be.visible"
     );
   });

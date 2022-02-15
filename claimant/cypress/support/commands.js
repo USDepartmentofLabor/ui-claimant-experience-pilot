@@ -293,6 +293,11 @@ Cypress.Commands.add("click_is_complete", () => {
   cy.get("[name=is_complete]").check({ force: true });
 });
 
+Cypress.Commands.add("navigate_to_form", (props) => {
+  cy.visit("/claimant/");
+  cy.contains(props?.inProgress ? "Continue" : "Start application").click();
+});
+
 Cypress.Commands.add("complete_claimant_names", (claimant) => {
   cy.get("[name=claimant_name\\.first_name]").type(claimant.first_name);
   cy.get("[name=claimant_name\\.last_name]").type(claimant.last_name);

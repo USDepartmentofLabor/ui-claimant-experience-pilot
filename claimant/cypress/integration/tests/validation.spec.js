@@ -8,7 +8,7 @@ function hasNumberOfErrors(num) {
 context("Claim form validation", { scrollBehavior: "center" }, () => {
   it("shows error if any required field is missing", () => {
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.get("[name=claimant_name\\.first_name]").clear();
     cy.click_next();
     cy.contains("is required").should("be.visible");
@@ -16,7 +16,7 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
 
   it("shows error if any field exceeds max length", () => {
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.get("[name=claimant_name\\.first_name]")
       .clear()
       .type("1234567890".repeat(4))
@@ -28,7 +28,7 @@ context("Claim form validation", { scrollBehavior: "center" }, () => {
   it("shows validation messages intuitively", () => {
     // Does not show a validation message on blur
     cy.login(faker.internet.exampleEmail());
-    cy.visit("/claimant/");
+    cy.navigate_to_form();
     cy.get("[name=claimant_name\\.first_name]").clear().blur();
     hasNumberOfErrors(0);
     // After submitting the page, all errors should show

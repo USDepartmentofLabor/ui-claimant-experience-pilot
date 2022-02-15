@@ -65,6 +65,14 @@ export const mergeClaimFormValues = (
   // first, merge the objects
   const mergedValues = { ...initialValues, ...partialClaim };
 
+  // some whoami values always take precedence
+  if (initialValues.ssn) {
+    mergedValues.ssn = initialValues.ssn;
+  }
+  if (initialValues.birthdate) {
+    mergedValues.birthdate = initialValues.birthdate;
+  }
+
   // second, set any of the LOCAL_ flow control fields to their logical starting values
   // based on what we see. This is because initialValues and partialClaim both likely
   // originated with server-side responses.

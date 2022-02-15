@@ -22,9 +22,58 @@ const home = {
     previous: "Back",
     save_and_exit: "Save and exit",
   },
-  claimAlreadySubmitted:
-    "Sorry, you have a Claim currently being processed by {{ swaName }}. " +
-    "Please contact them at <0>{{- swaClaimantUrl }}</0> to resolve your open claim.",
+  status: {
+    label: "Status",
+    not_started: "Not started",
+    in_progress: "In progress",
+    complete: "Complete",
+    ready_to_submit: "Ready to submit",
+  },
+  remaining_tasks: {
+    one: "You have one remaining task to apply for unemployment benefits:",
+    two: "Complete the following two tasks to apply for unemployment benefits:",
+  },
+  identity: {
+    list: "Verify your identity",
+    not_started: {
+      title: "Verify your identity",
+      description:
+        "Verifying your identity with Login.gov speeds up processing " +
+        "time for your application and helps make sure your benefits " +
+        "payments are secure.",
+      start: "Start ID verification",
+    },
+    complete: {
+      title: "Identity verified",
+      description:
+        "View on <extLink>Login.gov<span>opens in a new tab</span><icon></icon></extLink>",
+    },
+  },
+  application: {
+    list: "Complete your application",
+    ready_to_submit: {
+      title: "Application ready to submit",
+    },
+    not_ready_to_submit: {
+      title: "Fill out your application",
+      description:
+        "Provide information about yourself, your work history, " +
+        "and how you'd like to get benefits payments.",
+      start_application: "Start application",
+      continue: "Continue",
+      delete_application: "Delete application",
+    },
+  },
+  success: {
+    just_finished: {
+      title: "Success!",
+      message: "Success message for claim {{claim_id}}",
+    },
+    returning: {
+      title: "Welcome back!",
+      message: "Welcome back message for completed claim {{claim_id}}",
+    },
+  },
 };
 
 export default home;

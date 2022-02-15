@@ -20,6 +20,7 @@ const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
 // when we have routing, use this.
 // const HomePage = lazy(() => import("./pages/Home/Home"));
 const ClaimFormPage = lazy(() => import("./pages/ClaimForm/ClaimForm"));
+const SuccessPage = lazy(() => import("./pages/Success/Success"));
 
 import { AuthContainer } from "./common/AuthContainer";
 import { useTranslation } from "react-i18next";
@@ -30,37 +31,58 @@ import "@trussworks/react-uswds/lib/index.css";
 import { pages } from "./pages/PageDefinitions";
 import PageLoader from "./common/PageLoader";
 import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
+import HomePage from "./pages/Home/Home";
+import { useGetCompletedClaim } from "./queries/claim";
+
+const BYPASS_COMPLETED_CHECK =
+  process.env.NODE_ENV === "development" &&
+  process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { HOME_PAGE, CLAIM_FORM_PAGE, CLAIM_FORM_PAGE_SEGMENT, WHOAMI_PAGE } =
-    ROUTES;
+  const {
+    HOME_PAGE,
+    CLAIM_FORM_PAGE,
+    CLAIM_FORM_PAGE_SEGMENT,
+    WHOAMI_PAGE,
+    CLAIM_FORM_HOME,
+    SUCCESS_PAGE,
+    SUCCESS_PAGE_JUST_FINISHED,
+  } = ROUTES;
   const { t } = useTranslation("common");
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
   const logoutUrl = `${baseUrl}/logout/`;
   const ldFlags = useFeatureFlags();
+  const { status } = useGetCompletedClaim();
+
+  // Determine if we should go to the success page
+  const isSubmitted = !BYPASS_COMPLETED_CHECK && status === "success";
 
   const toggleMobileNav = () => {
     setMobileNavOpen((prevOpen) => !prevOpen);
   };
 
   const navItems = [
-    <NavLink
-      end
-      to={HOME_PAGE}
-      key={HOME_PAGE}
-      className={({ isActive }) => (isActive ? "usa-current" : "")}
-    >
-      Home
-    </NavLink>,
-    <NavLink
-      end
-      to={WHOAMI_PAGE}
-      key={WHOAMI_PAGE}
-      className={({ isActive }) => (isActive ? "usa-current" : "")}
-    >
-      Who am I
-    </NavLink>,
+    ...(isSubmitted
+      ? []
+      : [
+          <NavLink
+            end
+            to={HOME_PAGE}
+            key={HOME_PAGE}
+            className={({ isActive }) => (isActive ? "usa-current" : "")}
+          >
+            Home
+          </NavLink>,
+          <NavLink
+            end
+            to={WHOAMI_PAGE}
+            key={WHOAMI_PAGE}
+            className={({ isActive }) => (isActive ? "usa-current" : "")}
+          >
+            Who am I
+          </NavLink>,
+        ]),
     <ExtLink key="logoutlink" href={logoutUrl}>
       {t("logout")}
     </ExtLink>,
@@ -110,17 +132,40 @@ function App() {
               }
             >
               <Routes>
-                <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
+                <Route path={SUCCESS_PAGE} element={<SuccessPage />} />
                 <Route
-                  path={CLAIM_FORM_PAGE_SEGMENT}
-                  element={<ClaimFormPage />}
+                  path={SUCCESS_PAGE_JUST_FINISHED}
+                  element={<SuccessPage justFinished />}
                 />
-                <Route path={CLAIM_FORM_PAGE} element={<ClaimFormPage />} />
-                {/* TODO for now, redirect all to /claim/ -- future replace with HomePage once that has content */}
-                <Route
-                  path={`${HOME_PAGE}`}
-                  element={<Navigate replace to={`/claim/${pages[0].path}`} />}
-                />
+                {isSubmitted ? (
+                  <Route
+                    path="*"
+                    element={<Navigate replace to={SUCCESS_PAGE} />}
+                  />
+                ) : (
+                  <>
+                    <Route path={WHOAMI_PAGE} element={<WhoAmIPage />} />
+                    <Route
+                      path={CLAIM_FORM_PAGE_SEGMENT}
+                      element={<ClaimFormPage />}
+                    />
+                    <Route path={CLAIM_FORM_PAGE} element={<ClaimFormPage />} />
+                    <Route path={HOME_PAGE} element={<HomePage />} />
+                    <Route
+                      path={CLAIM_FORM_HOME}
+                      element={
+                        <Navigate
+                          replace
+                          to={`${CLAIM_FORM_HOME}${pages[0].path}`}
+                        />
+                      }
+                    />
+                    <Route
+                      path="*"
+                      element={<Navigate replace to={HOME_PAGE} />}
+                    />
+                  </>
+                )}
               </Routes>
             </Suspense>
           </AuthContainer>
