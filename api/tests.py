@@ -460,7 +460,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client(claimant)
+        csrf_client = self.csrf_client(claimant, swa)
         whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
         url = "/api/completed-claim/"
         headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
@@ -514,18 +514,11 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response.status_code, 200)
         claim_response = response.json()
         self.assertEqual(claim_response["id"], str(claim.uuid))
-        self.assertEqual(claim_response["status"], None)
-        self.assertEqual(len(claim_response["events"]), 4)
+        self.assertEqual(claim_response["status"], "processing")
+        self.assertTrue(claim_response["completed_at"])
 
         # if we have another claim that is newer and completed, but resolved, ignore it.
-        logger.debug("🚀 ignore resolved claim")
-        # re-use the current session but  modify it to remove any cached claim id.
-        current_session = csrf_client.session
-        current_session["whoami"]["swa_code"] = swa.code
-        current_session["whoami"]["claimant_id"] = claimant.idp_user_xid
-        del current_session["whoami"]["claim_id"]
-        current_session.save()
-
+        logger.debug("🚀 test we ignore resolved claim")
         completed_claim_uuid = str(claim.uuid)
         resolved_claim = Claim(claimant=claimant, swa=swa)
         resolved_claim.save()

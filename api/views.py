@@ -241,9 +241,6 @@ def POST_completed_claim(request):
         claim_request.payload["validated_at"] = timezone.now().isoformat()
         claim_request.payload["$schema"] = claim_validator.schema_url
 
-    # now that we have a Claim, stash its info in session
-    request.session["whoami"]["claim_id"] = claim_request.payload["id"]
-
     # log we received the claim
     claim_request.claim.events.create(category=Claim.EventCategories.SUBMITTED)
 
@@ -253,6 +250,11 @@ def POST_completed_claim(request):
             email_address=claim_request.whoami.email,
             claim=claim_request.claim,
         ).send_later()
+
+        # now that Claim is completed, forget it in the session.
+        if request.session["whoami"].get("claim_id"):
+            del request.session["whoami"]["claim_id"]
+
         return JsonResponse(
             {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=201
         )
@@ -265,15 +267,11 @@ def POST_completed_claim(request):
 def GET_completed_claim(request):
     whoami = WhoAmI(**request.session["whoami"])
     claim = ClaimFinder(whoami).find()
-    if not claim or not claim.is_completed():
+    if not claim or not claim.is_completed() or claim.is_resolved():
         logger.debug("🚀 not found {}".format(claim))
         return JsonResponse(
             {"status": "error", "error": "No completed claim found"}, status=404
         )
 
-    response_claim = {
-        "id": str(claim.uuid),
-        "events": claim.public_events(),
-        "status": claim.status,
-    }
+    response_claim = ClaimSerializer(claim).for_claimant()
     return JsonResponse(response_claim, status=200)
