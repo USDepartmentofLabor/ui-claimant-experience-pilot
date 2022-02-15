@@ -62,7 +62,7 @@
           {% include "uswds/_text_field.html" with id="address.address1" label="Address (1)" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="address.address2" label="Address (2)" type="text" required=False %}
           {% include "uswds/_text_field.html" with id="address.city" label="City" type="text" required=True %}
-          {% include "uswds/_dropdown.html" with options=states label=_("Select your state") default_option=None id="address.state" required=True %}
+          {% include "uswds/_dropdown.html" with options=states label=_("Select your state") default_option=None id="address.state" onchange=False required=True %}
           {% include "uswds/_text_field.html" with id="address.zipcode" label="ZIP code" type="text" required=True %}
 
           <div>
