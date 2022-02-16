@@ -208,7 +208,6 @@ def result(request):
         )
         claimant.bump_IAL_if_necessary(claimant_IAL)
 
-    request.session["authenticated"] = True
     request.session["logindotgov"]["userinfo"] = userinfo
     address = userinfo.get("address", {})
     whoami = WhoAmI(
@@ -228,6 +227,17 @@ def result(request):
         claimant_id=idp_user_xid,
     )
     request.session["whoami"] = whoami.as_dict()
+
+    # if they logged in at IAL1 but are immediately capable of IAL2 (already verified),
+    # then "step up" now and preserve the "redirect_to" in session. This makes sure
+    # we have all the IAL2 attributes available to us, and avoids displaying the
+    # "you need to verify your identity" on Claim form when they already have verified.
+    if request.session["IAL"] == 1 and claimant_IAL == 2:
+        logger.debug("Immediate step up to IAL2 for verified user")
+        return redirect("/logindotgov/?ial=2")
+
+    # wait to set this till after we've checked IAL 1vs2 above.
+    request.session["authenticated"] = True
 
     redirect_to = "/claimant/"
     if "redirect_to" in request.session:

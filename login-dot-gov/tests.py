@@ -2,6 +2,7 @@
 from django.test import TestCase
 from unittest.mock import patch, MagicMock
 from logindotgov.mock_server import OIDC as MockServer
+from logindotgov.oidc import LoginDotGovOIDCClient
 from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
@@ -14,6 +15,11 @@ logger = logging.getLogger(__name__)
 # set up the mock OIDC server
 MockServer.register_client(
     settings.LOGIN_DOT_GOV_CLIENT_ID,
+    settings.LOGIN_DOT_GOV_PUBLIC_KEY,
+    settings.LOGIN_DOT_GOV_REDIRECT_URI,
+)
+MockServer.register_client(
+    f"{settings.LOGIN_DOT_GOV_CLIENT_ID}:verified:false",
     settings.LOGIN_DOT_GOV_PUBLIC_KEY,
     settings.LOGIN_DOT_GOV_REDIRECT_URI,
 )
@@ -95,7 +101,15 @@ class LoginDotGovTestCase(TestCase):
         )
 
     @override_settings(DEBUG=True)  # so that /explain works
-    def test_ial1(self):
+    @patch(
+        "login-dot-gov.views.logindotgov_client",
+    )
+    def test_ial1_unverified(self, patched_client):
+        patched_client.return_value = LoginDotGovOIDCClient(
+            client_id=f"{settings.LOGIN_DOT_GOV_CLIENT_ID}:verified:false",
+            private_key=settings.LOGIN_DOT_GOV_PRIVATE_KEY,
+            logger=logger,
+        )
         swa, _ = create_swa(is_active=True)
         # ial == 2 unless explicitly == 1
         response = self.client.get(f"/logindotgov/?ial=0&swa={swa.code}")
@@ -115,6 +129,41 @@ class LoginDotGovTestCase(TestCase):
         explained = response.json()
         whoami = explained["whoami"]
         self.assertEquals(explained["authenticated"], True)
+        self.assertEquals(whoami["email"], "you@example.gov")
+        self.assertEquals(whoami["IAL"], "1")
+        self.assertFalse(whoami["first_name"])
+        self.assertFalse(whoami["last_name"])
+        self.assertFalse(whoami["ssn"])
+        self.assertFalse(whoami["birthdate"])
+        self.assertFalse(whoami["phone"])
+
+    @override_settings(DEBUG=True)  # so that /explain works
+    def test_ial1_verified(self):
+        swa, _ = create_swa(is_active=True)
+        # ial == 2 unless explicitly == 1
+        response = self.client.get(f"/logindotgov/?ial=0&swa={swa.code}")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 2)
+
+        response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 1)
+
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(
+            response,
+            "/logindotgov/?ial=2",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+        # confirm our session looks as we expect
+        response = self.client.get("/logindotgov/explain")
+        explained = response.json()
+        whoami = explained["whoami"]
+        # we redirected immediately to "step up" so we are not yet finished authenticating.
+        self.assertTrue("authenticated" not in explained)
         self.assertEquals(whoami["email"], "you@example.gov")
         # the MockServer will return a verified_at value so that triggers "2"
         self.assertEquals(whoami["IAL"], "2")
