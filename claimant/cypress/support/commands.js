@@ -138,6 +138,10 @@ Cypress.Commands.add("click_next", () => {
     .click();
 });
 
+Cypress.Commands.add("click_back", () => {
+  cy.get("a").contains("Back").scrollIntoView().should("be.visible").click();
+});
+
 Cypress.Commands.add("click_save_and_exit", () => {
   if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
     cy.click_next(); // TODO how to mock the save part?

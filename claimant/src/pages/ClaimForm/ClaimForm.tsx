@@ -64,6 +64,7 @@ export const ClaimForm = () => {
     nextSegment,
     previousSegment,
     pageSchema,
+    segmentSchema,
   } = pages[currentPageIndex];
 
   const navigateToNextPage = (values: FormValues) => {
@@ -83,20 +84,28 @@ export const ClaimForm = () => {
     }
   };
 
-  const previousPageUrl = () => {
+  const previousPageUrl = (values: ClaimantInput) => {
     if (repeatable && previousSegment) {
-      const previousPage = previousSegment(segment);
+      const previousPage = previousSegment({ segment });
       if (previousPage) {
         return `/claim/${pages[currentPageIndex].path}/${previousPage}/`;
+      }
+    } else if (previousSegment) {
+      const previousPage = previousSegment({ values });
+      if (previousPage) {
+        return previousPage;
       }
     }
     return `/claim/${pages[currentPageIndex - 1].path}`;
   };
 
-  const previousPageLink = () =>
+  const previousPageLink = (values: ClaimantInput) =>
     !claimCompleted() &&
     pages[currentPageIndex - 1] && (
-      <Link to={previousPageUrl()} className="usa-button usa-button--outline">
+      <Link
+        to={previousPageUrl(values)}
+        className="usa-button usa-button--outline"
+      >
         {t("pagination.previous")}
       </Link>
     );
@@ -112,7 +121,9 @@ export const ClaimForm = () => {
       </Button>
     );
 
-  const validationSchema = pageSchema(formT);
+  const validationSchema = segmentSchema
+    ? segmentSchema(formT, segment)
+    : pageSchema(formT);
 
   const claimCompleted = () => {
     return submitClaim.isSuccess && submitClaim.data.status === 201;
@@ -233,7 +244,7 @@ export const ClaimForm = () => {
               <div className={claimFormStyles.pagination}>
                 <FormGroup>
                   <div className="text-center">
-                    {previousPageLink()}
+                    {previousPageLink(claimForm.values)}
                     {nextPageLink()}
                     <div className="margin-top-1">
                       {saveAndExitLink(claimForm.values)}

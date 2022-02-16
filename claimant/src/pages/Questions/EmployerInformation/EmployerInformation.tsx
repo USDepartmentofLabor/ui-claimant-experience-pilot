@@ -1,9 +1,8 @@
 import { TFunction, Trans, useTranslation } from "react-i18next";
-import { Alert, Button } from "@trussworks/react-uswds";
+import { Alert } from "@trussworks/react-uswds";
 import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
 import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
-import { useFormikContext } from "formik";
-import { IPageDefinition } from "../../PageDefinitions";
+import { IPageDefinition, IPreviousSegment } from "../../PageDefinitions";
 import claimForm from "../../../i18n/en/claimForm";
 import { yupPhone, yupAddress } from "../../../common/YupBuilder";
 import * as yup from "yup";
@@ -26,7 +25,7 @@ const nextSegment = (currentSegment: string | undefined) => {
   return currentSegment === undefined ? "1" : currentSegmentIdx + 1 + "";
 };
 
-const previousSegment = (currentSegment: string | undefined) => {
+const previousSegment = ({ segment: currentSegment }: IPreviousSegment) => {
   const currentSegmentIdx = parseInt(currentSegment || "0");
   if (currentSegmentIdx - 1 < 0) {
     return false;
@@ -37,36 +36,10 @@ const previousSegment = (currentSegment: string | undefined) => {
 
 export const EmployerInformation = (props: PageProps) => {
   const { t } = useTranslation("claimForm");
-  const { values, setValues } = useFormikContext<ClaimantInput>();
   const segment = props.segment || "0";
-
-  const removeEmployer = (idx: number) => {
-    const employers = values.employers?.filter((_, i) => i !== idx);
-    const LOCAL_more_employers = values.LOCAL_more_employers?.filter(
-      (_, i) => i !== idx
-    );
-    setValues((form) => ({
-      ...form,
-      employers,
-      LOCAL_more_employers,
-    }));
-  };
 
   return (
     <>
-      {values.employers?.map((employer, idx) => (
-        <div key={idx}>
-          <span>{employer.name}</span>
-          &nbsp;
-          <Button
-            type="button"
-            className="usa-button--outline"
-            onClick={() => removeEmployer(idx)}
-          >
-            X [{idx}]
-          </Button>
-        </div>
-      ))}
       {/*TODO: Display only for first segment? ("TBD" in figma)*/}
       <Alert type="info">
         <Trans ns="claimForm" i18nKey="employers.reason_for_data_collection">
@@ -143,7 +116,9 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     separation_comment: yup.string().max(1024),
   });
 
-const pageSchema = (t: TFunction<"claimForm">) =>
+// defined here to satisfy the IPageDefinition
+// but we export so we can use it in EmployerReviewPage
+export const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
     LOCAL_more_employers: yup
       .array()
@@ -151,6 +126,30 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     employers: yup.array().of(yupEmployer(t)),
   });
 
+const segmentSchema = (
+  t: TFunction<"claimForm">,
+  currentSegment: string | undefined
+) => {
+  const segment = parseInt(currentSegment || "0");
+  return yup.object().shape({
+    employers: yup
+      .array()
+      .of(yupEmployer(t))
+      .transform((employers: Claim["employers"] = []) => {
+        const modified = new Array(employers.length);
+        modified[segment] = employers[segment];
+        return modified;
+      }),
+    LOCAL_more_employers: yup
+      .array()
+      .of(yup.boolean())
+      .transform((lme: Claim["LOCAL_more_employers"] = []) => {
+        const modified = new Array(lme.length);
+        modified[segment] = lme[segment];
+        return modified;
+      }),
+  });
+};
 export const EmployerInformationPage: IPageDefinition = {
   path: "employer",
   heading: "recent_employer",
@@ -163,4 +162,5 @@ export const EmployerInformationPage: IPageDefinition = {
   nextSegment,
   previousSegment,
   pageSchema,
+  segmentSchema,
 };

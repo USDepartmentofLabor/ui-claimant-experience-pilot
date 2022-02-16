@@ -89,10 +89,16 @@ describe("EmployerInformation Page", () => {
     }
 
     if (EmployerInformationPage.previousSegment) {
-      expect(EmployerInformationPage.previousSegment(undefined)).toEqual(false);
-      expect(EmployerInformationPage.previousSegment("0")).toEqual(false);
-      expect(EmployerInformationPage.previousSegment("1")).toEqual("0");
-      expect(EmployerInformationPage.previousSegment("10")).toEqual("9");
+      expect(EmployerInformationPage.previousSegment({})).toEqual(false);
+      expect(EmployerInformationPage.previousSegment({ segment: "0" })).toEqual(
+        false
+      );
+      expect(EmployerInformationPage.previousSegment({ segment: "1" })).toEqual(
+        "0"
+      );
+      expect(
+        EmployerInformationPage.previousSegment({ segment: "10" })
+      ).toEqual("9");
     } else {
       throw new Error("Employer previousSegment is not defined");
     }

@@ -3,6 +3,7 @@ import { TFunction } from "react-i18next";
 import { PersonalInformationPage } from "./Questions/PersonalInformation/PersonalInformation";
 import { DemographicPage } from "./Questions/Demographic/Demographic";
 import { EmployerInformationPage } from "./Questions/EmployerInformation/EmployerInformation";
+import { EmployerReviewPage } from "./Questions/EmployerReview/EmployerReview";
 import { OccupationPage } from "./Questions/Occupation/Occupation";
 import { UnionPage } from "./Questions/Union/Union";
 import { ReviewPage } from "./Questions/Review/Review";
@@ -17,6 +18,11 @@ import { PaymentInformationPage } from "./Questions/PaymentInformation/PaymentIn
 import { IdentityPage } from "./Questions/Identity/Identity";
 import { OtherPayInformationPage } from "./Questions/OtherPayInformation/OtherPayInformation";
 
+export interface IPreviousSegment {
+  segment?: string;
+  values?: ClaimantInput;
+}
+
 export interface IPageDefinition {
   path: string;
   heading: keyof typeof en.common.page_headings;
@@ -27,8 +33,14 @@ export interface IPageDefinition {
     values: FormValues
   ) => boolean;
   nextSegment?: (currentSegment: string | undefined) => string | false;
-  previousSegment?: (currentSegment: string | undefined) => string | false;
+  previousSegment?: (
+    currentSegmentOrValues: IPreviousSegment
+  ) => string | false;
   pageSchema: (t: TFunction<"claimForm">) => AnySchema;
+  segmentSchema?: (
+    t: TFunction<"claimForm">,
+    currentSegment: string | undefined
+  ) => AnySchema;
 }
 
 export const pages: ReadonlyArray<IPageDefinition> = [
@@ -37,6 +49,7 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   DemographicPage,
   IdentityPage,
   EmployerInformationPage,
+  EmployerReviewPage,
   SelfEmploymentPage,
   OtherPayInformationPage,
   OccupationPage,

@@ -147,6 +147,10 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.check_a11y();
     cy.click_next();
 
+    // employer-review
+    cy.check_a11y();
+    cy.click_next();
+
     /// Self-employment page
     const selfEmployment = {
       is_self_employed: "yes",
