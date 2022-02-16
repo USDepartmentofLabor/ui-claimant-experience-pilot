@@ -10,6 +10,7 @@ urlpatterns = [
     path("claims/", views.claims, name="claims"),
     path("partial-claim/", views.partial_claim, name="partial-claim"),
     path("completed-claim/", views.completed_claim, name="completed-claim"),
+    path("cancel-claim/<claim_id>/", views.cancel_claim, name="cancel_claim"),
     path("logout/", views.logout, name="logout"),
 ]
 

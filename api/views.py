@@ -22,6 +22,7 @@ from .whoami import WhoAmI
 from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
 from dacite import from_dict
+from launchdarkly.client import ld_client
 
 
 logger = logging.getLogger("api")
@@ -108,6 +109,51 @@ def claims(request):
         {"claims": list(map(lambda c: ClaimSerializer(c).for_claimant(), claims))},
         status=200,
     )
+
+
+@require_http_methods(["DELETE"])
+@authenticated_claimant_session
+@never_cache
+def cancel_claim(request, claim_id):
+    from api.models.claim import SUCCESS, NOOP
+
+    """
+    Mark a Claim as resolved and delete its artifacts.
+    The Claim must be COMPLETED but not yet FETCHED.
+    NOTE that normally this is only possible via SWA API, but we make it available
+    for testing purposes only, e.g. for creating multiple claims under the same account.
+    """
+    whoami = from_dict(data_class=WhoAmI, data=request.session.get("whoami"))
+
+    ld_flag_set = ld_client.variation(
+        "allow-claim-resolution", {"key": whoami.email}, False
+    )
+
+    if not ld_flag_set:
+        logger.debug("allow-claim-resolution false")
+        return JsonResponse({"status": "error", "error": "No such route"}, status=404)
+
+    whoami.claim_id = claim_id
+    claim = ClaimFinder(whoami).find()
+    if not claim or not claim.is_completed() or claim.is_fetched():
+        logger.debug("🚀 not found {}".format(claim))
+        return JsonResponse(
+            {"status": "error", "error": "No eligible claim found"}, status=404
+        )
+    try:
+        claim.events.create(
+            category=Claim.EventCategories.RESOLVED, description="cancelled by Claimant"
+        )
+        resp = claim.delete_artifacts()
+        if resp == SUCCESS or resp == NOOP:
+            return JsonResponse({"status": "ok"}, status=200)
+        else:
+            raise Exception("Failed to delete artifacts")
+    except Exception as err:
+        logger.exception(err)
+        return JsonResponse(
+            {"status": "error", "error": "failed to save change"}, status=500
+        )
 
 
 @require_http_methods(["GET", "POST"])

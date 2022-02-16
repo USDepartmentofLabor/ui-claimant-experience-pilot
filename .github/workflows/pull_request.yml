@@ -17,8 +17,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Prep env
         run: |
-          echo LD_CLIENT_SDK_KEY="${{ secrets.CI_LD_CLIENT_SDK_KEY }}" >> core/.env-ci
-          echo LD_SDK_KEY="${{ secrets.CI_LD_SDK_KEY }}" >> core/.env-ci
           cp core/ld-config-test.json core/ld-config.json
       - name: Start CI docker compose
         run: make ci-start

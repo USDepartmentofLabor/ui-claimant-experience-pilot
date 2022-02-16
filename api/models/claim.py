@@ -40,6 +40,7 @@ CLAIMANT_STATUS_CANCELLED = "cancelled"
 CLAIMANT_STATUS_PROCESSING = "processing"
 CLAIMANT_STATUS_ACTIVE = "active"
 CLAIMANT_STATUS_RESOLVED = "resolved"
+CLAIMANT_STATUS_DELETED = "deleted"
 CLAIMANT_STATUS_UNKNOWN = "unknown"
 
 
@@ -304,12 +305,19 @@ class Claim(TimeStampedModel):
     def status_for_claimant(self):
         if not self.is_completed() and not self.is_deleted() and not self.is_resolved():
             return CLAIMANT_STATUS_IN_PROCESS
-        if not self.is_completed() and self.is_deleted():
+        if (
+            self.is_completed()
+            and self.is_deleted()
+            and self.is_resolved()
+            and not self.is_fetched()
+        ):
             return CLAIMANT_STATUS_CANCELLED
         if self.is_completed() and not self.is_fetched():
             return CLAIMANT_STATUS_PROCESSING
         if self.is_completed() and self.is_fetched() and not self.is_resolved():
             return CLAIMANT_STATUS_ACTIVE
-        if self.is_resolved():
+        if self.is_fetched() and self.is_resolved():
             return CLAIMANT_STATUS_RESOLVED
+        if self.is_deleted():
+            return CLAIMANT_STATUS_DELETED
         return CLAIMANT_STATUS_UNKNOWN

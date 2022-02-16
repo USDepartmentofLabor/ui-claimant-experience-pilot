@@ -1,6 +1,7 @@
 {
   "flagValues": {
     "test-flag-server": true,
-    "allow-1099g-upload": true
+    "allow-1099g-upload": true,
+    "allow-claim-resolution": true
   }
 }

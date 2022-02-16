@@ -23,6 +23,24 @@ type Claim = ClaimantInput & {
   claimant_id: string;
 };
 
+// ClaimantClaim is the metadata from /api/claims/
+type ClaimantClaim = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  status: string;
+  swa: { code: string; name: string; claimant_url: string };
+  completed_at: string | null;
+  deleted_at: string | null;
+  fetched_at: string | null;
+  resolved_at: string | null;
+  resolution: string | null;
+};
+
+type ApiClaimsResponse = {
+  claims: ClaimantClaim[];
+};
+
 type WhoAmI = {
   IAL?: "1" | "2";
   claim_id?: string;

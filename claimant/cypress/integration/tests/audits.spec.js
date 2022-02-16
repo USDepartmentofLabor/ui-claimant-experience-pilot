@@ -1,6 +1,6 @@
 // Run the pa11y and Lighthouse audits
 /* eslint-disable no-undef */
-context("Cypress Audit", { scrollBehavior: false }, () => {
+context("Cypress Audit", { scrollBehavior: "center" }, () => {
   it("passes pa11y checks", () => {
     // mock the authn flow for 508 checks
     cy.mock_login();
@@ -45,5 +45,11 @@ context("Cypress Audit", { scrollBehavior: false }, () => {
       },
     };
     cy.lighthouse(thresholds, options, config);
+  });
+
+  it("shows sorry not found on 404", () => {
+    cy.login();
+    cy.visit("/claimant/oops");
+    cy.contains("we could not find that page").should("be.visible");
   });
 });

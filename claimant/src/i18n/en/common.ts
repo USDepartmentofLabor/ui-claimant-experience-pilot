@@ -1,4 +1,5 @@
 const common = {
+  page_not_found: "Sorry, we could not find that page.",
   pageLoader: "Loading. . .",
   logout: "Log out",
   yes: "Yes",
@@ -70,6 +71,27 @@ const common = {
   expanded_content: {
     revealed: "revealed content",
     collapsed: "collapsed",
+  },
+  claims_dashboard: {
+    heading: "Your claims",
+    claim: "Claim",
+    id: "ID",
+    status: "Status",
+    last_updated: "Last updated",
+    actions: "Actions",
+    status_labels: {
+      in_process: "In Process",
+      processing: "Processing",
+      cancelled: "Cancelled",
+      deleted: "Deleted",
+      active: "Active",
+      resolved: "Resolved",
+    },
+    button_actions: {
+      edit: "Edit",
+      contact: "Contact",
+      cancel: "Cancel",
+    },
   },
 };
 

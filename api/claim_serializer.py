@@ -26,6 +26,11 @@ class ClaimSerializer(object):
                 if self.claim.status
                 else self.claim.status_for_claimant()
             ),
+            "swa": {
+                "code": self.claim.swa.code,
+                "name": self.claim.swa.name,
+                "claimant_url": self.claim.swa.claimant_url,
+            },
             "completed_at": self.claim.completed_at(),
             "deleted_at": self.claim.deleted_at(),
             "fetched_at": self.claim.fetched_at(),

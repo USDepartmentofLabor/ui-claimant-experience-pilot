@@ -45,7 +45,7 @@
 // @import 'packages/usa-skipnav';
 @import "node_modules/uswds/src/stylesheets/packages/usa-step-indicator";
 // @import 'packages/usa-summary-box';
-// @import 'packages/usa-table';
+@import "node_modules/uswds/src/stylesheets/packages/usa-table";
 // @import 'packages/usa-tag';
 @import "node_modules/uswds/src/stylesheets/packages/uswds-utilities";
 
@@ -78,6 +78,12 @@
 @media all and (min-width: 1024px) {
   .dol-fieldset.usa-form-group--error .usa-form-group--error {
     padding-left: 1.25rem;
+  }
+}
+
+.dol-claims-actions {
+  a {
+    margin-right: 1rem;
   }
 }
 

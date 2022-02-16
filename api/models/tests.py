@@ -4,7 +4,16 @@ from django.db import IntegrityError
 from django.db.models import ProtectedError
 from django.conf import settings
 from api.models import SWA, IdentityProvider, Claimant, Claim
-from api.models.claim import SUCCESS, FAILURE
+from api.models.claim import (
+    SUCCESS,
+    FAILURE,
+    CLAIMANT_STATUS_IN_PROCESS,
+    CLAIMANT_STATUS_PROCESSING,
+    CLAIMANT_STATUS_CANCELLED,
+    CLAIMANT_STATUS_ACTIVE,
+    CLAIMANT_STATUS_RESOLVED,
+    CLAIMANT_STATUS_DELETED,
+)
 import datetime
 from datetime import timedelta
 from django.utils import timezone
@@ -256,6 +265,7 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(stored_claim.claimant, claimant)
         self.assertEqual(stored_claim.status, "something")
         self.assertFalse(stored_claim.is_completed())
+        self.assertEqual(stored_claim.status_for_claimant(), CLAIMANT_STATUS_IN_PROCESS)
 
         claim.events.create(
             category=Claim.EventCategories.COMPLETED,
@@ -263,6 +273,7 @@ class ApiModelsTestCase(TransactionTestCase):
         )
         self.assertTrue(claim.is_completed())
         self.assertTrue(stored_claim.is_completed())
+        self.assertEqual(stored_claim.status_for_claimant(), CLAIMANT_STATUS_PROCESSING)
 
         self.assertEqual(
             stored_claim.public_events(),
@@ -291,6 +302,46 @@ class ApiModelsTestCase(TransactionTestCase):
             json_decode(claim.events.last().description),
             {"old": "something", "new": "new status"},
         )
+
+    def test_claim_status_for_claimant(self):
+        swa, _ = create_swa()
+        idp = create_idp()
+        claimant = create_claimant(idp)
+
+        cancelled_claim = Claim(swa=swa, claimant=claimant)
+        cancelled_claim.save()
+        cancelled_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cancelled_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        cancelled_claim.events.create(category=Claim.EventCategories.DELETED)
+        self.assertEqual(
+            cancelled_claim.status_for_claimant(), CLAIMANT_STATUS_CANCELLED
+        )
+
+        resolved_claim = Claim(swa=swa, claimant=claimant)
+        resolved_claim.save()
+        resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        resolved_claim.events.create(category=Claim.EventCategories.FETCHED)
+        resolved_claim.events.create(category=Claim.EventCategories.DELETED)
+        resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        self.assertEqual(resolved_claim.status_for_claimant(), CLAIMANT_STATUS_RESOLVED)
+
+        active_claim = Claim(swa=swa, claimant=claimant)
+        active_claim.save()
+        active_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        active_claim.events.create(category=Claim.EventCategories.FETCHED)
+        self.assertEqual(active_claim.status_for_claimant(), CLAIMANT_STATUS_ACTIVE)
+
+        processing_claim = Claim(swa=swa, claimant=claimant)
+        processing_claim.save()
+        processing_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        self.assertEqual(
+            processing_claim.status_for_claimant(), CLAIMANT_STATUS_PROCESSING
+        )
+
+        deleted_claim = Claim(swa=swa, claimant=claimant)
+        deleted_claim.save()
+        deleted_claim.events.create(category=Claim.EventCategories.DELETED)
+        self.assertEqual(deleted_claim.status_for_claimant(), CLAIMANT_STATUS_DELETED)
 
     def test_events(self):
         idp = create_idp()

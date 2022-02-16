@@ -10,6 +10,6 @@ def authenticated_claimant_session(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if not request.session or not request.session.get("authenticated"):
             return JsonResponse({"error": "un-authenticated session"}, status=401)
-        return view_func(request)
+        return view_func(request, *args, **kwargs)
 
     return _wrapped_view

@@ -425,6 +425,34 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertFalse(response.json()["claims"][1]["resolved_at"])
         self.assertFalse(response.json()["claims"][1]["resolution"])
 
+    def test_cancel_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cw = ClaimWriter(claim, "test", path=claim.completed_payload_path())
+        self.assertTrue(cw.write())
+        self.assertTrue(claim.is_completed())
+        self.assertFalse(claim.is_deleted())
+        self.assertFalse(claim.is_resolved())
+
+        client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        headers = {"HTTP_X_CSRFTOKEN": client.cookies["csrftoken"].value}
+        response = client.delete(
+            f"/api/cancel-claim/{claim.uuid}/",
+            content_type="application/json",
+            **headers,
+        )
+        self.assertEqual(response.json(), {"status": "ok"})
+        claim.refresh_from_db()
+        self.assertTrue(claim.is_completed())
+        self.assertTrue(claim.is_deleted())
+        self.assertTrue(claim.is_resolved())
+        self.assertEqual(claim.resolution_description(), "cancelled by Claimant")
+
     def test_rotation_encrypted_partial_claim(self):
         idp = create_idp()
         swa, _ = create_swa()

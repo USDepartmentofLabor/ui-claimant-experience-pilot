@@ -20,6 +20,9 @@ const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
 // when we have routing, use this.
 // const HomePage = lazy(() => import("./pages/Home/Home"));
 const ClaimFormPage = lazy(() => import("./pages/ClaimForm/ClaimForm"));
+const ClaimsDashboardPage = lazy(
+  () => import("./pages/ClaimsDashboard/ClaimsDashboard")
+);
 const SuccessPage = lazy(() => import("./pages/Success/Success"));
 
 import { AuthContainer } from "./common/AuthContainer";
@@ -38,6 +41,19 @@ const BYPASS_COMPLETED_CHECK =
   process.env.NODE_ENV === "development" &&
   process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
 
+const NotFound = () => {
+  const { t } = useTranslation("common");
+  return (
+    <main id="main-content" role="main">
+      <section className="grid-container usa-section">
+        <div className="grid-row">
+          <h1>{t("page_not_found")}</h1>
+        </div>
+      </section>
+    </main>
+  );
+};
+
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const {
@@ -45,6 +61,7 @@ function App() {
     CLAIM_FORM_PAGE,
     CLAIM_FORM_PAGE_SEGMENT,
     WHOAMI_PAGE,
+    CLAIMS_PAGE,
     CLAIM_FORM_HOME,
     SUCCESS_PAGE,
     SUCCESS_PAGE_JUST_FINISHED,
@@ -93,6 +110,20 @@ function App() {
     navItems.push(<span>testFlagClient</span>);
   }
 
+  if (ldFlags.showClaimsDashboard) {
+    const dashboardLink = (
+      <NavLink
+        end
+        to={CLAIMS_PAGE}
+        key={CLAIMS_PAGE}
+        className={({ isActive }) => (isActive ? "usa-current" : "")}
+      >
+        Claims
+      </NavLink>
+    );
+    navItems.splice(1, 0, dashboardLink);
+  }
+
   return (
     <>
       <Header basic>
@@ -132,6 +163,9 @@ function App() {
               }
             >
               <Routes>
+                {ldFlags.showClaimsDashboard && (
+                  <Route path={CLAIMS_PAGE} element={<ClaimsDashboardPage />} />
+                )}
                 <Route path={SUCCESS_PAGE} element={<SuccessPage />} />
                 <Route
                   path={SUCCESS_PAGE_JUST_FINISHED}
@@ -160,12 +194,10 @@ function App() {
                         />
                       }
                     />
-                    <Route
-                      path="*"
-                      element={<Navigate replace to={HOME_PAGE} />}
-                    />
                   </>
                 )}
+                {/* always last */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </AuthContainer>
