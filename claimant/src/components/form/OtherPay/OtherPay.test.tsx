@@ -96,6 +96,64 @@ describe("OtherPay", () => {
     });
   });
 
+  it("removes and disables all other options when 'no other pay' is selected", async () => {
+    const initialValues = {
+      other_pay: [
+        {
+          pay_type: "vacation",
+          total: 3000,
+          note: "I had a few days of vacation left",
+        },
+        {
+          pay_type: "severance",
+          total: 500,
+          note: "They paid a small severance",
+        },
+      ],
+    };
+
+    render(
+      <Formik initialValues={initialValues} onSubmit={noop}>
+        <OtherPay />
+      </Formik>
+    );
+
+    const payTypeGroup = screen.getByRole("group", { name: "pay_type.label" });
+    const vacation = within(payTypeGroup).getByRole("checkbox", {
+      name: "pay_type.options.vacation.label pay_type.options.vacation.description",
+    });
+    const severance = within(payTypeGroup).getByRole("checkbox", {
+      name: "pay_type.options.severance.label pay_type.options.severance.description",
+    });
+
+    const noOtherPay = within(payTypeGroup).getByText(
+      "pay_type.options.no_other_pay.label"
+    );
+
+    expect(vacation).toBeEnabled();
+    expect(severance).toBeEnabled();
+
+    userEvent.click(noOtherPay);
+
+    await act(async () => {
+      screen.debug();
+      expect(vacation).toBeDisabled();
+      expect(
+        screen.queryByRole("heading", {
+          level: 2,
+          name: "pay_type.options.vacation.label",
+        })
+      ).not.toBeInTheDocument();
+      expect(severance).toBeDisabled();
+      expect(
+        screen.queryByRole("heading", {
+          level: 2,
+          name: "pay_type.options.severance.label",
+        })
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it("orders the order pay detail fields by order of checkboxes", async () => {
     render(
       <Formik initialValues={{ other_pay: [] }} onSubmit={noop}>

@@ -546,6 +546,11 @@ const claimForm = {
           label: "Other type of pay",
           description: "",
         },
+        no_other_pay: {
+          label: "I have not received any other pay",
+          description: "",
+          ariaDescription: "Selecting this disables all other pay options",
+        },
       },
     },
     total: {

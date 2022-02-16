@@ -64,13 +64,30 @@ const OtherPay = () => {
                 label: t(`pay_type.options.${option.translationKey}.label`),
                 value: option.value,
                 checkboxProps: {
+                  "aria-description":
+                    option.value === "no_other_pay"
+                      ? t(`pay_type.options.no_other_pay.ariaDescription`)
+                      : undefined,
                   labelDescription: t(
                     `pay_type.options.${option.translationKey}.description`
                   ),
                   tile: true,
                   onChange: (e) => {
                     if (e.target.checked) {
-                      arrayHelpers.push({ pay_type: option.translationKey });
+                      if (e.target.value === "no_other_pay") {
+                        setFieldValue(
+                          "LOCAL_pay_types",
+                          ["no_other_pay"],
+                          true
+                        );
+                        setFieldValue(
+                          "other_pay",
+                          [{ pay_type: option.translationKey }],
+                          true
+                        );
+                      } else {
+                        arrayHelpers.push({ pay_type: option.translationKey });
+                      }
                     } else {
                       values?.other_pay &&
                         arrayHelpers.remove(
@@ -80,28 +97,32 @@ const OtherPay = () => {
                         );
                     }
                   },
+                  disabled:
+                    values?.LOCAL_pay_types?.includes("no_other_pay") &&
+                    option.value != "no_other_pay",
                 },
               }))}
             />
           </Fieldset>
           {!!values.other_pay &&
             sortPayDetails(values.other_pay, payTypeOrder).map(
-              (otherPayDetail, index) => (
-                <OtherPayDetail
-                  key={`other_pay.${index}`}
-                  name={`other_pay.${index}`}
-                  label={t(
-                    `pay_type.options.${
-                      otherPayDetail.pay_type as PayTypeOption["translationKey"]
-                    }.label`
-                  )}
-                  description={t(
-                    `pay_type.options.${
-                      otherPayDetail.pay_type as PayTypeOption["translationKey"]
-                    }.description`
-                  )}
-                />
-              )
+              (otherPayDetail, index) =>
+                otherPayDetail.pay_type !== "no_other_pay" && (
+                  <OtherPayDetail
+                    key={`other_pay.${index}`}
+                    name={`other_pay.${index}`}
+                    label={t(
+                      `pay_type.options.${
+                        otherPayDetail.pay_type as PayTypeOption["translationKey"]
+                      }.label`
+                    )}
+                    description={t(
+                      `pay_type.options.${
+                        otherPayDetail.pay_type as PayTypeOption["translationKey"]
+                      }.description`
+                    )}
+                  />
+                )
             )}
         </>
       )}

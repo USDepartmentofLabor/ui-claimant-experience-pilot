@@ -430,25 +430,35 @@
             "vacation",
             "sick",
             "profit_sharing",
-            "other"
+            "other",
+            "no_other_pay"
           ]
-        },
-        "total": {
-          "description": "Total pay (stored in cents) received from employer for a specific type after becoming unemployed.",
-          "type": "integer"
-        },
-        "date_received": {
-          "description": "Date the pay was received",
-          "type": "string",
-          "format": "date"
-        },
-        "note": {
-          "description": "Further details about this other pay",
-          "type": "string",
-          "maxLength": 1024
         }
       },
-      "required": ["pay_type", "total", "date_received", "note"]
+      "total": {
+        "description": "Total pay (stored in cents) received from employer for a specific type after becoming unemployed.",
+        "type": "integer"
+      },
+      "date_received": {
+        "description": "Date the pay was received",
+        "type": "string",
+        "format": "date"
+      },
+      "note": {
+        "description": "Further details about this other pay",
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "if": {
+      "not": {
+        "properties": {
+          "pay_type": { "type": "string", "const": "no_other_pay" }
+        }
+      },
+      "then": {
+        "required": ["pay_type", "total", "date_received", "note"]
+      }
     },
     "disability": {
       "$id": "/definitions/disability",
