@@ -261,6 +261,23 @@ class LoginDotGovTestCase(TestCase):
             response, "/some/place/else", status_code=302, fetch_redirect_response=False
         )
 
+    def test_ial2_step_up(self):
+        # existing session at IAL1, request to step up to IAL2
+        session = self.client.session
+        session["authenticated"] = True
+        session["whoami"] = {"IAL": "1"}
+        session.save()
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&ial=2")
+        self.assertTrue("login" in response.url)
+        self.assertEquals(response.status_code, 302)
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(
+            response, "/claimant/", status_code=302, fetch_redirect_response=False
+        )
+        self.assertEqual(self.client.session["whoami"]["IAL"], "2")
+
     # this is the "escape" url from login.gov where users can opt-out of proofing
     def test_ial2required(self):
         response = self.client.get("/logindotgov/ial2required")

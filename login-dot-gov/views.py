@@ -71,9 +71,21 @@ def ial2required(request):
 
 @never_cache
 def index(request):
-    # if we already have an authenticated session, redirect to frontend app
+    requested_ial = DEFAULT_IAL
+    if "ial" in request.GET and int(request.GET["ial"]) in ALLOWED_IALS:
+        requested_ial = int(request.GET["ial"])
+
+    logger.debug("🚀 requested_ial={}".format(requested_ial))
+
+    # if we already have an authenticated session, conditionally redirect to frontend app
     if request.session.get("authenticated"):
-        return redirect("/claimant/")
+        whoami = request.session.get("whoami")
+        # if this is a step-up within the same session, allow it.
+        if whoami and int(whoami.get("IAL")) == 1 and requested_ial == 2:
+            logger.debug("🚀 IAL2 step up requested")
+            pass
+        else:
+            return redirect("/claimant/")
 
     # stash selection
     if "swa" in request.GET:
@@ -96,10 +108,8 @@ def index(request):
         logger.debug("🚀 invalid SWA code")
         return handle_404(request, None)
 
-    ial = DEFAULT_IAL
-    if "ial" in request.GET and int(request.GET["ial"]) in ALLOWED_IALS:
-        ial = int(request.GET["ial"])
-    request.session["IAL"] = ial
+    # remember what level we're aiming for in this request
+    request.session["IAL"] = requested_ial
 
     # optional swa_xid is unique string passed by SWAs to xref claims with their systems.
     if "swa_xid" in request.GET:
@@ -110,7 +120,7 @@ def index(request):
     state = secrets.token_hex(11)
     nonce = secrets.token_hex(11)
     client = logindotgov_client()
-    if ial == 2:
+    if requested_ial == 2:
         scopes = IAL2_SCOPES
         acrs = IAL2
     else:
