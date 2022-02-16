@@ -8,7 +8,7 @@ import secrets
 import os
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
 from core.utils import session_as_dict, hash_idp_user_xid
-from api.models import Claimant, IdentityProvider, SWA
+from api.models import Claimant, IdentityProvider, SWA, Claim
 from django.conf import settings
 from api.whoami import WhoAmI, WhoAmIAddress
 from home.views import base_url, handle_404
@@ -100,6 +100,10 @@ def index(request):
     if "ial" in request.GET and int(request.GET["ial"]) in ALLOWED_IALS:
         ial = int(request.GET["ial"])
     request.session["IAL"] = ial
+
+    # optional swa_xid is unique string passed by SWAs to xref claims with their systems.
+    if "swa_xid" in request.GET:
+        request.session["swa_xid"] = request.GET["swa_xid"]
 
     # otherwise, initiate login.gov session
     # create our session with a "state" we can use to track IdP response.
@@ -207,6 +211,14 @@ def result(request):
             description=request.session["IAL"],  # the level they logged in at
         )
         claimant.bump_IAL_if_necessary(claimant_IAL)
+        # if there was a swa_xid, if necessary create the Claim immediately to link it
+        if "swa_xid" in request.session:
+            # 'swa' key must exist because we required it in index()
+            swa = SWA.active.get(code=request.session["swa"])
+            claim, _ = Claim.objects.get_or_create(
+                swa=swa, claimant=claimant, swa_xid=request.session["swa_xid"]
+            )
+            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
 
     request.session["logindotgov"]["userinfo"] = userinfo
     address = userinfo.get("address", {})

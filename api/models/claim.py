@@ -87,11 +87,13 @@ class Claim(TimeStampedModel):
         CONFIRMATION_EMAIL = 6
         DELETED = 7
         STATUS_CHANGED = 8
+        INITIATED_WITH_SWA_XID = 9
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     swa = models.ForeignKey(SWA, on_delete=models.PROTECT)
     claimant = models.ForeignKey(Claimant, on_delete=models.PROTECT)
     status = models.CharField(max_length=255, null=True)
+    swa_xid = models.CharField(max_length=255, null=True, unique=True)
     events = GenericRelation(
         Event, content_type_field="model_name", object_id_field="model_id"
     )
@@ -183,6 +185,14 @@ class Claim(TimeStampedModel):
             self.events.filter(category=Claim.EventCategories.FETCHED)
             .first()
             .happened_at
+        )
+
+    def is_initiated_with_swa_xid(self):
+        return (
+            self.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count()
+            > 0
         )
 
     def public_events(self):

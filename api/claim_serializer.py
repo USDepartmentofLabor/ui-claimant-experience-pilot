@@ -7,6 +7,7 @@ class ClaimSerializer(object):
         events = self.claim.public_events()
         return {
             "id": str(self.claim.uuid),
+            "swa_xid": self.claim.swa_xid,
             "created_at": str(self.claim.created_at),
             "updated_at": str(self.claim.updated_at),
             "claimant_id": self.claim.claimant_id,
@@ -17,6 +18,7 @@ class ClaimSerializer(object):
     def for_claimant(self):
         return {
             "id": str(self.claim.uuid),
+            "swa_xid": self.claim.swa_xid,
             "created_at": str(self.claim.created_at),
             "updated_at": str(self.claim.updated_at),
             "status": (

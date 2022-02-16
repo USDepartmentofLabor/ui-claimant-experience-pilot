@@ -7,8 +7,9 @@ from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
 from api.test_utils import create_swa
-from api.models import IdentityProvider, Claimant
+from api.models import IdentityProvider, Claimant, Claim
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -283,3 +284,34 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
         self.assertEquals(self.client.session["swa"], swa.code)
+
+    def test_swa_xid_preserved(self):
+        swa, _ = create_swa(is_active=True)
+        swa_xid = str(uuid.uuid4())
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+
+        # logging in again with same swa_xid re-uses same Claim
+        self.client.session.flush()
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        self.assertEqual(claimant.claim_set.count(), 1)
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count(),
+            2,
+        )

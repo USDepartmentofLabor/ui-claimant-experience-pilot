@@ -584,6 +584,7 @@ class SwaTestCase(TestCase):
 
         expected_response = {
             "id": str(claim.uuid),
+            "swa_xid": None,
             "created_at": str(claim.created_at),
             "updated_at": str(claim.updated_at),
             "claimant_id": claimant.id,
