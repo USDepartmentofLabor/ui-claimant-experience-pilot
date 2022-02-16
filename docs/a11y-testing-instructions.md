@@ -17,6 +17,9 @@ The code submitter, code reviewer, and design reviewer should go through each of
   - all functionality available by mouse is also available by keyboard
   - If focus can be moved to a part of the content, it can also be moved away
   - navigate using tab, tab+shift, arrow keys, and enter
+  - Inputs should use constraints (e.g. `type`, `inputmode`, `maxlength`, or JS-based where more appropriate/maintainable) as often as possible to avoid relying on validation error messages
+  - Before the first form submit (clicking "Next" button), there is no per-field "onblur" validation. On submit ("Next" click), validate the entire form. If there are any errors, show validation summary and announce via `role=alert`, and set focus on first input with an error. After that, validation occurs on per-field focus change.
+  - Both "Back" button and "Save and exit" link are navigation only and do not trigger any validation.
 
 - [ ] Check the VoiceOver **rotary menu** ([instructions](https://github.com/trussworks/accessibility/blob/master/README.md#how-to-use-the-rotor-menu)):
 
