@@ -204,7 +204,6 @@ build-static: ## Build the static assets (intended for during container-build (i
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
 	cp claimant/build/manifest.json static/manifest.json
-	cp home/templates/sureroute-test-object.html static/
 	cd static && ln -s ../schemas schemas
 
 build-translations: ## Compiles .po (translation) files into binary files
