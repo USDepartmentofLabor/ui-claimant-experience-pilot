@@ -93,7 +93,6 @@ type DemographicInformationType = {
   sex?: string;
   ethnicity?: string[];
   race?: string[];
-  education_level?: string;
 };
 
 type WorkAuthorizationType = {
@@ -226,6 +225,7 @@ type EducationVocationalRehabType = Partial<{
   student_fulltime_in_last_18_months: boolean;
   attending_college_or_job_training: boolean;
   registered_with_vocational_rehab: boolean;
+  education_level?: string;
 }>;
 
 type CompleteClaimType = {

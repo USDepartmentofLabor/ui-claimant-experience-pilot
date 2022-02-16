@@ -394,15 +394,13 @@ Cypress.Commands.add("complete_contact_information", () => {
 });
 
 Cypress.Commands.add("complete_demographic", (demographic) => {
-  const { sex, ethnicity, races, educationLevel } = demographic;
+  const { sex, ethnicity, races } = demographic;
   cy.get(`input[id=sex\\.${sex}]`).parent().click();
   cy.get(`input[id=ethnicity\\.${ethnicity}]`).parent().click();
 
   races.forEach((race) => {
     cy.get(`input[id=race\\.${race}]`).parent().click();
   });
-
-  cy.get("[name=education_level]").select(educationLevel);
 });
 
 Cypress.Commands.add("complete_union_form", (union) => {
@@ -462,6 +460,10 @@ Cypress.Commands.add(
         .parent()
         .click();
     });
+
+    cy.get("[name=education_level]").select(
+      educationVocationalInfo.education_level
+    );
   }
 );
 

@@ -35,30 +35,25 @@ describe("Demographic component", () => {
       </Formik>
     );
 
-    Object.keys(claimForm.sex.options).map((option) => {
+    Object.keys(claimForm.sex.options).forEach((option) => {
       const sexRadio = screen.getByRole("radio", {
         name: `sex.options.${option}`,
       });
       expect(sexRadio).not.toBeChecked();
     });
 
-    Object.keys(claimForm.race.options).map((race) => {
+    Object.keys(claimForm.race.options).forEach((race) => {
       const raceCheckbox = getByLabelText(`race.options.${race}`);
       expect(raceCheckbox).not.toBeChecked();
       expect(raceCheckbox).toHaveAttribute("id", `race.${race}`);
       expect(raceCheckbox).toHaveAttribute("name", "race");
     });
 
-    Object.keys(claimForm.ethnicity.options).map((ethnicity) => {
+    Object.keys(claimForm.ethnicity.options).forEach((ethnicity) => {
       const ethnicityRadio = getByLabelText(`ethnicity.options.${ethnicity}`);
       expect(ethnicityRadio).not.toBeChecked();
       expect(ethnicityRadio).toHaveAttribute("id", `ethnicity.${ethnicity}`);
       expect(ethnicityRadio).toHaveAttribute("name", "ethnicity");
-    });
-
-    getByLabelText(`education_level.label`);
-    Object.keys(claimForm.education_level.options).map((educationLevel) => {
-      screen.getByText(`education_level.options.${educationLevel}`);
     });
   });
 
@@ -159,33 +154,6 @@ describe("Demographic component", () => {
       });
       expect(radio3).toBeChecked();
       expect(radio1).not.toBeChecked();
-    });
-  });
-
-  describe("education level", () => {
-    it("Allows selection of an education level", async () => {
-      render(
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          <Demographic />
-        </Formik>
-      );
-
-      const educationLevelDropdown = screen.getByLabelText(
-        "education_level.label"
-      );
-      expect(educationLevelDropdown).toHaveValue("");
-
-      await act(async () => {
-        await userEvent.click(educationLevelDropdown);
-        await userEvent.selectOptions(educationLevelDropdown, "none");
-      });
-      expect(educationLevelDropdown).toHaveValue("none");
-
-      await act(async () => {
-        userEvent.selectOptions(educationLevelDropdown, "grade_12");
-      });
-      expect(educationLevelDropdown).toHaveValue("grade_12");
-      expect(educationLevelDropdown).not.toHaveValue("none");
     });
   });
 

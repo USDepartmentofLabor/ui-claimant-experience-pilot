@@ -1,6 +1,5 @@
 {
   "sex": "female",
   "ethnicity": "not_hispanic",
-  "race": ["black", "american_indian_or_alaskan"],
-  "education_level": "masters"
+  "race": ["black", "american_indian_or_alaskan"]
 }

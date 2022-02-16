@@ -1,6 +1,5 @@
 {
   "sex": null,
   "ethnicity": "opt_out",
-  "race": ["opt_out"],
-  "education_level": "none"
+  "race": ["opt_out"]
 }

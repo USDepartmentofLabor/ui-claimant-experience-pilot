@@ -107,7 +107,6 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       sex: "female",
       ethnicity: "not_hispanic",
       races: ["asian", "hawaiian_or_pacific_islander"],
-      educationLevel: "bachelors",
     });
     cy.check_a11y();
     cy.click_next();
@@ -188,6 +187,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       student_fulltime_in_last_18_months: "yes",
       attending_college_or_job_training: "no",
       registered_with_vocational_rehab: "no",
+      education_level: "bachelors",
     };
     cy.complete_education_vocational_information(educationVocation);
     cy.check_a11y();

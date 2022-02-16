@@ -3,7 +3,6 @@ import { TFunction, Normalize, useTranslation } from "react-i18next";
 import * as yup from "yup";
 import claimForm from "../../../i18n/en/claimForm";
 import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
-import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { CheckboxGroupField } from "../../../components/form/fields/CheckboxGroupField/CheckboxGroupField";
 import { Alert } from "@trussworks/react-uswds";
 
@@ -28,15 +27,10 @@ const pageSchema = (t: TFunction<"claimForm">) =>
         otherwise: yup.array().min(1, t("race.errors.required")),
       })
       .required(t("race.errors.required")),
-
     ethnicity: yup
       .mixed()
       .oneOf(Object.keys(claimForm.ethnicity.options))
       .required(t("ethnicity.required")),
-    education_level: yup
-      .mixed()
-      .oneOf(Object.keys(claimForm.education_level.options))
-      .required(t("education_level.required")),
   });
 
 type SexOption = {
@@ -73,18 +67,6 @@ const ethnicityOptions: EthnicityOption[] = Object.keys(
 ).map((option) => ({
   value: option,
   translationKey: option as Normalize<typeof claimForm.ethnicity.options>,
-}));
-
-type EducationLevelOption = {
-  value: string;
-  translationKey: Normalize<typeof claimForm.education_level.options>;
-};
-
-const educationLevelOptions: EducationLevelOption[] = Object.keys(
-  claimForm.education_level.options
-).map((option) => ({
-  value: option,
-  translationKey: option as Normalize<typeof claimForm.education_level.options>,
 }));
 
 export const Demographic = () => {
@@ -139,16 +121,6 @@ export const Demographic = () => {
           }))}
         />
       </Fieldset>
-      <DropdownField
-        id="education_level"
-        name="education_level"
-        label={t("education_level.label")}
-        startEmpty
-        options={educationLevelOptions.map((option) => ({
-          value: option.value,
-          label: t(`education_level.options.${option.translationKey}`),
-        }))}
-      />
     </>
   );
 };
@@ -160,7 +132,6 @@ export const DemographicPage: IPageDefinition = {
     sex: undefined,
     ethnicity: undefined,
     race: [],
-    education_level: undefined,
   },
   Component: Demographic,
   pageSchema,

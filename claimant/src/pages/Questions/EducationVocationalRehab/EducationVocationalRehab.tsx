@@ -1,8 +1,10 @@
 import { Fieldset } from "@trussworks/react-uswds";
-import { TFunction, useTranslation } from "react-i18next";
+import { Normalize, TFunction, useTranslation } from "react-i18next";
 import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { IPageDefinition } from "../../PageDefinitions";
 import * as yup from "yup";
+import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
+import claimForm from "../../../i18n/en/claimForm";
 
 export const EducationVocationalRehab = () => {
   const { t } = useTranslation("claimForm");
@@ -23,6 +25,22 @@ export const EducationVocationalRehab = () => {
           )}
           id="attending_college_or_job_training"
           name="attending_college_or_job_training"
+        />
+        <DropdownField
+          id="education_level"
+          name="education_level"
+          label={t("education_level.label")}
+          startEmpty
+          options={Object.keys(claimForm.education_level.options).map(
+            (option) => ({
+              value: option,
+              label: t(
+                `education_level.options.${
+                  option as Normalize<typeof claimForm.education_level.options>
+                }`
+              ),
+            })
+          )}
         />
       </Fieldset>
       <Fieldset
@@ -52,6 +70,10 @@ const pageSchema = (t: TFunction<"claimForm">) =>
       .required(
         t("education_vocational_rehab.education.attending_training.required")
       ),
+    education_level: yup
+      .mixed()
+      .oneOf(Object.keys(claimForm.education_level.options))
+      .required(t("education_level.required")),
     registered_with_vocational_rehab: yup
       .boolean()
       .required(
