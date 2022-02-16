@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
+from django.core.exceptions import BadRequest
 import logging
 import os
 from django.conf import settings
@@ -119,7 +120,7 @@ def partial_claim(request):
     elif request.method == "POST":
         return POST_partial_claim(request)
     else:  # pragma: no cover
-        raise Exception("require_http_methods failed to recognize GET or POST")
+        raise BadRequest("require_http_methods failed to recognize GET or POST")
 
 
 @require_http_methods(["GET", "POST"])
@@ -132,7 +133,7 @@ def completed_claim(request):
     elif request.method == "POST":
         return POST_completed_claim(request)
     else:  # pragma: no cover
-        raise Exception("require_http_methods failed to recognize GET or POST")
+        raise BadRequest("require_http_methods failed to recognize GET or POST")
 
 
 ###################################################################################################################

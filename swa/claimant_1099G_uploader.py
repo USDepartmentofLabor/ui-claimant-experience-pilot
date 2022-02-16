@@ -2,6 +2,7 @@
 from jwcrypto.common import json_decode, base64url_decode
 import os
 from api.models import ClaimantFile
+from core.exceptions import ClaimStorageError
 from core.claim_storage import ClaimWriter
 from core.claim_encryption import (
     SymmetricClaimEncryptor,
@@ -48,10 +49,10 @@ class Claimant1099GUploader(object):
         try:
             cw = ClaimWriter(claim=self.claimant_file, payload=packaged_payload)
             if not cw.write():
-                raise Exception("Failed to write claimant file")
+                raise ClaimStorageError("Failed to write claimant file")
             logger.debug("🚀 wrote claimant file")
             return True
-        except Exception as error:
+        except ClaimStorageError as error:
             logger.exception(error)
             return False
 

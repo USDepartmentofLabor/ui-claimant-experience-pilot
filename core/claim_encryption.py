@@ -2,6 +2,7 @@
 from jwcrypto import jwk, jwe
 from jwcrypto.common import json_encode, json_decode, base64url_decode
 from django.conf import settings
+from .exceptions import ClaimStorageError
 
 
 ALG = "ECDH-ES+A256KW"
@@ -212,7 +213,7 @@ class SymmetricKeyRotator(object):
                 claim=claimant_file, payload=new_encrypted_package.as_json()
             )
             if not cw.write():
-                raise Exception(
+                raise ClaimStorageError(
                     "Failed to write re-encrypted claimant file {}".format(
                         str(claimant_file.uuid)
                     )
@@ -232,7 +233,7 @@ class SymmetricKeyRotator(object):
                 path=claim.partial_payload_path(),
             )
             if not cw.write():
-                raise Exception(
+                raise ClaimStorageError(
                     "Failed to write re-encrypted partial claim {}".format(
                         str(claim.uuid)
                     )

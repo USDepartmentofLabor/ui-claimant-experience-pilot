@@ -7,6 +7,7 @@ from home.views import base_url
 from django.http import JsonResponse
 from django.db import connection
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
 from . import settings
 from .celery import app as celery_app
@@ -18,7 +19,7 @@ logger = logging.getLogger("core")
 # for testing 500 handling
 @never_cache
 def raise_error(request):
-    raise Exception("Something went wrong")
+    raise ObjectDoesNotExist("Something went wrong")
 
 
 def claimant(request):

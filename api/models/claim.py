@@ -12,6 +12,7 @@ from django.db import transaction
 from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
+from core.exceptions import ClaimStorageError
 from core.claim_encryption import (
     AsymmetricClaimEncryptor,
     SymmetricClaimEncryptor,
@@ -240,10 +241,10 @@ class Claim(TimeStampedModel):
             # TODO depending on performance, we might want to move this to an async task
             cw = ClaimWriter(self, packaged_payload, path=self.partial_payload_path())
             if not cw.write():
-                raise Exception("Failed to write partial claim")
+                raise ClaimStorageError("Failed to write partial claim")
             logger.debug("🚀 wrote partial claim")
             return True
-        except Exception as error:
+        except ClaimStorageError as error:
             logger.exception(error)
             return False
 
@@ -260,8 +261,8 @@ class Claim(TimeStampedModel):
                     self, packaged_payload, path=self.completed_payload_path()
                 )
                 if not cw.write():
-                    raise Exception("Failed to write completed claim")
-                archiveCw = ClaimWriter(
+                    raise ClaimStorageError("Failed to write completed claim")
+                archive_cw = ClaimWriter(
                     self,
                     json_encode(validated_payload),
                     path=self.completed_payload_path(),
@@ -269,11 +270,13 @@ class Claim(TimeStampedModel):
                         claim_bucket=ClaimBucket(BUCKET_TYPE_ARCHIVE)
                     ),
                 )
-                if not archiveCw.write():
-                    raise Exception("Failed to write completed claim to archive")
+                if not archive_cw.write():
+                    raise ClaimStorageError(
+                        "Failed to write completed claim to archive"
+                    )
             logger.debug("🚀 wrote completed claim")
             return True
-        except Exception as error:
+        except ClaimStorageError as error:
             logger.exception(error)
             return False
 

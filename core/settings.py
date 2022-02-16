@@ -28,7 +28,7 @@ def validate_secret_key(secret, key_name):
             base64.urlsafe_b64decode(secret),
             secret_len,
         )
-        raise Exception(err)
+        raise ValueError(err)
     return True
 
 
