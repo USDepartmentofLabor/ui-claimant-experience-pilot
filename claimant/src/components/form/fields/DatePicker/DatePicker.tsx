@@ -36,6 +36,7 @@ export const DatePicker = ({
       </div>
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <USWDSDatePicker
+        key={id}
         {...fieldProps}
         id={id}
         name={name}
