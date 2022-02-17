@@ -83,7 +83,14 @@
         "bls_description": { "type": "string", "maxLength": 255 },
         "bls_code": { "type": "string", "maxLength": 255 },
         "bls_title": { "type": "string", "maxLength": 255 }
-      }
+      },
+      "required": [
+        "job_title",
+        "job_description",
+        "bls_description",
+        "bls_code",
+        "bls_title"
+      ]
     },
     "employer": {
       "$id": "/definitions/employer",
