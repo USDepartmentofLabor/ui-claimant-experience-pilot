@@ -40,7 +40,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.contains("Progress saved").should("be.visible");
   });
 
-  it("saves and exits and restores", () => {
+  xit("saves and exits and restores", () => {
     const email = faker.internet.exampleEmail();
     cy.login(email);
     cy.navigate_to_form();
