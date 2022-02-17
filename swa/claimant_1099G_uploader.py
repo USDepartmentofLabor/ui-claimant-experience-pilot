@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 ACCEPTED_UPLOAD_TYPES = ["pdf", "png", "jpg"]
 
 
+class InvalidUploadError(Exception):
+    pass
+
+
 class Claimant1099GUploader(object):
     def __init__(self, request, claimant):
         self.swa = request.user
@@ -26,7 +30,7 @@ class Claimant1099GUploader(object):
 
     def save(self):
         if self.invalid:
-            raise "Cannot save() an invalid 1099-G file upload"
+            raise InvalidUploadError("Cannot save() an invalid 1099-G file upload")
 
         # create ClaimantFile record
         self.claimant_file = ClaimantFile(
