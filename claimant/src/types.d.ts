@@ -109,7 +109,7 @@ type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;
 
 type DemographicInformationType = {
   sex?: string;
-  ethnicity?: string[];
+  ethnicity?: string;
   race?: string[];
 };
 

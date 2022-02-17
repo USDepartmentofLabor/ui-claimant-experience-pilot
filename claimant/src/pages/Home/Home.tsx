@@ -13,6 +13,7 @@ import {
   IconLaunch,
   Link as ExtLink,
 } from "@trussworks/react-uswds";
+import { useClaimProgress } from "../../hooks/useClaimProgress";
 
 type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
 
@@ -25,6 +26,7 @@ const HomePage = () => {
     useGetCompletedClaim();
   const { data: partialClaim, isLoading: partialIsLoading } =
     useGetPartialClaim();
+  const { continuePath } = useClaimProgress(partialClaim);
 
   if (isLoading || completeIsLoading || partialIsLoading) {
     return <PageLoader />;
@@ -59,7 +61,12 @@ const HomePage = () => {
           ? t("application.ready_to_submit.title")
           : t("application.not_ready_to_submit.title"),
       status: claimStatus,
-      Content: () => <ApplicationContent claimStatus={claimStatus} />,
+      Content: () => (
+        <ApplicationContent
+          claimStatus={claimStatus}
+          continuePath={continuePath}
+        />
+      ),
     },
   ];
 
@@ -189,9 +196,13 @@ const IdentityContent = ({ identityStatus }: IIdentityContent) => {
 
 interface IApplicationContent {
   claimStatus: keyof Omit<Record<Status, string>, "complete">;
+  continuePath: string;
 }
 
-const ApplicationContent = ({ claimStatus }: IApplicationContent) => {
+const ApplicationContent = ({
+  claimStatus,
+  continuePath,
+}: IApplicationContent) => {
   const { t } = useTranslation("home");
 
   if (claimStatus !== "ready_to_submit") {
@@ -199,8 +210,14 @@ const ApplicationContent = ({ claimStatus }: IApplicationContent) => {
       <>
         <p>{t("application.not_ready_to_submit.description")}</p>
         <div className="display-flex flex-justify-center">
-          {/* TODO: Track where user left off */}
-          <Link className="usa-button" to={Routes.CLAIM_FORM_HOME}>
+          <Link
+            className="usa-button"
+            to={
+              claimStatus === "not_started"
+                ? Routes.CLAIM_FORM_HOME
+                : continuePath
+            }
+          >
             {claimStatus === "not_started"
               ? t("application.not_ready_to_submit.start_application")
               : t("application.not_ready_to_submit.continue")}

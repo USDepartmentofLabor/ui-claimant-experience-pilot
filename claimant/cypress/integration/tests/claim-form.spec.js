@@ -58,6 +58,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     cy.login(email);
     cy.navigate_to_form({ inProgress: true });
+    cy.click_back();
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
@@ -80,6 +81,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     cy.login(email);
     cy.navigate_to_form({ inProgress: true });
+    cy.click_back();
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
