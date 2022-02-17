@@ -11,6 +11,6 @@ context("LaunchDarkly", { scrollBehavior: false }, () => {
     cy.visit("/claimant/");
     cy.wait("@get-flags");
     cy.url().should("not.include", "/idp/?redirect_to");
-    cy.contains("testFlagClient");
+    cy.contains("testFlagClient").should("not.be.visible");
   });
 });

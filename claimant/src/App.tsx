@@ -105,9 +105,13 @@ function App() {
     </ExtLink>,
   ];
 
-  // TODO perhaps a page specifically to display LD flags?
   if (ldFlags.testFlagClient) {
-    navItems.push(<span>testFlagClient</span>);
+    navItems.push(
+      <span className="display-none" aria-hidden="true">
+        testFlagClient
+      </span>
+    );
+    console.log({ ldFlags });
   }
 
   if (ldFlags.showClaimsDashboard) {
