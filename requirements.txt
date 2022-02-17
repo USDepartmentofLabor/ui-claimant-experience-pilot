@@ -17,7 +17,7 @@ launchdarkly-server-sdk==7.3.0
 git+https://github.com/trussworks/logindotgov-oidc-py.git@bdf0b7c#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0
-redis==4.1.2
+redis==4.1.4
 request-id-django-log==0.2.0
 requests==2.27.1
 rfc3339-validator==0.1.4
