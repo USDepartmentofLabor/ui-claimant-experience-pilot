@@ -850,11 +850,6 @@
       "description": "https://www.bls.gov/oes/current/oes_stru.htm",
       "$ref": "#/definitions/occupation"
     },
-    "ready_willing_able_to_work": {
-      "description": "",
-      "type": "boolean",
-      "TODO_": "reconcile with Availability"
-    },
     "federal_income_tax_withheld": {
       "description": "Required per UIPL 17-95",
       "type": "boolean"
@@ -888,8 +883,7 @@
       "$ref": "#/definitions/disability"
     },
     "availability": {
-      "$ref": "#/definitions/availability",
-      "TODO_": "reconcile with ready_willing_able_to_work"
+      "$ref": "#/definitions/availability"
     },
     "payment": {
       "$ref": "#/definitions/payment"
