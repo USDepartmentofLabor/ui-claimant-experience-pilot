@@ -8,18 +8,24 @@ const PARTIAL_CLAIM_ENDPOINT = "/api/partial-claim/";
 
 const getPartialClaim = async () => {
   try {
-    const { data } = await httpclient.get<Claim>(PARTIAL_CLAIM_ENDPOINT, {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const { data } = await httpclient.get<PartialClaimApiResponseType>(
+      PARTIAL_CLAIM_ENDPOINT,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 404) {
         // no partial claim exists, which is completely normal
-        const emptyClaim: Partial<Claim> = {};
+        const emptyClaim: PartialClaimApiResponseType = {
+          claim: {},
+          ...error.response.data,
+        };
         return emptyClaim;
       } else {
         throw error;
@@ -36,7 +42,7 @@ const submitClaim = (payload: Claim) => {
   const url = payload.is_complete
     ? COMPLETED_CLAIM_ENDPOINT
     : PARTIAL_CLAIM_ENDPOINT;
-  return httpclient.post<ClaimResponse>(url, payload, {
+  return httpclient.post<ClaimResponseType>(url, payload, {
     withCredentials: true,
     headers: {
       "X-CSRFToken": csrftoken,

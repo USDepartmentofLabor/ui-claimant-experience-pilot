@@ -9,7 +9,7 @@ import django.middleware.csrf
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
-
+from datetime import timedelta
 from api.models.swa import SWA
 from .decorators import authenticated_claimant_session
 from .claim_finder import ClaimFinder
@@ -240,10 +240,32 @@ def POST_partial_claim(request):
         )
 
 
-def GET_partial_claim(request):
-    if "partial_claim" in request.session:
-        return JsonResponse(request.session["partial_claim"], status=200)
+def partial_claim_response(claim, json_payload):
+    # calculate time remaining before claim will be cleaned up
+    removed_after = claim.should_be_deleted_after()
+    removed_remaining = removed_after - timezone.now()
+    seconds = removed_remaining.total_seconds()
+    remaining_time = (
+        f"{int(seconds // 3600)}:{int((seconds % 3600) // 60)}:{int(seconds % 60)}"
+    )
+    # return the day before removed_after so that FE can display "... at 11:59:59"
+    expires = (removed_after - timedelta(days=1)).date()
+    logger.debug(
+        "🚀 partial claim expires={} remaining_time={}".format(expires, remaining_time)
+    )
+    return JsonResponse(
+        {
+            "status": "ok",
+            "claim": json_payload,
+            # remaining_time is FYI only, FE can do whatever.
+            "remaining_time": remaining_time,
+            "expires": expires,
+        },
+        status=200,
+    )
 
+
+def GET_partial_claim(request):
     whoami = whoami_from_session(request)
     claim = ClaimFinder(whoami).find()
     claim_not_found_response = JsonResponse(
@@ -257,11 +279,21 @@ def GET_partial_claim(request):
     )
     if not claim:
         return claim_not_found_response
+
+    # if claim is overdue for expiration, pretend we do not have it.
+    # this prevents edge case where claimant's browser has it but we've deleted it.
+    if claim.should_be_deleted_after() < timezone.now():
+        return claim_not_found_response
+
+    # memoize to save trips to S3
+    if "partial_claim" in request.session:
+        return partial_claim_response(claim, request.session["partial_claim"])
+
     partial_claim = claim.read_partial()
     if partial_claim:
         logger.debug("🚀 found partial claim for {}".format(claim.uuid))
         request.session["partial_claim"] = partial_claim
-        return JsonResponse(partial_claim, status=200)
+        return partial_claim_response(claim, partial_claim)
 
     logger.debug("🚀 no partial claim read for {}".format(claim.uuid))
     return claim_not_found_response

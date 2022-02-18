@@ -39,7 +39,7 @@ export const ClaimForm = () => {
   const navigate = useNavigate();
 
   const {
-    data: partialClaim,
+    data: partialClaimResponse,
     error: partialClaimError,
     isLoading: partialClaimIsLoading,
   } = useGetPartialClaim();
@@ -136,6 +136,9 @@ export const ClaimForm = () => {
   if (partialClaimError) {
     throw partialClaimError;
   }
+
+  const partialClaim =
+    partialClaimResponse?.claim || queryClient.getQueryData("getPartialClaim");
 
   let initialValues: FormValues = getInitialValuesFromPageDefinitions(pages);
 

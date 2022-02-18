@@ -321,3 +321,10 @@ class Claim(TimeStampedModel):
         if self.is_deleted():
             return CLAIMANT_STATUS_DELETED
         return CLAIMANT_STATUS_UNKNOWN
+
+    def should_be_deleted_after(self):
+        if self.is_deleted() or self.is_completed():
+            return False
+        return self.updated_at + timedelta(
+            days=settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
+        )

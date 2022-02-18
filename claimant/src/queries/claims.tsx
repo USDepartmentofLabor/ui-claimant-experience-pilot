@@ -20,7 +20,7 @@ export const useClaims = () => {
 const cancelClaim = async (claim_id: string) => {
   const cookies = new Cookies();
   const csrftoken = cookies.get("csrftoken");
-  const { data } = await httpclient.delete<ApiResponse>(
+  const { data } = await httpclient.delete<ApiResponseType>(
     `/api/cancel-claim/${claim_id}/`,
     {
       withCredentials: true,

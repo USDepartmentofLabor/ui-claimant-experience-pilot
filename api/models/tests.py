@@ -241,6 +241,14 @@ class ApiModelsTestCase(TransactionTestCase):
         claim.save()
         event_time = timezone.now()
 
+        self.assertAlmostEqual(
+            claim.should_be_deleted_after(),
+            (
+                claim.updated_at
+                + timedelta(days=settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS)
+            ),
+        )
+
         claim.events.create(
             category=Claim.EventCategories.STORED,
             happened_at=event_time,
@@ -274,6 +282,7 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertTrue(claim.is_completed())
         self.assertTrue(stored_claim.is_completed())
         self.assertEqual(stored_claim.status_for_claimant(), CLAIMANT_STATUS_PROCESSING)
+        self.assertFalse(stored_claim.should_be_deleted_after())
 
         self.assertEqual(
             stored_claim.public_events(),

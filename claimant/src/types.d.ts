@@ -23,6 +23,12 @@ type Claim = ClaimantInput & {
   claimant_id: string;
 };
 
+type PartialClaimApiResponseType = ApiResponseType & {
+  expires?: string;
+  remaining_time?: string;
+  claim?: Partial<Claim>;
+};
+
 // ClaimantClaim is the metadata from /api/claims/
 type ClaimantClaim = {
   id: string;
@@ -62,12 +68,12 @@ type FormValues = {
   [key: string]: any;
 };
 
-type ApiResponse = {
+type ApiResponseType = {
   status: string;
   error?: string;
 };
 
-type ClaimResponse = ApiResponse & {
+type ClaimResponseType = ApiResponseType & {
   claim_id?: string;
 };
 

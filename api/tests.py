@@ -3,11 +3,13 @@ from django.test import Client, RequestFactory, TestCase
 from django.core import mail
 from django.utils import timezone
 from django.conf import settings
+from django.test.utils import override_settings
 from unittest.mock import patch
 import boto3
 from jwcrypto.common import json_decode
 from botocore.stub import Stubber
 from dacite import from_dict
+from datetime import timedelta
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
 from .models import Claim, Claimant
@@ -482,7 +484,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         response = csrf_client.get(url, content_type="application/json", **headers)
         logger.debug("🚀 {}".format(response.json()))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), payload)
+        self.assertEqual(response.json()["claim"], payload)
 
     def test_completed_claim_with_csrf(self):
         idp = create_idp()
@@ -634,6 +636,48 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "is_complete payload false/missing at completed-claim endpoint",
         )
 
+    def write_partial_claim_payload(self, claim, payload):
+        sym_encryptor = SymmetricClaimEncryptor(payload, symmetric_encryption_key())
+        packaged_claim = sym_encryptor.packaged_claim()
+        packaged_payload = packaged_claim.as_json()
+        cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
+        self.assertTrue(cw.write())
+
+    @override_settings(DELETE_PARTIAL_CLAIM_AFTER_DAYS=0)
+    def test_partial_claim_expires_today(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa)
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/partial-claim/"
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        self.write_partial_claim_payload(claim, {"id": str(claim.uuid)})
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 404)
+
+    @override_settings(DELETE_PARTIAL_CLAIM_AFTER_DAYS=1)
+    def test_partial_claim_expires_tomorrow(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa)
+        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        url = "/api/partial-claim/"
+        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        self.write_partial_claim_payload(claim, {"id": str(claim.uuid)})
+        response = csrf_client.get(url, content_type="application/json", **headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["remaining_time"], "23:59:59")
+        self.assertEqual(
+            response.json()["expires"],
+            str((claim.should_be_deleted_after() - timedelta(days=1)).date()),
+        )
+
     def test_partial_claim_with_csrf(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -681,8 +725,11 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         response = csrf_client.get(url, content_type="application/json", **headers)
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
-        self.assertEqual(response_payload["id"], str(claim.uuid))
-        self.assertTrue(response_payload["identity_provider"])
+        self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
+        self.assertTrue(response_payload["claim"]["identity_provider"])
+        self.assertEqual(response_payload["status"], "ok")
+        self.assertTrue(response_payload["remaining_time"])
+        self.assertTrue(response_payload["expires"])
 
         # GET partial claim, uncached
         session = csrf_client.session
@@ -691,8 +738,11 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         response = csrf_client.get(url, content_type="application/json", **headers)
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
-        self.assertEqual(response_payload["id"], str(claim.uuid))
-        self.assertTrue(response_payload["identity_provider"])
+        self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
+        self.assertTrue(response_payload["claim"]["identity_provider"])
+        self.assertEqual(response_payload["status"], "ok")
+        self.assertTrue(response_payload["remaining_time"])
+        self.assertTrue(response_payload["expires"])
 
         # only GET or POST allowed
         response = csrf_client.put(

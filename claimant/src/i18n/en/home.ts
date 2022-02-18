@@ -63,6 +63,8 @@ const home = {
       continue: "Continue",
       delete_application: "Delete application",
     },
+    expiration_warning:
+      "Update application by <strong>{{when}}</strong> or application will be reset due to inactivity.",
   },
   success: {
     just_finished: {
@@ -74,6 +76,8 @@ const home = {
       message: "Welcome back message for completed claim {{claim_id}}",
     },
   },
+  today: "today",
+  expires_at_time: "at 11:59:59pm",
 };
 
 export default home;

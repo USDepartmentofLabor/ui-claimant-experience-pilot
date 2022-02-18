@@ -75,7 +75,7 @@ describe("the ClaimForm page", () => {
       isError: false,
       error: null,
       isSuccess: true,
-      data: {},
+      data: { status: "ok", claim: {} },
     }));
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({
@@ -365,7 +365,7 @@ describe("the ClaimForm", () => {
       isError: false,
       error: null,
       isSuccess: true,
-      data: {},
+      data: { status: "ok", claim: {} },
     }));
 
     mockedUseGetCompletedClaim.mockImplementation(() => ({

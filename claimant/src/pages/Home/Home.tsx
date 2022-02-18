@@ -1,10 +1,12 @@
 import { PropsWithChildren } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { Alert } from "@trussworks/react-uswds";
 import classnames from "classnames";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../../queries/whoami";
 import { Routes } from "../../routes";
+import { formatExpiresAtDate } from "../../utils/format";
 import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
 import {
   Button,
@@ -19,21 +21,32 @@ type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
+const SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING = 48;
+
 const HomePage = () => {
   const { t } = useTranslation("home");
   const { data: whoami, error } = useWhoAmI();
   const { status: completedFetchStatus } = useGetCompletedClaim();
-  const { data: partialClaim } = useGetPartialClaim();
-  const { continuePath } = useClaimProgress(partialClaim);
+  const { data: partialClaimResponse } = useGetPartialClaim();
+  const { continuePath } = useClaimProgress(partialClaimResponse?.claim);
+  const partialClaim = partialClaimResponse?.claim;
 
   if (error) {
     throw error;
   }
 
-  if (!partialClaim || !whoami) {
+  if (!partialClaimResponse || !whoami) {
     return <PageLoader />;
   }
 
+  const expiresAt = `${
+    partialClaimResponse?.expires
+      ? formatExpiresAtDate(partialClaimResponse?.expires)
+      : t("today")
+  } ${t("expires_at_time")}`;
+  const remainingTime = (
+    partialClaimResponse?.remaining_time || "00:00:00"
+  ).split(/:/);
   const claimStarted = partialClaim && Object.keys(partialClaim).length > 0;
 
   const identityStatus: Status =
@@ -61,6 +74,8 @@ const HomePage = () => {
       status: claimStatus,
       Content: () => (
         <ApplicationContent
+          remainingTime={remainingTime}
+          expiresAt={expiresAt}
           claimStatus={claimStatus}
           continuePath={continuePath}
         />
@@ -193,19 +208,36 @@ const IdentityContent = ({ identityStatus }: IIdentityContent) => {
 };
 
 interface IApplicationContent {
+  expiresAt: string;
+  remainingTime: string[];
   claimStatus: keyof Omit<Record<Status, string>, "complete">;
   continuePath: string;
 }
 
 const ApplicationContent = ({
   claimStatus,
+  expiresAt,
+  remainingTime,
   continuePath,
 }: IApplicationContent) => {
   const { t } = useTranslation("home");
+  const hoursRemaining = parseInt(remainingTime[0]);
+  const showWarning =
+    claimStatus === "in_progress" &&
+    hoursRemaining < SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING;
 
   if (claimStatus !== "ready_to_submit") {
     return (
       <>
+        {showWarning && (
+          <Alert type="error">
+            <Trans
+              t={t}
+              i18nKey="application.expiration_warning"
+              components={{ when: expiresAt }}
+            />
+          </Alert>
+        )}
         <p>{t("application.not_ready_to_submit.description")}</p>
         <div className="display-flex flex-justify-center">
           <Link
