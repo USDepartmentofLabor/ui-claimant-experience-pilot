@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
 from django.conf import settings
 from django.template.exceptions import TemplateDoesNotExist
-
+from django.utils import timezone
+from datetime import timedelta
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
 from api.models import SWA
@@ -127,9 +128,21 @@ def test(request):  # pragma: no cover
 
     request.session.set_test_cookie()
     this_session = session_as_dict(request)
-    this_session["test_cookie_worked"] = request.session.test_cookie_worked()
-    this_session["test_flag_worked"] = ld_flag_set
-    return JsonResponse(this_session)
+    if "partial_claim" in this_session:
+        this_session["partial_claim"] = "<redacted>"
+
+    from core.utils import get_session_expires_at
+
+    store_would_have_expired_at = get_session_expires_at(request.session.session_key)
+    store_will_expire_at = timezone.now() + timedelta(
+        seconds=request.session.get_expiry_age()
+    )
+    response = {
+        "session": this_session,
+        "store_would_have_expired_at": store_would_have_expired_at,
+        "store_will_expire_at": store_will_expire_at,
+    }
+    return JsonResponse(response)
 
 
 # NOTE this login page is for testing only, see the SHOW_LOGIN_PAGE setting in views.py

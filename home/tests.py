@@ -2,6 +2,7 @@
 from django.test import TestCase
 from api.models import Claimant, SWA
 from api.test_utils import create_swa
+from unittest.mock import patch
 import logging
 
 logger = logging.getLogger("home.tests")
@@ -118,9 +119,15 @@ class HomeTestCase(TestCase):
         response = self.client.get("/swa-redirect/XX/")
         self.assertContains(response, "your state's", status_code=200)
 
-    def test_launchdarkly_flag_received(self):
+    @patch("home.views.ld_client")
+    def test_launchdarkly_flag_received(self, patched_ld_client):
+        patched_ld_client.variation.return_value = True
         response = self.client.get("/test/")
-        self.assertTrue(response.json()["test_flag_worked"])
+        self.assertEqual(response.status_code, 200)
+
+        patched_ld_client.variation.return_value = False
+        response = self.client.get("/test/")
+        self.assertEqual(response.status_code, 404)
 
     def test_swa_start_page(self):
         # with active SWA we get a link to the SWA

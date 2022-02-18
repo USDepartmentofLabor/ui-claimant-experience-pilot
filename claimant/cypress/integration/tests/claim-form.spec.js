@@ -81,6 +81,9 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     cy.logout();
 
+    // pause just a little to avoid sync issues in CI
+    cy.wait(1000);
+
     cy.login(email);
     cy.navigate_to_form({ inProgress: true });
     cy.click_back();

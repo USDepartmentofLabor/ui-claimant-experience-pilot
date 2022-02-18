@@ -9,7 +9,6 @@ import boto3
 from jwcrypto.common import json_decode
 from botocore.stub import Stubber
 from dacite import from_dict
-from datetime import timedelta
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
 from .models import Claim, Claimant
@@ -44,6 +43,8 @@ from .whoami import WhoAmI
 from .claim_cleaner import ClaimCleaner
 from os import listdir
 from os.path import isfile, join, isdir
+from datetime import timedelta
+import time_machine
 
 logger = logging.getLogger("api.tests")
 
@@ -281,9 +282,10 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         csrf_client = self.csrf_client()
         response = csrf_client.get("/api/whoami/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.cookies), 2)
+        self.assertEqual(len(response.cookies), 3)
         self.assertEqual(response.cookies["sessionid"]["expires"], "")
         self.assertEqual(response.cookies["csrftoken"]["expires"], "")
+        self.assertEqual(response.cookies["expires_at"]["expires"], "")
 
     def test_encrypted_completed_claim(self):
         idp = create_idp()
@@ -850,6 +852,25 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.client.session.exists(session_key))
+
+    @override_settings(SESSION_COOKIE_AGE=10)
+    def test_session_expires(self):
+        self.authenticate_session()
+        response = self.client.get("/api/whoami/")
+        self.assertEqual(response.status_code, 200)
+
+        # Try again after session expires
+        logger.debug("⚡️ NOW == {}".format(timezone.now()))
+        logger.debug("forward -> {}".format(settings.SESSION_COOKIE_AGE + 10))
+        the_future = timezone.now() + timedelta(
+            seconds=settings.SESSION_COOKIE_AGE + 10
+        )
+        traveller = time_machine.travel(the_future)
+        traveller.start()
+        logger.debug("⚡️ travel -> NOW == {}".format(timezone.now()))
+        response = self.client.get("/api/whoami/")
+        self.assertEqual(response.status_code, 401)
+        traveller.stop()
 
 
 class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
