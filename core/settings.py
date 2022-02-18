@@ -148,6 +148,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "api.middleware.session.SessionTimeout",
     "django.middleware.locale.LocaleMiddleware",  # must come after session middleware and before common middleware
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -192,7 +193,8 @@ CACHES = {
             "SERIALIZER": "secure_redis.serializer.SecureSerializer",
         },
         "KEY_PREFIX": "claimantsapi:secure",
-        "TIMEOUT": 60 * 30,  # expire in 30 minutes TODO security requirement
+        # expire in 30 minutes after last activity - TODO this might be ignored by session ttl logic
+        "TIMEOUT": 60 * 30,
     },
     "insecure": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -201,18 +203,18 @@ CACHES = {
         | {
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
         },
-        "KEY_PREFIX": "claimantsapi",
+        "KEY_PREFIX": "claimantsapi:insecure",
         "TIMEOUT": 60 * 60 * 24,  # 1 day
     },
 }
 # logger.debug("CACHES={}".format(pprint.pformat(CACHES)))
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-SESSION_SAVE_EVERY_REQUEST = True  # keep-alive on each request
-SESSION_EXPIRY = env.int(
-    "SESSION_EXPIRY", 30 * 60
-)  # 30 minute timeout on no requests TODO
+SESSION_SAVE_EVERY_REQUEST = False  # we keep-alive in our Session middleware
+# 30 minute timeout after last activity
+# we made this SESSION_EXPIRY so it's clear what it does. COOKIE_AGE is a little misleading.
 SESSION_COOKIE_AGE = env.int("SESSION_EXPIRY", 30 * 60)
+# if expire on browser close is True, then the cookie expiration date is not set.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # allow XHR/CORS to work in local dev with http/https mix,
 # SESSION_COOKIE_SAMESITE is set to None in the .env-example for dev.

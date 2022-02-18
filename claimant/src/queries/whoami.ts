@@ -17,7 +17,5 @@ const getWhoAmI = async () => {
 };
 
 export const useWhoAmI = () => {
-  return useQuery<WhoAmI, AxiosError>("whoami", () => getWhoAmI(), {
-    staleTime: 1000 * 5 * 60,
-  });
+  return useQuery<WhoAmI, AxiosError>("whoami", () => getWhoAmI());
 };

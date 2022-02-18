@@ -4,6 +4,9 @@ import hashlib
 from api.models import Claimant, IdentityProvider
 from api.whoami import WhoAmI
 from django.db import transaction
+from django.utils import timezone
+from django_redis import get_redis_connection
+from datetime import timedelta
 from dacite import from_dict
 
 
@@ -14,6 +17,18 @@ def session_as_dict(request):
     for k in request.session.keys():
         this_session[k] = request.session[k]
     return this_session
+
+
+def get_session_store():
+    return get_redis_connection("default")
+
+
+def get_session_expires_at(session_key):
+    r = get_session_store()
+    # TODO there's gotta be a function somewhere to derive this...
+    key = f"claimantsapi:secure:1:django.contrib.sessions.cache{session_key}"
+    ttl = r.ttl(key)
+    return timezone.now() + timedelta(0, ttl)
 
 
 def register_local_login(request):

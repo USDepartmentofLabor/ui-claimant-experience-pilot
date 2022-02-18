@@ -76,6 +76,17 @@ const home = {
       message: "Welcome back message for completed claim {{claim_id}}",
     },
   },
+  timeout: {
+    title: "You will be logged out due to inactivity in ",
+    stay_logged_in: "Stay logged in",
+    log_out: "Log out",
+    instructions:
+      "Click the button below to stay logged in. Otherwise, to protect your" +
+      " data, your progress will be saved, but you will be logged out.",
+    sr_countdown_zero: "{{seconds}} seconds",
+    sr_countdown_one: "{{count}} minute, {{seconds}} seconds",
+    sr_countdown_other: "{{count}} minutes, {{seconds}} seconds",
+  },
   today: "today",
   expires_at_time: "at 11:59:59pm",
 };

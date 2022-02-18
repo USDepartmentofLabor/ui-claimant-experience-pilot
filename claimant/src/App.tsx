@@ -34,6 +34,7 @@ import "@trussworks/react-uswds/lib/index.css";
 import { pages } from "./pages/PageDefinitions";
 import PageLoader from "./common/PageLoader";
 import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
+import { SessionManager } from "./components/SessionManager/SessionManager";
 import HomePage from "./pages/Home/Home";
 import { useGetCompletedClaim } from "./queries/claim";
 
@@ -130,6 +131,7 @@ function App() {
 
   return (
     <>
+      <SessionManager />
       <Header basic>
         <a className="usa-skipnav" href="#main-content">
           {t("skip_to_main_content")}
