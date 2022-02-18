@@ -86,6 +86,10 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     cy.login(email);
     cy.navigate_to_form({ inProgress: true });
+
+    // pause just a little to avoid sync issues in CI
+    cy.wait(1000);
+
     cy.click_back();
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
