@@ -587,7 +587,7 @@ class SwaTestCase(TestCase):
             "swa_xid": None,
             "created_at": str(claim.created_at),
             "updated_at": str(claim.updated_at),
-            "claimant_id": claimant.id,
+            "claimant_id": "my-idp-id",
             "events": expected_events,
             "status": claim.status,
         }

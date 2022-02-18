@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from django.conf import settings
 from .claimant_key_rotator import ClaimantKeyRotator
+from .claim_packager import ClaimPackager, SchemaError
 from core.claim_encryption import (
     symmetric_encryption_key,
     encryption_key_hash,
@@ -15,24 +17,56 @@ from core.test_utils import (
 from api.test_utils import create_idp, create_swa
 from api.models import Claim, Claimant, ClaimantFile
 import uuid
+import tempfile
 
 
-class ClaimantKeyRotatorTestCase(TestCase):
+class BucketTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         create_s3_bucket()
+        create_s3_bucket(is_archive=True)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)
 
     def setUp(self):
         super().setUp()
         self.idp = create_idp()
         self.swa, _ = create_swa()
 
+
+class ClaimPackagerTestCase(BucketTestCase):
+    def test_packager(self):
+        claimant = Claimant(idp=self.idp, idp_user_xid="i-am-a-test")
+        claimant.save()
+        example = str(settings.BASE_DIR / "schemas" / "claim-v1.0-example.json")
+        packager = ClaimPackager(
+            swa=self.swa, claimant=claimant, json_file=example, schema="claim-v1.0"
+        )
+        claim = packager.package()
+        self.assertEqual(str(claim.uuid), packager.payload["id"])
+
+    def test_invalid_json(self):
+        claimant = Claimant(idp=self.idp, idp_user_xid="i-am-a-test")
+        claimant.save()
+        with tempfile.NamedTemporaryFile() as fp:
+            fp.write(b'{"test": "invalid"}')
+            fp.seek(0)
+            # ClaimPackager should close the fp for us.
+            with self.assertRaises(SchemaError):
+                ClaimPackager(
+                    swa=self.swa,
+                    claimant=claimant,
+                    json_file=fp.name,
+                    schema="claim-v1.0",
+                )
+
+
+class ClaimantKeyRotatorTestCase(BucketTestCase):
     def create_claim_with_key(self, key):
         claimant = Claimant(idp=self.idp, idp_user_xid=str(uuid.uuid4()))
         claimant.save()

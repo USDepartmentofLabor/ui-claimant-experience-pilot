@@ -10,7 +10,7 @@ class ClaimSerializer(object):
             "swa_xid": self.claim.swa_xid,
             "created_at": str(self.claim.created_at),
             "updated_at": str(self.claim.updated_at),
-            "claimant_id": self.claim.claimant_id,
+            "claimant_id": self.claim.claimant.idp_user_xid,
             "events": events,
             "status": self.claim.status,
         }

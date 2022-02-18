@@ -361,6 +361,20 @@ NOTE that Redis symmetric encryption does not support key rotation. However, the
 is deemed an acceptable risk. The effect of changing the `REDIS_SECRET_KEY` value is effectively removing all active authenticated
 sessions from the app, so if you must do that, perform it during a non-peak traffic time and/or put the app into maintenance mode.
 
+## Claims and JSON schemas
+
+The `schemas` directory contains the JSON schema definitions and example .json files for Claim and Identity.
+
+You can use those example files (or any other valid instance) to pre-package Claim objects for SWA testing.
+
+Example run inside the container:
+
+```sh
+> make prepackage-claim SWA=XX CLAIMANT=abc123 IDP=login.gov JSON=schemas/claim-v1.0-example.json SCHEMA=claim-v1.0
+```
+
+Valid `IDP` values include `login.gov` and (if `SHOW_LOGIN_PAGE` is active in your environment) `Local`.
+
 ## LaunchDarkly
 
 We use [LaunchDarkly](https://launchdarkly.com/) to manage our feature flags, for both the Django server and React application.
