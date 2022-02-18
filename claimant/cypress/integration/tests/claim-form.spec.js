@@ -40,7 +40,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.contains("Progress saved").should("be.visible");
   });
 
-  xit("saves and exits and restores", () => {
+  it("saves and exits and restores", () => {
     const email = faker.internet.exampleEmail();
     cy.login(email);
     cy.navigate_to_form();
@@ -57,8 +57,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_save_and_exit();
 
     cy.login(email);
-    cy.navigate_to_form({ inProgress: true });
-    cy.click_back();
+    cy.visit("/claimant/claim");
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
   });
 
@@ -77,6 +76,9 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
+
+    cy.contains("Success status").should("be.visible");
+
     cy.logout();
 
     cy.login(email);

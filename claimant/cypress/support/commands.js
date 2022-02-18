@@ -317,7 +317,9 @@ Cypress.Commands.add("click_is_complete", () => {
 
 Cypress.Commands.add("navigate_to_form", (props) => {
   cy.visit("/claimant/");
-  cy.contains(props?.inProgress ? "Continue" : "Start application").click();
+  cy.contains(props?.inProgress ? "Continue" : "Start application").click({
+    force: true,
+  });
 });
 
 Cypress.Commands.add("complete_claimant_names", (claimant) => {

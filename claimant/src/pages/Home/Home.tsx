@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import classnames from "classnames";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../../queries/whoami";
-import PageLoader from "../../common/PageLoader";
 import { Routes } from "../../routes";
 import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
 import {
@@ -14,6 +13,7 @@ import {
   Link as ExtLink,
 } from "@trussworks/react-uswds";
 import { useClaimProgress } from "../../hooks/useClaimProgress";
+import PageLoader from "../../common/PageLoader";
 
 type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
 
@@ -21,19 +21,17 @@ const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 const HomePage = () => {
   const { t } = useTranslation("home");
-  const { data: whoami, isLoading, error } = useWhoAmI();
-  const { status: completeStatus, isLoading: completeIsLoading } =
-    useGetCompletedClaim();
-  const { data: partialClaim, isLoading: partialIsLoading } =
-    useGetPartialClaim();
+  const { data: whoami, error } = useWhoAmI();
+  const { status: completedFetchStatus } = useGetCompletedClaim();
+  const { data: partialClaim } = useGetPartialClaim();
   const { continuePath } = useClaimProgress(partialClaim);
 
-  if (isLoading || completeIsLoading || partialIsLoading) {
-    return <PageLoader />;
+  if (error) {
+    throw error;
   }
 
-  if (error || !whoami) {
-    throw error;
+  if (!partialClaim || !whoami) {
+    return <PageLoader />;
   }
 
   const claimStarted = partialClaim && Object.keys(partialClaim).length > 0;
@@ -41,7 +39,7 @@ const HomePage = () => {
   const identityStatus: Status =
     whoami.IAL === "2" ? "complete" : "not_started";
   const claimStatus: Status =
-    completeStatus === "success"
+    completedFetchStatus === "success"
       ? "ready_to_submit"
       : claimStarted
       ? "in_progress"

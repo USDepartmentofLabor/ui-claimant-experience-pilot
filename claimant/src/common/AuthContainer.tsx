@@ -2,9 +2,9 @@ import { RequestErrorBoundary } from "../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../queries/whoami";
 
 const Auth: React.FC = ({ children }) => {
-  const { error, isLoading } = useWhoAmI();
+  const { error, isFetched } = useWhoAmI();
 
-  if (isLoading) {
+  if (!isFetched) {
     return <AuthLoader />;
   }
 

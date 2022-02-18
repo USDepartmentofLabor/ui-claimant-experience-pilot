@@ -54,7 +54,7 @@ export const useSubmitClaim = () => {
 };
 
 export const useGetPartialClaim = () => {
-  return useQuery("partial-claim", () => getPartialClaim());
+  return useQuery("getPartialClaim", () => getPartialClaim());
 };
 
 export const useGetCompletedClaim = () => {

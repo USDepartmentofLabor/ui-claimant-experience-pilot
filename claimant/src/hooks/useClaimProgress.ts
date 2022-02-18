@@ -21,7 +21,8 @@ export const useClaimProgress = (claim: Partial<Claim> | undefined) => {
             page.segmentSchema(t, segment).validateSync(claim);
             segment = page.nextSegment(segment);
           } catch (e) {
-            firstInvalidPage = `${page.path}/${segment}/`;
+            const segmentAsUrl = segment ? `${segment}/` : "";
+            firstInvalidPage = `${page.path}/${segmentAsUrl}`;
             break;
           }
         }
