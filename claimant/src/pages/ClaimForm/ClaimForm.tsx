@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { Formik, Form, FormikHelpers } from "formik";
+import { Formik, Form, FormikHelpers, FormikProps } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useSubmitClaim, useGetPartialClaim } from "../../queries/claim";
@@ -11,7 +11,6 @@ import {
 import { useTranslation } from "react-i18next";
 import PageLoader from "../../common/PageLoader";
 import { useParams, useNavigate } from "react-router";
-import { Link } from "react-router-dom";
 import claimFormStyles from "./ClaimForm.module.scss";
 import {
   Button,
@@ -65,15 +64,14 @@ export const ClaimForm = () => {
     previousSegment,
     pageSchema,
     segmentSchema,
+    path: currentPagePath,
   } = pages[currentPageIndex];
 
   const navigateToNextPage = (values: FormValues) => {
     let nextPage;
     if (repeatable) {
       if (repeatable(segment, values) && nextSegment) {
-        nextPage = `/claim/${pages[currentPageIndex].path}/${nextSegment(
-          segment
-        )}/`;
+        nextPage = `/claim/${currentPagePath}/${nextSegment(segment)}/`;
       }
     }
     if (!nextPage && pages[currentPageIndex + 1]) {
@@ -86,9 +84,9 @@ export const ClaimForm = () => {
 
   const previousPageUrl = (values: ClaimantInput) => {
     if (repeatable && previousSegment) {
-      const previousPage = previousSegment({ segment });
-      if (previousPage) {
-        return `/claim/${pages[currentPageIndex].path}/${previousPage}/`;
+      const previousSegmentPath = previousSegment({ segment });
+      if (previousSegmentPath) {
+        return `/claim/${currentPagePath}/${previousSegmentPath}/`;
       }
     } else if (previousSegment) {
       const previousPage = previousSegment({ values });
@@ -99,20 +97,40 @@ export const ClaimForm = () => {
     return `/claim/${pages[currentPageIndex - 1].path}`;
   };
 
-  const previousPageLink = (values: ClaimantInput) =>
+  const navigateToPreviousPage = (claimForm: FormikProps<FormValues>) => {
+    const previousPage = previousPageUrl(claimForm.values);
+    saveCurrentFormValues(claimForm.values);
+    submitClaim.reset();
+    navigate(previousPage);
+    claimForm.resetForm({
+      submitCount: 0,
+      touched: {},
+      errors: {},
+      isValidating: false,
+      isSubmitting: false,
+    });
+  };
+
+  const previousPageLink = (claimForm: FormikProps<FormValues>) =>
     !claimCompleted() &&
     pages[currentPageIndex - 1] && (
-      <Link
-        to={previousPageUrl(values)}
+      <Button
+        type="button"
+        data-testid="back-button"
+        onClick={() => navigateToPreviousPage(claimForm)}
         className="usa-button usa-button--outline"
       >
         {t("pagination.previous")}
-      </Link>
+      </Button>
     );
 
   const nextPageLink = () =>
     !claimCompleted() && (
-      <Button disabled={submitClaim.isLoading} type="submit">
+      <Button
+        disabled={submitClaim.isLoading}
+        type="submit"
+        data-testid="next-button"
+      >
         {pages[currentPageIndex + 1] ? (
           <>{t("pagination.next")}</>
         ) : (
@@ -201,7 +219,12 @@ export const ClaimForm = () => {
 
   const saveAndExitLink = (currentValues: FormValues) =>
     !claimCompleted() && (
-      <Button type="button" onClick={() => saveAndExit(currentValues)} unstyled>
+      <Button
+        type="button"
+        onClick={() => saveAndExit(currentValues)}
+        unstyled
+        data-testid="save-and-exit-button"
+      >
         {t("pagination.save_and_exit")}
       </Button>
     );
@@ -252,7 +275,7 @@ export const ClaimForm = () => {
               <div className={claimFormStyles.pagination}>
                 <FormGroup>
                   <div className="text-center">
-                    {previousPageLink(claimForm.values)}
+                    {previousPageLink(claimForm)}
                     {nextPageLink()}
                     <div className="margin-top-1">
                       {saveAndExitLink(claimForm.values)}

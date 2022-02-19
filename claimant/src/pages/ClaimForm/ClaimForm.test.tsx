@@ -67,6 +67,7 @@ describe("the ClaimForm page", () => {
       isFetched: true,
       isError: false,
       mutateAsync: jest.fn(),
+      reset: jest.fn(),
       data: { status: 201 },
     }));
 

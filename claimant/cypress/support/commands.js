@@ -143,12 +143,16 @@ Cypress.Commands.add("click_next", () => {
 });
 
 Cypress.Commands.add("click_back", () => {
-  cy.get("a").contains("Back").scrollIntoView().should("be.visible").click();
+  cy.get("button")
+    .contains("Back")
+    .scrollIntoView()
+    .should("be.visible")
+    .click();
 });
 
 Cypress.Commands.add("click_save_and_exit", () => {
   if (IS_DEV_SERVER) {
-    cy.click_next(); // TODO click_back() when that saves
+    cy.click_back();
     cy.clearCookies();
   } else {
     cy.get("button")
@@ -312,7 +316,7 @@ Cypress.Commands.add("click_more_employers", (bool, idx = "0") => {
 });
 
 Cypress.Commands.add("click_final_submit", () => {
-  cy.get("[data-testid='button']").contains("Test Claim").click();
+  cy.get("[data-testid='next-button']").contains("Test Claim").click();
 });
 
 Cypress.Commands.add("click_is_complete", () => {
