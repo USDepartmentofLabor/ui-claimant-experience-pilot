@@ -1,5 +1,6 @@
 const home = {
   welcome: "Welcome",
+  namelessWelcome: "Welcome to [PILOT NAME]",
   intro: "File an unemployment insurance claim.",
   sampleStyle: "Hello from a CSS Module style",
   sampleForm: {
@@ -30,8 +31,9 @@ const home = {
     ready_to_submit: "Ready to submit",
   },
   remaining_tasks: {
-    one: "You have one remaining task to apply for unemployment benefits:",
-    two: "Complete the following two tasks to apply for unemployment benefits:",
+    one: "You have one remaining task to apply for unemployment benefits.",
+    two: "Complete the following two tasks to apply for unemployment benefits.",
+    listTitle: "To apply online, you will:",
   },
   identity: {
     list: "Verify your identity",
@@ -47,6 +49,15 @@ const home = {
       title: "Identity verified",
       description:
         "View on <extLink>Login.gov<span>opens in a new tab</span><icon></icon></extLink>",
+    },
+    moreInfo: {
+      title: "To verify your identity, you'll need the following",
+      content: [
+        "Your state-issued ID",
+        "A phone or computer with a camera to take a picture of yourself (not always required)",
+        "Your Social Security Number",
+        "A phone number on a phone plan in your name. (If you don't have a phone plan in your name, we can mail you a verification code, which will take 3-5 days.)",
+      ],
     },
   },
   application: {
@@ -65,7 +76,38 @@ const home = {
     },
     expiration_warning:
       "Update application by <strong>{{when}}</strong> or application will be reset due to inactivity.",
+    moreInfo: {
+      title:
+        "To complete your unemployment insurance application, you'll need the following",
+      content: [
+        "Your personal information: your name, Social Security Number, birthdate, and contact information.",
+        "Your Alien Registration Number (if you're not a U.S. citizen)",
+        "Your complete work history for the last 18 months, including:",
+        "Details about other types of payments you receive(d)",
+        "Military form DD-214 (if you were in the military in the last 18 months)",
+        "Form SF-8 or SF-50 (if you were a federal employee during the last 18 months)",
+        "Your bank account information (if you'd like to get your benefits by direct deposit)",
+      ],
+      workHistoryContent: [
+        "Employer name(s)",
+        "Employer address(es)",
+        "Employer phone number(s)",
+        "Start and end dates for each job",
+        "A reason why each job ended, or why your hours changed",
+      ],
+    },
   },
+  afterApply: {
+    title: "After you apply",
+    content: "Text TBD",
+  },
+  moreInformation: {
+    title: "More information",
+    contactUs: "Contact us",
+    about: "About [PILOT NAME]",
+  },
+
+  disclaimer: "[STANDARD LEGAL DISCLAIMER]",
   success: {
     just_finished: {
       title: "Success!",

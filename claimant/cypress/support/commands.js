@@ -42,9 +42,13 @@ export const FAKE_LOGIN = {
   phone: "555-555-1234",
 };
 
+// we toggle some behavior based on running against dev server or docker server
+const IS_DEV_SERVER =
+  Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000";
+
 // test login uses local form page
 Cypress.Commands.add("login", (email) => {
-  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+  if (IS_DEV_SERVER) {
     cy.post_login(email);
   } else {
     cy.real_login(email);
@@ -52,7 +56,7 @@ Cypress.Commands.add("login", (email) => {
 });
 
 Cypress.Commands.add("logout", () => {
-  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+  if (IS_DEV_SERVER) {
     cy.clearCookies();
   } else {
     cy.contains("Log out").click();
@@ -143,8 +147,8 @@ Cypress.Commands.add("click_back", () => {
 });
 
 Cypress.Commands.add("click_save_and_exit", () => {
-  if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
-    cy.click_next(); // TODO how to mock the save part?
+  if (IS_DEV_SERVER) {
+    cy.click_next(); // TODO click_back() when that saves
     cy.clearCookies();
   } else {
     cy.get("button")
@@ -153,7 +157,7 @@ Cypress.Commands.add("click_save_and_exit", () => {
       .should("be.visible")
       .click();
   }
-  cy.wait(1000); // hesitate just a second to let the server do its thing
+  cy.wait(1000); // hesitate to let the server do its thing
 });
 
 Cypress.Commands.add("complete_identity_information", (identityInformation) => {

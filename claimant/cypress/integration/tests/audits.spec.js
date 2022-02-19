@@ -1,5 +1,8 @@
 // Run the pa11y and Lighthouse audits
 /* eslint-disable no-undef */
+
+import { IS_DEV_SERVER } from "../../support/commands";
+
 context("Cypress Audit", { scrollBehavior: "center" }, () => {
   it("passes pa11y checks", () => {
     // mock the authn flow for 508 checks
@@ -21,10 +24,10 @@ context("Cypress Audit", { scrollBehavior: "center" }, () => {
 
     // performance tests
     const thresholds = {
-      performance: 40,
+      performance: IS_DEV_SERVER ? 30 : 40,
       accessibility: 100,
       "first-contentful-paint": 10000,
-      "largest-contentful-paint": 10000,
+      "largest-contentful-paint": IS_DEV_SERVER ? 15000 : 10000,
       "cumulative-layout-shift": 0.1,
       "total-blocking-time": 1000,
     };

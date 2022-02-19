@@ -184,7 +184,10 @@ export const ClaimForm = () => {
     if (claim.is_complete) {
       navigate(`${Routes.SUCCESS_PAGE_JUST_FINISHED}`);
     } else {
-      queryClient.setQueryData("getPartialClaim", claim);
+      queryClient.setQueryData("getPartialClaim", {
+        ...partialClaimResponse,
+        claim,
+      });
     }
   };
 

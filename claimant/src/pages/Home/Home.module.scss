@@ -13,3 +13,16 @@
 .pagination {
   margin: units(2) 0;
 }
+
+.moreInfoAccordion {
+  :global(.usa-accordion__button) {
+    background-color: color("gray-50");
+    color: color("white");
+  }
+  :global(.usa-accordion__button[aria-expanded="false"]) {
+    @include add-background-svg("usa-icons-bg/add--white");
+  }
+  :global(.usa-accordion__button[aria-expanded="true"]) {
+    @include add-background-svg("usa-icons-bg/remove--white");
+  }
+}

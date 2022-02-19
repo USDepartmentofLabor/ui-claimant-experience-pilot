@@ -1,12 +1,16 @@
 import faker from "@faker-js/faker";
-import { FAKE_BIRTHDATE, FAKE_SSN } from "../../support/commands";
+import {
+  IS_DEV_SERVER,
+  FAKE_BIRTHDATE,
+  FAKE_SSN,
+} from "../../support/commands";
 /* eslint-disable no-undef */
 
 context("Initial Claim form", { scrollBehavior: "center" }, () => {
   it("requires login", () => {
     // Assume prequal is complete
     cy.setCookie("prequal_complete", "true");
-    if (Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000") {
+    if (IS_DEV_SERVER) {
       // always pass since we cannot redirect to a different port (4430)
     } else {
       cy.visit("/claimant/");

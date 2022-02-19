@@ -9,7 +9,12 @@ import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
     return {
-      t: (str: string) => str,
+      t: (str: string, option?: { returnObjects: boolean }) => {
+        if (option?.returnObjects) {
+          return ["a", "b", "c"];
+        }
+        return str;
+      },
     };
   },
   Trans: ({ i18nKey }: { i18nKey: string }) => <>{i18nKey}</>,
@@ -36,12 +41,28 @@ const myPII: WhoAmI = {
   swa_claimant_url: "https://some-test-url.gov",
 };
 
+const myEmptyPII: WhoAmI = {
+  IAL: "1",
+  claim_id: "123",
+  claimant_id: "321",
+  first_name: "",
+  last_name: "",
+  birthdate: "",
+  ssn: "",
+  email: "test@example.com",
+  phone: "",
+  swa_code: "",
+  swa_name: "",
+  swa_claimant_url: "https://some-test-url.gov",
+};
+
 const renderWithMocks = (
   IAL: WhoAmI["IAL"],
   appStatus: "notStarted" | "inProgress" | "ready"
 ) => {
+  const pii = IAL === "1" ? myEmptyPII : myPII;
   mockedUseWhoAmI.mockImplementation(() => ({
-    data: { ...myPII, IAL },
+    data: { ...pii, IAL },
     isLoading: false,
     error: null,
     isError: false,
@@ -80,6 +101,10 @@ describe("the Home page", () => {
     });
     it("shows ID verification not started", () => {
       renderWithMocks("1", "notStarted");
+      const welcome = screen.getByRole("heading", { level: 1 });
+      expect(welcome.textContent).toEqual("namelessWelcome");
+      const identityMoreInfo = screen.getByText("identity.moreInfo.title");
+      expect(identityMoreInfo).toBeInTheDocument();
       const verified = screen.getByText("identity.not_started.title");
       expect(verified).toBeInTheDocument();
       const verifiedContainer = verified.parentElement;
@@ -90,6 +115,8 @@ describe("the Home page", () => {
     });
     it("shows ID verification complete", () => {
       renderWithMocks("2", "notStarted");
+      const welcome = screen.getByRole("heading", { level: 1 });
+      expect(welcome.textContent).toContain(`welcome, ${myPII.first_name}`);
       const verified = screen.getByText("identity.complete.title");
       expect(verified).toBeInTheDocument();
       const verifiedContainer = verified.parentElement;
@@ -100,6 +127,8 @@ describe("the Home page", () => {
     });
     it("shows app not started", () => {
       renderWithMocks("1", "notStarted");
+      const appMoreInfo = screen.getByText("application.moreInfo.title");
+      expect(appMoreInfo).toBeInTheDocument();
       const app = screen.getByText("application.not_ready_to_submit.title");
       expect(app).toBeInTheDocument();
       const appContainer = app.parentElement;
