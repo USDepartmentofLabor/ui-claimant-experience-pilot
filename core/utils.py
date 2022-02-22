@@ -48,12 +48,16 @@ def register_local_login(request):
         else:
             whoami[k] = payload[k]
 
+    if whoami["IAL"] == "2":
+        whoami["verified_at"] = str(timezone.now().isoformat())
+
     request.session["whoami"] = whoami
+    local_idp = local_identity_provider()
     if "email" in whoami and len(whoami["email"]):
         xid = hash_idp_user_xid(whoami["email"])
         with transaction.atomic():
             claimant, _ = Claimant.objects.get_or_create(
-                idp_user_xid=xid, idp=local_identity_provider()
+                idp_user_xid=xid, idp=local_idp
             )
             claimant.events.create(
                 category=Claimant.EventCategories.LOGGED_IN, description=whoami["IAL"]
@@ -61,6 +65,7 @@ def register_local_login(request):
             claimant.bump_IAL_if_necessary(whoami["IAL"])
 
         whoami["claimant_id"] = xid
+    whoami["identity_provider"] = local_idp.name
     return from_dict(data_class=WhoAmI, data=whoami)
 
 

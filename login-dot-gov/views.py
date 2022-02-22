@@ -247,6 +247,8 @@ def result(request):
             zipcode=address.get("postal_code", ""),
         ),
         claimant_id=idp_user_xid,
+        verified_at=userinfo.get("verified_at", ""),
+        identity_provider=logindotgov_idp.name,
     )
     request.session["whoami"] = whoami.as_dict()
 

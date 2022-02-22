@@ -22,8 +22,7 @@
     "claimant_id",
     "identity_provider",
     "identity_assurance_level",
-    "swa_code",
-    "validated_at"
+    "swa_code"
   ],
   "properties": {
     "id": {

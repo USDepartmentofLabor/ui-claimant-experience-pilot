@@ -47,6 +47,7 @@ class HomeTestCase(TestCase):
             fetch_redirect_response=False,
         )
         claimant = Claimant.objects.last()
+        verified_at = self.client.session["whoami"]["verified_at"]
         self.assertEquals(
             self.client.session["whoami"],
             {
@@ -55,6 +56,8 @@ class HomeTestCase(TestCase):
                 "first_name": "Some",
                 "last_name": "Body",
                 "IAL": "2",
+                "identity_provider": "Local",
+                "verified_at": verified_at,
             },
         )
         self.assertEquals(claimant.last_login_event().description, "2")

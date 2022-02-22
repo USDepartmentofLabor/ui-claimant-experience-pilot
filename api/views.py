@@ -187,6 +187,7 @@ def completed_claim(request):
 
 
 def invalid_claim_response(claim_validator):
+    logger.debug("🚀 invalid claim errors: {}".format(claim_validator.errors_as_dict()))
     return JsonResponse(
         {
             "status": "error",

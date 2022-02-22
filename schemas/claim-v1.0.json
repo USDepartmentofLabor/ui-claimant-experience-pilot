@@ -652,8 +652,7 @@
     "employers",
     "ethnicity",
     "id",
-    "identity_assurance_level",
-    "identity_provider",
+    "idp_identity",
     "interpreter_required",
     "mailing_address",
     "occupation",
@@ -681,15 +680,9 @@
       "description": "Identifier for the Claimant. Unique to the Identity Provider used.",
       "type": "string"
     },
-    "identity_provider": {
-      "description": "Name of the Identity Provider used to authenticate the Claimant",
-      "type": "string"
-    },
-    "identity_assurance_level": {
-      "description": "https://pages.nist.gov/800-63-3-Implementation-Resources/63A/ial2remote/",
-      "type": "integer",
-      "enum": [1, 2],
-      "default": 2
+    "idp_identity": {
+      "description": "The profile of the claimant as returned from the Identity Provider",
+      "$ref": "file:schemas/identity-v1.0.json"
     },
     "swa_code": {
       "description": "2-letter code identifying the State Workforce Agency",

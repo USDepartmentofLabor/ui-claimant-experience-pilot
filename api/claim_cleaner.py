@@ -17,16 +17,15 @@ class ClaimCleaner(object):
 
         # set values we receive from whoami
         # this is to guarantee that they come directly from the IdP
-        claim["email"] = self.claim_request.whoami.email
-        claim["ssn"] = re.sub(
-            r"^([0-9]{3})-?([0-9]{2})-?([0-9]{4})$",
-            r"\1-\2-\3",
-            self.claim_request.whoami.ssn,
-        )
-        claim["birthdate"] = self.claim_request.whoami.birthdate
-        claim["identity_assurance_level"] = int(self.claim_request.whoami.IAL)
+        claim["idp_identity"] = self.claim_request.whoami.as_identity()
 
-        # Like SSN (above), FEIN and Alien Registration number have optional - delimiter,
+        # because "idp_identity" is a sub-schema that is also used standalone,
+        # sync some values just in case.
+        claim["idp_identity"]["swa_code"] = claim["swa_code"]
+        claim["idp_identity"]["id"] = claim["id"]
+        claim["idp_identity"]["claimant_id"] = claim["claimant_id"]
+
+        # Like SSN in WhoAmI, FEIN and Alien Registration number have optional - delimiter,
         # but we always use them in packaged claims.
         if (
             "work_authorization" in claim

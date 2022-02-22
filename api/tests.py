@@ -70,6 +70,8 @@ WHOAMI_IAL2 = {
     "birthdate": "1990-05-04",
     "ssn": "900001234",  # omit hyphen to test claim cleaner
     "phone": "555-555-1234",
+    "address": RESIDENCE_ADDRESS,
+    "verified_at": "2022-02-17T17:28:27-06:00",
 }
 
 
@@ -87,12 +89,20 @@ class BaseClaim:
     def base_claim(
         self, id=str(uuid.uuid4()), claimant_id=None, email=None, swa_code=None
     ):
+        identity = from_dict(
+            data_class=WhoAmI,
+            data=WHOAMI_IAL2
+            | {
+                "claim_id": id,
+                "swa_code": (swa_code or "XX"),
+                "claimant_id": (claimant_id or "random-claimaint-string"),
+            },
+        ).as_identity()
         claim = {
             "is_complete": True,
-            "claimant_id": claimant_id or "random-claimaint-string",
-            "identity_provider": "test",
-            "identity_assurance_level": 2,
-            "swa_code": swa_code or "XX",
+            "claimant_id": identity["claimant_id"],
+            "idp_identity": identity,
+            "swa_code": identity["swa_code"],
             "ssn": "900-00-1234",
             "email": email or "foo@example.com",
             "claimant_name": {"first_name": "first", "last_name": "last"},
@@ -728,7 +738,6 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
         self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
-        self.assertTrue(response_payload["claim"]["identity_provider"])
         self.assertEqual(response_payload["status"], "ok")
         self.assertTrue(response_payload["remaining_time"])
         self.assertTrue(response_payload["expires"])
@@ -741,7 +750,6 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
         self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
-        self.assertTrue(response_payload["claim"]["identity_provider"])
         self.assertEqual(response_payload["status"], "ok")
         self.assertTrue(response_payload["remaining_time"])
         self.assertTrue(response_payload["expires"])
@@ -981,7 +989,6 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
             "ssn": "666-00-0000",
             "email": "fake@example.com",
             "birthdate": "1999-12-12",
-            "identity_assurance_level": 1,
             "work_authorization": {
                 "authorization_type": "permanent_resident",
                 "alien_registration_number": "111111111",
@@ -992,11 +999,9 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim_cleaner = ClaimCleaner(claim_request)
         cleaned_claim = claim_cleaner.cleaned()
         logger.debug("🚀 cleaned_claim={}".format(cleaned_claim))
-        # whoami always overrides anything in the request body
-        self.assertEqual(cleaned_claim["ssn"], "900-00-1234")
-        self.assertEqual(cleaned_claim["email"], WHOAMI_IAL2["email"])
-        self.assertEqual(cleaned_claim["birthdate"], WHOAMI_IAL2["birthdate"])
-        self.assertEqual(cleaned_claim["identity_assurance_level"], 2)
+        self.assertEqual(cleaned_claim["ssn"], "666-00-0000")
+        self.assertEqual(cleaned_claim["email"], "fake@example.com")
+        self.assertEqual(cleaned_claim["birthdate"], "1999-12-12")
         self.assertEqual(cleaned_claim["employers"][0]["fein"], "00-1234567")
         self.assertEqual(
             cleaned_claim["work_authorization"]["alien_registration_number"],
@@ -1134,7 +1139,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 28)
+        self.assertEqual(len(cv.errors), 27)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)
@@ -1264,12 +1269,12 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 28)
+        self.assertEqual(len(cv.errors), 27)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
-        # TODO self.assertIn("'ssn' is a required property", error_dict)
-        # TODO self.assertIn("'email' is a required property", error_dict)
+        self.assertIn("'ssn' is a required property", error_dict)
+        self.assertIn("'email' is a required property", error_dict)
         self.assertIn("'residence_address' is a required property", error_dict)
         self.assertIn("'mailing_address' is a required property", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
