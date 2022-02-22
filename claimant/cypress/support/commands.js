@@ -143,7 +143,7 @@ Cypress.Commands.add("click_next", () => {
 });
 
 Cypress.Commands.add("click_back", () => {
-  cy.get("button")
+  cy.get("[data-testid=back-button]")
     .contains("Back")
     .scrollIntoView()
     .should("be.visible")
@@ -325,9 +325,15 @@ Cypress.Commands.add("click_is_complete", () => {
 
 Cypress.Commands.add("navigate_to_form", (props) => {
   cy.visit("/claimant/");
-  cy.contains(props?.inProgress ? "Continue" : "Start application").click({
-    force: true,
-  });
+  const buttonText = props?.inProgress ? "Continue" : "Start application";
+  if (props?.at) {
+    cy.contains(buttonText)
+      .scrollIntoView()
+      .should("have.attr", "href", props.at)
+      .click({ force: true });
+  } else {
+    cy.contains(buttonText).scrollIntoView().click({ force: true });
+  }
 });
 
 Cypress.Commands.add("complete_claimant_names", (claimant) => {
@@ -629,4 +635,12 @@ Cypress.Commands.add("click_yes", (fieldName) => {
 
 Cypress.Commands.add("click_no", (fieldName) => {
   cy.get(`input[id=${fieldName}\\.no]`).click({ force: true });
+});
+
+Cypress.Commands.add(`verifyCallCount`, (alias, expectedNumberOfCalls) => {
+  const resolvedAlias = alias[0] === `@` ? alias.substring(1) : alias;
+
+  cy.get(`${resolvedAlias}.all`).then((calls) => {
+    cy.wrap(calls.length).should(`equal`, expectedNumberOfCalls);
+  });
 });

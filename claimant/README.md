@@ -45,6 +45,8 @@ To turn on all the verbose Cypress debugging for one test against your dev serve
 DEBUG=cypress:* npx cypress run --headless --browser chrome --spec cypress/integration/tests/name-of-your-test -c baseUrl=https://sandbox.ui.dol.gov:3000
 ```
 
+The `DEBUG` environment variable can take different `cypress:...` values, comma-separated. See the [full list of DEBUG options](https://docs.cypress.io/guides/references/troubleshooting#Log-sources).
+
 Alternately, you can set the base url via an environment variable:
 
 ```sh
@@ -88,6 +90,18 @@ To run all the tests and display test coverage, using the local dev server (`mak
 ```sh
 % make dev-test-coverage
 ```
+
+### Debugging Cypress tests
+
+Because our React app relies heavily on async communication with the backend, it's possible to discover flakey tests
+due to timing issues that are environment-dependent. One handy tool for finding flakey tests in local development is
+_cypress-repeat_.
+
+```sh
+% DEBUG=cypress:* npx cypress-repeat run -n 20 --headless --browser chrome --spec cypress/integration/tests/your-test.spec.js
+```
+
+The [cypress blog](https://www.cypress.io/blog/2020/12/03/retry-rerun-repeat/) has other hints on running tests.
 
 ## React Query
 

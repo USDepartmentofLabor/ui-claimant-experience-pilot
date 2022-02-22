@@ -80,22 +80,15 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
-
     cy.contains("Success status").should("be.visible");
-
     cy.logout();
 
-    // pause just a little to avoid sync issues in CI
-    cy.wait(1000);
-
     cy.login(email);
-    cy.navigate_to_form({ inProgress: true });
-
-    // pause just a little to avoid sync issues in CI
-    cy.wait(1000);
-
+    cy.navigate_to_form({ inProgress: true, at: "/claimant/claim/contact" });
+    cy.url().should("contain", "/claim/contact");
     cy.click_back();
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
+    cy.verifyCallCount("@GET-whoami", 2);
   });
 
   it("saves completed claim (also checks a11y on each page)", () => {

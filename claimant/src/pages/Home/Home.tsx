@@ -30,20 +30,29 @@ type AccordionProps = React.ComponentProps<typeof Accordion>;
 
 const HomePage = () => {
   const { t } = useTranslation("home");
-  const { data: whoami, error } = useWhoAmI();
-  const { status: completedFetchStatus } = useGetCompletedClaim();
-  const { data: partialClaimResponse } = useGetPartialClaim();
-  const { continuePath } = useClaimProgress(partialClaimResponse?.claim);
-  const partialClaim = partialClaimResponse?.claim;
+  const { data: whoami, isFetched: whoamiIsFetched, error } = useWhoAmI();
+  const { status: completedFetchStatus, isFetched: completedIsFetched } =
+    useGetCompletedClaim();
+  const { data: partialClaimResponse, isFetched: partialIsFetched } =
+    useGetPartialClaim();
+  const { continuePath } = useClaimProgress(partialClaimResponse);
 
   if (error) {
     throw error;
   }
 
-  if (!partialClaimResponse || !whoami) {
+  const pageReady = () =>
+    whoami &&
+    partialClaimResponse?.claim &&
+    whoamiIsFetched &&
+    completedIsFetched &&
+    partialIsFetched;
+
+  if (!pageReady()) {
     return <PageLoader />;
   }
 
+  const partialClaim = partialClaimResponse?.claim;
   const expiresAt = `${
     partialClaimResponse?.expires
       ? formatExpiresAtDate(partialClaimResponse?.expires)
@@ -55,13 +64,20 @@ const HomePage = () => {
   const claimStarted = partialClaim && Object.keys(partialClaim).length > 0;
 
   const identityStatus: Status =
-    whoami.IAL === "2" ? "complete" : "not_started";
+    whoami?.IAL === "2" ? "complete" : "not_started";
   const claimStatus: Status =
     completedFetchStatus === "success"
       ? "ready_to_submit"
       : claimStarted
       ? "in_progress"
       : "not_started";
+
+  const claimProgressDeterminationIncomplete = () =>
+    claimStatus === "in_progress" && continuePath === Routes.CLAIM_FORM_HOME;
+
+  if (claimProgressDeterminationIncomplete()) {
+    return <PageLoader />;
+  }
 
   const identityMoreInfoProps: AccordionProps = {
     items: [
@@ -152,7 +168,7 @@ const HomePage = () => {
   const remainingTasks = tasks.filter(({ status }) => status !== "complete");
 
   const greetingName =
-    partialClaim?.claimant_name?.first_name || whoami.first_name;
+    partialClaim?.claimant_name?.first_name || whoami?.first_name;
 
   return (
     <main>

@@ -1,7 +1,11 @@
 // Run the pa11y and Lighthouse audits
 /* eslint-disable no-undef */
 
-import { IS_DEV_SERVER } from "../../support/commands";
+// we toggle some behavior based on running against dev server or docker server
+// this is duplicated from cypress/support/commands.js because of the deferred
+// load order of the audit modules.
+const IS_DEV_SERVER =
+  Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000";
 
 context("Cypress Audit", { scrollBehavior: "center" }, () => {
   it("passes pa11y checks", () => {

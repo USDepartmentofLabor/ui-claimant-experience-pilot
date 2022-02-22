@@ -66,6 +66,7 @@ const renderWithMocks = (
     isLoading: false,
     error: null,
     isError: false,
+    isFetched: true,
   }));
   mockedUseGetCompletedClaim.mockImplementation(() => ({
     data: {},
@@ -79,8 +80,9 @@ const renderWithMocks = (
     data:
       appStatus === "inProgress"
         ? { status: "ok", claim: { some: "data" } }
-        : {},
+        : { status: "ok", claim: {} },
     isLoading: false,
+    isFetched: true,
     error: false,
     isError: false,
   }));

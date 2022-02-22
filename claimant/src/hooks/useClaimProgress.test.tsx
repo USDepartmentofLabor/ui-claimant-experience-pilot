@@ -12,9 +12,9 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-const setupComponent = (claim: Partial<Claim>) => {
+const setupComponent = (partialClaimResponse: PartialClaimApiResponseType) => {
   const Component = () => {
-    const { continuePath } = useClaimProgress(claim);
+    const { continuePath } = useClaimProgress(partialClaimResponse);
     return <>{continuePath}</>;
   };
   render(<Component />);
@@ -22,20 +22,23 @@ const setupComponent = (claim: Partial<Claim>) => {
 
 describe("useClaimProgress", () => {
   it("returns first path for unstarted form", () => {
-    setupComponent({});
+    setupComponent({ status: "ok", claim: {} });
     expect(
       screen.getByText(`${Routes.CLAIM_FORM_HOME}${pages[0].path}`)
     ).toBeInTheDocument();
   });
   it("returns contact page if personal done", () => {
     setupComponent({
-      claimant_name: { first_name: "Jane", last_name: "Doe" },
-      LOCAL_claimant_has_alternate_names: false,
-      residence_address: {
-        address1: "123 Fake St",
-        city: "Fakeville",
-        state: "AK",
-        zipcode: "12345",
+      status: "ok",
+      claim: {
+        claimant_name: { first_name: "Jane", last_name: "Doe" },
+        LOCAL_claimant_has_alternate_names: false,
+        residence_address: {
+          address1: "123 Fake St",
+          city: "Fakeville",
+          state: "AK",
+          zipcode: "12345",
+        },
       },
     });
     expect(
@@ -43,7 +46,7 @@ describe("useClaimProgress", () => {
     ).toBeInTheDocument();
   });
   it("handles segments correctly", () => {
-    setupComponent(completedUpToEmployerTwo);
+    setupComponent({ status: "ok", claim: completedUpToEmployerTwo });
     expect(
       screen.getByText(`${Routes.CLAIM_FORM_HOME}employer/1/`)
     ).toBeInTheDocument();

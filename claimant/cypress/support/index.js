@@ -20,3 +20,32 @@ import "@cypress/code-coverage/support";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+/* eslint-disable no-undef */
+
+beforeEach(() => {
+  // observability only. useful for counting requests to verify caching.
+  cy.intercept(
+    "GET",
+    "/api/partial-claim/",
+    cy.spy().as("GET-partial-claim")
+  ).as("GET-partial-claim");
+  cy.intercept(
+    "POST",
+    "/api/partial-claim/",
+    cy.spy().as("POST-partial-claim")
+  ).as("POST-partial-claim");
+  cy.intercept(
+    "GET",
+    "/api/completed-claim/",
+    cy.spy().as("GET-completed-claim")
+  ).as("GET-completed-claim");
+  cy.intercept(
+    "POST",
+    "/api/completed-claim/",
+    cy.spy().as("POST-completed-claim")
+  ).as("POST-completed-claim");
+  cy.intercept("GET", "/api/whoami/", cy.spy().as("GET-whoami")).as(
+    "GET-whoami"
+  );
+});

@@ -52,7 +52,10 @@ const submitClaim = (payload: Claim) => {
 };
 
 const getCompletedClaim = () => {
-  return httpclient.get(COMPLETED_CLAIM_ENDPOINT, { withCredentials: true });
+  return httpclient.get(COMPLETED_CLAIM_ENDPOINT, {
+    withCredentials: true,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 export const useSubmitClaim = () => {
@@ -64,5 +67,7 @@ export const useGetPartialClaim = () => {
 };
 
 export const useGetCompletedClaim = () => {
-  return useQuery("getCompletedClaim", () => getCompletedClaim());
+  return useQuery("getCompletedClaim", () => getCompletedClaim(), {
+    staleTime: 1000 * 1 * 60,
+  });
 };

@@ -33,7 +33,14 @@ module.exports = (on, config) => {
     },
   });
 
-  on("before:browser:launch", (browser, launchOptions) => {
+  on("before:browser:launch", (browser = {}, launchOptions) => {
+    if (process.env.DEBUG && process.env.DEBUG.match(/cypress/)) {
+      launchOptions.args =
+        require("cypress-log-to-output").browserLaunchHandler(
+          browser,
+          launchOptions.args
+        );
+    }
     prepareAudit(launchOptions);
   });
 

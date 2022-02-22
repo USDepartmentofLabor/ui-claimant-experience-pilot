@@ -3,12 +3,17 @@ import { useTranslation } from "react-i18next";
 import { pages } from "../pages/PageDefinitions";
 import { Routes } from "../routes";
 
-export const useClaimProgress = (claim: Partial<Claim> | undefined) => {
+export const useClaimProgress = (
+  partialClaimResponse: PartialClaimApiResponseType | undefined
+) => {
   const { t } = useTranslation("claimForm");
   const [continuePath, setContinuePath] = useState(Routes.CLAIM_FORM_HOME);
 
   useEffect(() => {
-    if (!claim) return;
+    if (!partialClaimResponse) return;
+    if (!partialClaimResponse.claim) return;
+
+    const claim = partialClaimResponse.claim;
 
     let firstInvalidPage = "";
 
@@ -39,7 +44,7 @@ export const useClaimProgress = (claim: Partial<Claim> | undefined) => {
     }
 
     setContinuePath(Routes.CLAIM_FORM_HOME + firstInvalidPage);
-  }, [claim]);
+  }, [partialClaimResponse]);
 
   return { continuePath };
 };
