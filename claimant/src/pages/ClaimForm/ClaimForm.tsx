@@ -118,7 +118,7 @@ export const ClaimForm = () => {
         type="button"
         data-testid="back-button"
         onClick={() => navigateToPreviousPage(claimForm)}
-        className="usa-button usa-button--outline"
+        className="usa-button usa-button--outline width-auto"
       >
         {t("pagination.previous")}
       </Button>
@@ -127,6 +127,7 @@ export const ClaimForm = () => {
   const nextPageLink = () =>
     !claimCompleted() && (
       <Button
+        className="width-auto"
         disabled={submitClaim.isLoading}
         type="submit"
         data-testid="next-button"
@@ -220,6 +221,7 @@ export const ClaimForm = () => {
   const saveAndExitLink = (currentValues: FormValues) =>
     !claimCompleted() && (
       <Button
+        className="width-auto"
         type="button"
         onClick={() => saveAndExit(currentValues)}
         unstyled
@@ -325,9 +327,10 @@ const ClaimFormPage = () => {
   const totalSteps = pages.length;
 
   return (
-    <>
+    <div className="display-flex flex-column margin-top-5">
       <StepIndicator
-        counters="small"
+        className="overflow-hidden"
+        counters="none"
         headingLevel="h2"
         divProps={{
           role: "region",
@@ -342,7 +345,7 @@ const ClaimFormPage = () => {
           />
         ))}
       </StepIndicator>
-      <main id="main-content" className="margin-top-5">
+      <main className="tablet:width-mobile-lg margin-x-auto" id="main-content">
         <RequestErrorBoundary>
           <ClaimFormPageHeading
             pageHeading={t(`${pages[currentPageIndex].heading}`)}
@@ -352,7 +355,7 @@ const ClaimFormPage = () => {
           <ClaimForm />
         </RequestErrorBoundary>
       </main>
-    </>
+    </div>
   );
 };
 

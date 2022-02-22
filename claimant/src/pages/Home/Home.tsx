@@ -171,7 +171,7 @@ const HomePage = () => {
     partialClaim?.claimant_name?.first_name || whoami?.first_name;
 
   return (
-    <main>
+    <main className="tablet:width-mobile-lg margin-x-auto">
       <RequestErrorBoundary>
         {greetingName ? (
           <h1>
