@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from typing import Optional
 import re
+import datetime
 
 
 @dataclass
@@ -52,7 +53,12 @@ class WhoAmI:
             "email": self.email,
         }
         if self.IAL == "2":
-            identity["verified_at"] = self.verified_at
+            if re.match(r"\d+$", self.verified_at):
+                identity["verified_at"] = datetime.datetime.fromtimestamp(
+                    int(self.verified_at)
+                ).isoformat()
+            else:
+                identity["verified_at"] = self.verified_at
             identity["address"] = self.address.as_dict()
             identity["ssn"] = re.sub(
                 r"^([0-9]{3})-?([0-9]{2})-?([0-9]{4})$",

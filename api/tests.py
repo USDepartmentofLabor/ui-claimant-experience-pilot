@@ -1360,3 +1360,12 @@ class WhoAmITestCase(TestCase):
             data_class=WhoAmI, data={"email": "foo@example.com", "claimant_id": None}
         )
         self.assertEqual(whoami.claimant_id, None)
+
+    def test_whoami_as_identity(self):
+        whoami = from_dict(
+            data_class=WhoAmI,
+            data=(
+                WHOAMI_IAL2 | {"verified_at": "1234567890", "address": MAILING_ADDRESS}
+            ),
+        )
+        self.assertEqual(whoami.as_identity()["verified_at"], "2009-02-13T23:31:30")
