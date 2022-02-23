@@ -15,15 +15,15 @@ class ClaimFinder(object):
         if not self.whoami.claimant_id:
             logger.debug("🚀 missing whoami.claimant_id")
             return False
-        if not self.whoami.swa_code:
-            logger.debug("🚀 missing whoami.swa_code")
+        if not self.whoami.swa:
+            logger.debug("🚀 missing whoami.swa")
             return False
         try:
             self.claimant = Claimant.objects.get(idp_user_xid=self.whoami.claimant_id)
         except Claimant.DoesNotExist:
             return False
         try:
-            self.swa = SWA.objects.get(code=self.whoami.swa_code)
+            self.swa = SWA.objects.get(code=self.whoami.swa.code)
         except SWA.DoesNotExist:
             return False
         return True

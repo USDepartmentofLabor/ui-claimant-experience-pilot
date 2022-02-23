@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
 from typing import Optional
+import dacite
 import re
 import datetime
 
@@ -18,6 +19,17 @@ class WhoAmIAddress:
 
 
 @dataclass
+class WhoAmISWA:
+    code: str
+    name: str
+    featureset: str
+    claimant_url: Optional[str] = None
+
+    def as_dict(self):
+        return {k: v for k, v in self.__dict__.items() if v is not None}
+
+
+@dataclass
 class WhoAmI:
     email: str
     IAL: str = "2"
@@ -29,17 +41,21 @@ class WhoAmI:
     phone: Optional[str] = None
     claimant_id: Optional[str] = None
     claim_id: Optional[str] = None
-    swa_code: Optional[str] = None
-    swa_name: Optional[str] = None
-    swa_claimant_url: Optional[str] = None
+    swa: Optional[WhoAmISWA] = None
     address: Optional[WhoAmIAddress] = None
     verified_at: Optional[str] = None
     identity_provider: str = "login.gov"
+
+    @classmethod
+    def from_dict(cls, the_dict):
+        return dacite.from_dict(data_class=cls, data=the_dict)
 
     def as_dict(self):
         serialized = self.__dict__
         if "address" in serialized and isinstance(serialized["address"], WhoAmIAddress):
             serialized["address"] = self.address.as_dict()
+        if "swa" in serialized and isinstance(serialized["swa"], WhoAmISWA):
+            serialized["swa"] = self.swa.as_dict()
         return serialized
 
     def as_identity(self):
@@ -49,7 +65,7 @@ class WhoAmI:
             "claimant_id": self.claimant_id,
             "identity_provider": self.identity_provider,
             "identity_assurance_level": int(self.IAL),
-            "swa_code": self.swa_code,
+            "swa_code": self.swa.code,
             "email": self.email,
         }
         if self.IAL == "2":

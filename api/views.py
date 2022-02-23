@@ -18,7 +18,7 @@ from .claim_validator import ClaimValidator
 from .claim_cleaner import ClaimCleaner
 from .claim_serializer import ClaimSerializer
 from .models import Claim
-from .whoami import WhoAmI
+from .whoami import WhoAmI, WhoAmISWA
 from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
 from dacite import from_dict
@@ -63,13 +63,9 @@ def whoami(request):
     or still requires IdP AAL2 login.
     """
     whoami = whoami_from_session(request)
-    if "swa" in request.session and not (
-        whoami.swa_code and whoami.swa_name and whoami.swa_claimant_url
-    ):
-        whoami.swa_code = request.session["swa"]
-        swa = SWA.objects.get(code=whoami.swa_code)
-        whoami.swa_name = swa.name
-        whoami.swa_claimant_url = swa.claimant_url
+    if "swa" in request.session and not whoami.swa:
+        swa = SWA.objects.get(code=request.session["swa"])
+        whoami.swa = from_dict(data_class=WhoAmISWA, data=swa.for_whoami())
     # set csrftoken cookie
     django.middleware.csrf.get_token(request)
 
@@ -123,7 +119,7 @@ def cancel_claim(request, claim_id):
     NOTE that normally this is only possible via SWA API, but we make it available
     for testing purposes only, e.g. for creating multiple claims under the same account.
     """
-    whoami = from_dict(data_class=WhoAmI, data=request.session.get("whoami"))
+    whoami = whoami_from_session(request)
 
     ld_flag_set = ld_client.variation(
         "allow-claim-resolution", {"key": whoami.email}, False
@@ -273,7 +269,7 @@ def GET_partial_claim(request):
         {
             "status": "error",
             "error": "partial claim not found for SWA {} with Claimant {}".format(
-                whoami.swa_code, whoami.claimant_id
+                whoami.swa.code, whoami.claimant_id
             ),
         },
         status=404,

@@ -39,7 +39,7 @@ from core.claim_storage import (
     ClaimWriter,
 )
 from .claim_finder import ClaimFinder
-from .whoami import WhoAmI
+from .whoami import WhoAmI, WhoAmISWA
 from .claim_cleaner import ClaimCleaner
 from os import listdir
 from os.path import isfile, join, isdir
@@ -74,13 +74,20 @@ WHOAMI_IAL2 = {
     "verified_at": "2022-02-17T17:28:27-06:00",
 }
 
+TEST_SWA = {
+    "claimant_url": "https://somestate.gov",
+    "name": "SomeState",
+    "code": "XX",
+    "featureset": "Claim And Identity",
+}
+
 
 class SessionAuthenticator:
     def authenticate_session(self, client=None):
         client = client if client else self.client
         session = client.session
         session["authenticated"] = True
-        session["whoami"] = WHOAMI_IAL2
+        session["whoami"] = WHOAMI_IAL2 | {"swa": TEST_SWA}
         session.save()
         return session
 
@@ -94,7 +101,7 @@ class BaseClaim:
             data=WHOAMI_IAL2
             | {
                 "claim_id": id,
-                "swa_code": (swa_code or "XX"),
+                "swa": TEST_SWA | {"code": (swa_code or TEST_SWA["code"])},
                 "claimant_id": (claimant_id or "random-claimaint-string"),
             },
         ).as_identity()
@@ -214,9 +221,9 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         mail.outbox = []
         create_swa(
             is_active=True,
-            code="XX",
-            name="SomeState",
-            claimant_url="https://somestate.gov",
+            code=TEST_SWA["code"],
+            name=TEST_SWA["name"],
+            claimant_url=TEST_SWA["claimant_url"],
         )
 
     @classmethod
@@ -239,7 +246,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             session = c.session
             session["swa"] = swa.code
             session["whoami"]["claimant_id"] = claimant.idp_user_xid
-            session["whoami"]["swa_code"] = swa.code
+            session["whoami"]["swa"] = swa.for_whoami()
             session.save()
         return c
 
@@ -259,9 +266,15 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
 
         response = self.client.get("/api/whoami/")
         whoami = response.json()
-        self.assertEqual(whoami["swa_code"], "XX")
-        self.assertEqual(whoami["swa_name"], "SomeState")
-        self.assertEqual(whoami["swa_claimant_url"], "https://somestate.gov")
+        self.assertEqual(
+            whoami["swa"],
+            {
+                "code": "XX",
+                "name": "SomeState",
+                "claimant_url": "https://somestate.gov",
+                "featureset": "Claim And Identity",
+            },
+        )
 
     def test_whoami_no_authentication(self):
         response = self.client.get("/api/whoami/")
@@ -901,10 +914,12 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim.events.create(category=Claim.EventCategories.COMPLETED)
 
         finder = ClaimFinder(
-            WhoAmI(
-                email="foo@example.com",
-                claimant_id=claimant.idp_user_xid,
-                swa_code=swa.code,
+            WhoAmI.from_dict(
+                {
+                    "email": "foo@example.com",
+                    "claimant_id": claimant.idp_user_xid,
+                    "swa": swa.for_whoami(),
+                }
             )
         )
         self.assertEqual(claim, finder.find())
@@ -922,27 +937,37 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         self.assertFalse(finder.find())
 
         finder = ClaimFinder(
-            WhoAmI(email="foo@example.com", claimant_id="nonesuch", swa_code=swa.code)
+            WhoAmI.from_dict(
+                {
+                    "email": "foo@example.com",
+                    "claimant_id": "nonesuch",
+                    "swa": swa.for_whoami(),
+                }
+            )
         )
         self.assertFalse(finder.find())
 
-        finder = ClaimFinder(WhoAmI(email="foo@example.com", swa_code=swa.code))
+        finder = ClaimFinder(
+            WhoAmI.from_dict({"email": "foo@example.com", "swa": swa.for_whoami()})
+        )
         self.assertFalse(finder.find())
 
         finder = ClaimFinder(
             WhoAmI(
                 email="foo@example.com",
                 claimant_id=claimant.idp_user_xid,
-                swa_code="nonesuch",
+                swa=WhoAmISWA(code="nonesuch", name="nope", featureset="none"),
             )
         )
         self.assertFalse(finder.find())
 
         finder = ClaimFinder(
-            WhoAmI(
-                email="foo@example.com",
-                claimant_id=claimant2.idp_user_xid,
-                swa_code=swa.code,
+            WhoAmI.from_dict(
+                {
+                    "email": "foo@example.com",
+                    "claimant_id": claimant2.idp_user_xid,
+                    "swa": swa.for_whoami(),
+                }
             )
         )
         self.assertFalse(finder.find())
@@ -957,10 +982,12 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim2.save()
         claim2.events.create(category=Claim.EventCategories.COMPLETED)
         finder = ClaimFinder(
-            WhoAmI(
-                email="foo@example.com",
-                claimant_id=claimant.idp_user_xid,
-                swa_code=swa.code,
+            WhoAmI.from_dict(
+                {
+                    "email": "foo@example.com",
+                    "claimant_id": claimant.idp_user_xid,
+                    "swa": swa.for_whoami(),
+                }
             )
         )
         self.assertEqual(claim2, finder.find())
@@ -969,10 +996,12 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
 
         # .all returns everything regardless of events
         finder = ClaimFinder(
-            WhoAmI(
-                email="foo@example.com",
-                claimant_id=claimant.idp_user_xid,
-                swa_code=swa.code,
+            WhoAmI.from_dict(
+                {
+                    "email": "foo@example.com",
+                    "claimant_id": claimant.idp_user_xid,
+                    "swa": swa.for_whoami(),
+                }
             )
         )
         self.assertEqual(finder.all().count(), 2)
@@ -1365,7 +1394,12 @@ class WhoAmITestCase(TestCase):
         whoami = from_dict(
             data_class=WhoAmI,
             data=(
-                WHOAMI_IAL2 | {"verified_at": "1234567890", "address": MAILING_ADDRESS}
+                WHOAMI_IAL2
+                | {
+                    "swa": TEST_SWA,
+                    "verified_at": "1234567890",
+                    "address": MAILING_ADDRESS,
+                }
             ),
         )
         self.assertEqual(whoami.as_identity()["verified_at"], "2009-02-13T23:31:30")

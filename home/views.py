@@ -40,7 +40,13 @@ def swa_index(request, swa_code):
     try:
         swa = SWA.active.get(code=swa_code)
         return render(
-            None, "swa-index.html", {"swa": swa, "base_url": base_url(request)}
+            None,
+            "swa-index.html",
+            {
+                "swa": swa,
+                "swa_is_identity_only": swa.is_identity_only(),
+                "base_url": base_url(request),
+            },
         )
     except SWA.DoesNotExist:
         return handle_404(request, None)
@@ -71,13 +77,20 @@ def swa_contact(request, swa_code):
 
 # our IdP "login" page
 # currently only one IdP offered, but could be multiple.
-def idp(request):
+def idp(request, swa_code=None):
+    requested_swa = swa_code if swa_code else request.GET.get("swa", None)
+    if requested_swa:
+        try:
+            SWA.active.get(code=requested_swa)
+        except SWA.DoesNotExist:
+            return handle_404(request, None)
+
     return render(
         None,
         "idp.html",
         {
             "onchange": False,  # to avoid uninit var warnings
-            "swa": request.GET.get("swa", None),
+            "swa": requested_swa,
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
             "swas": active_swas_ordered_by_name(),

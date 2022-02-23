@@ -17,6 +17,11 @@ class SWA(TimeStampedModel):
         INACTIVE = 0
         ACTIVE = 1
 
+    class FeatureSetOptions(models.IntegerChoices):
+        CLAIM_AND_IDENTITY = 1
+        IDENTITY_ONLY = 2
+        CLAIM_ONLY = 3
+
     code = models.CharField(max_length=2, unique=True)
     name = models.CharField(max_length=255, unique=True)
     public_key_fingerprint = models.CharField(max_length=255, null=True)
@@ -26,6 +31,9 @@ class SWA(TimeStampedModel):
     status = models.IntegerField(
         choices=StatusOptions.choices, default=StatusOptions.INACTIVE
     )
+    featureset = models.IntegerField(
+        choices=FeatureSetOptions.choices, default=FeatureSetOptions.CLAIM_AND_IDENTITY
+    )
 
     objects = models.Manager()  # MUST come first
     active = ActiveSwaManager()
@@ -34,6 +42,17 @@ class SWA(TimeStampedModel):
         from jwcrypto import jwk
 
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))
+
+    def is_identity_only(self):
+        return self.featureset == SWA.FeatureSetOptions.IDENTITY_ONLY
+
+    def for_whoami(self):
+        return {
+            "code": self.code,
+            "name": self.name,
+            "claimant_url": self.claimant_url,
+            "featureset": self.get_featureset_display(),
+        }
 
     def claim_queue(self):
         from .claim import Claim

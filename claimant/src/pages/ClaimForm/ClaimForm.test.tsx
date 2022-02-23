@@ -41,9 +41,12 @@ const myPII: WhoAmI = {
   ssn: "555-55-5555",
   email: "test@example.com",
   phone: "555-555-5555",
-  swa_code: "MD",
-  swa_name: "Maryland",
-  swa_claimant_url: "https://some-test-url.gov",
+  swa: {
+    code: "MD",
+    name: "Maryland",
+    claimant_url: "https://some-test-url.gov",
+    featureset: "Claim And Identity",
+  },
   address: {
     address1: "123 Main St",
     city: "Anywhere",

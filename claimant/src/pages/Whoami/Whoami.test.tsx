@@ -51,9 +51,12 @@ describe("component WhoAmI", () => {
       state: "KS",
       zipcode: "00000",
     },
-    swa_code: "MD",
-    swa_name: "Maryland",
-    swa_claimant_url: "https://some-test-url.gov",
+    swa: {
+      code: "MD",
+      name: "Maryland",
+      claimant_url: "https://some-test-url.gov",
+      featureset: "Claim And Identity",
+    },
   };
 
   beforeEach(() => {

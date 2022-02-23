@@ -2,6 +2,42 @@
 <div id="form-errors"></div>
 <script type="text/javascript">
   if (typeof USDOL === "undefined") { USDOL = {} }
+  USDOL.allowedParams = ["swa_xid"];
+  USDOL.appendParamsToLinks = () => {
+    const params = new URLSearchParams(window.location.search);
+    const links = document.getElementsByTagName("a");
+    USDOL.allowedParams.forEach((param) => {
+      if (!params.has(param)) {
+        return;
+      }
+      const value = params.get(param).replace(/[^\w\-\.]+/g, "");
+      Array.from(links).forEach((link) => {
+        if (link.href.match(/\?/)) {
+          link.setAttribute("href", link.href + `&${param}=${value}`);
+        } else {
+          link.setAttribute("href", link.href + `?${param}=${value}`);
+        }
+      });
+    });
+  };
+  USDOL.passThroughParams = (form) => {
+    const params = new URLSearchParams(window.location.search);
+    USDOL.allowedParams.forEach((param) => {
+      if (!params.has(param)) {
+        return;
+      }
+      if (document.getElementById(param)) {
+        return;
+      }
+      const value = params.get(param).replace(/[^\w\-\.]+/g, "");
+      const hiddenInput = document.createElement("input");
+      hiddenInput.setAttribute("type", "hidden");
+      hiddenInput.id = param;
+      hiddenInput.setAttribute("name", param);
+      hiddenInput.setAttribute("value", value);
+      form.appendChild(hiddenInput);
+    });
+  };
   USDOL.showErrors = (errors) => {
     const errorDiv = document.getElementById("form-errors");
     // always start fresh

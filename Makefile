@@ -179,8 +179,9 @@ else
 	python manage.py import_swa_public_key $(SWA) $(PEM) --rotate
 endif
 
+FEATURESET=1
 create-swa: ## Create a SWA model record. Requires SWA=code, URL=url, and NAME=name values.
-	python manage.py create_swa $(SWA) $(NAME) $(URL)
+	python manage.py create_swa $(SWA) $(NAME) $(URL) --featureset=$(FEATURESET)
 
 activate-swa: ## Set SWA record status=Active
 	python manage.py activate_swa $(SWA)

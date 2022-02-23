@@ -14,11 +14,18 @@ class Command(BaseCommand):
         parser.add_argument(
             "claimant_url", nargs=1, type=str, help="URL of the SWA Claimant URL"
         )
+        parser.add_argument(
+            "--featureset",
+            nargs=1,
+            type=int,
+            help="The featureset enum value (optional -- default is 1)",
+        )
 
     def handle(self, *args, **options):
         swa = SWA(
             code=options["swa_code"][0],
             name=options["swa_name"][0],
             claimant_url=options["claimant_url"][0],
+            featureset=(options["featureset"][0] if "featureset" in options else 1),
         )
         swa.save()

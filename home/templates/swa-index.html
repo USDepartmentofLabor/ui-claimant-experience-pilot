@@ -13,7 +13,9 @@
       <ul class="usa-list">
         <li>{% translate "Upload an image of your state-issued ID and a photo of yourself to verify your identity with Login.gov" %}</li>
         <li>{% translate "Verify your phone number, email address, and physical address" %}</li>
+        {% if not swa_is_identity_only %}
         <li>{% translate "Fill out an application online, including providing recent work history and employment details" %}</li>
+        {% endif %}
       </ul>
     </section>
 
@@ -26,7 +28,11 @@
         if (proceed === "no") {
           form.action = "{{ swa.claimant_url }}";
         } else {
+          {% if swa_is_identity_only %}
+          form.action = "{{ base_url }}/idp/{{ swa.code }}/";
+          {% else %}
           form.action = "{{ base_url }}/start/";
+          {% endif %}
         }
       };
       USDOL.handleNext = () => {
@@ -40,6 +46,12 @@
           return false;
         } else {
           USDOL.clearErrors();
+          USDOL.passThroughParams(form);
+          {% if swa_is_identity_only %}
+          // Set cookie to say we passed so that /idp/ page knows it's ok to proceed
+          const maxAge = 60 * 60 * 24 * 7;
+          document.cookie = `prequal_complete=true; max-age=${maxAge}; path=/; secure`
+          {% endif %}
           return true;
         }
       };
@@ -48,7 +60,11 @@
     <section class="padding-2 bg-accent-cool-lighter">
       <form id="use-app-form" class="dol-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
         <fieldset class="usa-fieldset">
+          {% if swa_is_identity_only %}
+          <legend class="usa-legend">{% translate "Do you wish to verify your identity using APPNAME HERE system?" %}</legend>
+          {% else %}
           <legend class="usa-legend">{% translate "Do you wish to apply for unemployment benefits using APPNAME HERE system?" %}</legend>
+          {% endif %}
           <input type="hidden" name="swa" id="swa" value="{{ swa.code }}" />
           <div class="usa-form-group">
             <div class="usa-radio display-inline-block margin-right-8">
@@ -62,7 +78,12 @@
                 onchange="USDOL.handleUseAppSelection()"
               />
               <label class="usa-radio__label" for="use-app.yes">
-                <strong>{% translate "Yes" %}</strong>, {% translate "I want to apply with APPNAME HERE" %}
+                <strong>{% translate "Yes" %}</strong>,
+                {% if swa_is_identity_only %}
+                  {% translate "I want to verify my identity with APPNAME HERE" %}
+                {% else %}
+                  {% translate "I want to apply with APPNAME HERE" %}
+                {% endif %}
               </label>
             </div>
             <div class="usa-radio display-inline-block">

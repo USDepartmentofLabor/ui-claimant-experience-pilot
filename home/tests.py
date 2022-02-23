@@ -18,7 +18,17 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "Sign in", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
+        # active swa must exist if requested
+        swa, _ = create_swa(is_active=True)
         response = self.client.get("/idp/?swa=XX&redirect_to=/some/place")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(f"/idp/?swa={swa.code}&redirect_to=/some/place")
+        self.assertContains(response, "You will now be transferred", status_code=200)
+        self.assertContains(response, "redirect_to=/some/place", status_code=200)
+        response = self.client.get(f"/idp/{swa.code}/?redirect_to=/some/place")
+        self.assertContains(response, "You will now be transferred", status_code=200)
+        self.assertContains(response, "redirect_to=/some/place", status_code=200)
+        response = self.client.get(f"/idp/{swa.code}/?swa=XX&redirect_to=/some/place")
         self.assertContains(response, "You will now be transferred", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 

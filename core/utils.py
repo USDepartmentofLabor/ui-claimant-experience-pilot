@@ -48,6 +48,11 @@ def register_local_login(request):
         else:
             whoami[k] = payload[k]
 
+    # don't look up SWA yet. let /api/whoami/ do it.
+    if "swa_code" in whoami:
+        request.session["swa"] = whoami["swa_code"]
+        del whoami["swa_code"]
+
     if whoami["IAL"] == "2":
         whoami["verified_at"] = str(timezone.now().isoformat())
 

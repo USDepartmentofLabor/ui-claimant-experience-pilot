@@ -47,6 +47,13 @@ type ApiClaimsResponse = {
   claims: ClaimantClaim[];
 };
 
+type SWAType = {
+  code: string;
+  name: string;
+  claimant_url: string;
+  featureset: string;
+};
+
 type WhoAmI = {
   IAL?: "1" | "2";
   claim_id?: string;
@@ -57,9 +64,7 @@ type WhoAmI = {
   ssn: string;
   email: string;
   phone: string;
-  swa_code: string;
-  swa_name: string;
-  swa_claimant_url: string;
+  swa: SWAType;
   address?: AddressType;
 };
 

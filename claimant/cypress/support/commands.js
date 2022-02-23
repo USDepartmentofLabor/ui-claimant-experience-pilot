@@ -47,11 +47,11 @@ const IS_DEV_SERVER =
   Cypress.config("baseUrl") === "https://sandbox.ui.dol.gov:3000";
 
 // test login uses local form page
-Cypress.Commands.add("login", (email) => {
+Cypress.Commands.add("login", (email, IAL = "2") => {
   if (IS_DEV_SERVER) {
-    cy.post_login(email);
+    cy.post_login(email, IAL);
   } else {
-    cy.real_login(email);
+    cy.real_login(email, IAL);
   }
 });
 
@@ -63,35 +63,39 @@ Cypress.Commands.add("logout", () => {
   }
 });
 
-Cypress.Commands.add("real_login", (email) => {
+Cypress.Commands.add("real_login", (email, IAL = "2") => {
   cy.visit("https://sandbox.ui.dol.gov:4430/login/?swa=XX");
-  Object.keys(FAKE_LOGIN).forEach((field) => {
-    if (field === "address.state") {
-      cy.get("#address\\.state")
-        .scrollIntoView()
-        .should("be.visible")
-        .select(FAKE_LOGIN[field]);
-    } else {
-      cy.get(`#${field.replace(/\./, "\\.")}`)
-        .scrollIntoView()
-        .should("be.visible")
-        .clear()
-        .type(FAKE_LOGIN[field]);
-    }
-  });
+  // toggle the IAL selector first to make fields visible if needed.
+  cy.get("#IAL").scrollIntoView().should("be.visible").select(IAL);
   cy.get("#email")
     .should("be.visible")
     .type(email || "someone@example.com");
+  if (IAL === "2") {
+    Object.keys(FAKE_LOGIN).forEach((field) => {
+      if (field === "address.state") {
+        cy.get("#address\\.state")
+          .scrollIntoView()
+          .should("be.visible")
+          .select(FAKE_LOGIN[field]);
+      } else {
+        cy.get(`#${field.replace(/\./, "\\.")}`)
+          .scrollIntoView()
+          .should("be.visible")
+          .clear()
+          .type(FAKE_LOGIN[field]);
+      }
+    });
+  }
   cy.get("[data-testid='loginbutton']")
     .scrollIntoView()
     .should("be.visible")
     .click();
 });
 
-Cypress.Commands.add("post_login", (email) => {
+Cypress.Commands.add("post_login", (email, IAL) => {
   cy.request("POST", "/api/login/", {
     email: email || "someone@example.com",
-    IAL: "2",
+    IAL,
     swa_code: "XX",
     ...FAKE_LOGIN,
   });
@@ -101,9 +105,12 @@ Cypress.Commands.add("mock_login", () => {
   cy.intercept("GET", "/api/whoami/", (req) => {
     req.reply({
       email: "someone@example.com",
-      swa_code: "XX",
-      swa_name: "SomeState",
-      swa_claimant_url: "https://some-state.fake.url/",
+      swa: {
+        code: "XX",
+        name: "SomeState",
+        claimant_url: "https://some-state.fake.url/",
+        featureset: "Claim And Identity",
+      },
       claimant_id: "the-claimant-id",
       IAL: "2",
       ...FAKE_LOGIN,

@@ -187,7 +187,7 @@ export const ClaimForm = () => {
 
     const claim: Claim = {
       ...currentValues,
-      swa_code: whoami.swa_code,
+      swa_code: whoami.swa.code,
       claimant_id: whoami.claimant_id,
     };
     if (whoami.claim_id) {

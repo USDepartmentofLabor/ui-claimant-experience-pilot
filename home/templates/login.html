@@ -21,40 +21,22 @@
             >).
           </p>
 
-          <script type="text/javascript">
-            const IAL2_REQUIRED = ["phone", "ssn", "birthdate", "first_name", "last_name", "address.address1", "address.city", "address.state", "address.zipcode"];
-            function toggleRequiredFields(ial) {
-              IAL2_REQUIRED.forEach((field) => {
-                const input = document.getElementById(field);
-                const label = input.labels[0];
-                if (ial === "1") {
-                  input.required = false;
-                  label.classList.remove("required");
-                  label.getElementsByTagName("abbr")[0].classList.add("display-none");
-                } else if (ial === "2") {
-                  input.required = true;
-                  label.classList.add("required");
-                  label.getElementsByTagName("abbr")[0].classList.remove("display-none");
-                }
-              });
-            }
-          </script>
-
-          {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
-          {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=True %}
-          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
           <label class="usa-label" for="IAL"
             >Identity Assurance Level (IAL)</label
           >
           <select
+            id="IAL"
             name="IAL"
             class="usa-select"
             onchange="toggleRequiredFields(this.value)"
           >
-            <option selected value="2">2</option>
-            <option value="1">1</option>
+            <option selected value="1">1</option>
+            <option value="2">2</option>
           </select>
 
+          {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
+          {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=True %}
+          {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" %}
           {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate (YYYY-MM-DD)" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="ssn" label="SSN" type="text" required=True %}
@@ -64,6 +46,38 @@
           {% include "uswds/_text_field.html" with id="address.city" label="City" type="text" required=True %}
           {% include "uswds/_dropdown.html" with options=states label=_("Select your state") default_option=None id="address.state" onchange=False required=True %}
           {% include "uswds/_text_field.html" with id="address.zipcode" label="ZIP code" type="text" required=True %}
+
+         <script type="text/javascript">
+            const IAL2_REQUIRED = ["phone", "ssn", "birthdate", "first_name", "last_name", "address.address1", "address.city", "address.state", "address.zipcode"];
+            const IAL2_OPTIONAL = ["address.address2"]
+            function toggleRequiredFields(ial) {
+              IAL2_REQUIRED.forEach((field) => {
+                const input = document.getElementById(field);
+                const label = input.labels[0];
+                const parentGroup = input.closest(".usa-form-group");
+                if (ial === "1") {
+                  input.required = false;
+                  label.classList.remove("required");
+                  parentGroup.classList.add("display-none");
+                } else {
+                  input.required = true;
+                  label.classList.add("required");
+                  parentGroup.classList.remove("display-none");
+                }
+              });
+              IAL2_OPTIONAL.forEach((field) => {
+                const input = document.getElementById(field);
+                const parentGroup = input.closest(".usa-form-group");
+                if (ial === "1") {
+                  parentGroup.classList.add("display-none");
+                } else {
+                  parentGroup.classList.remove("display-none");
+                }
+              });
+            }
+            // start at IAL1
+            toggleRequiredFields("1");
+          </script>
 
           <div>
             <button class="usa-button" type="submit" data-testid="loginbutton">
