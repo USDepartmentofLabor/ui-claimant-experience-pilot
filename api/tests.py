@@ -48,6 +48,8 @@ import time_machine
 
 logger = logging.getLogger("api.tests")
 
+JSON = "application/json"
+
 MAILING_ADDRESS = {
     "address1": "456 Any St",
     "city": "Somewhere",
@@ -238,7 +240,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         delete_s3_bucket()
         delete_s3_bucket(is_archive=True)
 
-    def csrf_client(self, claimant=None, swa=None):
+    def csrf_client(self, claimant=None, swa=None, trigger_cookie=False):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
         c = Client(enforce_csrf_checks=True)
         self.authenticate_session(c)
@@ -248,7 +250,12 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             session["whoami"]["claimant_id"] = claimant.idp_user_xid
             session["whoami"]["swa"] = swa.for_whoami()
             session.save()
+        if trigger_cookie:
+            c.get("/api/whoami/").json()
         return c
+
+    def csrf_headers(self, csrf_client):
+        return {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
 
     def test_whoami(self):
         self.authenticate_session()
@@ -294,12 +301,15 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json(), {"error": "un-authenticated session"})
 
+    # some endpoints accept GET and POST because of Django's routing limits.
+    # verify that the POST actions require CSRF.
     def test_claim_without_csrf(self):
         csrf_client = self.csrf_client()
-        response = csrf_client.post(
-            "/api/completed-claim/", content_type="application/json", data={}
-        )
-        self.assertEqual(response.status_code, 403)
+        for url in ["/api/completed-claim/", "/api/partial-claim/"]:
+            response = csrf_client.post(url, content_type=JSON, data={})
+            self.assertEqual(response.status_code, 403)
+            self.assertContains(response, "CSRF verification failed", status_code=403)
+            logger.debug("🚀 {} CSRF check: {}".format(url, response.content))
 
     def test_response_cookies_should_not_have_expire_setting(self):
         csrf_client = self.csrf_client()
@@ -314,19 +324,16 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, private_key_jwk = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client()
-        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(trigger_cookie=True)
         url = "/api/completed-claim/"
         payload = self.base_claim(
             id=None,
             claimant_id=claimant.idp_user_xid,
-            email=whoami["email"],
+            email=csrf_client.session["whoami"]["email"],
             swa_code=swa.code,
         )
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
-        response = csrf_client.post(
-            url, content_type="application/json", data=payload, **headers
-        )
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
         logger.debug("🚀🚀🚀🚀🚀 debug={}".format(response))
         self.assertEqual(response.status_code, 201)
 
@@ -346,19 +353,16 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client()
-        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(trigger_cookie=True)
         url = "/api/completed-claim/"
         payload = self.base_claim(
             id=None,
             claimant_id=claimant.idp_user_xid,
-            email=whoami["email"],
+            email=csrf_client.session["whoami"]["email"],
             swa_code=swa.code,
         )
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
-        response = csrf_client.post(
-            url, content_type="application/json", data=payload, **headers
-        )
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
         logger.debug("🚀 {}".format(response.json()))
         self.assertEqual(response.status_code, 201)
 
@@ -381,8 +385,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client()
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(trigger_cookie=True)
         url = "/api/partial-claim/"
         payload = {
             "claimant_name": {"first_name": "foo", "last_name": "bar"},
@@ -395,10 +398,8 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "residence_address": RESIDENCE_ADDRESS,
             "LOCAL_mailing_address_same": False,
         }
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
-        response = csrf_client.post(
-            url, content_type="application/json", data=payload, **headers
-        )
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
         self.assertEqual(response.status_code, 202)
 
         # fetch the encrypted claim from the S3 bucket directly and decrypt it.
@@ -456,7 +457,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        client = self.csrf_client(claimant, swa)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
         claim.events.create(category=Claim.EventCategories.COMPLETED)
@@ -466,11 +467,10 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertFalse(claim.is_deleted())
         self.assertFalse(claim.is_resolved())
 
-        client.get("/api/whoami/").json()  # trigger csrftoken cookie
-        headers = {"HTTP_X_CSRFTOKEN": client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(client)
         response = client.delete(
             f"/api/cancel-claim/{claim.uuid}/",
-            content_type="application/json",
+            content_type=JSON,
             **headers,
         )
         self.assertEqual(response.json(), {"status": "ok"})
@@ -502,11 +502,10 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertTrue(cw.write())
 
         # then validate we can fetch with the newer key.
-        csrf_client = self.csrf_client(claimant, swa)
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
         url = "/api/partial-claim/"
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         logger.debug("🚀 {}".format(response.json()))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["claim"], payload)
@@ -515,25 +514,22 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client(claimant, swa)
-        whoami = csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
         url = "/api/completed-claim/"
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(csrf_client)
 
         # GET completed claim (we don't have one yet)
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 404)
 
         # POST to create
         payload = self.base_claim(
             id=None,
             claimant_id=claimant.idp_user_xid,
-            email=whoami["email"],
+            email=csrf_client.session["whoami"]["email"],
             swa_code=swa.code,
         )
-        response = csrf_client.post(
-            url, content_type="application/json", data=payload, **headers
-        )
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
         logger.debug(response.json())
         self.assertEqual(response.status_code, 201)
         claim = claimant.claim_set.all()[0]
@@ -565,7 +561,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(mail.outbox[0].subject, "Your UI Claim receipt")
 
         # GET completed claim we have made
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 200)
         claim_response = response.json()
         self.assertEqual(claim_response["id"], str(claim.uuid))
@@ -579,21 +575,17 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         resolved_claim.save()
         resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
         resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 200)
         claim_response = response.json()
         self.assertEqual(claim_response["id"], completed_claim_uuid)
 
         # only GET or POST allowed
-        response = csrf_client.put(
-            url, content_type="application/json", data={}, **headers
-        )
+        response = csrf_client.put(url, content_type=JSON, data={}, **headers)
         self.assertEqual(response.status_code, 405)
 
         # missing param returns error
-        response = csrf_client.post(
-            url, content_type="application/json", data={}, **headers
-        )
+        response = csrf_client.post(url, content_type=JSON, data={}, **headers)
         self.assertEqual(response.status_code, 400)
 
         # invalid claim payload returns error
@@ -604,7 +596,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "is_complete": True,
         }
         response = csrf_client.post(
-            url, content_type="application/json", data=invalid_payload, **headers
+            url, content_type=JSON, data=invalid_payload, **headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn(
@@ -618,9 +610,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             stubber.add_client_error("put_object")
             stubber.activate()
             mocked_client.return_value = client
-            response = csrf_client.post(
-                url, content_type="application/json", data=payload, **headers
-            )
+            response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
             logger.debug("🚀 expect error")
             self.assertEqual(response.status_code, 500)
             self.assertEqual(
@@ -636,7 +626,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "is_complete": True,
         }
         response = csrf_client.post(
-            url, content_type="application/json", data=invalid_payload, **headers
+            url, content_type=JSON, data=invalid_payload, **headers
         )
         self.assertEqual(response.status_code, 400)
         logger.debug("missing complete fields")
@@ -653,7 +643,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "is_complete": False,
         }
         response = csrf_client.post(
-            url, content_type="application/json", data=invalid_payload, **headers
+            url, content_type=JSON, data=invalid_payload, **headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
@@ -673,14 +663,13 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client(claimant, swa)
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
         url = "/api/partial-claim/"
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(csrf_client)
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
         self.write_partial_claim_payload(claim, {"id": str(claim.uuid)})
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 404)
 
     @override_settings(DELETE_PARTIAL_CLAIM_AFTER_DAYS=1)
@@ -688,14 +677,13 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client(claimant, swa)
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
         url = "/api/partial-claim/"
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(csrf_client)
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
         self.write_partial_claim_payload(claim, {"id": str(claim.uuid)})
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["remaining_time"], "23:59:59")
         self.assertEqual(
@@ -707,20 +695,19 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         idp = create_idp()
         swa, _ = create_swa()
         claimant = create_claimant(idp)
-        csrf_client = self.csrf_client(claimant, swa)
-        csrf_client.get("/api/whoami/").json()  # trigger csrftoken cookie
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
         url = "/api/partial-claim/"
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(csrf_client)
 
         # does a partial claim already exist?
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 404)
 
         # GET claim with no saved artifact
         claim = Claim(swa=swa, claimant=claimant)
         claim.save()
 
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 404)
 
         # success
@@ -733,9 +720,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "residence_address": RESIDENCE_ADDRESS,
             "mailing_address": MAILING_ADDRESS,
         }
-        response = csrf_client.post(
-            url, content_type="application/json", data=payload, **headers
-        )
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
         self.assertEqual(claimant.claim_set.count(), 2)
         claim = claimant.claim_set.order_by(
             "created_at"
@@ -747,7 +732,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertTrue("validation_errors" in response.json())
 
         # GET partial claim
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
         self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
@@ -759,7 +744,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         session = csrf_client.session
         del session["partial_claim"]
         session.save()
-        response = csrf_client.get(url, content_type="application/json", **headers)
+        response = csrf_client.get(url, content_type=JSON, **headers)
         self.assertEqual(response.status_code, 200)
         response_payload = response.json()
         self.assertEqual(response_payload["claim"]["id"], str(claim.uuid))
@@ -768,15 +753,11 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertTrue(response_payload["expires"])
 
         # only GET or POST allowed
-        response = csrf_client.put(
-            url, content_type="application/json", data={}, **headers
-        )
+        response = csrf_client.put(url, content_type=JSON, data={}, **headers)
         self.assertEqual(response.status_code, 405)
 
         # missing param returns error
-        response = csrf_client.post(
-            url, content_type="application/json", data={}, **headers
-        )
+        response = csrf_client.post(url, content_type=JSON, data={}, **headers)
         self.assertEqual(response.status_code, 400)
 
         # signal is_complete not isn't
@@ -786,7 +767,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "is_complete": True,
         }
         response = csrf_client.post(
-            url, content_type="application/json", data=payload_that_lies, **headers
+            url, content_type=JSON, data=payload_that_lies, **headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
@@ -801,7 +782,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             "swa_code": swa.code,
         }
         response = csrf_client.post(
-            url, content_type="application/json", data=invalid_payload, **headers
+            url, content_type=JSON, data=invalid_payload, **headers
         )
         self.assertEqual(response.status_code, 202)
         self.assertIn("'1234' is not a 'date'", response.json()["validation_errors"])
@@ -825,7 +806,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             mocked_client.return_value = client
             response = csrf_client.post(
                 url,
-                content_type="application/json",
+                content_type=JSON,
                 data=payload_with_trouble,
                 **headers,
             )
@@ -853,7 +834,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         response = self.client.post(
             "/api/login/",
             data={"email": "someone@example.com", "IAL": "2"},
-            content_type="application/json",
+            content_type=JSON,
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["authenticated"])
@@ -865,10 +846,10 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         session_key = csrf_client.session.session_key
         self.assertTrue(csrf_client.session.exists(session_key))
 
-        headers = {"HTTP_X_CSRFTOKEN": csrf_client.cookies["csrftoken"].value}
+        headers = self.csrf_headers(csrf_client)
         response = csrf_client.post(
             "/api/logout/",
-            content_type="application/json",
+            content_type=JSON,
             **headers,
         )
         self.assertEqual(response.status_code, 200)
@@ -896,9 +877,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
 
 class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
     def create_api_claim_request(self, body):
-        request = RequestFactory().post(
-            "/api/claim/", content_type="application/json", data=body
-        )
+        request = RequestFactory().post("/api/claim/", content_type=JSON, data=body)
         request.session = self.client.session
         claim_request = ClaimRequest(request)
         return claim_request
