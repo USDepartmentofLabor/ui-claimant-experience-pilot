@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 
 import soc_entries_2018 from "../../../fixtures/soc_entries_2018.json";
 import classnames from "classnames";
+import { Pagination } from "./Pagination";
 
 type OccupationOption = {
   code: string;
@@ -33,6 +34,7 @@ type SOCEntry = {
 };
 
 const MIN_JOB_TITLE_LENGTH = 2;
+const OCCUPATIONS_PER_PAGE = 5;
 
 const SOCEntries = soc_entries_2018 as { [key: string]: SOCEntry };
 
@@ -51,11 +53,26 @@ const OccupationEntry = (props: { occupation: OccupationOption }) => {
 
 type OccupationListProps = {
   occupationOptions: OccupationOption[];
+  selectedBlsCode: string | undefined;
 };
 
 const OccupationList = (props: OccupationListProps) => {
+  const [page, setPage] = useState(0);
   const occupationOptions = props.occupationOptions;
   const { t } = useTranslation("claimForm", { keyPrefix: "occupation" });
+
+  const lastPageIndex =
+    Math.ceil(occupationOptions.length / OCCUPATIONS_PER_PAGE) - 1;
+
+  useEffect(() => {
+    const selectedIndex = occupationOptions.findIndex(
+      (opt) => opt.code === props.selectedBlsCode
+    );
+    if (selectedIndex > 0) {
+      setPage(Math.floor(selectedIndex / OCCUPATIONS_PER_PAGE));
+    }
+  }, [props.selectedBlsCode, occupationOptions]);
+
   return occupationOptions.length ? (
     <>
       <div>{t("choose_the_occupation")}</div>
@@ -63,13 +80,23 @@ const OccupationList = (props: OccupationListProps) => {
         tile
         id="occupation.bls_code"
         name="occupation.bls_code"
-        options={occupationOptions.map((option) => {
-          return {
-            label: <OccupationEntry occupation={option} />,
-            value: option.code,
-          };
-        })}
+        options={occupationOptions
+          .slice(page * OCCUPATIONS_PER_PAGE, (page + 1) * OCCUPATIONS_PER_PAGE)
+          .map((option) => {
+            return {
+              label: <OccupationEntry occupation={option} />,
+              value: option.code,
+            };
+          })}
       />
+      {lastPageIndex > 0 && (
+        <Pagination
+          currentIndex={page}
+          setCurrentIndex={setPage}
+          lastIndex={lastPageIndex}
+          listName={t("list_of_occupations")}
+        />
+      )}
     </>
   ) : null;
 };
@@ -263,6 +290,7 @@ export const OccupationPicker = () => {
             autoComplete="off"
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
+            value={occupationJobTitleFieldProps.value || ""}
           />
           <InputSuffix>
             <IconSearch />
@@ -292,7 +320,10 @@ export const OccupationPicker = () => {
         </div>
       </FormGroup>
       <div className="occupation-options margin-top-2">
-        <OccupationList occupationOptions={occupationOptions} />
+        <OccupationList
+          occupationOptions={occupationOptions}
+          selectedBlsCode={values.occupation?.bls_code}
+        />
       </div>
       <TextAreaField
         id={jobDescriptionName}

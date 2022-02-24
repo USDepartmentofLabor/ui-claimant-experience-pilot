@@ -72,7 +72,9 @@ describe("OccupationPicker component", () => {
       "occupation.bls_code.29-1141.00"
     );
     expect(selectedBlsCode).toBeChecked();
-    expect(matchingBlsCodes.length).toEqual(12);
+    // Paganated
+    expect(matchingBlsCodes.length).toEqual(5);
+    expect(screen.getAllByLabelText("pagination.page_sr").length).toBe(3);
     matchingBlsCodes.forEach((radio) => {
       expect(radio).toHaveAttribute("name", "occupation.bls_code");
     });
@@ -140,7 +142,9 @@ describe("OccupationPicker component", () => {
       userEvent.type(jobTitle, "software designer");
     });
     const matchingBlsCodes = await screen.findAllByRole("radio");
-    expect(matchingBlsCodes.length).toEqual(30);
+    // Paganated
+    expect(matchingBlsCodes.length).toEqual(5);
+    expect(screen.getAllByLabelText("pagination.page_sr").length).toBe(4);
   });
 
   it("Displays error-like message if there are zero search results", async () => {

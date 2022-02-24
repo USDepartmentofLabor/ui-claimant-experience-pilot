@@ -142,7 +142,7 @@ Cypress.Commands.add("check_a11y", () => {
 });
 
 Cypress.Commands.add("click_next", () => {
-  cy.get("button")
+  cy.get("button[type='submit']")
     .contains("Next")
     .scrollIntoView()
     .should("be.visible")
@@ -395,6 +395,13 @@ Cypress.Commands.add("complete_claimant_addresses", (addresses) => {
 
 Cypress.Commands.add("complete_occupation_form", (occupation) => {
   cy.get("[name=occupation\\.job_title]").clear().type(occupation.title);
+
+  if (occupation.page !== undefined) {
+    cy.get(
+      `button[aria-label="list of occupations page ${occupation.page}"]`
+    ).click();
+  }
+
   cy.get(
     `input[id=occupation\\.bls_code\\.${occupation.bls_code.replace(
       /\./,

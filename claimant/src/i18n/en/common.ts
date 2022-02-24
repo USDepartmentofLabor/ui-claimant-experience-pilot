@@ -93,6 +93,13 @@ const common = {
       cancel: "Cancel",
     },
   },
+  pagination: {
+    previous: "Previous",
+    next: "Next",
+    previous_sr: "Previous {{listName}} page",
+    next_sr: "Next {{listName}} page",
+    page_sr: "{{listName}} page {{page}}",
+  },
 };
 
 export default common;
