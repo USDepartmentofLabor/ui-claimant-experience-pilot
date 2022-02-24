@@ -739,6 +739,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response_payload["status"], "ok")
         self.assertTrue(response_payload["remaining_time"])
         self.assertTrue(response_payload["expires"])
+        self.assertTrue("validation_errors" in response.json())
 
         # GET partial claim, uncached
         session = csrf_client.session
@@ -751,6 +752,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response_payload["status"], "ok")
         self.assertTrue(response_payload["remaining_time"])
         self.assertTrue(response_payload["expires"])
+        self.assertTrue("validation_errors" in response.json())
 
         # only GET or POST allowed
         response = csrf_client.put(url, content_type=JSON, data={}, **headers)

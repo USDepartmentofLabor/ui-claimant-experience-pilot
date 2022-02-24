@@ -250,14 +250,20 @@ def partial_claim_response(claim, json_payload):
     logger.debug(
         "🚀 partial claim expires={} remaining_time={}".format(expires, remaining_time)
     )
+    response_body = {
+        "status": "ok",
+        "claim": json_payload,
+        # remaining_time is FYI only, FE can do whatever.
+        "remaining_time": remaining_time,
+        "expires": expires,
+    }
+    claim_validator = ClaimValidator(json_payload)
+    if not claim_validator.valid:
+        validation_errors = claim_validator.errors_as_dict()
+        response_body["validation_errors"] = validation_errors
+
     return JsonResponse(
-        {
-            "status": "ok",
-            "claim": json_payload,
-            # remaining_time is FYI only, FE can do whatever.
-            "remaining_time": remaining_time,
-            "expires": expires,
-        },
+        response_body,
         status=200,
     )
 

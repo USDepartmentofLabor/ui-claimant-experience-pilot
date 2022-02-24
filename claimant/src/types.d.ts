@@ -23,10 +23,21 @@ type Claim = ClaimantInput & {
   claimant_id: string;
 };
 
+type ValidationError = {
+  string: {
+    path: string;
+    invalid: string;
+    message: string;
+    context: string;
+    cause: string;
+  };
+};
+
 type PartialClaimApiResponseType = ApiResponseType & {
   expires?: string;
   remaining_time?: string;
   claim?: Partial<Claim>;
+  validation_errors?: ValidationError[];
 };
 
 // ClaimantClaim is the metadata from /api/claims/
