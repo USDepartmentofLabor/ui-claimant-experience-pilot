@@ -365,6 +365,7 @@ else:  # pragma: no cover
 LOGIN_PAGE_ALLOWED_WCMS_ENVIRONMENTS = {
     "https://dev1-unemployment.dol.gov",
     "https://test1-unemployment.dol.gov",
+    "https://stage1-unemployment.dol.gov",
 }
 if (
     os.environ.get("ENV_NAME") == "wcms"
