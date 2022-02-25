@@ -51,7 +51,9 @@ export const initializeClaimFormWithWhoAmI = (
   for (const [key, value] of Object.entries(whoami)) {
     if (key === "first_name" || key === "last_name") {
       initializedValues.claimant_name[key] = value;
-    } else if (key == "address" && value) {
+    } else if (key === "phone" && value) {
+      initializedValues.phones = [{ number: value }];
+    } else if (key === "address" && value) {
       initializedValues.residence_address = { ...whoami.address };
       // no nulls, just empty strings
       Object.keys(initializedValues.residence_address).forEach((k) => {
@@ -72,14 +74,6 @@ export const mergeClaimFormValues = (
 ) => {
   // first, merge the objects
   const mergedValues = { ...initialValues, ...partialClaim };
-
-  // some whoami values always take precedence
-  if (initialValues.ssn) {
-    mergedValues.ssn = initialValues.ssn;
-  }
-  if (initialValues.birthdate) {
-    mergedValues.birthdate = initialValues.birthdate;
-  }
 
   // second, set any of the LOCAL_ flow control fields to their logical starting values
   // based on what we see. This is because initialValues and partialClaim both likely
