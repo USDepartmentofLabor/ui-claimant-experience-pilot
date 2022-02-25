@@ -57,7 +57,12 @@ export const SessionManager = () => {
     }
     if (expiresAt.current) {
       setSecondsRemaining(
-        Math.round((expiresAt.current.getTime() - new Date().getTime()) / 1000)
+        Math.max(
+          0,
+          Math.round(
+            (expiresAt.current.getTime() - new Date().getTime()) / 1000
+          )
+        )
       );
     }
   }, []);
@@ -81,7 +86,7 @@ export const SessionManager = () => {
     }
   }, [secondsRemaining]);
 
-  if (!secondsRemaining) return null;
+  if (secondsRemaining === undefined) return null;
 
   const timeFromSeconds = (time: number, sr = false) => {
     const minutes = Math.floor(time / 60);
