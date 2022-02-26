@@ -29,10 +29,10 @@ export const WhoAmI = () => {
       <li>{t("info.city", { city: whoami.address?.city })}</li>
       <li>{t("info.state", { state: whoami.address?.state })}</li>
       <li>{t("info.zipcode", { zipcode: whoami.address?.zipcode })}</li>
-      <li>{t("info.SWA", { SWA: whoami.swa.code })}</li>
-      <li>{t("info.SWAName", { SWAName: whoami.swa.name })}</li>
+      <li>{t("info.SWA", { SWA: whoami.swa?.code })}</li>
+      <li>{t("info.SWAName", { SWAName: whoami.swa?.name })}</li>
       <li>
-        {t("info.SWAClaimantUrl", { SWAClaimantUrl: whoami.swa.claimant_url })}
+        {t("info.SWAClaimantUrl", { SWAClaimantUrl: whoami.swa?.claimant_url })}
       </li>
       <li>{t("info.claim", { claim: whoami.claim_id })}</li>
     </ul>
