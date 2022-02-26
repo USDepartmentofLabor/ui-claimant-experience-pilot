@@ -17,7 +17,7 @@ context("Let's get started page", { scrollBehavior: "center" }, () => {
     cy.click_yes("worked_other_state");
     cy.get("button").contains("Next").click();
     cy.url().should("contain", "/swa-redirect/NJ/");
-    cy.contains("You may be asked to provide some of this information");
+    cy.contains("Once you’ve created your account");
   });
 
   it("redirects to SWA-specific if not worked in last 18 months", () => {

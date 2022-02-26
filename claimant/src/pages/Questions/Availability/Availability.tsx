@@ -8,7 +8,6 @@ import { useClearFields } from "../../../hooks/useClearFields";
 
 export const Availability = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "availability" });
-  const { t: tCommon } = useTranslation("common");
   const { values } = useFormikContext<ClaimantInput>();
 
   useClearFields(
@@ -37,7 +36,7 @@ export const Availability = () => {
           <TextAreaField
             id="availability.cannot_begin_work_immediately_reason"
             name="availability.cannot_begin_work_immediately_reason"
-            label={tCommon("provide_more_information")}
+            label={t("cannot_begin_work_immediately_reason.label")}
           />
         )}
       </YesNoQuestion>
@@ -50,7 +49,7 @@ export const Availability = () => {
           <TextAreaField
             id="availability.cannot_work_full_time_reason"
             name="availability.cannot_work_full_time_reason"
-            label={tCommon("provide_more_information")}
+            label={t("cannot_work_full_time_reason.label")}
           />
         )}
       </YesNoQuestion>
@@ -63,7 +62,7 @@ export const Availability = () => {
           <TextAreaField
             id="availability.is_prevented_from_accepting_full_time_work_reason"
             name="availability.is_prevented_from_accepting_full_time_work_reason"
-            label={tCommon("provide_more_information")}
+            label={t("is_prevented_from_accepting_full_time_work_reason.label")}
           />
         )}
       </YesNoQuestion>

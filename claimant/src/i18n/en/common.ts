@@ -17,8 +17,8 @@ const common = {
   start_date: "Start date",
   end_date: "End date",
   address: {
-    address1: { label: "Address 1" },
-    address2: { label: "Address 2" },
+    address1: { label: "Address line 1" },
+    address2: { label: "Address line 2 (optional)" },
     city: { label: "City" },
     state: { label: "State" },
     zipcode: { label: "ZIP Code" },

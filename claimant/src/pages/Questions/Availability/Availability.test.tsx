@@ -107,7 +107,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(canBeginWorkImmediatelyFieldset).queryByLabelText(
-        "provide_more_information"
+        "cannot_begin_work_immediately_reason.label"
       )
     ).toBeInTheDocument();
   });
@@ -117,7 +117,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(canWorkFullTimeFieldset).queryByLabelText(
-        "provide_more_information"
+        "cannot_work_full_time_reason.label"
       )
     ).toBeInTheDocument();
   });
@@ -127,7 +127,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(isPreventedFromAcceptingFullTimeWorkFieldset).queryByLabelText(
-        "provide_more_information"
+        "is_prevented_from_accepting_full_time_work_reason.label"
       )
     ).toBeInTheDocument();
   });
@@ -137,7 +137,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(canBeginWorkImmediatelyFieldset).queryByLabelText(
-        "provide_more_information"
+        "cannot_begin_work_immediately_reason.label"
       )
     ).not.toBeInTheDocument();
   });
@@ -147,7 +147,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(canWorkFullTimeFieldset).queryByLabelText(
-        "provide_more_information"
+        "cannot_work_full_time_reason.label"
       )
     ).not.toBeInTheDocument();
   });
@@ -157,7 +157,7 @@ it("hides and shows textfields", async () => {
   await waitFor(() => {
     expect(
       within(isPreventedFromAcceptingFullTimeWorkFieldset).queryByLabelText(
-        "provide_more_information"
+        "is_prevented_from_accepting_full_time_work_reason.label"
       )
     ).not.toBeInTheDocument();
   });

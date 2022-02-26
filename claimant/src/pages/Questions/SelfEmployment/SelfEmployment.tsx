@@ -34,7 +34,7 @@ export const SelfEmployment = () => {
 
   return (
     <>
-      <Fieldset legend={t("self_employment.label")}>
+      <>
         <YesNoQuestion
           question={t("self_employment.self_employed.label")}
           id="self_employment.is_self_employed"
@@ -53,7 +53,7 @@ export const SelfEmployment = () => {
             name="self_employment.name_of_business"
           />
         )}
-      </Fieldset>
+      </>
       <Fieldset legend={t("self_employment.business_interests.label")}>
         <YesNoQuestion
           question={t("self_employment.corporate_officer.label")}

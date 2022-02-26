@@ -233,14 +233,14 @@ describe("the ClaimForm page", () => {
       });
 
       return {
-        firstName: screen.getByLabelText("First Name"),
-        lastName: screen.getByLabelText("Last Name"),
+        firstName: screen.getByLabelText("First name"),
+        lastName: screen.getByLabelText("Last name"),
         noAdditionalClaimantNames: screen.getByRole("radio", { name: "No" }),
         residenceAddress1: within(residenceAddressGroup).getByLabelText(
-          "Address 1"
+          "Address line 1"
         ),
         residenceAddress2: within(residenceAddressGroup).getByLabelText(
-          "Address 2"
+          "Address line 2 (optional)"
         ),
         residenceCity: within(residenceAddressGroup).getByLabelText("City"),
         residenceState: within(residenceAddressGroup).getByLabelText("State"),
@@ -409,7 +409,7 @@ describe("the ClaimForm", () => {
     render(wrappedClaimForm);
 
     expect(useWhoAmI).toHaveBeenCalled();
-    expect(screen.getByText("First Name")).toBeInTheDocument();
+    expect(screen.getByText("First name")).toBeInTheDocument();
   });
 
   it("shows the loader when loading", () => {

@@ -22,7 +22,7 @@ describe("SelfEmployment Page", () => {
   });
   it("renders", async () => {
     expect(
-      await screen.findByText("self_employment.label")
+      await screen.findByText("self_employment.self_employed.label")
     ).toBeInTheDocument();
   });
   it("shows fields conditionally", async () => {

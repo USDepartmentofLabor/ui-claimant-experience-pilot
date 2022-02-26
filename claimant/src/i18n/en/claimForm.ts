@@ -4,11 +4,11 @@ const claimForm = {
   step_progress: "step {{step}} of {{totalSteps}}",
   demographic_information: {
     info_alert:
-      "We ask for your demographic information only for our reporting requirements. The information you share does not affect your application or your benefit amount. ",
+      "We ask for your demographic information only for our reporting requirements. Your responses to these questions won't affect your application or potential payment amount.",
   },
   ssn: {
-    label: "Social Security Number",
-    required: "Social Security Number is required",
+    label: "Social Security number",
+    required: "Social Security number is required",
   },
   birthdate: {
     label: "Date of birth",
@@ -72,31 +72,30 @@ const claimForm = {
       required: "Please indicate whether you are authorized to work",
     },
     not_authorized_to_work_explanation: {
-      label:
-        "Please provide more information about why you aren’t able to work in the United States:",
+      label: "Please share more about why you can’t work in the United States:",
       required:
-        "Please provide more information about why you aren’t able to work in the United States",
+        "Please share more about why you can’t work in the United States",
     },
     authorization_type: {
       label: "Select your authorization:",
       options: {
-        US_citizen_or_national: "U.S. Citizen/National",
-        permanent_resident: "Permanent Resident",
-        temporary_legal_worker: "Temporary Legal Worker",
+        US_citizen_or_national: "U.S. citizen/national",
+        permanent_resident: "Permanent resident",
+        temporary_legal_worker: "Temporary legal worker",
       },
       required: "You must select an authorization status",
     },
     alien_registration_number: {
-      label: "Alien Registration Number",
-      required: "Alien Registration Number is required",
+      label: "Alien registration number",
+      required: "Alien registration number is required",
       format:
-        "Please enter a valid Alien Registration Number with format 123-456-789",
+        "Please enter a valid Alien registration number with format 123-456-789",
     },
   },
   state_credential: {
     drivers_license_or_state_id_number: {
-      label: "Drivers License or State ID number",
-      required: "Drivers License or State ID number is required",
+      label: "Driver’s license or state ID number",
+      required: "Driver’s license or state ID number is required",
     },
     issuer: {
       label: "State that issued your license/ID",
@@ -107,15 +106,15 @@ const claimForm = {
     separation: {
       heading: "Separation",
       reason: {
-        label: "What was your reason for separation?",
+        label: "Why did your job end/your hours change?",
         required: "Separation reason is required",
       },
       option: {
         required: "Please select a separation option",
       },
       comment: {
-        required_label: "Please share any additional details below",
-        optional_label: "Please share any additional details below (optional)",
+        required_label: "Please share more details below",
+        optional_label: "Please share more details below (optional)",
       },
       reasons: {
         laid_off: {
@@ -137,13 +136,10 @@ const claimForm = {
           option_heading:
             "What was the reason you were fired, discharged, or terminated?",
           options: {
-            absent_tardy: "Absent/tardy",
-            drinking_drugs: "Drinking/drugs/drug test",
-            insubordination: "Insubordination/disobedience",
-            sleeping: "Sleeping",
-            fighting: "Fighting",
-            military: "Military",
-            general: "General",
+            attendance: "Attendance",
+            violation: "Violation of employer policy",
+            other: "Other reason",
+            none: "No reason provided",
           },
         },
         still_employed: {
@@ -169,13 +165,14 @@ const claimForm = {
         },
         quit: {
           label: "Quit",
-          description:
-            "You voluntarily left your job (this does not include retirement).",
+          description: "You left your job (this does not include retirement).",
           option_heading: "Why did you quit your job?",
           options: {
-            emergency: "Personal emergency",
+            personal: "Personal",
             health: "Health",
             general: "General",
+            quit_job: "Quit for another job",
+            quit_terminated: "Quit instead of being terminated",
           },
         },
         strike: {
@@ -198,9 +195,9 @@ const claimForm = {
         },
       },
     },
-    heading: "Your most recent employer:",
+    heading: "Your employer:",
     reason_for_data_collection:
-      "We need the <strong>last 18 months</strong> of your work history because it helps calculate your unemployment benefit amount. Include all your jobs to avoid delays with your application",
+      "We need the <strong>last 18 months</strong> of your work history to calculate your unemployment benefit amount. Include all your jobs, including jobs you are still working, to avoid delays with your application.",
     errors: {
       required: "This field is required",
     },
@@ -209,7 +206,7 @@ const claimForm = {
       address2: { label: "Employer address line 2 (optional)" },
       city: { label: "City" },
       state: { label: "State" },
-      zipcode: { label: "ZIP code" },
+      zipcode: { label: "ZIP Code" },
     },
     name: {
       label: "Employer name",
@@ -252,10 +249,10 @@ const claimForm = {
     work_site_address: {
       heading: "Your work location address:",
       address1: { label: "Employer address line 1" },
-      address2: { label: "Employer address line 2" },
+      address2: { label: "Employer address line 2 (optional)" },
       city: { label: "City" },
       state: { label: "State" },
-      zipcode: { label: "ZIP code" },
+      zipcode: { label: "ZIP Code" },
     },
     no_different_phone: "No, it was a different phone number",
     no_different_address: "No, I worked at a different location",
@@ -267,7 +264,7 @@ const claimForm = {
   self_employment: {
     label: "Self-employment",
     self_employed: {
-      label: "Are you self-employed?",
+      label: "Are you currently self-employed?",
       required: "You must indicate whether you are self-employed",
     },
     business_ownership: {
@@ -304,7 +301,7 @@ const claimForm = {
   occupation: {
     search: "Search",
     choose_the_occupation:
-      "Choose the occupation that best matches your selection above. If nothing matches, please try another search.",
+      "Choose the occupation that best matches what you entered above. If nothing matches, please try another search.",
     what_is_your_occupation: {
       label: "What is your occupation?",
       required: "Occupation is required",
@@ -312,13 +309,13 @@ const claimForm = {
     hint: "If you're not sure, see our",
     list_of_occupations: "list of occupations",
     short_description: {
-      label: "Short description of your job",
+      label: "Give a short description of your job:",
       required: "Job description is required",
     },
     bls_code: {
       required: "Please select the occupation that best matches your selection",
     },
-    no_results: "No results. Try another word.",
+    no_results: "No results. Try another search.",
     opens_in_a_new_tab: "opens in a new tab",
   },
   disability: {
@@ -400,17 +397,21 @@ const claimForm = {
         "You must indicate whether anything prevents you from accepting full-time work",
     },
     cannot_begin_work_immediately_reason: {
+      label:
+        "Please share more about what’s preventing you from starting work:",
       required: "A reason you cannot being work immediately is required",
     },
     cannot_work_full_time_reason: {
+      label: "Please share more about why you can’t work full time:",
       required: "A reason you cannot work full-time is required",
     },
     is_prevented_from_accepting_full_time_work_reason: {
+      label:
+        "Please share more about what’s preventing you from working full time:",
       required: "A reason you cannot accept full-time work is required",
     },
   },
   contact_information: {
-    what_is_your_contact_information: "What is your contact information?",
     more_phones: "Add another phone number",
     email: "Email address", // no label, not editable
     interpreter_required: {
@@ -427,8 +428,8 @@ const claimForm = {
     city: { required: "City is required" },
     state: { required: "State is required" },
     zipcode: {
-      required: "ZIP code is required",
-      format: "ZIP code must be five digits",
+      required: "ZIP Code is required",
+      format: "ZIP Code must be five digits",
     },
   },
   phone: {
@@ -444,14 +445,14 @@ const claimForm = {
     required: "{{ fieldName }} is required",
   },
   name: {
-    legal_name: "Legal Name",
-    alternate_name: "Alternate Name",
-    first_name: { label: "First Name", required: "First Name is required" },
-    middle_name: { label: "Middle Name (Optional)" },
-    last_name: { label: "Last Name", required: "Last Name is required" },
+    legal_name: "What is your legal name?",
+    alternate_name: "Additional name",
+    first_name: { label: "First name", required: "First name is required" },
+    middle_name: { label: "Middle name (optional)" },
+    last_name: { label: "Last name", required: "Last name is required" },
     claimant_has_alternate_names: {
       label:
-        "In the past 18 months, have you worked under a name different from above?",
+        "In the last 18 months, have you worked under a name different from your legal name?",
       required:
         "You must indicate if you have worked under a different name in the past 18 months",
     },
@@ -459,7 +460,7 @@ const claimForm = {
   payment: {
     federal_income_tax_withheld: {
       label:
-        "Would you like to have 10% Federal Income Tax withheld from your benefits?",
+        "Would you like to have 10% federal income tax withheld from your benefits payments?",
       help_text:
         "Federal tax withholding will only be made after amounts are deducted and withheld for any unemployment overpayments, child support obligations, or any other amounts required to be deducted and withheld by law.",
       errors: {
@@ -467,9 +468,9 @@ const claimForm = {
       },
     },
     payment_method: {
-      label: "How would you like to receive your benefit payment?",
+      label: "How would you like to receive your benefits payments?",
       options: {
-        debit: "Debit card mailed to me",
+        debit: "Prepaid debit card mailed to me",
         direct_deposit: "Direct deposit to my bank account",
       },
       errors: {

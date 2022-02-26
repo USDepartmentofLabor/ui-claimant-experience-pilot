@@ -1,29 +1,27 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main" class="">
   <section class="grid-container">
-    <h1>{% translate "Apply through" %} {% if swa %}{{ swa.name }}{% else %}{% translate "your state unemployment system" %}{% endif %}</h1>
+    <h1>{% translate "Apply through" %} {% if swa %}the {{ swa.name }} system{% else %}{% translate "your state unemployment system" %}{% endif %}</h1>
     {% if swa and swa.claimant_url %}
       {% blocktranslate with name=swa.name %}
-      It looks like you'll need to complete your application on {{ name }}'s existing unemployment insurance system
-      based on the information you provided.
+      Based on the information you provided, you’ll need to complete your application using the existing {{ name }} unemployment insurance system.
       {% endblocktranslate %}
     {% else %}
-      {% translate "It looks like you'll need to complete your application on your state's existing unemployment insurance system based on the information you provided." %}
+      {% translate "Based on the information you provided, you'll need to complete your application using your state's existing unemployment insurance system." %}
     {% endif %}
 
     {% if swa and swa.code == "NJ" %}
     <section class="margin-top-2">
-      {% translate "You may be asked to provide some of this information again once you have created your account." %}
+      {% translate "Once you’ve created your account, you may need to re-share some of the information you just provided." %}
     </section>
     {% endif %}
 
+    {% if not swa %}
     <section class="margin-top-2">
-      {% if swa and swa.claimant_url %}
-      {% blocktranslate with name=swa.name %}Click next to go to {{ name }}'s online application.{% endblocktranslate %}
-      {% else %}
       {% translate "Click next to find unemployment resources for your state." %}
-      {% endif %}
     </section>
+    {% endif %}
+
     <section class="margin-top-2 text-center">
       {% if swa and swa.claimant_url %}
       <a class="usa-button" href="{{ swa.claimant_url }}">{% translate "Next" %}</a>

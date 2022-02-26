@@ -1,4 +1,3 @@
-import { Fieldset } from "@trussworks/react-uswds";
 import { TFunction, useTranslation } from "react-i18next";
 import { FieldArray, useFormikContext } from "formik";
 import { TextField } from "../../../components/form/fields/TextField/TextField";
@@ -51,7 +50,7 @@ export const ContactInformation = () => {
       <FieldArray
         name="phones"
         render={(arrayHelpers) => (
-          <Fieldset legend={t("what_is_your_contact_information")}>
+          <>
             <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
             <CheckboxField
               id="LOCAL_more_phones"
@@ -74,7 +73,7 @@ export const ContactInformation = () => {
                 showSMS={false}
               />
             )}
-          </Fieldset>
+          </>
         )}
       />
 

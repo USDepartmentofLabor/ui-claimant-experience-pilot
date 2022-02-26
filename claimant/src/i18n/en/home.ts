@@ -77,8 +77,7 @@ const home = {
     expiration_warning:
       "Update application by <strong>{{when}}</strong> or application will be reset due to inactivity.",
     moreInfo: {
-      title:
-        "To complete your unemployment insurance application, you'll need the following",
+      title: "To fill out your application, you'll need this information",
       content: [
         "Your personal information: your name, Social Security Number, birthdate, and contact information.",
         "Your Alien Registration Number (if you're not a U.S. citizen)",

@@ -3,13 +3,13 @@
 {% load i18n %}
 <div class="grid-container">
   <main id="what-to-expect">
-    <h1>{% translate "Welcome to a new way to apply for unemployment benefits" %}</h1>
+    <h1>{% translate "Apply for unemployment benefits" %}</h1>
     {% include './uswds/_alert_error.html' %}
     <section>
-      {{ swa.name }} {% translate "and the United States Department of Labor invite you to be among the first to try the new APPNAME HERE" %}
+      {% translate "We invite you to try using APPNAME HERE — a new, user-friendly way to apply for unemployment insurance." %}
     </section>
     <section>
-      {% translate "This process requires access to a computer or smartphone to complete. You will need to be able to:" %}
+      {% translate "To use it, you need to:" %}
       <ul class="usa-list">
         <li>{% translate "Upload an image of your state-issued ID and a photo of yourself to verify your identity with Login.gov" %}</li>
         <li>{% translate "Verify your phone number, email address, and physical address" %}</li>
@@ -109,7 +109,7 @@
     </section>
 
     <section>
-      {% translate "Using APPNAME HERE will not affect your ability to receive unemployment benefits and does not imply preferential treatment for your application." %}
+      {% translate "Using APPNAME HERE will not affect your ability to receive unemployment benefits. State staff will process your application following all applicable laws and regulations." %}
     </section>
   </main>
 </div>
