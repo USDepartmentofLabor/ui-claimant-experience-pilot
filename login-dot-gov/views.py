@@ -52,6 +52,13 @@ def logindotgov_client():
     return client
 
 
+# redirect to the relevant login profile page
+@never_cache
+def profile(request):
+    login_url = LoginDotGovOIDCClient.get_url()
+    return redirect(f"{login_url}/account")
+
+
 @never_cache
 def explain(request):
     if not settings.DEBUG:

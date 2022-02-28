@@ -304,7 +304,7 @@ const IdentityContent = ({
             extLink: (
               <ExtLink
                 variant="external"
-                href="https://login.gov"
+                href={`${baseUrl}/logindotgov/profile/`}
                 target="_blank"
                 rel="noreferrer"
               >
