@@ -83,6 +83,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.url().should("contain", "/claim/contact");
     cy.click_back();
     cy.get("[name=claimant_name\\.first_name]").should("have.value", "Dave");
-    cy.verifyCallCount("@GET-whoami", 2);
+    // TODO this will fail on automatic re-tries. We should figure out how to
+    // reliably count per attempt, so we can verify our caching logic.
+    // cy.verifyCallCount("@GET-whoami", 2);
   });
 });
