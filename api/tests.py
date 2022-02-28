@@ -691,6 +691,25 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             str((claim.should_be_deleted_after() - timedelta(days=1)).date()),
         )
 
+    def test_partial_claim_not_found(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        url = "/api/partial-claim/"
+        headers = self.csrf_headers(csrf_client)
+
+        # GET claim with no saved artifact
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        # mock up the session with the claim we just created
+        session = csrf_client.session
+        session["whoami"]["claim_id"] = str(claim.uuid)
+        session.save()
+        logger.debug("🚀🚀 expect to find no artifact for claim {}".format(claim.uuid))
+        response = csrf_client.get(url, content_type=JSON, **headers)
+        self.assertEqual(response.status_code, 404)
+
     def test_partial_claim_with_csrf(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -700,15 +719,9 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         headers = self.csrf_headers(csrf_client)
 
         # does a partial claim already exist?
+        # verify bootstrapping happens, as after an initial login.
         response = csrf_client.get(url, content_type=JSON, **headers)
-        self.assertEqual(response.status_code, 404)
-
-        # GET claim with no saved artifact
-        claim = Claim(swa=swa, claimant=claimant)
-        claim.save()
-
-        response = csrf_client.get(url, content_type=JSON, **headers)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
         # success
         payload = {

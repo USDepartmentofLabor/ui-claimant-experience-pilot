@@ -14,7 +14,8 @@ Generally, `SUBMITTED` events reflect the "save and continue" pattern on the fro
 
 Whenever a Claim is written to S3, create a `STORED` Event. We expect to see `SUBMITTED` and `STORED` Events in very close temporal proximity.
 If we don't, there is something amiss with our S3 storage pattern (misconfiguration, network latency, etc) that might suggest we need
-to change our approach.
+to change our approach. The one exception is on initial Claim creation, we should see a `STORED` event before anything is ever `SUBMITTED`
+because the first time a Claimant logs in will result in an initial Claim.
 
 ## COMPLETED
 
@@ -44,3 +45,7 @@ We will remove the encrypted artifacts and create the `DELETED` Event to track t
 ## STATUS_CHANGED
 
 When a SWA sends a `PATCH` request to change the status of a Claim, the `STATUS_CHANGED` Events tracks the action.
+
+## INITIATED_WITH_SWA_XID
+
+When a Claim is created at login time via the `swa_xid` parameter, this event will also be created.

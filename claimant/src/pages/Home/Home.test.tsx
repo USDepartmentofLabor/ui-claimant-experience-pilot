@@ -85,7 +85,16 @@ const renderWithMocks = (
   mockedUseGetPartialClaim.mockImplementation(() => ({
     data:
       appStatus === "inProgress"
-        ? { status: "ok", claim: { some: "data" } }
+        ? {
+            status: "ok",
+            claim: {
+              id: "abc",
+              swa_code: "XX",
+              claimant_id: "123",
+              email: "foo@example.com",
+              some: "data",
+            },
+          }
         : { status: "ok", claim: {} },
     isLoading: false,
     isFetched: true,

@@ -25,6 +25,7 @@ type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 const SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING = 48;
+const CLAIM_SKELETON_SIZE = 4; // a bootstrapped claim has this many keys before any submission
 
 type AccordionProps = React.ComponentProps<typeof Accordion>;
 
@@ -61,7 +62,8 @@ const HomePage = () => {
   const remainingTime = (
     partialClaimResponse?.remaining_time || "00:00:00"
   ).split(/:/);
-  const claimStarted = partialClaim && Object.keys(partialClaim).length > 0;
+  const claimStarted =
+    partialClaim && Object.keys(partialClaim).length > CLAIM_SKELETON_SIZE;
 
   const identityStatus: Status =
     whoami?.IAL === "2" ? "complete" : "not_started";

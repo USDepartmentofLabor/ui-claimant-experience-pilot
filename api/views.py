@@ -17,6 +17,7 @@ from .claim_request import ClaimRequest
 from .claim_validator import ClaimValidator
 from .claim_cleaner import ClaimCleaner
 from .claim_serializer import ClaimSerializer
+from .claim_maker import ClaimMaker
 from .models import Claim
 from .whoami import WhoAmI, WhoAmISWA
 from core.email import InitialClaimConfirmationEmail
@@ -270,7 +271,8 @@ def partial_claim_response(claim, json_payload):
 
 def GET_partial_claim(request):
     whoami = whoami_from_session(request)
-    claim = ClaimFinder(whoami).find()
+    claim_finder = ClaimFinder(whoami)
+    claim = claim_finder.find()
     claim_not_found_response = JsonResponse(
         {
             "status": "error",
@@ -281,7 +283,13 @@ def GET_partial_claim(request):
         status=404,
     )
     if not claim:
-        return claim_not_found_response
+        # we should always have a Claim for every session, to at least track whoami.email
+        claim, partial_claim = ClaimMaker(
+            swa=claim_finder.swa, claimant=claim_finder.claimant
+        ).create(whoami.email)
+        logger.debug("🚀 no Claim found -- bootstrapped {}".format(claim.uuid))
+        request.session["partial_claim"] = partial_claim
+        request.session["whoami"]["claim_id"] = str(claim.uuid)
 
     # if claim is overdue for expiration, pretend we do not have it.
     # this prevents edge case where claimant's browser has it but we've deleted it.
@@ -298,6 +306,7 @@ def GET_partial_claim(request):
         request.session["partial_claim"] = partial_claim
         return partial_claim_response(claim, partial_claim)
 
+    # in theory, we should never get here, but just in case.
     logger.debug("🚀 no partial claim read for {}".format(claim.uuid))
     return claim_not_found_response
 
