@@ -48,3 +48,14 @@ class Claimant(TimeStampedModel):
                     category=Claimant.EventCategories.IAL, description="1 => 2"
                 )
             return True
+
+    def pending_identity_only_claim(self):
+        for claim in self.claim_set.all():
+            if (
+                not claim.is_completed()
+                and not claim.is_resolved()
+                and claim.swa.is_identity_only()
+                and claim.is_initiated_with_swa_xid()
+            ):
+                return claim
+        return False

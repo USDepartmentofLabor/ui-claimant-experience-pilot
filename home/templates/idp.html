@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 {% load i18n %}
+{{ swa_featuresets|json_script:"swa-featuresets" }}
 <script>
   if (typeof USDOL === "undefined") { USDOL = {} }
+  USDOL.SWAS = JSON.parse(document.getElementById("swa-featuresets").textContent);
   {% include "_has_completed_prequal.jssnip" %}
   if (!hasCompletedPrequal()) {
-    window.location.replace("/start/")
+    {% if swa %}
+    const newPath = USDOL.SWAS.{{ swa }}.featureset === "Identity Only" ? "/start/{{ swa }}/" : "/start/";
+    {% else %}
+    const newPath = "/start/";
+    {% endif %}
+    window.location.replace(newPath);
   }
 </script>
 <main id="main-content" role="main">

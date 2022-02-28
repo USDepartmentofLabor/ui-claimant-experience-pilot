@@ -4,6 +4,8 @@ from typing import Optional
 import dacite
 import re
 import datetime
+import pytz
+import copy
 
 
 @dataclass
@@ -51,7 +53,7 @@ class WhoAmI:
         return dacite.from_dict(data_class=cls, data=the_dict)
 
     def as_dict(self):
-        serialized = self.__dict__
+        serialized = copy.deepcopy(self.__dict__)
         if "address" in serialized and isinstance(serialized["address"], WhoAmIAddress):
             serialized["address"] = self.address.as_dict()
         if "swa" in serialized and isinstance(serialized["swa"], WhoAmISWA):
@@ -71,7 +73,7 @@ class WhoAmI:
         if self.IAL == "2":
             if re.match(r"\d+$", self.verified_at):
                 identity["verified_at"] = datetime.datetime.fromtimestamp(
-                    int(self.verified_at)
+                    int(self.verified_at), tz=pytz.utc
                 ).isoformat()
             else:
                 identity["verified_at"] = self.verified_at

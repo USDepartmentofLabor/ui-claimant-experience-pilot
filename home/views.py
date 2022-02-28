@@ -10,12 +10,18 @@ from django.http import JsonResponse, HttpResponse
 from api.models import SWA
 import django.middleware.csrf
 import logging
-
+from core.local_idp import LocalIdentityProviderError
 import json
+from django.template.defaulttags import register
 
 from launchdarkly.client import ld_client
 
 logger = logging.getLogger("home")
+
+
+@register.filter
+def get_dictionary_value(dictionary, key):
+    return dictionary.get(key)
 
 
 def handle_404(request, exception=None):
@@ -28,6 +34,13 @@ def handle_500(request):
 
 def active_swas_ordered_by_name():
     return SWA.active.order_by("name").all()
+
+
+def active_swas_with_featuresets():
+    swas = {}
+    for swa in SWA.active.all():
+        swas[swa.code] = swa.for_whoami()
+    return swas
 
 
 # TODO should this be a 404 or a placeholder referring viewers to a SWA finder fed site?
@@ -93,6 +106,7 @@ def idp(request, swa_code=None):
             "swa": requested_swa,
             "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
+            "swa_featuresets": active_swas_with_featuresets(),
             "swas": active_swas_ordered_by_name(),
             "redirect_to": request.GET.get("redirect_to", ""),
         },
@@ -175,9 +189,12 @@ def login(request):
             "login.html",
             {
                 "required": False,  # to avoid uninit var warnings
+                "whoami": request.session.get("whoami", None),  # if stepping up
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
                 "states": get_states(),
+                "ial": request.GET.get("ial", "1"),
+                "swa_xid": request.GET.get("swa_xid", None),
                 "swa": request.GET.get(
                     "swa", request.GET.get("swa_code", request.session.get("swa", None))
                 ),
@@ -185,13 +202,24 @@ def login(request):
             },
         )
     elif request.method == "POST":
-        register_local_login(request)
+        try:
+            register_local_login(request)
+        except LocalIdentityProviderError as error:
+            return render(
+                None,
+                "auth-error.html",
+                {"error": str(error), "base_url": base_url(request)},
+                status=400,
+            )
+
         redirect_to = "/claimant/"
         if request.session.get("redirect_to", None):
             redirect_to = request.session["redirect_to"]
             del request.session["redirect_to"]
         logger.debug("redirect_to={}".format(redirect_to))
-        return redirect(redirect_to)
+        response = redirect(redirect_to)
+        response.delete_cookie("swa_xid")  # just in case
+        return response
     else:
         return HttpResponse("GET or POST", status=405)
 

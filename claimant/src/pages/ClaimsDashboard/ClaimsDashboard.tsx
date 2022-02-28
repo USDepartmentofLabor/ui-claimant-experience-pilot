@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useClaims, useCancelClaim } from "../../queries/claims";
+import { useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import common from "../../i18n/en/common";
 import { formatISODateTimeString } from "../../utils/format";
@@ -11,15 +13,16 @@ import PageLoader from "../../common/PageLoader";
 interface IClaimSummary {
   claim: ClaimantClaim;
   whoami: WhoAmI;
-  refetch: () => void;
 }
 
 type StatusLabel = keyof typeof common.claims_dashboard.status_labels;
 
-export const ClaimSummary = ({ claim, refetch }: IClaimSummary) => {
+export const ClaimSummary = ({ claim }: IClaimSummary) => {
   const { t } = useTranslation("common", { keyPrefix: "claims_dashboard" });
   const ldFlags = useFeatureFlags();
   const cancelClaim = useCancelClaim();
+  const setStatusChanged = useState(false)[1];
+  const queryClient = useQueryClient();
 
   const getLastUpdated = () => {
     if (claim.status === "in_process") {
@@ -49,9 +52,10 @@ export const ClaimSummary = ({ claim, refetch }: IClaimSummary) => {
   };
 
   const handleCancelClaim = async () => {
-    await cancelClaim.mutateAsync(claim.id);
-    if (cancelClaim.isSuccess) {
-      refetch();
+    const r = await cancelClaim.mutateAsync(claim.id);
+    if (r.status === "ok") {
+      await queryClient.invalidateQueries("claims", { refetchInactive: true });
+      setStatusChanged(true);
     }
   };
 
@@ -85,7 +89,7 @@ export const ClaimSummary = ({ claim, refetch }: IClaimSummary) => {
             key={`${claim.id}-cancel`}
             type="submit"
             secondary
-            disabled={cancelClaim.isLoading}
+            disabled={cancelClaim.isLoading || cancelClaim.isSuccess}
             onClick={handleCancelClaim}
             data-testid={`${claim.id}-cancel`}
           >
@@ -111,33 +115,25 @@ export const ClaimSummary = ({ claim, refetch }: IClaimSummary) => {
 };
 
 export const ClaimsDashboard = () => {
-  const { data, isLoading, error, refetch } = useClaims();
+  const { data, isLoading, error } = useClaims();
   const { t } = useTranslation("common", { keyPrefix: "claims_dashboard" });
   const {
     data: whoami,
-    isLoading: isLoadingWhoAmI,
+    isFetched: isFetchedWhoAmI,
     error: errorWhoAmI,
   } = useWhoAmI();
 
-  if (isLoadingWhoAmI) {
-    return null;
+  if (!isFetchedWhoAmI || isLoading) {
+    return <PageLoader />;
   }
 
   if (errorWhoAmI || !whoami) {
-    throw error;
-  }
-
-  if (isLoading) {
-    return <PageLoader />;
+    throw errorWhoAmI;
   }
 
   if (error || !data) {
     throw error;
   }
-
-  const refetchClaims = () => {
-    refetch();
-  };
 
   return (
     <>
@@ -154,12 +150,7 @@ export const ClaimsDashboard = () => {
           </thead>
           <tbody>
             {data.claims.map((claim, idx) => (
-              <ClaimSummary
-                claim={claim}
-                whoami={whoami}
-                key={idx}
-                refetch={refetchClaims}
-              />
+              <ClaimSummary claim={claim} whoami={whoami} key={idx} />
             ))}
           </tbody>
         </table>

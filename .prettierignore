@@ -1,7 +1,5 @@
 home/templates/idp.html
-home/templates/uswds/_swa_options.html
-home/templates/uswds/_alert_error.html
-home/templates/uswds/_dropdown.html
+home/templates/uswds/_*
 home/templates/swa-*
 home/templates/_swa/*
 home/templates/_google_tag_manager.html

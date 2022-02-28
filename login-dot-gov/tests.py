@@ -7,7 +7,8 @@ from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
 from api.test_utils import create_swa
-from api.models import IdentityProvider, Claimant, Claim
+from api.models import IdentityProvider, Claimant, Claim, SWA
+from core.test_utils import create_s3_bucket, delete_s3_bucket
 import logging
 import uuid
 
@@ -52,6 +53,14 @@ class LoginDotGovTestCase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         IdentityProvider.objects.get_or_create(name="login.gov")
+        create_s3_bucket()
+        create_s3_bucket(is_archive=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)
 
     @override_settings(DEBUG=True)  # so that /explain works
     def test_oidc_flow(self):
@@ -59,13 +68,26 @@ class LoginDotGovTestCase(TestCase):
         # swa= or swa_code= will both work
         response = self.client.get(f"/logindotgov/?swa_code={swa.code}")
         self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 1)
+        self.assertEquals(self.client.session["swa"], swa.code)
+
+        self.client.session.flush()
 
         response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 1)
+        self.assertEquals(self.client.session["swa"], swa.code)
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
 
-        # the server will redirect to here
+        # the mock server should try to step up to IAL2
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        logger.debug("🚀 response.url {}".format(response.url))
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, "/logindotgov/?ial=2")
+
+        response = self.client.get(response.url)
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertRedirects(response, "/claimant/", status_code=302)
 
@@ -74,15 +96,13 @@ class LoginDotGovTestCase(TestCase):
         self.assertEquals(
             claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
         )
-        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
-        self.assertEquals(claimant.events.last().description, "1 => 2")
         self.assertEquals(claimant.IAL, 2)
 
         # confirm our session looks as we expect
         response = self.client.get("/logindotgov/explain")
         explained = response.json()
         whoami = explained["whoami"]
-        logger.debug("whoami={}".format(whoami))
+        logger.debug("🚀 whoami={}".format(whoami))
         self.assertEquals(explained["authenticated"], True)
         self.assertEquals(whoami["email"], "you@example.gov")
         self.assertEquals(whoami["IAL"], "2")
@@ -91,10 +111,11 @@ class LoginDotGovTestCase(TestCase):
         self.assertTrue(whoami["ssn"])
         self.assertTrue(whoami["birthdate"])
         self.assertTrue(whoami["phone"])
-        self.assertTrue(
+        self.assertEquals(
             whoami["address"],
             {
                 "address1": "1600 Pennsylvania Ave",
+                "address2": "Oval Office",
                 "city": "Washington",
                 "state": "DC",
                 "zipcode": "20500",
@@ -112,10 +133,10 @@ class LoginDotGovTestCase(TestCase):
             logger=logger,
         )
         swa, _ = create_swa(is_active=True)
-        # ial == 2 unless explicitly == 1
+        # default IAL1
         response = self.client.get(f"/logindotgov/?ial=0&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.client.session["IAL"], 2)
+        self.assertEquals(self.client.session["IAL"], 1)
 
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
@@ -138,13 +159,24 @@ class LoginDotGovTestCase(TestCase):
         self.assertFalse(whoami["birthdate"])
         self.assertFalse(whoami["phone"])
 
+        # logging in again at IAL2 will create step up event
+        response = self.client.get(f"/logindotgov/?ial=2&swa={swa.code}")
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(self.client.session["IAL"], 2)
+
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(response, "/claimant/", status_code=302)
+
+        claimant = Claimant.objects.get(
+            idp_user_xid=self.client.session["whoami"]["claimant_id"]
+        )
+        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
+        self.assertEquals(claimant.events.last().description, "1 => 2")
+
     @override_settings(DEBUG=True)  # so that /explain works
     def test_ial1_verified(self):
         swa, _ = create_swa(is_active=True)
-        # ial == 2 unless explicitly == 1
-        response = self.client.get(f"/logindotgov/?ial=0&swa={swa.code}")
-        self.assertEquals(response.status_code, 302)
-        self.assertEquals(self.client.session["IAL"], 2)
 
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
@@ -251,7 +283,7 @@ class LoginDotGovTestCase(TestCase):
         session["redirect_to"] = "/some/place/else"
         session.save()
 
-        response = self.client.get(f"/logindotgov/?swa={swa.code}")
+        response = self.client.get(f"/logindotgov/?ial=2&swa={swa.code}")
         self.assertEquals(response.status_code, 302)
 
         authorize_parsed = mimic_oidc_server_authorized(response.url)
@@ -315,7 +347,7 @@ class LoginDotGovTestCase(TestCase):
         self.assertEquals(claim.swa, swa)
         self.assertTrue(claim.is_initiated_with_swa_xid())
 
-        # logging in again with same swa_xid re-uses same Claim
+        # logging in again with same swa_xid param in URL re-uses same Claim
         self.client.session.flush()
         response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
         authorize_parsed = mimic_oidc_server_authorized(response.url)
@@ -332,3 +364,88 @@ class LoginDotGovTestCase(TestCase):
             ).count(),
             2,
         )
+
+    def test_swa_xid_preserved_with_cookie(self):
+        swa, _ = create_swa(is_active=True)
+        swa_xid = str(uuid.uuid4())
+        self.client.cookies["swa_xid"] = swa_xid
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+
+        # logging in again with same browser uses same Claim
+        self.client.session.flush()
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertFalse(self.client.session.get("swa_xid"))
+        claimant = Claimant.objects.last()
+        self.assertEqual(claimant.claim_set.count(), 1)
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count(),
+            2,
+        )
+
+    def test_identity_only_claim_same_session(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+
+        # swa_xid param required for identity only swa
+        response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
+        self.assertContains(response, "missing swa_xid", status_code=400)
+
+        swa_xid = str(uuid.uuid4())
+        response = self.client.get(
+            f"/logindotgov/?ial=1&swa={swa.code}&swa_xid={swa_xid}"
+        )
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        self.assertFalse(claim.is_completed())
+
+        # step up should complete the claim
+        response = self.client.get("/logindotgov/?ial=2")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        self.assertTrue(claim.is_completed())
+
+    def test_identity_only_claim_different_session(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        swa_xid = str(uuid.uuid4())
+        response = self.client.get(
+            f"/logindotgov/?ial=1&swa={swa.code}&swa_xid={swa_xid}"
+        )
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        self.assertFalse(claim.is_completed())
+
+        self.client.session.flush()
+
+        # step up should complete the claim
+        response = self.client.get(f"/logindotgov/?ial=2&swa={swa.code}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        self.assertTrue(claim.is_completed())

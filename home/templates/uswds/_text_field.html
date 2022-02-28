@@ -7,5 +7,14 @@
       {% endif %}
     </label>
     <!-- prettier-ignore -->
-    <input {% if required %}required{% endif %} class="usa-input" type="{{ type|default:'text' }}" id="{{ id }}" name="{{ id }}" />
+    {% if disabled %}
+    <input type="hidden" value="{{ disabled|get_dictionary_value:id }}" name="{{ id }}" />
+    {% endif %}
+    <input {% if disabled %}value="{{ disabled|get_dictionary_value:id }}" disabled{% endif %}
+           {% if required %}required{% endif %}
+           class="usa-input"
+           type="{{ type|default:'text' }}"
+           id="{{ id }}"
+           name="{{ id }}"
+           />
 </div>

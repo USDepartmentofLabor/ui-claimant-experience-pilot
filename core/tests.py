@@ -78,17 +78,21 @@ class CoreTestCase(TestCase):
         self.assertEqual(response.status_code, 503)
 
 
-class CoreClaimStorageTestCase(TestCase):
+class BucketableTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         create_s3_bucket()
+        create_s3_bucket(is_archive=True)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)
 
+
+class CoreClaimStorageTestCase(BucketableTestCase):
     def test_claim_writer(self):
         idp = create_idp()
         swa, _ = create_swa()

@@ -11,7 +11,7 @@ from botocore.stub import Stubber
 from dacite import from_dict
 from core.tasks_tests import CeleryTestCase
 from .test_utils import create_idp, create_swa, create_claimant
-from .models import Claim, Claimant
+from .models import Claim, Claimant, SWA
 from .models.claim import CLAIMANT_STATUS_PROCESSING
 from core.test_utils import create_s3_bucket, delete_s3_bucket
 from .claim_request import (
@@ -41,6 +41,7 @@ from core.claim_storage import (
 from .claim_finder import ClaimFinder
 from .whoami import WhoAmI, WhoAmISWA
 from .claim_cleaner import ClaimCleaner
+from .identity_claim_maker import IdentityClaimMaker
 from os import listdir
 from os.path import isfile, join, isdir
 from datetime import timedelta
@@ -832,23 +833,25 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             )
 
     def test_login(self):
+        swa, _ = create_swa(is_active=True)
         self.assertFalse("authenticated" in self.client.session)
         response = self.client.post(
             "/api/login/",
             {
                 "email": "someone@example.com",
-                "IAL": "2",
-                "address.address1": "123 Main St",
+                "IAL": "1",
+                "swa_code": swa.code,
             },
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.client.session["authenticated"])
 
     def test_login_json(self):
+        swa, _ = create_swa(is_active=True)
         self.assertFalse("authenticated" in self.client.session)
         response = self.client.post(
             "/api/login/",
-            data={"email": "someone@example.com", "IAL": "2"},
+            data={"email": "someone@example.com", "IAL": "1", "swa_code": swa.code},
             content_type=JSON,
         )
         self.assertEqual(response.status_code, 200)
@@ -1392,8 +1395,61 @@ class WhoAmITestCase(TestCase):
                 | {
                     "swa": TEST_SWA,
                     "verified_at": "1234567890",
-                    "address": MAILING_ADDRESS,
                 }
             ),
         )
-        self.assertEqual(whoami.as_identity()["verified_at"], "2009-02-13T23:31:30")
+        self.assertEqual(
+            whoami.as_identity()["verified_at"], "2009-02-13T23:31:30+00:00"
+        )
+
+
+class IdentityClaimMakerTestCase(TestCase):
+    def setUp(self):
+        super().setUp()
+        # Empty the test outbox
+        mail.outbox = []
+        swa, private_key_jwk = create_swa(
+            is_active=True,
+            code=TEST_SWA["code"],
+            name=TEST_SWA["name"],
+            claimant_url=TEST_SWA["claimant_url"],
+            featureset=SWA.FeatureSetOptions.IDENTITY_ONLY,
+        )
+        self.swa = swa
+        self.swa_private_key = private_key_jwk
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+        create_s3_bucket(is_archive=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)
+
+    def test_identity_claim(self):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        claim = Claim(swa_xid="abc-123", swa=self.swa, claimant=claimant)
+        claim.save()
+        whoami = WhoAmI.from_dict(WHOAMI_IAL2 | {"swa": self.swa.for_whoami()})
+        claim_maker = IdentityClaimMaker(claim, whoami)
+        self.assertTrue(claim_maker.create())
+
+        # fetch the encrypted claim from the S3 bucket directly and decrypt it.
+        self.assertTrue(claim.is_completed())
+        claim_id = str(claim.uuid)
+        cr = ClaimReader(claim)
+        packaged_claim_str = cr.read()
+        acd = AsymmetricClaimDecryptor(packaged_claim_str, self.swa_private_key)
+        decrypted_claim = acd.decrypt()
+        self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
+        self.assertEqual(decrypted_claim["id"], claim_id)
+        self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
+        self.assertEqual(
+            decrypted_claim["$schema"],
+            "https://unemployment.dol.gov/schemas/identity-v1.0.json",
+        )

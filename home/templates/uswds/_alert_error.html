@@ -18,6 +18,9 @@
           link.setAttribute("href", link.href + `?${param}=${value}`);
         }
       });
+      // also set a cookie with this value, in case we navigate away from our site and lose the params.
+      const maxAge = 60 * 60 * 24 * 7;
+      document.cookie = `${param}=${value}; max-age=${maxAge}; path=/; secure`;
     });
   };
   USDOL.passThroughParams = (form) => {

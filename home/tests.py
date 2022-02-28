@@ -4,6 +4,7 @@ from api.models import Claimant, SWA
 from api.test_utils import create_swa
 from unittest.mock import patch
 import logging
+from core.tests import BucketableTestCase
 
 logger = logging.getLogger("home.tests")
 
@@ -36,71 +37,8 @@ class HomeTestCase(TestCase):
         response = self.client.get("/ial2required/?idp=foo")
         self.assertContains(response, "foo/?ial=1", status_code=200)
 
-    def test_login_page(self):
-        response = self.client.get("/login/?swa=XX&redirect_to=http://example.com/")
-        self.assertContains(response, "Login", status_code=200)
-        self.assertEquals(self.client.session["redirect_to"], "http://example.com/")
-        self.assertEquals(self.client.session["swa"], "XX")
-        response = self.client.post(
-            "/login/",
-            {
-                "email": "some@example.com",
-                "first_name": "Some",
-                "last_name": "Body",
-                "IAL": "2",
-            },
-        )
-        self.assertRedirects(
-            response,
-            "http://example.com/",
-            status_code=302,
-            fetch_redirect_response=False,
-        )
-        claimant = Claimant.objects.last()
-        verified_at = self.client.session["whoami"]["verified_at"]
-        self.assertEquals(
-            self.client.session["whoami"],
-            {
-                "claimant_id": claimant.idp_user_xid,
-                "email": "some@example.com",
-                "first_name": "Some",
-                "last_name": "Body",
-                "IAL": "2",
-                "identity_provider": "Local",
-                "verified_at": verified_at,
-            },
-        )
-        self.assertEquals(claimant.last_login_event().description, "2")
-        self.assertEquals(
-            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
-        )
-        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
-        self.assertEquals(claimant.events.last().description, "1 => 2")
-        self.assertEquals(claimant.IAL, 2)
-
-        # GET or POST only
-        response = self.client.head("/login/")
-        self.assertEquals(response.status_code, 405)
-
-    def test_IAL_bump(self):
-        self.client.post(
-            "/login/",
-            {
-                "email": "some@example.com",
-                "first_name": "Some",
-                "last_name": "Body",
-                "IAL": "1",
-            },
-        )
-        claimant = Claimant.objects.last()
-        self.assertEquals(claimant.last_login_event().description, "1")
-        self.assertEquals(
-            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
-        )
-        self.assertEquals(claimant.events.count(), 1)
-        self.assertEquals(claimant.IAL, 1)
-
     def test_logout_page(self):
+        swa, _ = create_swa(is_active=True)
         self.client.post(
             "/login/",
             {
@@ -108,6 +46,7 @@ class HomeTestCase(TestCase):
                 "first_name": "Some",
                 "last_name": "Body",
                 "IAL": "2",
+                "swa_code": swa.code,
             },
         )
         response = self.client.get("/logout/")
@@ -172,3 +111,134 @@ class HomeTestCase(TestCase):
         # no such SWA
         response = self.client.get("/contact/foobar/")
         self.assertEqual(response.status_code, 404)
+
+
+ADDRESS = {
+    "address.address1": "123 Any St",
+    "address.city": "Some",
+    "address.state": "KS",
+    "address.zipcode": "00000",
+}
+
+
+class LocalLoginTestCase(BucketableTestCase):
+    maxDiff = None
+
+    def test_login_page(self):
+        swa, _ = create_swa(is_active=True, code="XX")
+        response = self.client.get("/login/?swa=XX&redirect_to=http://example.com/")
+        self.assertContains(response, "Login", status_code=200)
+        self.assertEquals(self.client.session["redirect_to"], "http://example.com/")
+        self.assertEquals(self.client.session["swa"], "XX")
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "swa_code": "XX",
+            }
+            | ADDRESS,
+        )
+        self.assertRedirects(
+            response,
+            "http://example.com/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        claimant = Claimant.objects.last()
+        verified_at = self.client.session["whoami"]["verified_at"]
+        self.assertEquals(
+            self.client.session["whoami"],
+            {
+                "claimant_id": claimant.idp_user_xid,
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "identity_provider": "Local",
+                "verified_at": verified_at,
+                "birthdate": None,
+                "address": {
+                    "address1": "123 Any St",
+                    "city": "Some",
+                    "state": "KS",
+                    "zipcode": "00000",
+                },
+                "ssn": None,
+                "swa": {
+                    "code": "XX",
+                    "name": "XX state name",
+                    "claimant_url": "https://some.fake.url",
+                    "featureset": "Claim And Identity",
+                },
+                "csrfmiddlewaretoken": None,
+                "claim_id": None,
+                "phone": None,
+            },
+        )
+        self.assertEquals(claimant.last_login_event().description, "2")
+        self.assertEquals(
+            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
+        )
+        self.assertEquals(claimant.events.last().category, Claimant.EventCategories.IAL)
+        self.assertEquals(claimant.events.last().description, "1 => 2")
+        self.assertEquals(claimant.IAL, 2)
+
+        # GET or POST only
+        response = self.client.head("/login/")
+        self.assertEquals(response.status_code, 405)
+
+    def test_local_login_swa_xid(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "ssn": "900001234",
+                "swa_code": swa.code,
+                "swa_xid": "abc-123",
+                "phone": "555-555-5555",
+                "birthdate": "1970-01-01",
+            }
+            | ADDRESS,
+        )
+        self.assertRedirects(
+            response,
+            "/claimant/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        self.assertTrue(self.client.session["whoami"]["claim_id"])
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertEqual(self.client.session["whoami"]["claim_id"], str(claim.uuid))
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        self.assertTrue(claim.completed_artifact_exists())
+
+    def test_IAL_bump(self):
+        swa, _ = create_swa(is_active=True)
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "1",
+                "swa_code": swa.code,
+            },
+        )
+        self.assertEquals(response.status_code, 302)
+        claimant = Claimant.objects.last()
+        self.assertEquals(claimant.last_login_event().description, "1")
+        self.assertEquals(
+            claimant.last_login_event().category, Claimant.EventCategories.LOGGED_IN
+        )
+        self.assertEquals(claimant.events.count(), 1)
+        self.assertEquals(claimant.IAL, 1)

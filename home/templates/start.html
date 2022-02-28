@@ -110,10 +110,7 @@
       // TODO GA event
 
       if (canProceed) {
-        // Set cookie to say we passed so that /idp/ page knows it's ok to proceed
-        const maxAge = 60 * 60 * 24 * 7;
-        document.cookie = `prequal_complete=true; max-age=${maxAge}; path=/; secure`
-
+        {% include "_set_prequal_cookie.jssnip" %}
         const loginUrl = `/idp/?swa=${formData.get("swa_code")}`;
         window.location = loginUrl;
       } else {

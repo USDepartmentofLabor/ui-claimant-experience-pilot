@@ -293,7 +293,10 @@ def GET_partial_claim(request):
 
     # if claim is overdue for expiration, pretend we do not have it.
     # this prevents edge case where claimant's browser has it but we've deleted it.
-    if claim.should_be_deleted_after() < timezone.now():
+    if (
+        claim.should_be_deleted_after()
+        and claim.should_be_deleted_after() < timezone.now()
+    ):
         return claim_not_found_response
 
     # memoize to save trips to S3

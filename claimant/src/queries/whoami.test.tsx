@@ -20,6 +20,7 @@ const whoIsYou: WhoAmI = {
     claimant_url: "https://some-test-url.gov",
     featureset: "Claim And Identity",
   },
+  identity_provider: "Local",
 };
 
 jest.mock("../utils/httpclient");

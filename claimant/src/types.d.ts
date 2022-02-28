@@ -17,11 +17,13 @@ type ClaimantInput = {
   OccupationType &
   CompleteClaimType;
 
-type Claim = ClaimantInput & {
+type IdentityClaimType = {
   id?: string;
   swa_code: string;
   claimant_id: string;
 };
+
+type Claim = ClaimantInput & IdentityClaimType;
 
 type ValidationError = {
   string: {
@@ -62,7 +64,7 @@ type SWAType = {
   code: string;
   name: string;
   claimant_url: string;
-  featureset: string;
+  featureset: "Claim And Identity" | "Claim Only" | "Identity Only";
 };
 
 type WhoAmI = {
@@ -77,6 +79,8 @@ type WhoAmI = {
   phone: string;
   swa: SWAType;
   address?: AddressType;
+  identity_provider: "login.gov" | "Local";
+  verified_at?: string;
 };
 
 type FormValues = {

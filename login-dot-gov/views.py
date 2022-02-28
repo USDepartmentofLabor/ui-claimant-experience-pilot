@@ -10,8 +10,10 @@ from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, 
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider, SWA, Claim
 from django.conf import settings
-from api.whoami import WhoAmI, WhoAmIAddress
+from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
 from home.views import base_url, handle_404
+from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
+from core.exceptions import ClaimStorageError
 
 logger = logging.getLogger("logindotgov")
 
@@ -20,7 +22,7 @@ if os.environ.get("LOGIN_DOT_GOV_ENV") == "test":
 else:  # pragma: no cover
     logindotgov_config = LoginDotGovOIDCClient.discover()
 
-DEFAULT_IAL = 2
+DEFAULT_IAL = 1
 ALLOWED_IALS = Claimant.IALOptions.values
 IAL1_SCOPES = [
     "openid",
@@ -104,16 +106,30 @@ def index(request):
             status=403,
         )
 
-    if not SWA.active.filter(code=request.session.get("swa")).exists():
+    try:
+        swa = SWA.active.get(code=request.session.get("swa"))
+    except SWA.DoesNotExist:
         logger.debug("🚀 invalid SWA code")
         return handle_404(request, None)
 
     # remember what level we're aiming for in this request
     request.session["IAL"] = requested_ial
 
-    # optional swa_xid is unique string passed by SWAs to xref claims with their systems.
+    # swa_xid is unique string passed by SWAs to xref claims with their systems.
+    # if the swa is an Identity Only featureset, swa_xid is required. otherwise, optional.
+    # The swa_xid is optional on ial=2 because we assume we captured it already at ial=1
     if "swa_xid" in request.GET:
         request.session["swa_xid"] = request.GET["swa_xid"]
+    elif requested_ial == 2:
+        pass  # step up
+    elif swa.is_identity_only():
+        logger.debug("🚀 SWA.is_identity_only and missing swa_xid")
+        return render(
+            None,
+            "auth-error.html",
+            {"error": "missing swa_xid parameter", "base_url": base_url(request)},
+            status=400,
+        )
 
     # otherwise, initiate login.gov session
     # create our session with a "state" we can use to track IdP response.
@@ -205,11 +221,100 @@ def result(request):
         )
 
     userinfo = client.get_userinfo(tokens["access_token"])
+    redirect_response = initiate_claimant_session(request, userinfo)
 
+    if redirect_response:
+        # preserve all cookies
+        return redirect_response
+
+    redirect_to = "/claimant/"
+    if "redirect_to" in request.session:
+        redirect_to = request.session["redirect_to"]
+        del request.session["redirect_to"]
+    logger.debug("redirect_to={}".format(redirect_to))
+
+    response = redirect(redirect_to)
+    response.delete_cookie("swa_xid")  # in case it was set
+    return response
+
+
+#########################################################################################
+# private methods
+
+
+def initiate_claimant_session(request, userinfo):
     # if we made an IAL1 initial request, but the claimant has a "verified_at" attribute,
     # that means their account at login.gov is capable already at IAL2. Remember that.
     claimant_IAL = 2 if userinfo.get("verified_at", None) else 1
 
+    # the IAL for this request
+    request_IAL = request.session["IAL"]
+
+    whoami, claimant = build_whoami_and_claimant(userinfo, request_IAL, claimant_IAL)
+
+    # 'swa' key must exist because we required it in index()
+    swa = SWA.active.get(code=request.session["swa"])
+    whoami.swa = WhoAmISWA(**swa.for_whoami())
+
+    # create db artifacts, and optionally, Identity claim
+    initiate_claim_with_swa_xid(request, whoami, claimant, swa)
+
+    if (
+        claimant_IAL == 2
+        and request_IAL == 2
+        and swa.is_identity_only()
+        and claimant.pending_identity_only_claim()
+    ):
+        complete_identity_only_claim(whoami, claimant)
+
+    request.session["logindotgov"]["userinfo"] = userinfo
+    request.session["whoami"] = whoami.as_dict()
+
+    # if they logged in at IAL1 but are immediately capable of IAL2 (already verified),
+    # then "step up" now and preserve the "redirect_to" in session. This makes sure
+    # we have all the IAL2 attributes available to us, and avoids displaying the
+    # "you need to verify your identity" on Claim form when they already have verified.
+    if request_IAL == 1 and claimant_IAL == 2:
+        logger.debug("Immediate step up to IAL2 for verified user")
+        return redirect("/logindotgov/?ial=2")
+
+    # wait to set this till after we've checked IAL 1vs2 above.
+    request.session["authenticated"] = True
+
+    # None return value means caller can proceed without redirecting immediately.
+    return None
+
+
+def get_swa_xid(request):
+    if "swa_xid" in request.session:
+        return request.session["swa_xid"]
+    if "swa_xid" in request.COOKIES:
+        return request.COOKIES["swa_xid"]
+    return False
+
+
+def initiate_claim_with_swa_xid(request, whoami, claimant, swa):
+    swa_xid = get_swa_xid(request)
+    if swa_xid:
+        with transaction.atomic():
+            claim, _ = Claim.objects.get_or_create(
+                swa=swa, claimant=claimant, swa_xid=swa_xid
+            )
+            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
+            whoami.claim_id = str(claim.uuid)
+
+
+def complete_identity_only_claim(whoami, claimant):
+    claim = claimant.pending_identity_only_claim()
+    claim_maker = IdentityClaimMaker(claim, whoami)
+    try:
+        claim_maker.create()
+    except (ClaimStorageError, IdentityClaimValidationError) as error:
+        # log and continue
+        logger.exception(error)
+
+
+def build_whoami_and_claimant(userinfo, request_IAL, claimant_IAL):
     with transaction.atomic():
         logindotgov_idp, _ = IdentityProvider.objects.get_or_create(name="login.gov")
         idp_user_xid = hash_idp_user_xid(userinfo["sub"])
@@ -218,20 +323,15 @@ def result(request):
         )
         claimant.events.create(
             category=Claimant.EventCategories.LOGGED_IN,
-            description=request.session["IAL"],  # the level they logged in at
+            description=request_IAL,
         )
         claimant.bump_IAL_if_necessary(claimant_IAL)
-        # if there was a swa_xid, if necessary create the Claim immediately to link it
-        if "swa_xid" in request.session:
-            # 'swa' key must exist because we required it in index()
-            swa = SWA.active.get(code=request.session["swa"])
-            claim, _ = Claim.objects.get_or_create(
-                swa=swa, claimant=claimant, swa_xid=request.session["swa_xid"]
-            )
-            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
 
-    request.session["logindotgov"]["userinfo"] = userinfo
     address = userinfo.get("address", {})
+    # split street address into 1/2 based on presence of newline
+    if "\n" in address.get("street_address", ""):
+        address["address1"] = address["street_address"].split("\n")[0]
+        address["address2"] = address["street_address"].split("\n")[1]
     whoami = WhoAmI(
         IAL=str(claimant_IAL),
         first_name=userinfo.get("given_name", ""),
@@ -241,7 +341,8 @@ def result(request):
         email=userinfo["email"],
         phone=userinfo.get("phone", ""),
         address=WhoAmIAddress(
-            address1=address.get("street_address", ""),
+            address1=address.get("address1", address.get("street_address", "")),
+            address2=address.get("address2", ""),
             city=address.get("locality", ""),
             state=address.get("region", ""),
             zipcode=address.get("postal_code", ""),
@@ -250,23 +351,4 @@ def result(request):
         verified_at=str(userinfo.get("verified_at", "")),
         identity_provider=logindotgov_idp.name,
     )
-    request.session["whoami"] = whoami.as_dict()
-
-    # if they logged in at IAL1 but are immediately capable of IAL2 (already verified),
-    # then "step up" now and preserve the "redirect_to" in session. This makes sure
-    # we have all the IAL2 attributes available to us, and avoids displaying the
-    # "you need to verify your identity" on Claim form when they already have verified.
-    if request.session["IAL"] == 1 and claimant_IAL == 2:
-        logger.debug("Immediate step up to IAL2 for verified user")
-        return redirect("/logindotgov/?ial=2")
-
-    # wait to set this till after we've checked IAL 1vs2 above.
-    request.session["authenticated"] = True
-
-    redirect_to = "/claimant/"
-    if "redirect_to" in request.session:
-        redirect_to = request.session["redirect_to"]
-        del request.session["redirect_to"]
-    logger.debug("redirect_to={}".format(redirect_to))
-
-    return redirect(redirect_to)
+    return whoami, claimant

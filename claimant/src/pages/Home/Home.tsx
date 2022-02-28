@@ -25,6 +25,9 @@ type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 const SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING = 48;
+const FEATURE_SET_CLAIM_AND_IDENTITY = "Claim And Identity";
+const FEATURE_SET_IDENTITY_ONLY = "Identity Only";
+const FEATURE_SET_CLAIM_ONLY = "Claim Only";
 const CLAIM_SKELETON_SIZE = 4; // a bootstrapped claim has this many keys before any submission
 
 type AccordionProps = React.ComponentProps<typeof Accordion>;
@@ -136,15 +139,31 @@ const HomePage = () => {
     bordered: true,
   };
 
-  const tasks = [
-    {
+  const identityTaskRequired = () =>
+    whoami?.swa.featureset === FEATURE_SET_CLAIM_AND_IDENTITY ||
+    whoami?.swa.featureset === FEATURE_SET_IDENTITY_ONLY;
+  const claimAppTaskRequired = () =>
+    whoami?.swa.featureset === FEATURE_SET_CLAIM_AND_IDENTITY ||
+    whoami?.swa.featureset === FEATURE_SET_CLAIM_ONLY;
+  const identityProvider = whoami?.identity_provider || "login.gov";
+
+  const tasks = [];
+  if (identityTaskRequired()) {
+    tasks.push({
       listText: t("identity.list"),
       status: identityStatus,
       title: t(`identity.${identityStatus}.title`),
-      Content: () => <IdentityContent identityStatus={identityStatus} />,
+      Content: () => (
+        <IdentityContent
+          identityStatus={identityStatus}
+          identityProvider={identityProvider}
+        />
+      ),
       MoreInfo: () => <Accordion {...identityMoreInfoProps} />,
-    },
-    {
+    });
+  }
+  if (claimAppTaskRequired()) {
+    tasks.push({
       listText: t("application.list"),
       title:
         claimStatus === "ready_to_submit"
@@ -160,8 +179,8 @@ const HomePage = () => {
         />
       ),
       MoreInfo: () => <Accordion {...applicationMoreInfoProps} />,
-    },
-  ];
+    });
+  }
 
   if (identityStatus === "complete" && claimStatus !== "ready_to_submit") {
     tasks.reverse();
@@ -186,16 +205,20 @@ const HomePage = () => {
         <div className="padding-bottom-4">
           {remainingTasks.length === 1 && <p>{t("remaining_tasks.one")}</p>}
           {remainingTasks.length === 2 && <p>{t("remaining_tasks.two")}</p>}
-          <p>{t("remaining_tasks.listTitle")}</p>
-          <ul>
-            {remainingTasks.map(({ listText }) => (
-              <li key={listText}>{listText}</li>
-            ))}
-          </ul>
+          {remainingTasks.length > 0 && (
+            <>
+              <p>{t("remaining_tasks.listTitle")}</p>
+              <ul>
+                {remainingTasks.map(({ listText }) => (
+                  <li key={listText}>{listText}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
         {tasks.map(({ title, status, Content, MoreInfo }) => (
           <div key={title} className="margin-top-8">
-            <MoreInfo />
+            {status !== "complete" && <MoreInfo />}
             <ProgressCard key={title} title={title} status={status}>
               <Content />
             </ProgressCard>
@@ -257,14 +280,19 @@ const ProgressCard = ({
 };
 
 interface IIdentityContent {
+  identityProvider: "login.gov" | "Local";
   identityStatus: keyof Pick<
     Record<Status, string>,
     "not_started" | "complete"
   >;
 }
 
-const IdentityContent = ({ identityStatus }: IIdentityContent) => {
+const IdentityContent = ({
+  identityProvider,
+  identityStatus,
+}: IIdentityContent) => {
   const { t } = useTranslation("home");
+  const { data: whoami } = useWhoAmI();
 
   if (identityStatus === "complete") {
     return (
@@ -292,14 +320,19 @@ const IdentityContent = ({ identityStatus }: IIdentityContent) => {
     );
   }
 
+  const verifyIdentityUrl = () => {
+    if (identityProvider === "login.gov") {
+      return `${baseUrl}/logindotgov/?ial=2&swa_code=${whoami?.swa.code}`;
+    } else if (identityProvider === "Local") {
+      return `${baseUrl}/login/?ial=2&swa_code=${whoami?.swa.code}`;
+    }
+  };
+
   return (
     <>
       <p>{t("identity.not_started.description")}</p>
       <div className="text-center">
-        <a
-          className="usa-button margin-x-auto"
-          href={`${baseUrl}/logindotgov/?ial=2`}
-        >
+        <a className="usa-button margin-x-auto" href={verifyIdentityUrl()}>
           {t("identity.not_started.start")} &#8594;
         </a>
       </div>

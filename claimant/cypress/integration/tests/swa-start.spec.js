@@ -63,6 +63,7 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
       cy.click_next();
       cy.url().should("contain", "/idp/YY/?");
       cy.url().should("contain", `swa_xid=${swa_xid}`);
+      cy.getCookie("swa_xid").should("have.property", "value", swa_xid);
     });
 
     it("filters out dangerous characters", () => {

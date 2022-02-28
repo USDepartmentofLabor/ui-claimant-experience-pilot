@@ -42,6 +42,7 @@ const myPII: WhoAmI = {
     claimant_url: "https://some-test-url.gov",
     featureset: "Claim And Identity",
   },
+  identity_provider: "Local",
 };
 
 const myEmptyPII: WhoAmI = {
@@ -60,15 +61,18 @@ const myEmptyPII: WhoAmI = {
     claimant_url: "https://some-test-url.gov",
     featureset: "Claim And Identity",
   },
+  identity_provider: "Local",
 };
 
 const renderWithMocks = (
   IAL: WhoAmI["IAL"],
-  appStatus: "notStarted" | "inProgress" | "ready"
+  appStatus: "notStarted" | "inProgress" | "ready",
+  featureset?: "Claim And Identity" | "Identity Only" | "Claim Only"
 ) => {
   const pii = IAL === "1" ? myEmptyPII : myPII;
+  const feature = featureset || "Claim And Identity";
   mockedUseWhoAmI.mockImplementation(() => ({
-    data: { ...pii, IAL },
+    data: { ...pii, IAL, swa: { ...pii.swa, featureset: feature } },
     isLoading: false,
     error: null,
     isError: false,
@@ -112,9 +116,30 @@ const renderWithMocks = (
 };
 
 describe("the Home page", () => {
-  describe("with IAL2", () => {
+  describe("Claim Application task", () => {
     beforeEach(() => {
       jest.resetAllMocks();
+    });
+    describe("with featureset Identity Only", () => {
+      it("does not show Claim Application task at all", () => {
+        renderWithMocks("1", "notStarted", "Identity Only");
+        expect(
+          screen.queryByText("application.moreInfo.title")
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
+  describe("Identity task", () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+    describe("with featureset Claim Only", () => {
+      it("does not show ID verification task at all", () => {
+        renderWithMocks("1", "notStarted", "Claim Only");
+        expect(
+          screen.queryByText("identity.moreInfo.title")
+        ).not.toBeInTheDocument();
+      });
     });
     it("shows ID verification not started", () => {
       renderWithMocks("1", "notStarted");

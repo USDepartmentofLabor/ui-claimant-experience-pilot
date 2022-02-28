@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 import hashlib
-from api.models import Claimant, IdentityProvider
-from api.whoami import WhoAmI
-from django.db import transaction
+from api.models import IdentityProvider
 from django.utils import timezone
 from django_redis import get_redis_connection
 from datetime import timedelta
-from dacite import from_dict
 
 
 def session_as_dict(request):
@@ -32,46 +28,10 @@ def get_session_expires_at(session_key):
 
 
 def register_local_login(request):
-    request.session["authenticated"] = True
-    whoami = {}
-    if request.content_type == "application/json":
-        payload = json.loads(request.body)
-    else:
-        payload = request.POST
+    from .local_idp import LocalIdentityProvider
 
-    for k in payload.keys():
-        if "." in k:
-            k_parts = k.split(".")
-            if k_parts[0] not in whoami:
-                whoami[k_parts[0]] = {}
-            whoami[k_parts[0]][k_parts[1]] = payload[k]
-        else:
-            whoami[k] = payload[k]
-
-    # don't look up SWA yet. let /api/whoami/ do it.
-    if "swa_code" in whoami:
-        request.session["swa"] = whoami["swa_code"]
-        del whoami["swa_code"]
-
-    if whoami["IAL"] == "2":
-        whoami["verified_at"] = str(timezone.now().isoformat())
-
-    request.session["whoami"] = whoami
-    local_idp = local_identity_provider()
-    if "email" in whoami and len(whoami["email"]):
-        xid = hash_idp_user_xid(whoami["email"])
-        with transaction.atomic():
-            claimant, _ = Claimant.objects.get_or_create(
-                idp_user_xid=xid, idp=local_idp
-            )
-            claimant.events.create(
-                category=Claimant.EventCategories.LOGGED_IN, description=whoami["IAL"]
-            )
-            claimant.bump_IAL_if_necessary(whoami["IAL"])
-
-        whoami["claimant_id"] = xid
-    whoami["identity_provider"] = local_idp.name
-    return from_dict(data_class=WhoAmI, data=whoami)
+    idp = LocalIdentityProvider(request)
+    return idp.login()
 
 
 def hash_idp_user_xid(user_xid):

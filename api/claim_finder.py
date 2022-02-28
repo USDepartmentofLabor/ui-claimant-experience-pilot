@@ -59,6 +59,4 @@ class ClaimFinder(object):
         if not self.ok:
             return False
 
-        return Claim.objects.filter(swa=self.swa, claimant=self.claimant).order_by(
-            "-created_at"
-        )
+        return Claim.objects.filter(claimant=self.claimant).order_by("-created_at")

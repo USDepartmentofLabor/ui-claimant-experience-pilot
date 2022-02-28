@@ -15,7 +15,7 @@ describe("the Whoami page", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockedUseWhoAmI.mockImplementation(() => ({
-      data: {},
+      data: { swa: { code: "XX" } },
       isLoading: false,
       error: null,
       isError: false,
@@ -57,6 +57,7 @@ describe("component WhoAmI", () => {
       claimant_url: "https://some-test-url.gov",
       featureset: "Claim And Identity",
     },
+    identity_provider: "Local",
   };
 
   beforeEach(() => {

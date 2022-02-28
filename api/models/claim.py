@@ -301,6 +301,10 @@ class Claim(TimeStampedModel):
         )
         return cd.decrypt()
 
+    def completed_artifact_exists(self):
+        claim_reader = ClaimReader(self, path=self.completed_payload_path())
+        return claim_reader.exists()
+
     # returns a constant that reflects the status of the claim from the Claimant's perspective
     def status_for_claimant(self):
         if not self.is_completed() and not self.is_deleted() and not self.is_resolved():

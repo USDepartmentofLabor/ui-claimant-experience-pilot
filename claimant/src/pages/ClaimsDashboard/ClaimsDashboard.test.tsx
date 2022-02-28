@@ -37,6 +37,7 @@ const myPII: WhoAmI = {
     claimant_url: "https://some-test-url.gov",
     featureset: "Claim And Identity",
   },
+  identity_provider: "Local",
 };
 
 const myClaims: ClaimantClaim[] = [

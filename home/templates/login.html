@@ -9,6 +9,9 @@
           name="csrfmiddlewaretoken"
           value="{{ csrf_token }}"
         />
+        {% if swa_xid %}
+        <input type="hidden" name="swa_xid" value="{{ swa_xid }}" />
+        {% endif %}
         <fieldset class="usa-fieldset">
           <legend class="usa-legend usa-legend--large"></legend>
           <div class="clearfix"></div>
@@ -30,14 +33,14 @@
             class="usa-select"
             onchange="toggleRequiredFields(this.value)"
           >
-            <option selected value="1">1</option>
-            <option value="2">2</option>
+            <option {% if not ial or ial == "1" %}selected{% endif %} value="1">1</option>
+            <option {% if ial == "2" %}selected{% endif %} value="2">2</option>
           </select>
 
           {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
           {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
-          {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" %}
+          {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" disabled=whoami %}
           {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate (YYYY-MM-DD)" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="ssn" label="SSN" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="phone" label="Phone" type="text" required=True %}
@@ -75,8 +78,8 @@
                 }
               });
             }
-            // start at IAL1
-            toggleRequiredFields("1");
+            // start with whatever is selected
+            toggleRequiredFields(document.getElementById("IAL").value);
           </script>
 
           <div>

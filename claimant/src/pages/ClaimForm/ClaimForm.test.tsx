@@ -53,6 +53,7 @@ const myPII: WhoAmI = {
     state: "KS",
     zipcode: "00000",
   },
+  identity_provider: "Local",
 };
 
 describe("the ClaimForm page", () => {
