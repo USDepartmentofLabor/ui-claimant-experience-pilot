@@ -1,0 +1,12 @@
+{% load i18n %}
+<h1>{% translate "Apply through the New Jersey system" %}</h1>
+<section>
+  {% translate "Based on the information you provided, you’ll need to complete your application using the existing New Jersey unemployment insurance system." %}
+</section>
+<section>
+  {% translate "Once you’ve created your account, you may need to re-share some of the information you just provided." %}
+</section>
+
+<section class="text-center">
+  <a class="usa-button" href="{{ swa.claimant_url }}">{% translate "Next" %}</a>
+</section>

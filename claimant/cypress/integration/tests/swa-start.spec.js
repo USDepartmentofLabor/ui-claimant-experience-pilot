@@ -30,7 +30,7 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
     // cypress cannot access other domains so do not click Next, just check that form.action has changed
     cy.get("#use-app-form")
       .invoke("attr", "action")
-      .should("eq", "https://xx.example.gov/");
+      .should("contain", "swa-redirect/XX");
   });
 
   it("shows/hides error message(s) on form validation", () => {
@@ -48,7 +48,9 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
   context("IDENTITY_ONLY featureset", () => {
     it("uses verify identity language", () => {
       cy.visit("/start/YY/");
-      cy.contains("Do you wish to verify your identity").should("be.visible");
+      cy.contains("Verify your identity online with Login.gov").should(
+        "be.visible"
+      );
       cy.click_yes("use-app");
       cy.click_next();
       cy.url().should("contain", "/idp/YY/");

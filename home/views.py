@@ -52,12 +52,16 @@ def index(request):
 def swa_index(request, swa_code):
     try:
         swa = SWA.active.get(code=swa_code)
+        template_file = (
+            "swa-index-identity-only.html"
+            if swa.is_identity_only()
+            else "swa-index.html"
+        )
         return render(
             None,
-            "swa-index.html",
+            template_file,
             {
                 "swa": swa,
-                "swa_is_identity_only": swa.is_identity_only(),
                 "base_url": base_url(request),
             },
         )
@@ -113,14 +117,21 @@ def idp(request, swa_code=None):
     )
 
 
-# some unhappy-path answer on the /start/ page results in redirect to here
+# some unhappy-path answer on the /start/* page results in redirect to here
 def swa_redirect(request, swa_code):
     try:
         swa = SWA.active.get(code=swa_code)
     except SWA.DoesNotExist:
         swa = None
-    view_args = {"swa": swa, "base_url": base_url(request)}
-    return render(None, "swa-redirect.html", view_args)
+    try:
+        view_args = {
+            "swa": swa,
+            "swa_redirect": f"_swa/{swa.code}/redirect.html" if swa else None,
+            "base_url": base_url(request),
+        }
+        return render(None, "swa-redirect.html", view_args)
+    except TemplateDoesNotExist:
+        return handle_404(request, None)
 
 
 @never_cache

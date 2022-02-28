@@ -3,18 +3,22 @@
 {% load i18n %}
 <div class="grid-container">
   <main id="what-to-expect">
-    <h1>{% translate "Apply for unemployment benefits" %}</h1>
+    <h1>{% translate "Verify your identity online with Login.gov" %}</h1>
     {% include './uswds/_alert_error.html' %}
     <section>
-      {% translate "We invite you to try using APPNAME HERE — a new, user-friendly way to apply for unemployment insurance." %}
+      {% translate "Using Login.gov may be faster and more convenient than visiting a local unemployment insurance office. It is a secure way for you to verify your identity online." %}
     </section>
     <section>
-      {% translate "To use it, you need to:" %}
+      {% translate "You will need to have these items to verify your identity online with Login.gov:" %}
       <ul class="usa-list">
-        <li>{% translate "Upload an image of your state-issued ID to verify your identity with Login.gov" %}</li>
-        <li>{% translate "Verify your phone number, email address, and physical address" %}</li>
-        <li>{% translate "Fill out an application online, including providing recent work history and employment details" %}</li>
+        <li>{% translate "Your state-issued ID" %}</li>
+        <li>{% translate "A phone or computer with a camera to take and upload a photo of your ID" %}</li>
+        <li>{% translate "Your Social Security Number" %}</li>
+        <li>{% translate "A phone number on a phone plan in your name. (If you don't have a phone plan in your name, we can mail you a verification code, which will take 3-5 days.)" %}</li>
       </ul>
+    </section>
+    <section>
+      <strong>{% translate "You must verify your identity within fourteen (14) business days of submitting your application in order to process your claim." %}</strong>
     </section>
 
     <script type="text/javascript">
@@ -26,7 +30,7 @@
         if (proceed === "no") {
           form.action = "{{ base_url }}/swa-redirect/{{ swa.code }}/";
         } else {
-          form.action = "{{ base_url }}/start/";
+          form.action = "{{ base_url }}/idp/{{ swa.code }}/";
         }
       };
       USDOL.handleNext = () => {
@@ -41,6 +45,7 @@
         } else {
           USDOL.clearErrors();
           USDOL.passThroughParams(form);
+          {% include "_set_prequal_cookie.jssnip" %}
           return true;
         }
       };
@@ -49,7 +54,7 @@
     <section class="padding-2 bg-accent-cool-lighter">
       <form id="use-app-form" class="dol-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
         <fieldset class="usa-fieldset">
-          <legend class="usa-legend">{% translate "Do you wish to apply for unemployment benefits using APPNAME HERE system?" %}</legend>
+          <legend class="usa-legend">{% translate "Would you like to verify your identity online?" %}</legend>
           <input type="hidden" name="swa" id="swa" value="{{ swa.code }}" />
           <div class="usa-form-group">
             <div class="usa-radio display-inline-block margin-right-8">
@@ -63,7 +68,7 @@
                 onchange="USDOL.handleUseAppSelection()"
               />
               <label class="usa-radio__label" for="use-app.yes">
-                <strong>{% translate "Yes" %}</strong>, {% translate "I want to apply with APPNAME HERE" %}
+                <strong>{% translate "Yes" %}</strong>, {% translate "I want to verify my identity with Login.gov" %}
               </label>
             </div>
             <div class="usa-radio display-inline-block">
@@ -77,7 +82,7 @@
                 onchange="USDOL.handleUseAppSelection()"
               />
               <label class="usa-radio__label" for="use-app.no" >
-                <strong>{% translate "No" %}</strong>, {% blocktranslate with swa_name=swa.name %}I want to use the regular {{swa_name}} application{% endblocktranslate %}
+                <strong>{% translate "No" %}</strong>, {% translate "I want to verify my identity in-person at a local office" %}
               </label>
             </div>
           </div>
