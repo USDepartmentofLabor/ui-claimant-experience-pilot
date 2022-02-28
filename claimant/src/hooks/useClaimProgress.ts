@@ -24,7 +24,11 @@ export const useClaimProgress = (
         while (segment !== false) {
           try {
             page.segmentSchema(t, segment).validateSync(claim);
-            segment = page.nextSegment(segment);
+            if (page.repeatable && page.repeatable(segment, claim)) {
+              segment = page.nextSegment(segment);
+            } else {
+              segment = false;
+            }
           } catch (e) {
             const segmentAsUrl = segment ? `${segment}/` : "";
             firstInvalidPage = `${page.path}/${segmentAsUrl}`;
@@ -43,7 +47,9 @@ export const useClaimProgress = (
       if (firstInvalidPage) break;
     }
 
-    setContinuePath(Routes.CLAIM_FORM_HOME + firstInvalidPage);
+    setContinuePath(
+      Routes.CLAIM_FORM_HOME + (firstInvalidPage ? firstInvalidPage : "review")
+    );
   }, [partialClaimResponse]);
 
   return { continuePath };

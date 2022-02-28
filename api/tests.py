@@ -1022,7 +1022,9 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
             },
         }
         claim_request = self.create_api_claim_request(body)
-        claim_cleaner = ClaimCleaner(claim_request)
+        claim_cleaner = ClaimCleaner(
+            payload=claim_request.payload, whoami=claim_request.whoami
+        )
         cleaned_claim = claim_cleaner.cleaned()
         logger.debug("🚀 cleaned_claim={}".format(cleaned_claim))
         self.assertEqual(cleaned_claim["ssn"], "666-00-0000")

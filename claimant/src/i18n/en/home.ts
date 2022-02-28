@@ -4,7 +4,6 @@ const home = {
   intro: "File an unemployment insurance claim.",
   sampleStyle: "Hello from a CSS Module style",
   sampleForm: {
-    claimButton: "Test Claim",
     claimSuccess: "Claim submitted with ID",
   },
   label: {
@@ -22,13 +21,13 @@ const home = {
     next: "Next",
     previous: "Back",
     save_and_exit: "Save and exit",
+    complete: "Complete",
   },
   status: {
     label: "Status",
     not_started: "Not started",
     in_progress: "In progress",
     complete: "Complete",
-    ready_to_submit: "Ready to submit",
   },
   remaining_tasks: {
     one: "You have one remaining task to apply for unemployment benefits.",
@@ -62,6 +61,7 @@ const home = {
   },
   application: {
     list: "Complete your application",
+    edit: "Edit",
     ready_to_submit: {
       title: "Application ready to submit",
     },
@@ -108,14 +108,11 @@ const home = {
 
   disclaimer: "[STANDARD LEGAL DISCLAIMER]",
   success: {
-    just_finished: {
-      title: "Success!",
-      message: "Success message for claim {{claim_id}}",
-    },
-    returning: {
-      title: "Welcome back!",
-      message: "Welcome back message for completed claim {{claim_id}}",
-    },
+    title: "Success!",
+    heading: "Application submitted",
+    message:
+      "You submitted your application <claimId>{{claimId}}</claimId> on {{completedDate}}.",
+    next_steps: "Next steps",
   },
   timeout: {
     title: "You will be logged out due to inactivity in ",
@@ -130,6 +127,14 @@ const home = {
   },
   today: "today",
   expires_at_time: "at 11:59:59pm",
+  submit_claim_card: {
+    submit_application_button: "Submit application",
+    title: "Submit your application to {{stateName}}",
+    error: {
+      heading: "There was a problem",
+      body: "We had trouble submitting your application. Please try again or contact us.",
+    },
+  },
 };
 
 export default home;

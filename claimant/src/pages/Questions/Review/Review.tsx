@@ -1,29 +1,37 @@
+import { useField } from "formik";
 import { TFunction, useTranslation } from "react-i18next";
 import CheckboxField from "../../../components/form/fields/CheckboxField/CheckboxField";
 import { IPageDefinition } from "../../PageDefinitions";
+import { FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import * as yup from "yup";
 import { PersonalInformationReview } from "./PersonalInformationReview";
+import { useShowErrors } from "../../../hooks/useShowErrors";
 
 export const Review = () => {
   const { t } = useTranslation("claimForm");
+  const name = "legal_affirmation";
+  const [fieldProps, metaProps] = useField(name);
+  const showError = useShowErrors(name);
 
   return (
     <>
       <PersonalInformationReview />
-      <CheckboxField
-        id="is_complete"
-        name="is_complete"
-        label={t("is_complete.label")}
-        labelDescription={t("is_complete_description")}
-        tile
-      />
+      <FormGroup error={showError}>
+        <CheckboxField
+          {...fieldProps}
+          id={name}
+          name={name}
+          label={t("legal_affirmation.label")}
+        />
+        {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
+      </FormGroup>
     </>
   );
 };
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    is_complete: yup.boolean().required(t("is_complete.required")),
+    legal_affirmation: yup.boolean().required(t("legal_affirmation.required")),
   });
 
 export const ReviewPage: IPageDefinition = {

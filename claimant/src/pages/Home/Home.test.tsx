@@ -4,7 +4,11 @@ import HomePage from "./Home";
 import { MemoryRouter } from "react-router-dom";
 
 import { render, screen, within } from "@testing-library/react";
-import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
+import {
+  useGetCompletedClaim,
+  useGetPartialClaim,
+  useSubmitClaim,
+} from "../../queries/claim";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -25,6 +29,7 @@ jest.mock("../../queries/claim");
 const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
+const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
 
 const myPII: WhoAmI = {
   IAL: "2",
@@ -64,9 +69,32 @@ const myEmptyPII: WhoAmI = {
   identity_provider: "Local",
 };
 
+const partialClaim = {
+  id: "abc",
+  swa_code: "XX",
+  claimant_id: "123",
+  email: "foo@example.com",
+  some: "data",
+};
+const partialClaimDataForStatus = (
+  appStatus: "notStarted" | "inProgress" | "completed"
+) => {
+  if (appStatus === "notStarted") {
+    return { status: "ok", claim: {} };
+  } else if (appStatus === "inProgress") {
+    return {
+      status: "ok",
+      claim: { ...partialClaim },
+      validation_errors: [true],
+    };
+  } else if (appStatus === "completed") {
+    return { status: "ok", claim: { ...partialClaim } };
+  }
+};
+
 const renderWithMocks = (
   IAL: WhoAmI["IAL"],
-  appStatus: "notStarted" | "inProgress" | "ready",
+  appStatus: "notStarted" | "inProgress" | "completed",
   featureset?: "Claim And Identity" | "Identity Only" | "Claim Only"
 ) => {
   const pii = IAL === "1" ? myEmptyPII : myPII;
@@ -80,30 +108,25 @@ const renderWithMocks = (
   }));
   mockedUseGetCompletedClaim.mockImplementation(() => ({
     data: {},
-    status: appStatus === "ready" ? "success" : "error",
+    status: appStatus === "completed" ? "success" : "error",
     isFetched: true,
     error: null,
-    isError: appStatus !== "ready",
-    isSuccess: appStatus === "ready",
+    isError: appStatus !== "completed",
+    isSuccess: appStatus === "completed",
   }));
   mockedUseGetPartialClaim.mockImplementation(() => ({
-    data:
-      appStatus === "inProgress"
-        ? {
-            status: "ok",
-            claim: {
-              id: "abc",
-              swa_code: "XX",
-              claimant_id: "123",
-              email: "foo@example.com",
-              some: "data",
-            },
-          }
-        : { status: "ok", claim: {} },
+    data: partialClaimDataForStatus(appStatus),
     isLoading: false,
     isFetched: true,
     error: false,
     isError: false,
+  }));
+  mockedUseSubmitClaim.mockImplementation(() => ({
+    isFetched: true,
+    isError: false,
+    mutateAsync: jest.fn(),
+    reset: jest.fn(),
+    data: { status: 201 },
   }));
   const queryClient = new QueryClient();
   render(
@@ -190,13 +213,13 @@ describe("the Home page", () => {
       ).toBeInTheDocument();
     });
     it("shows app ready to submit", () => {
-      renderWithMocks("1", "ready");
+      renderWithMocks("1", "completed");
       const app = screen.getByText("application.ready_to_submit.title");
       expect(app).toBeInTheDocument();
       const appContainer = app.parentElement;
       if (!appContainer) throw new Error("No container");
       expect(
-        within(appContainer).getByText("status.ready_to_submit")
+        within(appContainer).getByText("status.complete")
       ).toBeInTheDocument();
     });
   });

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 export const ISO_8601_DATE = "YYYY-MM-DD";
 export const USER_FACING_DATE_INPUT_FORMAT = "MM-DD-YYYY";
 export const DATE_TIME_FORMAT = "MMMM D, YYYY hh:mm:ss a";
+export const DATE_FORMAT = "MMMM D, YYYY";
 export const EXPIRES_AT_FORMAT = "MMMM D";
 
 export const formatUserInputDate = (
@@ -20,6 +21,11 @@ export const formatISODateTimeString = (datetime: string): string => {
   const dayjsValue = dayjs(datetime);
   // TODO i18n
   return dayjsValue.format(DATE_TIME_FORMAT);
+};
+
+export const formatDate = (datetime: string): string => {
+  const dayjsValue = dayjs(datetime);
+  return dayjsValue.format(DATE_FORMAT);
 };
 
 export const formatExpiresAtDate = (date: string): string => {

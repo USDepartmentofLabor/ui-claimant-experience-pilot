@@ -274,6 +274,7 @@ type EducationVocationalRehabType = Partial<{
 
 type CompleteClaimType = {
   is_complete?: boolean;
+  legal_affirmation?: boolean;
 };
 
 type DeepPartial<T> = {

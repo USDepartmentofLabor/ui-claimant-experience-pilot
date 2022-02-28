@@ -1,41 +1,52 @@
-import { useEffect } from "react";
 import { Alert } from "@trussworks/react-uswds";
-import { useQueryClient } from "react-query";
-import { useWhoAmI } from "../../queries/whoami";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
+import { useGetCompletedClaim } from "../../queries/claim";
+import { formatDate } from "../../utils/format";
 
-interface ISuccessProps {
-  justFinished?: boolean;
-}
-
-const Success = ({ justFinished }: ISuccessProps) => {
-  const { data } = useWhoAmI();
+const Success = () => {
   const { t } = useTranslation("home");
-  const queryClient = useQueryClient();
+  const {
+    data: completedClaimResponse,
+    isFetched: completedIsFetched,
+    error,
+  } = useGetCompletedClaim();
 
-  useEffect(() => {
-    // Make sure our query reflects the claim being completed
-    queryClient.invalidateQueries("getCompletedClaim");
-  }, []);
-
-  // If just finished the form
-  if (justFinished) {
-    return (
-      <>
-        <h1>{t("success.just_finished.title")}</h1>
-        <Alert type="success">
-          {t("success.just_finished.message", { claim_id: data?.claim_id })}
-        </Alert>
-      </>
-    );
+  if (!completedIsFetched || error) {
+    return <></>;
   }
 
-  // If returning to app after having completed
+  /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+  const completedClaim: ClaimantClaim = completedClaimResponse!.data;
+  /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+  const completedDate = formatDate(completedClaim.completed_at!);
+  const claimId = completedClaim.id;
+
+  const AlertMessage = () => {
+    return (
+      <Trans
+        t={t}
+        i18nKey="success.message"
+        values={{ claimId }}
+        components={{ claimId: <span className="claim-id" />, completedDate }}
+      />
+    );
+  };
+
   return (
-    <>
-      <h1>{t("success.returning.title")}</h1>
-      <p>{t("success.returning.message", { claim_id: data?.claim_id })}</p>
-    </>
+    <div className="display-flex flex-column margin-top-5">
+      <main className="tablet:width-mobile-lg margin-x-auto" id="main-content">
+        <section className="completed-claim">
+          <h1>{t("success.title")}</h1>
+          <Alert type="success" heading={t("success.heading")}>
+            <AlertMessage />
+          </Alert>
+        </section>
+        <section>
+          <h2>{t("success.next_steps")}</h2>
+          <p>TODO</p>
+        </section>
+      </main>
+    </div>
   );
 };
 

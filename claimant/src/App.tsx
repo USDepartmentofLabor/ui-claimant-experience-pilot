@@ -65,7 +65,6 @@ function App() {
     CLAIMS_PAGE,
     CLAIM_FORM_HOME,
     SUCCESS_PAGE,
-    SUCCESS_PAGE_JUST_FINISHED,
   } = ROUTES;
   const { t } = useTranslation("common");
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
@@ -173,10 +172,6 @@ function App() {
                   <Route path={CLAIMS_PAGE} element={<ClaimsDashboardPage />} />
                 )}
                 <Route path={SUCCESS_PAGE} element={<SuccessPage />} />
-                <Route
-                  path={SUCCESS_PAGE_JUST_FINISHED}
-                  element={<SuccessPage justFinished />}
-                />
                 {isSubmitted ? (
                   <Route
                     path="*"

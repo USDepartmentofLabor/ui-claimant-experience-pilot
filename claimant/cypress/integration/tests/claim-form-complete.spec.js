@@ -167,14 +167,16 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     // TODO all the other pages go here as we write them
 
     // Review page
-    cy.click_is_complete();
+    cy.click_legal_affirmation();
     cy.check_a11y();
+    cy.click_finish();
+    cy.url().should("contain", "/claimant/");
+    cy.url().should("not.include", "/claim/review");
     cy.click_final_submit();
+    cy.url().should("contain", "success");
     cy.contains("Success!").should("be.visible");
     // Should no longer allow the claim form to be accessed
     cy.visit("/claimant/");
-    cy.contains("Welcome back message for completed claim").should(
-      "be.visible"
-    );
+    cy.contains("Application submitted").should("be.visible");
   });
 });

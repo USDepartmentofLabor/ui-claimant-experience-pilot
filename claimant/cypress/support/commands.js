@@ -322,12 +322,16 @@ Cypress.Commands.add("click_more_employers", (bool, idx = "0") => {
     .click();
 });
 
-Cypress.Commands.add("click_final_submit", () => {
-  cy.get("[data-testid='next-button']").contains("Test Claim").click();
+Cypress.Commands.add("click_finish", () => {
+  cy.get("[data-testid='next-button']").click();
 });
 
-Cypress.Commands.add("click_is_complete", () => {
-  cy.get("[name=is_complete]").check({ force: true });
+Cypress.Commands.add("click_final_submit", () => {
+  cy.get("[data-testid='submit-claim-button']").click();
+});
+
+Cypress.Commands.add("click_legal_affirmation", () => {
+  cy.get("[name=legal_affirmation]").check({ force: true });
 });
 
 Cypress.Commands.add("navigate_to_form", (props) => {

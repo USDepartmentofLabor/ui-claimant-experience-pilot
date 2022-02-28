@@ -135,7 +135,7 @@ export const ClaimForm = () => {
         {pages[currentPageIndex + 1] ? (
           <>{t("pagination.next")}</>
         ) : (
-          t("sampleForm.claimButton")
+          t("pagination.complete")
         )}
       </Button>
     );
@@ -200,8 +200,8 @@ export const ClaimForm = () => {
         claim_id: r.data.claim_id,
       });
     }
-    if (claim.is_complete) {
-      navigate(`${Routes.SUCCESS_PAGE_JUST_FINISHED}`);
+    if (claim.legal_affirmation) {
+      navigate(`${Routes.HOME_PAGE}`);
     } else {
       queryClient.setQueryData("getPartialClaim", {
         ...partialClaimResponse,

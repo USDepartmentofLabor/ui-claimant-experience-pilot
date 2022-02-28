@@ -210,7 +210,9 @@ def POST_partial_claim(request):
             status=400,
         )
 
-    claim_validator = ClaimValidator(claim_request.payload)
+    claim_validator = cleaned_claim_validator(
+        claim_request.payload, claim_request.whoami
+    )
     if not claim_validator.valid:
         # we allow the save regardless because it may be (e.g.) a partial address
         pass
@@ -238,16 +240,26 @@ def POST_partial_claim(request):
         )
 
 
-def partial_claim_response(claim, json_payload):
+# we want to know what the validation errors would be if this were a "final" claim,
+def cleaned_claim_validator(payload, whoami):
+    return ClaimValidator(ClaimCleaner(payload, whoami).cleaned())
+
+
+def partial_claim_response(claim, whoami, json_payload):
     # calculate time remaining before claim will be cleaned up
-    removed_after = claim.should_be_deleted_after()
-    removed_remaining = removed_after - timezone.now()
-    seconds = removed_remaining.total_seconds()
-    remaining_time = (
-        f"{int(seconds // 3600)}:{int((seconds % 3600) // 60)}:{int(seconds % 60)}"
-    )
-    # return the day before removed_after so that FE can display "... at 11:59:59"
-    expires = (removed_after - timedelta(days=1)).date()
+    if claim.should_be_deleted_after():
+        removed_after = claim.should_be_deleted_after()
+        removed_remaining = removed_after - timezone.now()
+        seconds = removed_remaining.total_seconds()
+        remaining_time = (
+            f"{int(seconds // 3600)}:{int((seconds % 3600) // 60)}:{int(seconds % 60)}"
+        )
+        # return the day before removed_after so that FE can display "... at 11:59:59"
+        expires = (removed_after - timedelta(days=1)).date()
+    else:
+        expires = timezone.now().date() - timedelta(days=1)
+        remaining_time = "00:00:00"
+
     logger.debug(
         "🚀 partial claim expires={} remaining_time={}".format(expires, remaining_time)
     )
@@ -258,7 +270,7 @@ def partial_claim_response(claim, json_payload):
         "remaining_time": remaining_time,
         "expires": expires,
     }
-    claim_validator = ClaimValidator(json_payload)
+    claim_validator = cleaned_claim_validator(json_payload, whoami)
     if not claim_validator.valid:
         validation_errors = claim_validator.errors_as_dict()
         response_body["validation_errors"] = validation_errors
@@ -301,13 +313,13 @@ def GET_partial_claim(request):
 
     # memoize to save trips to S3
     if "partial_claim" in request.session:
-        return partial_claim_response(claim, request.session["partial_claim"])
+        return partial_claim_response(claim, whoami, request.session["partial_claim"])
 
     partial_claim = claim.read_partial()
     if partial_claim:
         logger.debug("🚀 found partial claim for {}".format(claim.uuid))
         request.session["partial_claim"] = partial_claim
-        return partial_claim_response(claim, partial_claim)
+        return partial_claim_response(claim, whoami, partial_claim)
 
     # in theory, we should never get here, but just in case.
     logger.debug("🚀 no partial claim read for {}".format(claim.uuid))
@@ -330,7 +342,10 @@ def POST_completed_claim(request):
         )
 
     # validate with complete schema
-    claim_request.payload = ClaimCleaner(claim_request).cleaned()
+    # we don't use cleaned_claim_validator() because we want to mutate claim_request.payload
+    claim_request.payload = ClaimCleaner(
+        payload=claim_request.payload, whoami=claim_request.whoami
+    ).cleaned()
     claim_validator = ClaimValidator(claim_request.payload)
     if not claim_validator.valid:
         return invalid_claim_response(claim_validator)

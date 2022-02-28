@@ -701,6 +701,10 @@
       "description": "Indicates Claimant has reviewed and approved the Claim form",
       "type": "boolean"
     },
+    "legal_affirmation": {
+      "description": "Claimant has attested to the accuracy of the Claim form",
+      "type": "boolean"
+    },
     "claimant_name": {
       "description": "Claimant's name",
       "$ref": "#/definitions/person_name"

@@ -576,6 +576,11 @@ const claimForm = {
       },
     },
   },
+  legal_affirmation: {
+    required: "You must confirm the affirmation statement by checking the box",
+    label:
+      "I gave true answers to all questions. I know that there may be legal punishments for giving false answers.",
+  },
   is_complete: { label: "I'm done!", required: "You must check the box" },
   is_complete_description:
     "Checking this box means your claim will be sent to your workforce agency",

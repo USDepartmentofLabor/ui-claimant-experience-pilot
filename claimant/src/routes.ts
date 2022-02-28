@@ -7,7 +7,6 @@ const Routes = {
   CLAIM_FORM_PAGE_SEGMENT: "/claim/:page/:segment/*",
   CLAIMS_PAGE: "/claims",
   SUCCESS_PAGE: "/success/",
-  SUCCESS_PAGE_JUST_FINISHED: "/success/finished",
 };
 
 export { Routes };

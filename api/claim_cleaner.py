@@ -3,27 +3,33 @@
 # fix up a Claim payload (as from the /completed-claim/ endpoint)
 # for packaging. E.g. removes all the LOCAL_ properties.
 
-import json
+import copy
 import re
 
 
 class ClaimCleaner(object):
-    def __init__(self, claim_request):
-        self.claim_request = claim_request
+    def __init__(self, payload, whoami):
+        self.whoami = whoami
+        self.payload = payload
 
     def cleaned(self):
-        # serialize/deserialize to make a copy
-        claim = json.loads(json.dumps(self.claim_request.payload))
+        claim = copy.deepcopy(self.payload)
 
         # set values we receive from whoami
         # this is to guarantee that they come directly from the IdP
-        claim["idp_identity"] = self.claim_request.whoami.as_identity()
+        claim["idp_identity"] = self.whoami.as_identity()
 
         # because "idp_identity" is a sub-schema that is also used standalone,
         # sync some values just in case.
-        claim["idp_identity"]["swa_code"] = claim["swa_code"]
-        claim["idp_identity"]["id"] = claim["id"]
-        claim["idp_identity"]["claimant_id"] = claim["claimant_id"]
+        # use .get because this might be a partial claim being cleaned,
+        # and the values in claim[] might not yet be set.
+        claim["idp_identity"]["swa_code"] = claim.get("swa_code")
+        claim["idp_identity"]["id"] = claim.get("id")
+        claim["idp_identity"]["claimant_id"] = claim.get("claimant_id")
+
+        # backwards compatability
+        # use pop() in case the key does not exist
+        claim.pop("identity_provider", None)
 
         # Like SSN in WhoAmI, FEIN and Alien Registration number have optional - delimiter,
         # but we always use them in packaged claims.

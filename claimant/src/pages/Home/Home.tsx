@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react";
+import { useQueryClient } from "react-query";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Alert } from "@trussworks/react-uswds";
@@ -7,7 +8,7 @@ import { RequestErrorBoundary } from "../../queries/RequestErrorBoundary";
 import { useWhoAmI } from "../../queries/whoami";
 import { Routes } from "../../routes";
 import { formatExpiresAtDate } from "../../utils/format";
-import { useGetCompletedClaim, useGetPartialClaim } from "../../queries/claim";
+import { useGetPartialClaim, useSubmitClaim } from "../../queries/claim";
 import {
   Accordion,
   Button,
@@ -20,7 +21,7 @@ import PageLoader from "../../common/PageLoader";
 
 import styles from "./Home.module.scss";
 
-type Status = "not_started" | "in_progress" | "ready_to_submit" | "complete";
+type Status = "not_started" | "in_progress" | "complete";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -35,8 +36,6 @@ type AccordionProps = React.ComponentProps<typeof Accordion>;
 const HomePage = () => {
   const { t } = useTranslation("home");
   const { data: whoami, isFetched: whoamiIsFetched, error } = useWhoAmI();
-  const { status: completedFetchStatus, isFetched: completedIsFetched } =
-    useGetCompletedClaim();
   const { data: partialClaimResponse, isFetched: partialIsFetched } =
     useGetPartialClaim();
   const { continuePath } = useClaimProgress(partialClaimResponse);
@@ -49,7 +48,6 @@ const HomePage = () => {
     whoami &&
     partialClaimResponse?.claim &&
     whoamiIsFetched &&
-    completedIsFetched &&
     partialIsFetched;
 
   if (!pageReady()) {
@@ -67,15 +65,21 @@ const HomePage = () => {
   ).split(/:/);
   const claimStarted =
     partialClaim && Object.keys(partialClaim).length > CLAIM_SKELETON_SIZE;
+  const claimHasErrors = partialClaimResponse?.validation_errors;
+
+  const determineClaimStatus = () => {
+    if (!claimStarted) {
+      return "not_started";
+    }
+    if (claimHasErrors) {
+      return "in_progress";
+    }
+    return "complete";
+  };
 
   const identityStatus: Status =
     whoami?.IAL === "2" ? "complete" : "not_started";
-  const claimStatus: Status =
-    completedFetchStatus === "success"
-      ? "ready_to_submit"
-      : claimStarted
-      ? "in_progress"
-      : "not_started";
+  const claimStatus: Status = determineClaimStatus();
 
   const claimProgressDeterminationIncomplete = () =>
     claimStatus === "in_progress" && continuePath === Routes.CLAIM_FORM_HOME;
@@ -166,7 +170,7 @@ const HomePage = () => {
     tasks.push({
       listText: t("application.list"),
       title:
-        claimStatus === "ready_to_submit"
+        claimStatus === "complete"
           ? t("application.ready_to_submit.title")
           : t("application.not_ready_to_submit.title"),
       status: claimStatus,
@@ -176,13 +180,19 @@ const HomePage = () => {
           expiresAt={expiresAt}
           claimStatus={claimStatus}
           continuePath={continuePath}
-        />
+        >
+          {claimStatus === "complete" && (
+            <Link className="usa-button usa-button--outline" to={continuePath}>
+              {t("application.edit")}
+            </Link>
+          )}
+        </ApplicationContent>
       ),
       MoreInfo: () => <Accordion {...applicationMoreInfoProps} />,
     });
   }
 
-  if (identityStatus === "complete" && claimStatus !== "ready_to_submit") {
+  if (identityStatus === "complete" && claimStatus === "complete") {
     tasks.reverse();
   }
 
@@ -190,6 +200,10 @@ const HomePage = () => {
 
   const greetingName =
     partialClaim?.claimant_name?.first_name || whoami?.first_name;
+
+  const okToSubmitClaimApp = () => {
+    return remainingTasks.length === 0 || claimStatus === "complete";
+  };
 
   return (
     <main className="tablet:width-mobile-lg margin-x-auto">
@@ -216,6 +230,7 @@ const HomePage = () => {
             </>
           )}
         </div>
+        {okToSubmitClaimApp() && <SubmitClaimCard />}
         {tasks.map(({ title, status, Content, MoreInfo }) => (
           <div key={title} className="margin-top-8">
             {status !== "complete" && <MoreInfo />}
@@ -343,7 +358,7 @@ const IdentityContent = ({
 interface IApplicationContent {
   expiresAt: string;
   remainingTime: string[];
-  claimStatus: keyof Omit<Record<Status, string>, "complete">;
+  claimStatus: keyof Record<Status, string>;
   continuePath: string;
 }
 
@@ -352,14 +367,15 @@ const ApplicationContent = ({
   expiresAt,
   remainingTime,
   continuePath,
-}: IApplicationContent) => {
+  children,
+}: PropsWithChildren<IApplicationContent>) => {
   const { t } = useTranslation("home");
   const hoursRemaining = parseInt(remainingTime[0]);
   const showWarning =
     claimStatus === "in_progress" &&
     hoursRemaining < SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING;
 
-  if (claimStatus !== "ready_to_submit") {
+  if (claimStatus !== "complete") {
     return (
       <>
         {showWarning && (
@@ -392,9 +408,78 @@ const ApplicationContent = ({
             </Button>
           )}
         </div>
+        {children}
       </>
     );
   }
 
-  return null;
+  return <>{children}</>;
+};
+
+const SubmitClaimCard = () => {
+  const { t } = useTranslation("home");
+  const submitClaim = useSubmitClaim();
+  const { data: partialClaimResponse, isFetched: partialIsFetched } =
+    useGetPartialClaim();
+  const { data: whoami, isFetched: whoamiIsFetched, error } = useWhoAmI();
+  const queryClient = useQueryClient();
+
+  if (error) {
+    throw error;
+  }
+  if (!whoamiIsFetched || !partialIsFetched) {
+    return <></>;
+  }
+
+  const claimSubmissionCompleted = () => {
+    return submitClaim.isSuccess && submitClaim.data.status === 201;
+  };
+
+  const claimSubmissionError = () => {
+    return submitClaim.isError;
+  };
+
+  const submitCompletedClaim = async () => {
+    const claim: Claim = {
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      ...(partialClaimResponse!.claim as Claim),
+      is_complete: true,
+    };
+    const r = await submitClaim.mutateAsync(claim);
+    // invalidate cache on success so we refetch everywhere
+    // this will effectively re-render the whole page and navigate us
+    // to the success page
+    if (r.data.status === "accepted") {
+      queryClient.invalidateQueries("getCompletedClaim");
+    }
+  };
+
+  const classes = classnames(
+    "border-2px border-base-lightest padding-2 margin-y-3 bg-gray-5"
+  );
+
+  return (
+    <>
+      <div className={classes}>
+        <h2 className="margin-0">
+          {t("submit_claim_card.title", { stateName: whoami?.swa.name })}
+        </h2>
+        <p className="display-flex flex-align-center">
+          <Button
+            data-testid="submit-claim-button"
+            onClick={submitCompletedClaim}
+            disabled={claimSubmissionCompleted()}
+            type="submit"
+          >
+            {t("submit_claim_card.submit_application_button")}
+          </Button>
+        </p>
+      </div>
+      {claimSubmissionError() && (
+        <Alert type="error" heading={t("submit_claim_card.error.heading")}>
+          {t("submit_claim_card.error.body")}
+        </Alert>
+      )}
+    </>
+  );
 };
