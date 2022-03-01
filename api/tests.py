@@ -312,7 +312,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             self.assertContains(response, "CSRF verification failed", status_code=403)
             logger.debug("🚀 {} CSRF check: {}".format(url, response.content))
 
-    def test_response_cookies_should_not_have_expire_setting(self):
+    def test_response_cookies_do_not_have_expire_setting(self):
         csrf_client = self.csrf_client()
         response = csrf_client.get("/api/whoami/")
         self.assertEqual(response.status_code, 200)
@@ -320,6 +320,24 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(response.cookies["sessionid"]["expires"], "")
         self.assertEqual(response.cookies["csrftoken"]["expires"], "")
         self.assertEqual(response.cookies["expires_at"]["expires"], "")
+
+    def test_response_cookies_have_secure_setting(self):
+        csrf_client = self.csrf_client()
+        response = csrf_client.get("/api/whoami/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.cookies), 3)
+        self.assertTrue(response.cookies["sessionid"]["secure"])
+        self.assertTrue(response.cookies["csrftoken"]["secure"])
+        self.assertTrue(response.cookies["expires_at"]["secure"])
+
+    def test_response_cookies_have_samesite_setting(self):
+        csrf_client = self.csrf_client()
+        response = csrf_client.get("/api/whoami/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.cookies), 3)
+        self.assertNotEqual(response.cookies["sessionid"]["samesite"], "")
+        self.assertNotEqual(response.cookies["csrftoken"]["samesite"], "")
+        self.assertNotEqual(response.cookies["expires_at"]["samesite"], "")
 
     def test_encrypted_completed_claim(self):
         idp = create_idp()

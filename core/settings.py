@@ -229,6 +229,9 @@ SESSION_COOKIE_SECURE = (
 CSRF_COOKIE_AGE = None
 CSRF_COOKIE_SECURE = True
 
+# SameSite setting for non-session cookies.
+COOKIE_SAMESITE = SESSION_COOKIE_SAMESITE
+
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 if os.environ.get("DATABASE_URL"):

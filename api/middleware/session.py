@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.utils import timezone
 import logging
 
@@ -23,7 +24,10 @@ class SessionTimeout(object):
             request.session["expires_at"] = expires_at
             response = self.get_response(request)
             response.set_cookie(
-                "expires_at", int(expires_at.timestamp() - timezone.now().timestamp())
+                "expires_at",
+                int(expires_at.timestamp() - timezone.now().timestamp()),
+                secure=True,
+                samesite=settings.COOKIE_SAMESITE,
             )
 
         return response
