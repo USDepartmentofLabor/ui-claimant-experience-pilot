@@ -101,7 +101,7 @@ export const EmployerReview = () => {
   // then quietly remove it.
   const employersToRemove: number[] = [];
   segmentErrors.forEach((errCount, idx) => {
-    const employer = values.employers?.at(idx);
+    const employer = values.employers?.[idx];
     if (employerLooksEmpty(employer, errCount)) {
       employersToRemove.push(idx);
     }
