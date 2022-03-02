@@ -26,13 +26,16 @@ const home = {
   status: {
     label: "Status",
     not_started: "Not started",
+    deleted: "Not started",
     in_progress: "In progress",
     complete: "Complete",
   },
   remaining_tasks: {
-    one: "You have one remaining task to apply for unemployment benefits.",
+    one: "You have one remaining task to apply for unemployment benefits:",
     two: "Complete the following two tasks to apply for unemployment benefits.",
     listTitle: "To apply online, you will:",
+    resetMessage:
+      "You will need to begin a new application; for security reasons, your previous application was reset on {{ resetDate }} due to inactivity.",
   },
   identity: {
     list: "Verify your identity",

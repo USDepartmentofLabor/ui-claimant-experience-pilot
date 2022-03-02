@@ -9,6 +9,7 @@ import { useWhoAmI } from "../../queries/whoami";
 import { Routes } from "../../routes";
 import { formatExpiresAtDate } from "../../utils/format";
 import { useGetPartialClaim, useSubmitClaim } from "../../queries/claim";
+import { useClaims } from "../../queries/claims";
 import {
   Accordion,
   Button,
@@ -38,6 +39,13 @@ const HomePage = () => {
   const { data: whoami, isFetched: whoamiIsFetched, error } = useWhoAmI();
   const { data: partialClaimResponse, isFetched: partialIsFetched } =
     useGetPartialClaim();
+  const { data: claimsResponse, isFetched: claimsIsFetched } = useClaims();
+  const claimDeleted =
+    claimsResponse?.claims.length &&
+    claimsResponse.claims[0].status === "deleted";
+  const resetDate = claimDeleted
+    ? claimsResponse?.claims[0].updated_at
+    : undefined;
   const { continuePath } = useClaimProgress(partialClaimResponse);
 
   if (error) {
@@ -48,7 +56,8 @@ const HomePage = () => {
     whoami &&
     partialClaimResponse?.claim &&
     whoamiIsFetched &&
-    partialIsFetched;
+    partialIsFetched &&
+    claimsIsFetched;
 
   if (!pageReady()) {
     return <PageLoader />;
@@ -68,7 +77,7 @@ const HomePage = () => {
   const claimHasErrors = partialClaimResponse?.validation_errors;
 
   const determineClaimStatus = () => {
-    if (!claimStarted) {
+    if (!claimStarted || claimDeleted) {
       return "not_started";
     }
     if (claimHasErrors) {
@@ -216,18 +225,23 @@ const HomePage = () => {
         ) : (
           <h1>{t("namelessWelcome")}</h1>
         )}
-        <div className="padding-bottom-4">
+        <div>
           {remainingTasks.length === 1 && <p>{t("remaining_tasks.one")}</p>}
           {remainingTasks.length === 2 && <p>{t("remaining_tasks.two")}</p>}
+          {remainingTasks.length > 1 && <p>{t("remaining_tasks.listTitle")}</p>}
           {remainingTasks.length > 0 && (
-            <>
-              <p>{t("remaining_tasks.listTitle")}</p>
-              <ul>
-                {remainingTasks.map(({ listText }) => (
-                  <li key={listText}>{listText}</li>
-                ))}
-              </ul>
-            </>
+            <ul>
+              {remainingTasks.map(({ listText }) => (
+                <li key={listText}>{listText}</li>
+              ))}
+            </ul>
+          )}
+          {claimDeleted && (
+            <p className="margin-top-4">
+              {t("remaining_tasks.resetMessage", {
+                resetDate: resetDate && formatExpiresAtDate(resetDate),
+              })}
+            </p>
           )}
         </div>
         {okToSubmitClaimApp() && <SubmitClaimCard />}

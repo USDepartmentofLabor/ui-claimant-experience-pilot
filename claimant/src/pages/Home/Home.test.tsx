@@ -9,6 +9,7 @@ import {
   useGetPartialClaim,
   useSubmitClaim,
 } from "../../queries/claim";
+import { useClaims } from "../../queries/claims";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -26,10 +27,12 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("../../queries/whoami");
 jest.mock("../../queries/claim");
+jest.mock("../../queries/claims");
 const mockedUseWhoAmI = useWhoAmI as jest.Mock;
 const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 const mockedUseSubmitClaim = useSubmitClaim as jest.Mock;
+const mockedUseGetClaims = useClaims as jest.Mock;
 
 const myPII: WhoAmI = {
   IAL: "2",
@@ -95,7 +98,8 @@ const partialClaimDataForStatus = (
 const renderWithMocks = (
   IAL: WhoAmI["IAL"],
   appStatus: "notStarted" | "inProgress" | "completed",
-  featureset?: "Claim And Identity" | "Identity Only" | "Claim Only"
+  featureset?: "Claim And Identity" | "Identity Only" | "Claim Only",
+  isDeleted?: true | false
 ) => {
   const pii = IAL === "1" ? myEmptyPII : myPII;
   const feature = featureset || "Claim And Identity";
@@ -128,6 +132,16 @@ const renderWithMocks = (
     reset: jest.fn(),
     data: { status: 201 },
   }));
+  mockedUseGetClaims.mockImplementation(() => ({
+    data: {
+      claims: [
+        { status: isDeleted ? "deleted" : "in_progress" },
+        { status: "in_progress" },
+      ],
+    },
+    isFetched: true,
+  }));
+
   const queryClient = new QueryClient();
   render(
     <MemoryRouter initialEntries={["/"]}>
@@ -215,12 +229,29 @@ describe("the Home page", () => {
     it("shows app ready to submit", () => {
       renderWithMocks("1", "completed");
       const app = screen.getByText("application.ready_to_submit.title");
-      expect(app).toBeInTheDocument();
       const appContainer = app.parentElement;
       if (!appContainer) throw new Error("No container");
       expect(
         within(appContainer).getByText("status.complete")
       ).toBeInTheDocument();
+    });
+    it("shows reset message and not started status when last updated claim was deleted", () => {
+      renderWithMocks("2", "notStarted", undefined, true);
+      expect(
+        screen.getByText("remaining_tasks.resetMessage")
+      ).toBeInTheDocument();
+      const app = screen.getByText("application.not_ready_to_submit.title");
+      const appContainer = app.parentElement;
+      if (!appContainer) throw new Error("No container");
+      expect(
+        within(appContainer).getByText("status.not_started")
+      ).toBeInTheDocument();
+    });
+    it("does not show reset message when last updated claim is in progress", () => {
+      renderWithMocks("2", "inProgress", undefined, false);
+      expect(
+        screen.queryByText("remaining_tasks.resetMessage")
+      ).not.toBeInTheDocument();
     });
   });
 });
