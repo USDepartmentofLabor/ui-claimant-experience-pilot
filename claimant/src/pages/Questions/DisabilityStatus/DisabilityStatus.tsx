@@ -9,6 +9,7 @@ import { DatePicker } from "../../../components/form/fields/DatePicker/DatePicke
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import { formatUserInputDate } from "../../../utils/format";
 import { IPageDefinition } from "../../PageDefinitions";
+import HelpText from "../../../components/HelpText/HelpText";
 
 const typeOptions = [
   { label: "State Plan", value: "State Plan" },
@@ -50,7 +51,11 @@ export const DisabilityStatus = () => {
         question={t("disability.has_collected_disability.label")}
         id="disability.has_collected_disability"
         name="disability.has_collected_disability"
-      />
+      >
+        <HelpText withLeftBorder={true}>
+          {t("disability.has_collected_disability.help_text")}
+        </HelpText>
+      </YesNoQuestion>
       {values.disability?.has_collected_disability && (
         <>
           <YesNoQuestion

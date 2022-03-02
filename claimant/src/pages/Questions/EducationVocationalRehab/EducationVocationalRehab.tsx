@@ -5,6 +5,7 @@ import { IPageDefinition } from "../../PageDefinitions";
 import * as yup from "yup";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import claimForm from "../../../i18n/en/claimForm";
+import HelpText from "../../../components/HelpText/HelpText";
 
 export const EducationVocationalRehab = () => {
   const { t } = useTranslation("claimForm");
@@ -14,17 +15,23 @@ export const EducationVocationalRehab = () => {
       <Fieldset legend={t("education_vocational_rehab.education.heading")}>
         <YesNoQuestion
           question={t(
-            "education_vocational_rehab.education.full_time_student.label"
-          )}
-          id="student_fulltime_in_last_18_months"
-          name="student_fulltime_in_last_18_months"
-        />
-        <YesNoQuestion
-          question={t(
             "education_vocational_rehab.education.attending_training.label"
           )}
           id="attending_college_or_job_training"
           name="attending_college_or_job_training"
+        >
+          <HelpText withLeftBorder={true}>
+            {t(
+              "education_vocational_rehab.education.attending_training.help_text"
+            )}
+          </HelpText>
+        </YesNoQuestion>
+        <YesNoQuestion
+          question={t(
+            "education_vocational_rehab.education.full_time_student.label"
+          )}
+          id="student_fulltime_in_last_18_months"
+          name="student_fulltime_in_last_18_months"
         />
         <DropdownField
           id="education_level"
@@ -52,7 +59,13 @@ export const EducationVocationalRehab = () => {
           )}
           id="registered_with_vocational_rehab"
           name="registered_with_vocational_rehab"
-        />
+        >
+          <HelpText withLeftBorder={true}>
+            {t(
+              "education_vocational_rehab.vocational_rehab.is_registered.help_text"
+            )}
+          </HelpText>
+        </YesNoQuestion>
       </Fieldset>
     </>
   );

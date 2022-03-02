@@ -195,7 +195,7 @@ const claimForm = {
         },
       },
     },
-    heading: "Your employer:",
+    heading: "Your employer",
     reason_for_data_collection:
       "We need the <strong>last 18 months</strong> of your work history to calculate your unemployment benefit amount. Include all your jobs, including jobs you are still working, to avoid delays with your application.",
     errors: {
@@ -228,9 +228,10 @@ const claimForm = {
       required: "Last day of work is required",
     },
     same_phone: {
-      label: "Is this the phone number of the location where you worked?",
+      label:
+        "Is the phone number of your physical workplace the same as the number listed above?",
       required:
-        "Please indicate if this is the phone number of the location where you worked",
+        "Please indicate if this is the phone number of your physical workplace",
     },
     phones: {
       number: {
@@ -247,7 +248,7 @@ const claimForm = {
         "Please indicate if you worked at the physical location you listed for your employer",
     },
     work_site_address: {
-      heading: "Your work location address:",
+      heading: "What physical address did you work at?",
       address1: { label: "Employer address line 1" },
       address2: { label: "Employer address line 2 (optional)" },
       city: { label: "City" },
@@ -289,6 +290,8 @@ const claimForm = {
     related_to_owner: {
       label:
         "Are you related to the owner of any business you worked for during the last 18 months?",
+      help_text:
+        'Choose "No" unless the business owner is your spouse or child, or if you are a child under 18 working for a parent',
       required:
         "You must indicate whether you are related to the owner of any business you worked for during the last 18 months",
     },
@@ -322,15 +325,17 @@ const claimForm = {
     heading: "Disability",
     has_collected_disability: {
       label:
-        "Since your last day worked, have you collected disability or worker's compensation?",
+        "Since your last day worked, have you received disability or workers' compensation payments?",
       required:
-        "You must indicate whether you have collected disability or worker's compensation",
+        "You must indicate whether you have received disability or workers' compensation",
+      help_text:
+        "Pandemic Unemployment Assistance (PUA) and Social Security (SSI/SSDI) payments are not included. Choose “No” if you received payments from these programs.",
     },
     disabled_immediately_before: {
       label:
-        "Were you disabled immediately before filling out this application?",
+        "Were you disabled in the last 4 weeks before filling out this application?",
     },
-    type_of_disability: { label: "Type of disability" },
+    type_of_disability: { label: "What plan do you get your payment from?" },
     date_disability_began: { label: "Date disability began" },
     recovery_date: { label: "Recovery date (optional)" },
     contact_employer_after_recovering: {
@@ -341,15 +346,17 @@ const claimForm = {
   education_vocational_rehab: {
     education: {
       heading: "Your education",
+      attending_training: {
+        label: "Are you currently attending school, college, or job training?",
+        required:
+          "You must indicate whether you are currently attending school, college, or job training",
+        help_text:
+          'If you are in union-required training or paid job training, choose "No."',
+      },
       full_time_student: {
         label: "Have you been a full-time student during the last 18 months?",
         required:
           "You must indicate whether you have been a full-time student during the last 18 months",
-      },
-      attending_training: {
-        label: "Are you currently attending college or job training?",
-        required:
-          "You must indicate whether you are currently attending college or job training",
       },
     },
     vocational_rehab: {
@@ -358,6 +365,8 @@ const claimForm = {
         label: "Are you currently registered with Vocational Rehabilitation?",
         required:
           "You must indicate whether you are currently registered with Vocational Rehabilitation",
+        help_text:
+          "Vocational Rehabilitation is a program that helps people living with disabilities find and keep jobs.",
       },
     },
   },
@@ -392,14 +401,13 @@ const claimForm = {
       required: "You must indicate whether you can work full time",
     },
     is_prevented_from_accepting_full_time_work: {
-      label: "Is anything preventing you from accepting full-time work?",
+      label: "Is anything preventing you from accepting work?",
       required:
-        "You must indicate whether anything prevents you from accepting full-time work",
+        "You must indicate whether anything prevents you from accepting work",
     },
     cannot_begin_work_immediately_reason: {
-      label:
-        "Please share more about what’s preventing you from starting work:",
-      required: "A reason you cannot being work immediately is required",
+      label: "Please share more about what's preventing you from working:",
+      required: "A reason you cannot begin work immediately is required",
     },
     cannot_work_full_time_reason: {
       label: "Please share more about why you can’t work full time:",
@@ -448,7 +456,7 @@ const claimForm = {
     legal_name: "What is your legal name?",
     alternate_name: "Additional name",
     first_name: { label: "First name", required: "First name is required" },
-    middle_name: { label: "Middle name (optional)" },
+    middle_name: { label: "Middle initial (optional)" },
     last_name: { label: "Last name", required: "Last name is required" },
     claimant_has_alternate_names: {
       label:
@@ -570,9 +578,9 @@ const claimForm = {
       },
     },
     note: {
-      label: "Please provide further detail about {{ payType }}",
+      label: "Please share more about your {{ payType }} received",
       errors: {
-        required: "Please provide further detail is required",
+        required: "Please provide further details",
       },
     },
   },

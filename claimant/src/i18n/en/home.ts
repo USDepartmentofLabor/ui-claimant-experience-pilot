@@ -1,6 +1,6 @@
 const home = {
   welcome: "Welcome",
-  namelessWelcome: "Welcome to [PILOT NAME]",
+  namelessWelcome: "Welcome to [PILOT NAME]!",
   intro: "File an unemployment insurance claim.",
   sampleStyle: "Hello from a CSS Module style",
   sampleForm: {
@@ -9,7 +9,7 @@ const home = {
   label: {
     email: "Email",
     birthdate: "Birthdate",
-    ssn: "Social Security Number",
+    ssn: "Social Security number",
   },
   validation: {
     required: "This field is required",
@@ -57,7 +57,7 @@ const home = {
       content: [
         "Your state-issued ID",
         "A phone or computer with a camera to take a picture of yourself (not always required)",
-        "Your Social Security Number",
+        "Your Social Security number",
         "A phone number on a phone plan in your name. (If you don't have a phone plan in your name, we can mail you a verification code, which will take 3-5 days.)",
       ],
     },

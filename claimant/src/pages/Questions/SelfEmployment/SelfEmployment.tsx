@@ -5,6 +5,7 @@ import TextField from "../../../components/form/fields/TextField/TextField";
 import { IPageDefinition } from "../../PageDefinitions";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
+import HelpText from "../../../components/HelpText/HelpText";
 import * as yup from "yup";
 
 export const SelfEmployment = () => {
@@ -72,7 +73,11 @@ export const SelfEmployment = () => {
           question={t("self_employment.related_to_owner.label")}
           id="self_employment.related_to_owner"
           name="self_employment.related_to_owner"
-        />
+        >
+          <HelpText withLeftBorder={true}>
+            {t("self_employment.related_to_owner.help_text")}
+          </HelpText>
+        </YesNoQuestion>
         {data.related_to_owner && (
           <YesNoQuestion
             question={t("self_employment.corporation_or_partnership.label")}
