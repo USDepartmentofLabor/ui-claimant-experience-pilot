@@ -22,6 +22,8 @@ import { pages } from "../PageDefinitions";
 import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
 import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
 import { Routes } from "../../routes";
+import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
+import { useRef } from "react";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -325,6 +327,7 @@ const ClaimFormPage = () => {
 
   const step = currentPageIndex + 1;
   const totalSteps = pages.length;
+  const pageHeadingRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <div className="display-flex flex-column margin-top-5">
@@ -347,12 +350,18 @@ const ClaimFormPage = () => {
       </StepIndicator>
       <main className="tablet:width-mobile-lg margin-x-auto" id="main-content">
         <RequestErrorBoundary>
-          <ClaimFormPageHeading
-            pageHeading={t(`${pages[currentPageIndex].heading}`)}
-            step={step}
-            totalSteps={totalSteps}
-          />
-          <ClaimForm />
+          <ScrollToTop
+            headingRef={pageHeadingRef}
+            pageTitle={t(`${pages[currentPageIndex].heading}`)}
+          >
+            <ClaimFormPageHeading
+              pageHeading={t(`${pages[currentPageIndex].heading}`)}
+              step={step}
+              totalSteps={totalSteps}
+              headingRef={pageHeadingRef}
+            />
+            <ClaimForm />
+          </ScrollToTop>
         </RequestErrorBoundary>
       </main>
     </div>

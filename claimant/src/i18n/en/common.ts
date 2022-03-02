@@ -1,4 +1,5 @@
 const common = {
+  form_title: "Unemployment Insurance Claim",
   page_not_found: "Sorry, we could not find that page.",
   pageLoader: "Loading. . .",
   logout: "Log out",

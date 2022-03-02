@@ -18,10 +18,12 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     cy.complete_contact_information();
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     cy.complete_demographic({
       sex: "female",
@@ -30,6 +32,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     const identityInformation = {
       ssn: FAKE_SSN,
@@ -43,6 +46,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_identity_information(identityInformation);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     const employer0 = {
       name: "ACME 0",
@@ -66,10 +70,12 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_more_employers("no");
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     // employer-review
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     /// Self-employment page
     const selfEmployment = {
@@ -84,6 +90,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_self_employment_information(selfEmployment);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     const otherPay = [
       {
@@ -97,6 +104,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_other_pay_information(otherPay);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
     // Occupation page
     cy.complete_occupation_form({
       title: "registered nurse",
@@ -105,6 +113,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     // Education and Vocational Rehab page
     const educationVocation = {
@@ -116,6 +125,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_education_vocational_information(educationVocation);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     cy.complete_union_form({
       is_union_member: true,
@@ -125,6 +135,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     });
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     // Disability status page
     const disabilityStatus = {
@@ -138,6 +149,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_disability_status_information(disabilityStatus);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     //Availability page
     const availability = {
@@ -151,6 +163,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_availability_information(availability);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     // Payment information page
     const paymentInformation = {
@@ -163,6 +176,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.complete_payment_information(paymentInformation);
     cy.check_a11y();
     cy.click_next();
+    cy.get("h1").should("have.focus");
 
     // TODO all the other pages go here as we write them
 
