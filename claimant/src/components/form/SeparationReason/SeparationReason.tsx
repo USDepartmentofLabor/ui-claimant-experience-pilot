@@ -118,7 +118,7 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
 
   return (
     <>
-      <h3>{t("separation.heading")}</h3>
+      <h2 className="font-heading-md">{t("separation.heading")}</h2>
       <Fieldset legend={t("separation.reason.label")}>
         <RadioField
           tile

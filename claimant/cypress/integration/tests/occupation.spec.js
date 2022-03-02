@@ -16,7 +16,6 @@ context(
         bls_code: "29-1141.02",
       });
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
     });
   }
 );

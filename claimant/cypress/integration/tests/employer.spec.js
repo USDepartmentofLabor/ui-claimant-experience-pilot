@@ -52,11 +52,9 @@ context("Employer section of Claim form", { scrollBehavior: "center" }, () => {
     createEmployer0();
     cy.click_more_employers("yes", "0");
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
     createEmployer1();
     cy.click_more_employers("no", "1");
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 });
 
@@ -77,7 +75,6 @@ context(
       cy.contains("ACME 0").should("be.visible");
       cy.contains("ACME 1").should("be.visible");
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
     });
 
     it("shows errors with links", () => {

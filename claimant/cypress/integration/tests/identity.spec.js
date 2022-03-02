@@ -18,7 +18,6 @@ context("Identity section of Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_identity_information(identityInformation);
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 
   it("navigates Identity Information when authorized to work and not citizen", () => {
@@ -36,7 +35,6 @@ context("Identity section of Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_identity_information(identityInformation);
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 
   it("navigates Identity Information when not authorized to work", () => {
@@ -53,6 +51,5 @@ context("Identity section of Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_identity_information(identityInformation);
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 });

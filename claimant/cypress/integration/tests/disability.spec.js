@@ -20,7 +20,6 @@ context(
       };
       cy.complete_disability_status_information(disabilityStatus);
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
     });
   }
 );

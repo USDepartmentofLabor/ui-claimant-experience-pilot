@@ -27,7 +27,6 @@ context("/claims/ dashboard", { scrollBehavior: "center" }, () => {
         bls_code: "29-1141.00",
       });
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
       cy.get('a[href*="claims"]').click();
       cy.contains("In Process").should("be.visible");
     });
@@ -43,7 +42,6 @@ context("/claims/ dashboard", { scrollBehavior: "center" }, () => {
         bls_code: "29-1141.00",
       });
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
       cy.get('a[href*="claims"]').should("not.exist");
 
       cy.visit("/claimant/claims/");

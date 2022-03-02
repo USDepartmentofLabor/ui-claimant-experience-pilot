@@ -15,6 +15,5 @@ context("Other Pay section of Claim form", { scrollBehavior: "center" }, () => {
     ];
     cy.complete_other_pay_information(otherPay);
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 });

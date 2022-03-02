@@ -14,6 +14,5 @@ context("Payment section of Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_payment_information(paymentInformation);
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 });

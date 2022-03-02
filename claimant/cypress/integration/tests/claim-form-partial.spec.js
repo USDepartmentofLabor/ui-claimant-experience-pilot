@@ -36,7 +36,6 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_next();
     cy.complete_contact_information();
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 
   it("saves and exits and restores", () => {
@@ -75,7 +74,6 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       },
     });
     cy.click_next();
-    cy.contains("Success status").should("be.visible");
     cy.logout();
 
     cy.login(email);

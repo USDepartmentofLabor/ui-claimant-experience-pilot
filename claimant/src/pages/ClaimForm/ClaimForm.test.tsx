@@ -249,7 +249,10 @@ describe("the ClaimForm page", () => {
           "ZIP Code"
         ),
         mailingAddressIsSame: screen.getByTestId("LOCAL_mailing_address_same"),
-        nextLink: screen.getByText("Next", { exact: false }),
+        nextLink: screen.getByText("Next", {
+          selector: "button",
+          exact: false,
+        }),
       };
     };
 
@@ -258,7 +261,10 @@ describe("the ClaimForm page", () => {
       phoneOneType: screen.getByTestId("phones[0].type"),
       needsInterpreterNo: screen.getByTestId("interpreter_required.no"),
       backButton: screen.getByText("Back", { exact: false }),
-      nextButton: screen.getByText("Next", { exact: false }),
+      nextButton: screen.getByText("Next", {
+        selector: "button",
+        exact: false,
+      }),
     });
 
     const {
@@ -432,23 +438,6 @@ describe("the ClaimForm", () => {
     expect(console.error).toHaveBeenCalled();
     expect((console.error as jest.Mock).mock.calls[0][0]).toContain(
       "Error: Uncaught { message: 'Error getting your PII' }"
-    );
-  });
-
-  it("renders success message when submitted successfully", () => {
-    mockedUseWhoAmI.mockReturnValueOnce({
-      data: myPII,
-      isError: false,
-      error: null,
-      isFetched: true,
-    });
-    mockedUseSubmitClaim.mockReturnValueOnce({
-      isSuccess: true,
-      data: { status: 201 },
-    });
-    render(wrappedClaimForm);
-    expect(screen.queryByRole("heading", { level: 4 })).toHaveTextContent(
-      "Success status"
     );
   });
 });

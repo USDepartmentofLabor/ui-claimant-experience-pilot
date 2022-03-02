@@ -12,6 +12,5 @@ context("Union section of Claim form", { scrollBehavior: "center" }, () => {
       union_local_number: "12345",
     });
     cy.click_next();
-    cy.contains("Progress saved").should("be.visible");
   });
 });

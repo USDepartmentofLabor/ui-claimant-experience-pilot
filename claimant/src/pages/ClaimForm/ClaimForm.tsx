@@ -291,22 +291,9 @@ export const ClaimForm = () => {
           );
         }}
       </Formik>
-      {submitClaim.isSuccess ? (
-        // TODO probably want to hide the "Progress saved" after a few seconds so
-        // not to confuse users with "which progress" from one page to the next.
-        <div className="usa-alert usa-alert--success">
-          <div className="usa-alert__body">
-            <h4 className="usa-alert__heading">Success status</h4>
-            {claimCompleted() ? (
-              <p className="usa-alert__text">
-                {t("sampleForm.claimSuccess")} <code>{whoami.claim_id}</code>
-              </p>
-            ) : (
-              <p className="usa-alert__text">Progress saved</p>
-            )}
-          </div>
-        </div>
-      ) : null}
+      <p className="text-center font-body-2xs">
+        {t("pagination.save_message")}
+      </p>
     </div>
   );
 };

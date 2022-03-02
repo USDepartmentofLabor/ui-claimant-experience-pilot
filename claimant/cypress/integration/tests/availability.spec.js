@@ -20,7 +20,6 @@ context(
       };
       cy.complete_availability_information(availability);
       cy.click_next();
-      cy.contains("Progress saved").should("be.visible");
     });
   }
 );

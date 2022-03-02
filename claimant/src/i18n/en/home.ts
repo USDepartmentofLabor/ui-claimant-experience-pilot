@@ -22,6 +22,8 @@ const home = {
     previous: "Back",
     save_and_exit: "Save and exit",
     complete: "Complete",
+    save_message:
+      "Your progress is automatically saved when you complete a page and click “Next.”",
   },
   status: {
     label: "Status",
