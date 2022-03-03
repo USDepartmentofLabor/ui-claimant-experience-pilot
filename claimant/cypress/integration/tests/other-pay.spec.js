@@ -5,6 +5,9 @@ context("Other Pay section of Claim form", { scrollBehavior: "center" }, () => {
   it("navigates other pay", () => {
     cy.login(faker.internet.exampleEmail());
     cy.visit("/claimant/claim/other-pay/");
+    // Must check at least one option
+    cy.click_next();
+    cy.contains("At least one option must be selected").should("be.visible");
     const otherPay = [
       {
         pay_type: "severance",

@@ -21,7 +21,8 @@ export const payTypeOptions: PayTypeOption[] = Object.keys(
 
 const OtherPay = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "other_pay_detail" });
-  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
+  const { values, setFieldValue, setValues } =
+    useFormikContext<ClaimantInput>();
   const payTypeOrder = payTypeOptions.map((opt) => opt.value);
   const sortPayDetails = (
     otherPayArray: ClaimantInput["other_pay"],
@@ -50,6 +51,16 @@ const OtherPay = () => {
       setFieldValue("LOCAL_pay_types", []);
     }
   }, [values.other_pay]);
+
+  useEffect(() => {
+    setValues((v) => {
+      const localPayTypes = values.LOCAL_pay_types || [];
+      const otherPay = v.other_pay || [];
+      const fixed = otherPay.filter((p) => localPayTypes.includes(p.pay_type));
+      if (fixed.length === otherPay.length) return v;
+      return { ...v, other_pay: fixed };
+    });
+  }, [values.LOCAL_pay_types]);
 
   return (
     <FieldArray
@@ -88,13 +99,6 @@ const OtherPay = () => {
                       } else {
                         arrayHelpers.push({ pay_type: option.translationKey });
                       }
-                    } else {
-                      values?.other_pay &&
-                        arrayHelpers.remove(
-                          values.other_pay.findIndex(
-                            (item) => item.pay_type === option.translationKey
-                          )
-                        );
                     }
                   },
                   disabled:

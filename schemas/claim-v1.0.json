@@ -667,7 +667,8 @@
     "student_fulltime_in_last_18_months",
     "swa_code",
     "union",
-    "work_authorization"
+    "work_authorization",
+    "other_pay"
   ],
   "properties": {
     "id": {
@@ -873,7 +874,8 @@
       "description": "Different types of other pay and details",
       "type": "array",
       "items": { "$ref": "#/definitions/other_pay_detail" },
-      "maxItems": 7
+      "maxItems": 6,
+      "minItems": 1
     },
     "disability": {
       "$ref": "#/definitions/disability"

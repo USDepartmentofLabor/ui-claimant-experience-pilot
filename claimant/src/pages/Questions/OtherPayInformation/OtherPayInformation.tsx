@@ -14,6 +14,10 @@ export default OtherPayInformation;
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object({
+    LOCAL_pay_types: yup
+      .array()
+      .min(1, t("other_pay_detail.pay_type.required"))
+      .required(t("other_pay_detail.pay_type.required")),
     other_pay: yup.array().of(
       yup.object({
         pay_type: yup.mixed().oneOf(payTypeOptions.map(({ value }) => value)),

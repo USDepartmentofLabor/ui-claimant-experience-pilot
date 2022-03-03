@@ -157,6 +157,14 @@ class BaseClaim:
                     "separation_comment": "they ran out of money",
                 }
             ],
+            "other_pay": [
+                {
+                    "pay_type": "severance",
+                    "total": 500000,
+                    "date_received": "2021-01-15",
+                    "note": "All one payment for layoff",
+                }
+            ],
             "self_employment": {
                 "is_self_employed": False,
                 "ownership_in_business": True,
@@ -1185,7 +1193,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 27)
+        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)
@@ -1315,7 +1323,7 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 27)
+        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)

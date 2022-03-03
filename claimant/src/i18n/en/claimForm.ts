@@ -522,6 +522,7 @@ const claimForm = {
     pay_type: {
       label:
         "Have you received any payments from your employer(s) since becoming unemployed?",
+      required: "At least one option must be selected",
       options: {
         vacation_sick_pto: {
           label: "Vacation/sick/PTO pay",
