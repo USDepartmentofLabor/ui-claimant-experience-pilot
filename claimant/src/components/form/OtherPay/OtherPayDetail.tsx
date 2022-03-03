@@ -13,6 +13,7 @@ const OtherPayDetail = (props: {
 }) => {
   const { name, label, description = "" } = props;
   const { t } = useTranslation("claimForm");
+  const lowerLabel = label.charAt(0).toLowerCase() + label.slice(1);
 
   return (
     <div
@@ -26,7 +27,7 @@ const OtherPayDetail = (props: {
           id={`${name}.total`}
           name={`${name}.total`}
           label={t("other_pay_detail.total.label", {
-            payType: label,
+            payType: lowerLabel,
           })}
           inputPrefix="$"
           type="number"
@@ -35,7 +36,7 @@ const OtherPayDetail = (props: {
         />
         <DateInputField
           legend={t("other_pay_detail.date_received.label", {
-            payType: label,
+            payType: lowerLabel,
           })}
           id={`${name}.date_received`}
           name={`${name}.date_received`}
@@ -44,7 +45,7 @@ const OtherPayDetail = (props: {
           id={`${name}.note`}
           name={`${name}.note`}
           label={t("other_pay_detail.note.label", {
-            payType: label,
+            payType: lowerLabel,
           })}
         />
       </FormGroup>
