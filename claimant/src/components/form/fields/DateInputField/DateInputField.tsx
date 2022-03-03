@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import styles from "./DateInputField.module.scss";
+import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
 type DateInputProps = Omit<
   ComponentProps<typeof DateInput>,
@@ -93,6 +94,9 @@ export const DateInputField = ({
   const dayInputRef = useRef<HTMLInputElement>(null);
   const yearInputRef = useRef<HTMLInputElement>(null);
 
+  const showError = useShowErrors(name);
+  useFocusFirstError(metaProps.error, monthInputRef);
+
   const updateFormik = () => {
     if (day || month || year) {
       const paddedMonth =
@@ -153,8 +157,6 @@ export const DateInputField = ({
       e.preventDefault();
     }
   };
-
-  const showError = useShowErrors(name);
 
   return (
     <FormGroup error={showError}>

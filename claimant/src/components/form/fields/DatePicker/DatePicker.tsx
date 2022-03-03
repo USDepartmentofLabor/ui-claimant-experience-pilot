@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
@@ -7,8 +7,9 @@ import {
   DatePicker as USWDSDatePicker,
 } from "@trussworks/react-uswds";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
+import { useFocusFirstErrorById } from "../../../../hooks/useFocusFirstError";
 
-type DatePickerProps = React.ComponentProps<typeof USWDSDatePicker>;
+type DatePickerProps = ComponentProps<typeof USWDSDatePicker>;
 
 interface IDatePickerProps extends DatePickerProps {
   id: string;
@@ -25,6 +26,8 @@ export const DatePicker = ({
 }: IDatePickerProps) => {
   const [fieldProps, metaProps] = useField(name);
   const showError = useShowErrors(name);
+
+  useFocusFirstErrorById(metaProps.error, id);
 
   return (
     <FormGroup error={showError}>

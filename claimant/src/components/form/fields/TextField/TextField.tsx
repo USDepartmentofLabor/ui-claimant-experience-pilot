@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, ReactNode, useState } from "react";
+import React, { FocusEventHandler, ReactNode, useRef, useState } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
@@ -10,6 +10,7 @@ import {
 } from "@trussworks/react-uswds";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import classnames from "classnames";
+import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
 type TextInputProps = React.ComponentProps<typeof TextInput>;
 
@@ -52,6 +53,9 @@ export const TextField = ({
   const [focused, setFocused] = useState(false);
   const showError = useShowErrors(textInputProps.name);
   const showErrorOutline = showError && !focused;
+  const textFieldRef = useRef<HTMLInputElement>(null);
+
+  useFocusFirstError(metaProps.error, textFieldRef);
 
   const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
     setFocused(false);
@@ -67,6 +71,7 @@ export const TextField = ({
       onFocus={() => setFocused(true)}
       onBlur={handleBlur}
       {...textInputProps}
+      inputRef={textFieldRef}
     />
   );
 

@@ -85,4 +85,47 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     // reliably count per attempt, so we can verify our caching logic.
     // cy.verifyCallCount("@GET-whoami", 2);
   });
+
+  describe("Error focusing", () => {
+    it("focuses the first error when submitting the form after page load", () => {
+      const email = faker.internet.exampleEmail();
+      cy.login(email);
+      cy.navigate_to_form();
+
+      cy.get("h1").contains("Personal").should("be.visible");
+
+      cy.click_next();
+
+      cy.get("h1").contains("Personal").should("be.visible");
+
+      cy.get(".usa-form-group--error input:first").should("have.focus");
+    });
+
+    it("focuses the first error when submitting the form immediately after swapping to a new page", () => {
+      const email = faker.internet.exampleEmail();
+      cy.login(email);
+      cy.navigate_to_form();
+
+      cy.get("h1").contains("Personal").should("be.visible");
+
+      cy.navigate_to_form();
+      cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+      cy.complete_claimant_addresses({
+        residence_address: {
+          address1: "1 Street",
+          address2: "Apartment 12345",
+          city: "City",
+          state: "CA",
+          zipcode: "00000",
+        },
+      });
+      cy.click_next();
+
+      cy.get("h1").contains("Contact").should("be.visible");
+
+      cy.click_next();
+
+      cy.get(".usa-form-group--error input:first").should("have.focus");
+    });
+  });
 });

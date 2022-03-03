@@ -1,9 +1,10 @@
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps, ReactNode, useRef } from "react";
 import { FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import { useField } from "formik";
 
 import CheckboxField from "../CheckboxField/CheckboxField";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
+import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
 type CheckboxOption = {
   value: string;
@@ -27,6 +28,9 @@ export const CheckboxGroupField = ({
 }: ICheckBoxGroupFieldProps) => {
   const [fieldProps, metaProps] = useField(name);
   const showError = useShowErrors(name);
+  const checkboxRef = useRef<HTMLInputElement>(null);
+
+  useFocusFirstError(metaProps.error, checkboxRef);
 
   return (
     <FormGroup error={showError}>
@@ -40,6 +44,7 @@ export const CheckboxGroupField = ({
           value={option.value}
           checked={!!fieldProps?.value?.includes(option.value)}
           {...option.checkboxProps}
+          inputRef={index === 0 ? checkboxRef : undefined}
         />
       ))}
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}

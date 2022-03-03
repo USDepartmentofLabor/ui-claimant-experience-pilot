@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import { useField } from "formik";
 import {
   FormGroup,
@@ -7,6 +7,7 @@ import {
   ErrorMessage,
 } from "@trussworks/react-uswds";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
+import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
 type TextareaProps = React.ComponentProps<typeof Textarea>;
 
@@ -28,6 +29,9 @@ export const TextAreaField = ({
     name: textareaProps.name,
   });
   const showError = useShowErrors(textareaProps.name);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useFocusFirstError(metaProps.error, textareaRef);
 
   return (
     <FormGroup error={showError}>
@@ -48,6 +52,7 @@ export const TextAreaField = ({
         {...fieldProps}
         value={fieldProps.value || ""}
         {...textareaProps}
+        inputRef={textareaRef}
       />
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}

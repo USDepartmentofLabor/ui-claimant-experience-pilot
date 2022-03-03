@@ -267,6 +267,10 @@ describe("the ClaimForm page", () => {
       }),
     });
 
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
+      "Personal"
+    );
+
     const {
       firstName,
       lastName,
@@ -312,6 +316,10 @@ describe("the ClaimForm page", () => {
     await waitFor(() => {
       expect(firstName).not.toBeInTheDocument();
     });
+
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
+      "Contact"
+    );
 
     const { backButton: backToPersonalInformation } =
       getContactInformationFields();

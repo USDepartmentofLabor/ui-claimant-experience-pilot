@@ -24,6 +24,7 @@ import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFor
 import { Routes } from "../../routes";
 import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
 import { useRef } from "react";
+import { useEffect } from "react";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -107,7 +108,6 @@ export const ClaimForm = () => {
     claimForm.resetForm({
       submitCount: 0,
       touched: {},
-      errors: {},
       isValidating: false,
       isSubmitting: false,
     });
@@ -126,13 +126,16 @@ export const ClaimForm = () => {
       </Button>
     );
 
-  const nextPageLink = () =>
+  const nextPageLink = (claimForm: FormikProps<FormValues>) =>
     !claimCompleted() && (
       <Button
         className="width-auto"
         disabled={submitClaim.isLoading}
         type="submit"
         data-testid="next-button"
+        onClick={() => {
+          claimForm.isValid || claimForm.submitForm();
+        }}
       >
         {pages[currentPageIndex + 1] ? (
           <>{t("pagination.next")}</>
@@ -240,12 +243,11 @@ export const ClaimForm = () => {
     // navigate first, then fire the xhr call, so we display message on the next page.
     navigateToNextPage(values);
     saveCurrentFormValues(values);
-    // Reset form to clear "submitted" status and prevent eager validations on all fields.
+    // Reset form to clear "submitted" status
     resetForm({
       values,
       submitCount: 0,
       touched: {},
-      errors: {},
       isValidating: false,
       isSubmitting: false,
     });
@@ -256,6 +258,7 @@ export const ClaimForm = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {(claimForm) => {
@@ -264,8 +267,12 @@ export const ClaimForm = () => {
             Object.keys(claimForm.errors).length > 0 &&
             Object.keys(claimForm.touched).length > 0;
 
-          // Console.log any errors for debugging
-          // if (showError) console.log(claimForm.errors);
+          // ALWAYS validate the form on load or when navigating to a new page
+          useEffect(() => {
+            claimForm
+              .validateForm()
+              .then((errors) => claimForm.setErrors(errors));
+          }, [validationSchema]);
 
           return (
             <Form>
@@ -280,7 +287,7 @@ export const ClaimForm = () => {
                 <FormGroup>
                   <div className="text-center">
                     {previousPageLink(claimForm)}
-                    {nextPageLink()}
+                    {nextPageLink(claimForm)}
                     <div className="margin-top-1">
                       {saveAndExitLink(claimForm.values)}
                     </div>

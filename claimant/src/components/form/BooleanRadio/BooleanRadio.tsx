@@ -1,9 +1,10 @@
 import { useField } from "formik";
 import { Radio, FormGroup, ErrorMessage } from "@trussworks/react-uswds";
-import { ChangeEvent, ChangeEventHandler } from "react";
+import { ChangeEvent, ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./BooleanRadio.module.scss";
 import { useShowErrors } from "../../../hooks/useShowErrors";
+import { useFocusFirstError } from "../../../hooks/useFocusFirstError";
 
 interface IBooleanRadioProps {
   id: string;
@@ -24,6 +25,9 @@ export const BooleanRadio = ({
   const { t } = useTranslation("common");
   const [fieldProps, metaProps, fieldHelperProps] = useField(name);
   const showError = useShowErrors(name);
+  const radioRef = useRef<HTMLInputElement>(null);
+
+  useFocusFirstError(metaProps.error, radioRef);
 
   const convertValueToBoolean = (value: string): boolean | undefined => {
     return value === "" ? undefined : value === "yes";
@@ -50,6 +54,7 @@ export const BooleanRadio = ({
         onChange={handleChange}
         className={styles.inline}
         {...inputProps}
+        inputRef={radioRef}
       />
       <Radio
         {...fieldProps}

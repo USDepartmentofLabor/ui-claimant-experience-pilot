@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import {
   ErrorMessage,
@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import soc_entries_2018 from "../../../fixtures/soc_entries_2018.json";
 import classnames from "classnames";
 import { Pagination } from "./Pagination";
+import { useFocusFirstError } from "../../../hooks/useFocusFirstError";
+import { useShowErrors } from "../../../hooks/useShowErrors";
 
 type OccupationOption = {
   code: string;
@@ -202,6 +204,9 @@ export const OccupationPicker = () => {
   const [occupationOptions, setOccupationOptions] = useState(
     [] as OccupationOption[]
   );
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const searchSOC = (input: string) => {
     // one or two characters renders too many results
     if (!input || input.length <= MIN_JOB_TITLE_LENGTH) {
@@ -219,8 +224,10 @@ export const OccupationPicker = () => {
   const [occupationJobTitleFieldProps, occupationJobTitleMetaProps] = useField({
     name: jobTitleName,
   });
-  const showJobTitleError =
-    occupationJobTitleMetaProps.touched && !!occupationJobTitleMetaProps.error;
+
+  const showJobTitleError = useShowErrors(jobTitleName);
+
+  useFocusFirstError(occupationJobTitleMetaProps.error, searchInputRef);
 
   useEffect(() => {
     const occupation = {
@@ -288,6 +295,7 @@ export const OccupationPicker = () => {
             name={jobTitleName}
             autoCapitalize="off"
             autoComplete="off"
+            inputRef={searchInputRef}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             value={occupationJobTitleFieldProps.value || ""}
