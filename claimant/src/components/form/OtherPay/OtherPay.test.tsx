@@ -36,7 +36,7 @@ describe("OtherPay", () => {
 
     const payTypeGroup = screen.getByRole("group", { name: "pay_type.label" });
     const pto = within(payTypeGroup).getByText(
-      "pay_type.options.paid_time_off.label"
+      "pay_type.options.vacation_sick_pto.label"
     );
     const severance = within(payTypeGroup).getByText(
       "pay_type.options.severance.label"
@@ -48,7 +48,7 @@ describe("OtherPay", () => {
       expect(
         screen.getByRole("heading", {
           level: 2,
-          name: "pay_type.options.paid_time_off.label",
+          name: "pay_type.options.vacation_sick_pto.label",
         })
       ).toBeInTheDocument();
       expect(
@@ -75,7 +75,7 @@ describe("OtherPay", () => {
       expect(
         screen.getByRole("heading", {
           level: 2,
-          name: "pay_type.options.paid_time_off.label",
+          name: "pay_type.options.vacation_sick_pto.label",
         })
       ).toBeInTheDocument();
       expect(
@@ -120,7 +120,7 @@ describe("OtherPay", () => {
 
     const payTypeGroup = screen.getByRole("group", { name: "pay_type.label" });
     const vacation = within(payTypeGroup).getByRole("checkbox", {
-      name: "pay_type.options.vacation.label pay_type.options.vacation.description",
+      name: "pay_type.options.vacation_sick_pto.label pay_type.options.vacation_sick_pto.description",
     });
     const severance = within(payTypeGroup).getByRole("checkbox", {
       name: "pay_type.options.severance.label pay_type.options.severance.description",
@@ -163,7 +163,7 @@ describe("OtherPay", () => {
 
     const payTypeGroup = screen.getByRole("group", { name: "pay_type.label" });
     const pto = within(payTypeGroup).getByText(
-      "pay_type.options.paid_time_off.label"
+      "pay_type.options.vacation_sick_pto.label"
     );
     const severance = within(payTypeGroup).getByText(
       "pay_type.options.severance.label"
@@ -179,7 +179,7 @@ describe("OtherPay", () => {
     await act(async () => {
       const payDetails = screen.getAllByRole("heading", { level: 2 });
       expect(payDetails).toHaveLength(3);
-      expect(payDetails[0]).toHaveTextContent("paid_time_off");
+      expect(payDetails[0]).toHaveTextContent("vacation_sick_pto");
       expect(payDetails[1]).toHaveTextContent("severance");
       expect(payDetails[2]).toHaveTextContent("other");
     });

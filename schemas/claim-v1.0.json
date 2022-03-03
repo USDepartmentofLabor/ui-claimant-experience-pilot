@@ -431,11 +431,10 @@
           "description": "Type of pay received from employer(s)",
           "type": "string",
           "enum": [
-            "paid_time_off",
+            "vacation_sick_pto",
+            "final_paycheck",
             "pension_annuity_retirement",
             "severance",
-            "vacation",
-            "sick",
             "profit_sharing",
             "other",
             "no_other_pay"

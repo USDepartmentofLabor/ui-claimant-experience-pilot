@@ -523,28 +523,25 @@ const claimForm = {
       label:
         "Have you received any payments from your employer(s) since becoming unemployed?",
       options: {
-        paid_time_off: {
-          label: "Paid Time Off (PTO) pay",
+        vacation_sick_pto: {
+          label: "Vacation/sick/PTO pay",
           description:
-            "Pay you receive while taking approved time off from your job",
+            "Pay you received for approved time off or a pay out of unused time off",
+        },
+        final_paycheck: {
+          label: "Final paycheck",
+          description:
+            "Pay you received for hours you worked prior to your last day of work",
         },
         pension_annuity_retirement: {
-          label: "Pension, Annuity or Retirement pay",
+          label: "Pension, annuity, or retirement pay",
           description:
-            "Different types of pay you may receive once you're retired",
+            "Pay you received from a retirement plan associated with an employer you listed on this application (not a loan)",
         },
         severance: {
           label: "Severance pay",
           description:
-            "Pay you receive from your employer when you're dismissed from your job",
-        },
-        vacation: {
-          label: "Vacation pay",
-          description: "Pay you're owed for unused vacation time",
-        },
-        sick: {
-          label: "Sick pay",
-          description: "A paid absence from your job",
+            "Pay you received from your employer when you're dismissed from your job",
         },
         profit_sharing: {
           label: "Profit sharing",
@@ -563,7 +560,7 @@ const claimForm = {
       },
     },
     total: {
-      label: "Total {{ payType }} received",
+      label: "Total {{- payType }} received",
       errors: {
         required: "Total pay is required",
         min: "Total pay must be greater than 0",
@@ -571,14 +568,14 @@ const claimForm = {
       },
     },
     date_received: {
-      label: "Date {{ payType }} received",
+      label: "Date {{- payType }} received",
       errors: {
         required: "Date received is required",
         max: "Date must be today or in the past",
       },
     },
     note: {
-      label: "Please share more about your {{ payType }} received",
+      label: "Please share more about your {{- payType }} received",
       errors: {
         required: "Please provide further details",
       },
