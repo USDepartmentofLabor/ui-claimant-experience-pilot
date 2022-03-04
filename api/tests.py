@@ -122,7 +122,7 @@ class BaseClaim:
             "sex": "female",
             "ethnicity": "opt_out",
             "race": ["american_indian_or_alaskan"],
-            "education_level": "some_college",
+            "education_level": "bachelors",
             "state_credential": {
                 "drivers_license_or_state_id_number": "111222333",
                 "issuer": "GA",

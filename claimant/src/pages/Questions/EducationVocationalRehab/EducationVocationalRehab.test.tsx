@@ -62,9 +62,9 @@ describe("EducationVocationalRehab component", () => {
       expect(educationLevelDropdown).toHaveValue("none");
 
       await act(async () => {
-        userEvent.selectOptions(educationLevelDropdown, "grade_12");
+        userEvent.selectOptions(educationLevelDropdown, "high_school_ged");
       });
-      expect(educationLevelDropdown).toHaveValue("grade_12");
+      expect(educationLevelDropdown).toHaveValue("high_school_ged");
       expect(educationLevelDropdown).not.toHaveValue("none");
     });
   });

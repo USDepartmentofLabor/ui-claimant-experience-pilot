@@ -53,7 +53,7 @@
   "sex": "female",
   "race": ["black", "asian"],
   "ethnicity": "not_hispanic",
-  "education_level": "one_year_college_plus",
+  "education_level": "high_school_ged",
   "preferred_language": "English",
   "federal_income_tax_withheld": true,
   "worked_in_other_states": ["MN", "KS", "MO"],
