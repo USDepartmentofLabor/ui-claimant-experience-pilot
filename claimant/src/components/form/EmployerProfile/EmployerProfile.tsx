@@ -108,6 +108,18 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].fein`}
         hint={t("fein.hint")}
       />
+      <TextField
+        name={`employers[${segment}].state_employer_payroll_number`}
+        label={t("state_employer_payroll_number.label")}
+        type="text"
+        id={`employers[${segment}].state_employee_payroll_number`}
+        hint={t("state_employer_payroll_number.hint")}
+      />
+      <YesNoQuestion
+        question={t("self_employed.label")}
+        id={`employers[${segment}].self_employed`}
+        name={`employers[${segment}].self_employed`}
+      />
       <SeparationReason segment={segment} />
       <DatePicker
         label={t("first_work_date.label")}

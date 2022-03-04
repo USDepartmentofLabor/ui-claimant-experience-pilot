@@ -98,6 +98,7 @@
       "last_work_date": "2020-11-30",
       "recall_date": "2020-12-13",
       "fein": "00-1234567",
+      "self_employed": false,
       "address": {
         "address1": "999 Acme Way",
         "address2": "Suite 888",

@@ -136,6 +136,7 @@ class BaseClaim:
                     "last_work_date": "2020-11-30",
                     "recall_date": "2020-12-13",
                     "fein": "001234567",
+                    "self_employed": False,
                     "address": {
                         "address1": "999 Acme Way",
                         "address2": "Suite 888",

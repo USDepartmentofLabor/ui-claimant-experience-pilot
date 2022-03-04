@@ -130,6 +130,7 @@ describe("EmployerInformation Page", () => {
           LOCAL_same_address: true,
           LOCAL_same_phone: true,
           phones: [{ number: "555-555-5555" }],
+          self_employed: false,
           address: {
             address1: "123 Main St",
             city: "Somewhere",

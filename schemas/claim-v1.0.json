@@ -103,6 +103,8 @@
         "first_work_date": { "type": "string", "format": "date" },
         "recall_date": { "type": "string", "format": "date" },
         "fein": { "type": "string", "pattern": "(^[0-9]{2}-[0-9]{7}$|)" },
+        "state_employer_payroll_number": { "type": "string", "maxLength": 255 },
+        "self_employed": { "type": "boolean" },
         "address": { "$ref": "#/definitions/address" },
         "work_site_address": { "$ref": "#/definitions/optionaladdress" },
         "phones": {
@@ -117,7 +119,8 @@
         "address",
         "first_work_date",
         "phones",
-        "separation_reason"
+        "separation_reason",
+        "self_employed"
       ],
       "allOf": [
         {

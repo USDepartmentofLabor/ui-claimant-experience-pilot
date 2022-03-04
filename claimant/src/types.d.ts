@@ -164,6 +164,8 @@ type EmployerType = {
   last_work_date?: string;
   recall_date?: string;
   fein?: string;
+  state_employer_payroll_number?: string;
+  self_employed?: boolean;
   address: AddressType;
   work_site_address?: AddressType;
   phones: PhoneType[];

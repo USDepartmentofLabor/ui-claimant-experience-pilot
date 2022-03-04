@@ -15,6 +15,8 @@ const createEmployer0 = () => {
       zipcode: "12345",
     },
     phones: [{ number: "555-555-5555" }],
+    state_employer_payroll_number: "123-456",
+    self_employed: false,
     separation: {
       reason: "laid_off",
       option: "position_eliminated",
@@ -36,6 +38,7 @@ const createEmployer1 = () => {
       zipcode: "12345",
     },
     phones: [{ number: "555-555-5555" }],
+    self_employed: true,
     separation: {
       reason: "still_employed",
       option: "hours_reduced_by_employer",
@@ -98,7 +101,7 @@ context(
       cy.contains("ACME 0").should("be.visible");
       cy.contains("ACME 1").should("be.visible");
       cy.contains("ACME 2").should("be.visible");
-      cy.get("a").contains("Fix 10 errors").should("be.visible").click();
+      cy.get("a").contains("Fix 12 errors").should("be.visible").click();
       cy.url().should("contain", "/claimant/claim/employer/2");
     });
 

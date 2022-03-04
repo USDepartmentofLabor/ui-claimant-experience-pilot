@@ -286,6 +286,17 @@ Cypress.Commands.add("complete_employer_form", (employer, idx = "0") => {
       .should("be.visible")
       .type(employer.fein);
   }
+  if (employer.state_employer_payroll_number) {
+    cy.get(`[name=employers\\[${idx}\\]\\.state_employer_payroll_number]`)
+      .should("be.visible")
+      .type(employer.state_employer_payroll_number);
+  }
+  if (employer.self_employed === true) {
+    cy.click_yes(`employers\\[${idx}\\]\\.self_employed`);
+  }
+  if (employer.self_employed === false) {
+    cy.click_no(`employers\\[${idx}\\]\\.self_employed`);
+  }
   if (employer.separation) {
     cy.get(
       `input[id=employers\\[${idx}\\]\\.separation_reason\\.${employer.separation.reason}]`

@@ -60,6 +60,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "12345",
       },
       phones: [{ number: "555-555-5555" }],
+      self_employed: false,
       separation: {
         reason: "laid_off",
         option: "position_eliminated",

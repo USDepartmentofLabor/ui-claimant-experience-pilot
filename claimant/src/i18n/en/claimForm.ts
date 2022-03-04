@@ -255,6 +255,15 @@ const claimForm = {
     fein: {
       label: "FEIN, or Federal Employer Identification Number (optional)",
       hint: "You can usually find your employer's FEIN on your W2 or other tax documents your employer provides.",
+      pattern: "The FEIN must match the pattern 12-1234567",
+    },
+    state_employer_payroll_number: {
+      label: "State employer payroll number (optional)",
+      hint: "You can find the state employer payroll number on line 15 of your W2.",
+    },
+    self_employed: {
+      label: "Were you self-employed at this job?",
+      required: "You must indicate whether you were self-employed at this job",
     },
   },
   self_employment: {
