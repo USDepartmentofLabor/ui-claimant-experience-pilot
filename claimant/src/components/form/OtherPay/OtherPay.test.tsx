@@ -4,6 +4,12 @@ import { Formik } from "formik";
 
 import OtherPay from "./OtherPay";
 import { noop } from "../../../testUtils/noop";
+import {
+  getInvalidClaimFormFixtures,
+  getValidClaimFormFixtures,
+} from "../../../testUtils/fixtures";
+import { useTranslation } from "react-i18next";
+import { OtherPayInformationPage } from "../../../pages/Questions/OtherPayInformation/OtherPayInformation";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -182,6 +188,32 @@ describe("OtherPay", () => {
       expect(payDetails[0]).toHaveTextContent("vacation_sick_pto");
       expect(payDetails[1]).toHaveTextContent("severance");
       expect(payDetails[2]).toHaveTextContent("other");
+    });
+  });
+
+  describe("validations", () => {
+    describe("valid answers", () => {
+      it.concurrent.each(getValidClaimFormFixtures("other-pay"))(
+        "passes with valid values: %o",
+        (formData) => {
+          const { t } = useTranslation("claimForm");
+          const schema = OtherPayInformationPage.pageSchema(t);
+
+          expect(schema.isValidSync(formData)).toBeTruthy();
+        }
+      );
+    });
+
+    describe("invalid answers", () => {
+      it.concurrent.each(getInvalidClaimFormFixtures("other-pay"))(
+        "fails with invalid values: %o",
+        (formData) => {
+          const { t } = useTranslation("claimForm");
+          const schema = OtherPayInformationPage.pageSchema(t);
+
+          expect(schema.isValidSync(formData)).toBeFalsy();
+        }
+      );
     });
   });
 });

@@ -48,6 +48,19 @@ class ClaimValidator(object):
                             validator_value=None,
                         )
                         self.errors.append(err)
+        if "other_pay" in self.claim:
+            for idx, other_pay in enumerate(self.claim["other_pay"]):
+                # date_received must be a valid date
+                if "date_received" in other_pay:
+                    try:
+                        datetime.fromisoformat(other_pay["date_received"])
+                    except ValueError:
+                        err = ValidationError(
+                            message="date_received is not a valid date",
+                            path=[f"other_pay[{idx}]", "date_received"],
+                            validator_value=None,
+                        )
+                        self.errors.append(err)
 
     def errors_as_dict(self):
         errors = {}

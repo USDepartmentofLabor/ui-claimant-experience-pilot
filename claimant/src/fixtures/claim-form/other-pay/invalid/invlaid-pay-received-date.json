@@ -1,0 +1,10 @@
+{
+  "other_pay": [
+    {
+      "pay_type": "severance",
+      "total": 500000,
+      "date_received": "2021-01-99",
+      "note": "All one payment for layoff"
+    }
+  ]
+}

@@ -567,6 +567,7 @@ const claimForm = {
       errors: {
         required: "Date received is required",
         max: "Date must be today or in the past",
+        label: "Date received",
       },
     },
     note: {
