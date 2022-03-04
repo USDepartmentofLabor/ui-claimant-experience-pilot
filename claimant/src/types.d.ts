@@ -114,10 +114,8 @@ type AddressType = {
 type PhoneType = {
   number: string;
   sms?: boolean;
-  type?: string;
+  type?: "home" | "work" | "mobile";
 };
-
-type YesNo = "yes" | "no";
 
 type ClaimantNamesType = {
   claimant_name?: PersonName;
@@ -133,17 +131,34 @@ type ClaimantAddressType = {
 
 type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;
 
+type SexOptionType = "female" | "male";
+
+type EthnicityOptionType = "hispanic" | "not_hispanic" | "opt_out";
+
+type RaceOptionType =
+  | "american_indian_or_alaskan"
+  | "asian"
+  | "black"
+  | "hawaiian_or_pacific_islander"
+  | "white"
+  | "opt_out";
+
 type DemographicInformationType = {
-  sex?: string;
-  ethnicity?: string;
-  race?: string[];
+  sex?: SexOptionType;
+  ethnicity?: EthnicityOptionType;
+  race?: RaceOptionType[];
 };
+
+type AuthorizationTypeOptionType =
+  | "US_citizen_or_national"
+  | "permanent_resident"
+  | "temporary_legal_worker";
 
 type WorkAuthorizationType = {
   work_authorization?: {
     authorized_to_work?: boolean;
     not_authorized_to_work_explanation?: string;
-    authorization_type?: string;
+    authorization_type?: AuthorizationTypeOptionType;
     alien_registration_number?: string;
   };
 };
@@ -154,6 +169,15 @@ type StateCredentialType = {
     issuer?: string;
   };
 };
+
+type SeparationReasonOptionType =
+  | "laid_off"
+  | "fired_discharged_terminated"
+  | "still_employed"
+  | "quit"
+  | "strike"
+  | "retired"
+  | "shutdown";
 
 type EmployerType = {
   name: string;
@@ -169,7 +193,8 @@ type EmployerType = {
   address: AddressType;
   work_site_address?: AddressType;
   phones: PhoneType[];
-  separation_reason: string;
+  separation_reason?: SeparationReasonOptionType;
+  separation_option?: string;
   separation_comment: string;
 };
 
@@ -219,8 +244,8 @@ type AvailabilityType = {
 type PaymentInformationType = DeepPartial<{
   federal_income_tax_withheld: boolean;
   payment: {
-    payment_method: string;
-    account_type: string;
+    payment_method: "debit" | "direct_deposit";
+    account_type: "checking" | "savings";
     routing_number: string;
     LOCAL_re_enter_routing_number: string;
     account_number: string;
@@ -235,23 +260,33 @@ type PageProps = {
 type SelfEmploymentType = DeepPartial<{
   self_employment: {
     is_self_employed: boolean;
-    ownership_in_business: YesNo;
+    ownership_in_business: boolean;
     name_of_business: string | null;
-    is_corporate_officer: YesNo;
+    is_corporate_officer: boolean;
     name_of_corporation: string | null;
-    related_to_owner: YesNo;
-    corporation_or_partnership: YesNo;
+    related_to_owner: boolean;
+    corporation_or_partnership: boolean;
   };
 }>;
 
+type OtherPayOptionType =
+  | "paid_time_off"
+  | "pension_annuity_retirement"
+  | "severance"
+  | "vacation"
+  | "sick"
+  | "profit_sharing"
+  | "other"
+  | "no_other_pay";
+
 type OtherPayType = Partial<{
-  LOCAL_pay_types: string[];
+  LOCAL_pay_types: OtherPayOptionType[];
   other_pay: OtherPayDetailType[];
 }>;
 
 type OtherPayDetailType = {
-  pay_type: string;
-  total?: number;
+  pay_type: OtherPayOptionType;
+  total?: number | string;
   date_received?: string;
   note?: string;
 };
@@ -260,18 +295,29 @@ type DisabilityStatusType = DeepPartial<{
   disability: {
     has_collected_disability: boolean;
     disabled_immediately_before: boolean;
-    type_of_disability: string;
+    type_of_disability: "state_plan" | "private_plan" | "workers_compensation";
     date_disability_began: string;
     recovery_date: string;
     contacted_last_employer_after_recovery: boolean;
   };
 }>;
 
+type EducationLevelOptionType =
+  | "none"
+  | "primary_school"
+  | "some_high_school"
+  | "high_school_ged"
+  | "technical_associates"
+  | "bachelors"
+  | "masters"
+  | "doctorate"
+  | "other";
+
 type EducationVocationalRehabType = Partial<{
   student_fulltime_in_last_18_months: boolean;
   attending_college_or_job_training: boolean;
   registered_with_vocational_rehab: boolean;
-  education_level?: string;
+  education_level?: EducationLevelOptionType;
 }>;
 
 type CompleteClaimType = {

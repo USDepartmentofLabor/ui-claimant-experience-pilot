@@ -3,22 +3,19 @@ import { useTranslation } from "react-i18next";
 import { addressToString } from "../../../utils/format";
 import { PersonalInformationPage } from "../PersonalInformation/PersonalInformation";
 import { ReviewElement, ReviewSection } from "./ReviewSection";
+import { YesNoReview } from "./ReviewHelpers";
 
 export const PersonalInformationReview = () => {
-  const { t: t } = useTranslation("common");
   const { t: formT } = useTranslation("claimForm");
   const { t: contactT } = useTranslation("contact");
   const { values } = useFormikContext<Claim>();
 
   return (
-    <ReviewSection
-      title={t("page_headings.personal")}
-      editPath={PersonalInformationPage.path}
-    >
+    <ReviewSection pageDefinition={PersonalInformationPage}>
       {values.claimant_name && <NameReview name={values.claimant_name} />}
-      <ReviewElement
+      <YesNoReview
         title={formT("name.claimant_has_alternate_names.label")}
-        text={t(values.LOCAL_claimant_has_alternate_names ? "yes" : "no")}
+        value={values.LOCAL_claimant_has_alternate_names}
       />
       {values.alternate_names &&
         values.alternate_names.map((name) => (
@@ -30,9 +27,9 @@ export const PersonalInformationReview = () => {
           text={addressToString(values.residence_address)}
         />
       )}
-      <ReviewElement
+      <YesNoReview
         title={contactT("label.mailing_address_same")}
-        text={t(values.LOCAL_mailing_address_same ? "yes" : "no")}
+        value={values.LOCAL_mailing_address_same}
       />
       {!values.LOCAL_mailing_address_same && values.mailing_address && (
         <ReviewElement

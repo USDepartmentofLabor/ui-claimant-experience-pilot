@@ -114,6 +114,7 @@ export const EmployerReview = () => {
     <>
       {values.employers?.map((employer, idx) => (
         <FormGroup error={!!segmentErrors[idx]} key={`employer-${idx}`}>
+          {/* TODO replace this with the Employer Review component used in the review page */}
           <EmployerProfileReview employer={employer} />
           <NavLink to={`/claim/employer/${idx}`}>
             {segmentErrors[idx] ? (

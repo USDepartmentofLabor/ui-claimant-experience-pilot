@@ -19,17 +19,17 @@ export const SelfEmployment = () => {
   // Remove conditional data if previous answer is changed
 
   useClearFields(
-    data.ownership_in_business === "no",
+    data.ownership_in_business === false,
     "self_employment.name_of_business"
   );
 
   useClearFields(
-    data.is_corporate_officer === "no",
+    data.is_corporate_officer === false,
     "self_employment.name_of_corporation"
   );
 
   useClearFields(
-    data.related_to_owner === "no",
+    data.related_to_owner === false,
     "self_employment.corporation_or_partnership"
   );
 

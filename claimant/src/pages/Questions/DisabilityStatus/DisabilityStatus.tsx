@@ -12,9 +12,9 @@ import { IPageDefinition } from "../../PageDefinitions";
 import HelpText from "../../../components/HelpText/HelpText";
 
 const typeOptions = [
-  { label: "State Plan", value: "State Plan" },
-  { label: "Private Plan", value: "Private Plan" },
-  { label: "Worker's Compensation", value: "Worker's Compensation" },
+  { label: "State Plan", value: "state_plan" },
+  { label: "Private Plan", value: "private_plan" },
+  { label: "Worker's Compensation", value: "workers_compensation" },
 ];
 
 export const DisabilityStatus = () => {

@@ -10,7 +10,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("EmployerProfileReview component", () => {
-  const employer = {
+  const employer: EmployerType = {
     name: "ACME",
     separation_comment: "",
     separation_reason: "laid_off",

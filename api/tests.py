@@ -188,7 +188,7 @@ class BaseClaim:
             "disability": {
                 "has_collected_disability": True,
                 "disabled_immediately_before": False,
-                "type_of_disability": "State Plan",
+                "type_of_disability": "state_plan",
                 "date_disability_began": "2020-01-01",
                 "recovery_date": "2022-01-08",
                 "contacted_last_employer_after_recovery": False,

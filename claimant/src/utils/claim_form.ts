@@ -28,7 +28,7 @@ export const EMPLOYER_SKELETON: EmployerType = {
   LOCAL_same_address: undefined,
   phones: [{ number: "" }],
   LOCAL_same_phone: undefined,
-  separation_reason: "",
+  separation_reason: undefined,
   separation_comment: "",
   fein: "",
 };

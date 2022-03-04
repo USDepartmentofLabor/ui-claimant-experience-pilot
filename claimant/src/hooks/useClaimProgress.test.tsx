@@ -53,7 +53,7 @@ describe("useClaimProgress", () => {
   });
 });
 
-const completedUpToEmployerTwo = {
+const completedUpToEmployerTwo: Partial<Claim> = {
   claimant_name: {
     first_name: "Timothy",
     middle_name: "",

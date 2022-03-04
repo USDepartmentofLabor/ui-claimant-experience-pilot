@@ -197,6 +197,7 @@ const claimForm = {
       required: "This field is required",
     },
     address: {
+      heading: "Employer address",
       address1: { label: "Employer address line 1" },
       address2: { label: "Employer address line 2 (optional)" },
       city: { label: "City" },
@@ -338,7 +339,14 @@ const claimForm = {
       label:
         "Were you disabled in the last 4 weeks before filling out this application?",
     },
-    type_of_disability: { label: "What plan do you get your payment from?" },
+    type_of_disability: {
+      label: "What plan do you get your payment from?",
+      options: {
+        state_plan: "State Plan",
+        private_plan: "Private Plan",
+        workers_compensation: "Worker's Compensation",
+      },
+    },
     date_disability_began: { label: "Date disability began" },
     recovery_date: { label: "Recovery date (optional)" },
     contact_employer_after_recovering: {

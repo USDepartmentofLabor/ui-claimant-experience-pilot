@@ -1,30 +1,55 @@
 import { PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
 import reviewStyles from "./Review.module.scss";
+import en from "../../../i18n/en";
+import { useTranslation } from "react-i18next";
 
-interface IReviewSectionProps {
-  title: string;
-  editPath: string;
+interface ICustomReviewSectionProps {
+  heading: string;
+  path: string;
 }
 
-export const ReviewSection = ({
-  title,
-  editPath,
+export const CustomReviewSection = ({
+  heading,
+  path,
   children,
-}: PropsWithChildren<IReviewSectionProps>) => (
-  <>
-    <section className={reviewStyles["review-section"]}>
-      <div className={reviewStyles["review-section-header"]}>
-        <h2>{title}</h2>
-        <Link to={`/claim/${editPath}`} aria-label={`Edit ${title}`}>
-          Edit
-        </Link>
-      </div>
+}: PropsWithChildren<ICustomReviewSectionProps>) => {
+  return (
+    <>
+      <section className={reviewStyles["review-section"]}>
+        <div className={reviewStyles["review-section-header"]}>
+          <h2>{heading}</h2>
+          <Link to={`/claim/${path}`} aria-label={`Edit ${heading}`}>
+            Edit
+          </Link>
+        </div>
+        {children}
+      </section>
+      <hr aria-hidden="true" />
+    </>
+  );
+};
+
+interface IReviewSectionProps {
+  pageDefinition: {
+    path: string;
+    heading: keyof typeof en.common.page_headings;
+  };
+}
+export const ReviewSection = ({
+  pageDefinition,
+  children,
+}: PropsWithChildren<IReviewSectionProps>) => {
+  const { t } = useTranslation("common");
+  return (
+    <CustomReviewSection
+      heading={t(`page_headings.${pageDefinition.heading}`)}
+      path={pageDefinition.path}
+    >
       {children}
-    </section>
-    <hr />
-  </>
-);
+    </CustomReviewSection>
+  );
+};
 
 interface IReviewElementProps {
   title: string;

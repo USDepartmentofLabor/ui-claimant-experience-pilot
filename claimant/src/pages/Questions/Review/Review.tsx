@@ -5,6 +5,18 @@ import { IPageDefinition } from "../../PageDefinitions";
 import { FormGroup, ErrorMessage } from "@trussworks/react-uswds";
 import * as yup from "yup";
 import { PersonalInformationReview } from "./PersonalInformationReview";
+import { IdentityReview } from "./IdentityReview";
+import { DemographicInformationReview } from "./DemographicReview";
+import { ContactInformationReview } from "./ContactInformationReview";
+import { EmployersReview } from "./EmployersReview";
+import { AvailabilityReview } from "./AvailabilityReview";
+import { PaymentReview } from "./PaymentReview";
+import { DisabilityStatusReview } from "./DisabilityStatusReview";
+import { SelfEmploymentReview } from "./SelfEmploymentReview";
+import { OtherPayReview } from "./OtherPayReview";
+import { OccupationReview } from "./OccupationReview";
+import { EducationVocationRehabReview } from "./EducationVocationRehabReview";
+import { UnionReview } from "./UnionReview";
 import { useShowErrors } from "../../../hooks/useShowErrors";
 
 export const Review = () => {
@@ -16,6 +28,18 @@ export const Review = () => {
   return (
     <>
       <PersonalInformationReview />
+      <ContactInformationReview />
+      <DemographicInformationReview />
+      <IdentityReview />
+      <EmployersReview />
+      <SelfEmploymentReview />
+      <OtherPayReview />
+      <OccupationReview />
+      <EducationVocationRehabReview />
+      <UnionReview />
+      <DisabilityStatusReview />
+      <AvailabilityReview />
+      <PaymentReview />
       <FormGroup error={showError}>
         <CheckboxField
           {...fieldProps}

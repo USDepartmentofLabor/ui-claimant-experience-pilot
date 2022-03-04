@@ -495,7 +495,7 @@
           "type_of_disability": {
             "description": "The claimant's disability type",
             "type": "string",
-            "enum": ["State Plan", "Private Plan", "Worker's Compensation"]
+            "enum": ["state_plan", "private_plan", "workers_compensation"]
           },
           "date_disability_began": {
             "description": "The date the disability began",
