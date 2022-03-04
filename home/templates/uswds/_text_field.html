@@ -16,5 +16,8 @@
            type="{{ type|default:'text' }}"
            id="{{ id }}"
            name="{{ id }}"
+           {% if pattern %}
+           pattern="{{ pattern }}"
+           {% endif %}
            />
 </div>
