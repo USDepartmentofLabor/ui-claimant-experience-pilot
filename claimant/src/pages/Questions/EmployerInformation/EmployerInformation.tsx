@@ -1,11 +1,12 @@
 import { TFunction, Trans, useTranslation } from "react-i18next";
-import { Alert } from "@trussworks/react-uswds";
+import { SummaryBox } from "@trussworks/react-uswds";
 import { EmployerProfile } from "../../../components/form/EmployerProfile/EmployerProfile";
 import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { IPageDefinition, IPreviousSegment } from "../../PageDefinitions";
 import claimForm from "../../../i18n/en/claimForm";
 import { yupPhone, yupAddress } from "../../../common/YupBuilder";
 import * as yup from "yup";
+import employerStyles from "./EmployerInformation.module.scss";
 
 // TODO: Validate that the number of employers matches the number of times that
 //  the claimant has selected "LOCAL_more_employers"
@@ -41,12 +42,9 @@ export const EmployerInformation = (props: PageProps) => {
   return (
     <>
       {/*TODO: Display only for first segment? ("TBD" in figma)*/}
-      <Alert type="info">
-        <Trans ns="claimForm" i18nKey="employers.reason_for_data_collection">
-          {/*TODO: Just include english text as default here as the docs do?*/}
-          employers.reason_for_data_collection
-        </Trans>
-      </Alert>
+      <SummaryBox heading="" className={employerStyles["no-header"]}>
+        <Trans ns="claimForm" i18nKey="employers.reason_for_data_collection" />
+      </SummaryBox>
       <EmployerProfile segment={segment} />
       <YesNoQuestion
         question={t("employers.more_employers.label")}
