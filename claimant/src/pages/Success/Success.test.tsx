@@ -83,5 +83,6 @@ describe("Success screen", () => {
     expect(screen.getByText("success.title")).toBeInTheDocument();
     expect(screen.getByText("success.heading")).toBeInTheDocument();
     expect(screen.getByText("success.message")).toBeInTheDocument();
+    expect(screen.getByText("success.next_steps.heading")).toBeInTheDocument();
   });
 });

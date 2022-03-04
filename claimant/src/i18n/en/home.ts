@@ -117,7 +117,15 @@ const home = {
     heading: "Application submitted",
     message:
       "You submitted your application <claimId>{{claimId}}</claimId> on {{completedDate}}.",
-    next_steps: "Next steps",
+    next_steps: {
+      heading: "Next steps",
+      body_p1:
+        "We will review your information to see if you’re eligible for benefits payments.",
+      body_p2:
+        "You will begin certifying for your benefits each week at <1>XYZ website</1>. We will send you emails to remind you.",
+      body_p3:
+        "If you don't hear from us in [X] days, please <1>contact us.</1>",
+    },
   },
   timeout: {
     title: "You will be logged out due to inactivity in ",

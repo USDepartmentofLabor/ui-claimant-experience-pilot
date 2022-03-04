@@ -236,13 +236,13 @@ const HomePage = () => {
               ))}
             </ul>
           )}
-          {claimDeleted && (
+          {claimDeleted ? (
             <p className="margin-top-4">
               {t("remaining_tasks.resetMessage", {
                 resetDate: resetDate && formatExpiresAtDate(resetDate),
               })}
             </p>
-          )}
+          ) : null}
         </div>
         {okToSubmitClaimApp() && <SubmitClaimCard />}
         {tasks.map(({ title, status, Content, MoreInfo }) => (
