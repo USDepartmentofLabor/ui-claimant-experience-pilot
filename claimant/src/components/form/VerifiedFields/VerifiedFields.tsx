@@ -74,7 +74,10 @@ export const VerifiedFields = ({ fields }: VerifiedFieldsProps) => {
     if (desiredFields.length > 0) {
       // Render the component with the desired field(s)
       return (
-        <div data-testid="verified-fields" className="usa-summary-box">
+        <div
+          data-testid="verified-fields"
+          className="usa-summary-box margin-bottom-6"
+        >
           <div className="usa-summary-box__body">
             <Logo className={classes.idpLogo} data-testid="idp-logo" />
             <h2 className="usa-summary-box__heading">{t("heading")}</h2>

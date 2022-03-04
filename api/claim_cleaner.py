@@ -31,8 +31,14 @@ class ClaimCleaner(object):
         # use pop() in case the key does not exist
         claim.pop("identity_provider", None)
 
-        # Like SSN in WhoAmI, FEIN and Alien Registration number have optional - delimiter,
+        # Like SSN from idp in WhoAmI, editable SSN from claim FEIN and Alien Registration number have optional - delimiter,
         # but we always use them in packaged claims.
+        if "ssn" in claim:
+            claim["ssn"] = re.sub(
+                r"^([0-9]{3})-?([0-9]{2})-?([0-9]{4})$",
+                r"\1-\2-\3",
+                claim["ssn"],
+            )
         if (
             "work_authorization" in claim
             and "alien_registration_number" in claim["work_authorization"]

@@ -8,11 +8,19 @@ const claimForm = {
   },
   ssn: {
     label: "Social Security number",
-    required: "Social Security number is required",
+    hint: "Use format 000-00-0000",
+    errors: {
+      badFormat: "Must use format 000-00-0000",
+      required: "Social Security number is required",
+    },
+    showSsnLabel: "Show SSN",
   },
   birthdate: {
     label: "Date of birth",
-    required: "Date of birth is required",
+    errors: {
+      maxDate: "Date must be in the past",
+      required: "Date of birth is required",
+    },
   },
   sex: {
     label: "What is your sex?",

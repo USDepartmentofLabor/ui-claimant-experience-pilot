@@ -1,4 +1,8 @@
+import { useState } from "react";
+import { Checkbox as UswdsCheckbox } from "@trussworks/react-uswds";
 import { Normalize, TFunction, useTranslation } from "react-i18next";
+import dayjs from "dayjs";
+
 import TextField from "../../../components/form/fields/TextField/TextField";
 import { DateInputField } from "../../../components/form/fields/DateInputField/DateInputField";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
@@ -14,10 +18,12 @@ import { StatesDropdown } from "../../../components/form/StatesDropdown/StatesDr
 import states from "../../../fixtures/states.json";
 import { VerifiedFields } from "../../../components/form/VerifiedFields/VerifiedFields";
 
+import styles from "./Identity.module.scss";
+
 export const Identity = () => {
   const { t } = useTranslation("claimForm");
   const { values } = useFormikContext<ClaimantInput>();
-
+  const [showSsn, setShowSsn] = useState(false);
   const showWorkAuthorizationFields =
     values.work_authorization?.authorized_to_work;
 
@@ -28,6 +34,9 @@ export const Identity = () => {
     values.work_authorization?.authorization_type &&
     values.work_authorization.authorization_type !== "US_citizen_or_national";
 
+  const handleShowSsn = () => {
+    setShowSsn(!showSsn);
+  };
   useClearFields(!showWorkAuthorizationFields, [
     "work_authorization.authorization_type",
     "work_authorization.alien_registration_number",
@@ -46,21 +55,30 @@ export const Identity = () => {
   return (
     <>
       <VerifiedFields fields={["ssn", "birthdate"]} />
-      {/*TODO: number? format validations? auto-hyphen?*/}
-      <TextField
-        label={t("ssn.label")}
-        id="ssn"
-        name="ssn"
-        type="text"
-        readOnly
-        disabled
-      />
+      <div className="position-relative">
+        <TextField
+          label={t("ssn.label")}
+          id="ssn"
+          name="ssn"
+          type={showSsn ? "text" : "password"}
+          hint={t("ssn.hint")}
+          fieldAddon={
+            <UswdsCheckbox
+              id="show-ssn"
+              name="LOCAL_showSsn"
+              label={t("ssn.showSsnLabel")}
+              checked={showSsn}
+              onChange={handleShowSsn}
+              tile={true}
+              className={styles.showSsn}
+            />
+          }
+        />
+      </div>
       <DateInputField
         legend={t("birthdate.label")}
         id="birthdate"
         name="birthdate"
-        readOnly
-        disabled
       />
       <TextField
         label={t("state_credential.drivers_license_or_state_id_number.label")}
@@ -124,9 +142,14 @@ export const Identity = () => {
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    ssn: yup.string().required(t("ssn.required")),
-    birthdate: yupDate(t, t("birthdate.label")),
-
+    ssn: yup
+      .string()
+      .matches(/^[0-9]{3}-?[0-9]{2}-?[0-9]{4}$/, t("ssn.errors.badFormat"))
+      .required(t("ssn.errors.required")),
+    birthdate: yupDate(t, t("birthdate.label")).max(
+      dayjs(new Date()).format("YYYY-MM-DD"),
+      t("birthdate.errors.maxDate")
+    ),
     state_credential: yup.object().shape({
       drivers_license_or_state_id_number: yup
         .string()

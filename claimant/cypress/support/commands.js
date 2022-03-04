@@ -183,21 +183,18 @@ Cypress.Commands.add("complete_identity_information", (identityInformation) => {
     alienRegistrationNumber,
   } = identityInformation;
 
-  cy.get(`[name=ssn]`).should("be.disabled").should("have.value", ssn);
+  cy.get(`[name=ssn]`).should("have.value", ssn);
 
   const [year, month, day] = birthdate.split("-");
 
   cy.get(`[name=birthdate\\.month]`)
     .should("be.visible")
-    .should("be.disabled")
     .should("have.value", month);
   cy.get(`[name=birthdate\\.day]`)
     .should("be.visible")
-    .should("be.disabled")
     .should("have.value", day);
   cy.get(`[name=birthdate\\.year]`)
     .should("be.visible")
-    .should("be.disabled")
     .should("have.value", year);
 
   cy.get(`[name=state_credential\\.drivers_license_or_state_id_number]`)

@@ -82,24 +82,33 @@ describe("Identity Information Page", () => {
     expect(verifiedBirthdateValue).toBeInTheDocument();
 
     expect(socialSecurityNumber).toBeInTheDocument();
-    expect(socialSecurityNumber).toBeDisabled();
 
     expect(dateOfBirthLabel).toBeInTheDocument();
     expect(dateOfBirthMonth).toBeInTheDocument();
-    expect(dateOfBirthMonth).toBeDisabled();
 
     expect(dateOfBirthDay).toBeInTheDocument();
-    expect(dateOfBirthDay).toBeDisabled();
 
     expect(dateOfBirthYear).toBeInTheDocument();
-    expect(dateOfBirthYear).toBeDisabled();
 
     expect(idNumber).toBeInTheDocument();
     expect(stateDropdown).toBeInTheDocument();
     expect(yesAuthorizedToWorkInUS).toBeInTheDocument();
     expect(noAuthorizedToWorkInUS).toBeInTheDocument();
   });
-
+  it("can toggle ssn value visibility", async () => {
+    render(
+      <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
+        <Identity />
+      </Formik>
+    );
+    const socialSecurityNumber = screen.getByLabelText("ssn.label");
+    expect(socialSecurityNumber).toHaveAttribute("type", "password");
+    const showSsn = screen.getByLabelText("ssn.showSsnLabel");
+    userEvent.click(showSsn);
+    await waitFor(() => {
+      expect(socialSecurityNumber).toHaveAttribute("type", "text");
+    });
+  });
   it("hides and shows explanation field", async () => {
     render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>

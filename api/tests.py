@@ -1039,7 +1039,7 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         body = self.base_claim() | {
             "claimant_id": claimant.idp_user_xid,
             "swa_code": swa.code,
-            "ssn": "666-00-0000",
+            "ssn": "666000000",
             "email": "fake@example.com",
             "birthdate": "1999-12-12",
             "work_authorization": {
