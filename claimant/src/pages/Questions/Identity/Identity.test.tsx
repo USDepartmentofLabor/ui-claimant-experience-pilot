@@ -38,7 +38,7 @@ describe("Identity Information Page", () => {
     );
     const verifiedSsn = within(verifiedFieldsSection).getByText("ssn");
     const verifiedSsnValue = within(verifiedFieldsSection).getByText(
-      "123-45-6789"
+      "***-**-6789"
     );
     const verifiedBirthdate = within(verifiedFieldsSection).getByText(
       "birthdate"

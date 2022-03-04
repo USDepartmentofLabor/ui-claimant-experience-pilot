@@ -193,4 +193,24 @@ describe("VerifiedFields Component", () => {
 
     expect(verifiedFields).not.toBeInTheDocument();
   });
+
+  it("masks the ssn", () => {
+    mockedUseWhoAmI.mockImplementationOnce(() => ({
+      data: {
+        ssn: "123-45-6789",
+      },
+      isLoading: false,
+      error: null,
+      isError: false,
+      isSuccess: true,
+    }));
+
+    render(<VerifiedFields fields={["ssn"]} />);
+
+    const ssnField = screen.getByText("ssn");
+    const ssnValue = screen.getByText("***-**-6789");
+
+    expect(ssnField).toBeInTheDocument();
+    expect(ssnValue).toBeInTheDocument();
+  });
 });

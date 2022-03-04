@@ -39,7 +39,11 @@ const mockWhoAmIData = {
 const Template: ComponentStory<typeof Identity> = () => {
   const { t } = useTranslation("claimForm");
 
-  const initialValues = IdentityPage.initialValues;
+  const initialValues = {
+    ...IdentityPage.initialValues,
+    ssn: mockWhoAmIData.ssn,
+    birthdate: mockWhoAmIData.birthdate,
+  };
   const validationSchema = IdentityPage.pageSchema?.(t);
 
   return (

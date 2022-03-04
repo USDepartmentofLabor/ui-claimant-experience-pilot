@@ -6,6 +6,7 @@ import { Normalize, useTranslation } from "react-i18next";
 import { useWhoAmI } from "../../../queries/whoami";
 import whoami from "../../../i18n/en/whoami";
 import { VerifiedField } from "./VerifiedField/VerifiedField";
+import { ReactElement } from "react";
 
 type Field = keyof WhoAmI;
 
@@ -13,15 +14,17 @@ type VerifiedFieldsProps = {
   fields: Field[];
 };
 
-/**
- * Get corresponding i18n key from WhoAmI key
- *
- * Ideally these are the same (but TS doesn't know that unfortunately), so just
- * cast it. Logic to manually map fields can go here too.
- * @param field
- */
-const getTranslationKeyFromField = (field: Field | string) => {
-  return field as Normalize<typeof whoami.field_names>;
+const isFieldPopulated = <O extends { [key: string]: any }>(
+  object: O,
+  field: keyof O
+) =>
+  field in object &&
+  object[field] !== undefined &&
+  object[field] !== null &&
+  object[field] !== "";
+
+const maskingFunctions = {
+  ssn: (ssn: string) => `***-**-${ssn.substring(ssn.length - 4)}`,
 };
 
 export const VerifiedFields = ({ fields }: VerifiedFieldsProps) => {
@@ -34,44 +37,40 @@ export const VerifiedFields = ({ fields }: VerifiedFieldsProps) => {
   // If we get a response
   if (whoAmI.data) {
     // Get the fields we asked for as components
-    const isFieldPopulated = (
-      object: { [key: string]: any },
-      field: Field | string
-    ) =>
-      Object.keys(object).includes(field) &&
-      object[field] !== null &&
-      object[field] !== "";
 
-    const desiredFields = fields
-      .filter((field) => isFieldPopulated(whoAmI.data, field))
-      .flatMap((desiredField, index) => {
-        const value = whoAmI.data[desiredField];
-        if (value) {
+    const extractFieldsAsComponents = <O extends { [key: string]: any }>(
+      object: O,
+      desiredFields: (keyof O)[]
+    ): ReactElement[] =>
+      desiredFields
+        .filter((field) => isFieldPopulated(object, field))
+        .flatMap((desiredField, index) => {
+          const value = object[desiredField];
           if (typeof value === "object" && !Array.isArray(value)) {
-            return Object.entries(value)
-              .filter(([subField]) => isFieldPopulated(value, subField))
-              .map(([subfieldKey, subfieldValue]) => (
-                <VerifiedField
-                  key={`${index}.${subfieldKey}`}
-                  name={tWhoAmIFields(getTranslationKeyFromField(subfieldKey))}
-                  value={subfieldValue}
-                />
-              ));
-          } else {
-            return (
-              <VerifiedField
-                key={`${index}.${desiredField}`}
-                name={tWhoAmIFields(getTranslationKeyFromField(desiredField))}
-                value={value}
-              />
-            );
+            return extractFieldsAsComponents(value, Object.keys(value));
           }
-        }
-      });
+          return (
+            <VerifiedField
+              key={`${index}.${desiredField}`}
+              name={tWhoAmIFields(
+                desiredField as Normalize<typeof whoami.field_names>
+              )}
+              value={
+                desiredField in maskingFunctions
+                  ? maskingFunctions[
+                      desiredField as keyof typeof maskingFunctions
+                    ](value)
+                  : value
+              }
+            />
+          );
+        });
+
+    const fieldsToDisplay = extractFieldsAsComponents(whoAmI.data, fields);
 
     // If the response contained at least one field we were looking for, and we
     // were able to build a component out of it
-    if (desiredFields.length > 0) {
+    if (fieldsToDisplay.length > 0) {
       // Render the component with the desired field(s)
       return (
         <div
@@ -82,7 +81,7 @@ export const VerifiedFields = ({ fields }: VerifiedFieldsProps) => {
             <Logo className={classes.idpLogo} data-testid="idp-logo" />
             <h2 className="usa-summary-box__heading">{t("heading")}</h2>
             <div className="usa-summary-box__text">
-              <ul className={classes.fieldList}>{desiredFields}</ul>
+              <ul className={classes.fieldList}>{fieldsToDisplay}</ul>
               <HelpText>
                 {t("to_edit_visit")}{" "}
                 <Link href={"https://login.gov"}>{t("idp_url_text")}</Link>
