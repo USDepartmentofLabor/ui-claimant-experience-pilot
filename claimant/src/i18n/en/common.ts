@@ -8,7 +8,7 @@ const common = {
   no: "No",
   none: "None provided",
   skip_to_main_content: "Skip to main content",
-  edit_details: "Edit details",
+  edit: "Edit",
   fix_one_error: "Fix error",
   fix_multiple_errors: "Fix {{errCount}} errors",
   remove: "Remove",

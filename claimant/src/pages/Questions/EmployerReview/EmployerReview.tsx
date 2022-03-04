@@ -2,10 +2,11 @@ import { EmployerProfileReview } from "../../../components/form/EmployerProfile/
 import { pageSchema } from "../EmployerInformation/EmployerInformation";
 import { IPageDefinition, IPreviousSegment } from "../../PageDefinitions";
 import { NavLink } from "react-router-dom";
-import { Button, FormGroup } from "@trussworks/react-uswds";
+import { Button, FormGroup, SummaryBox } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { ValidationError } from "yup";
+import reviewStyles from "./EmployerReview.module.scss";
 
 type SegmentError = number;
 
@@ -81,6 +82,7 @@ const previousPageUrl = ({ values }: IPreviousSegment) => {
 export const EmployerReview = () => {
   const { values, setValues } = useFormikContext<ClaimantInput>();
   const { t } = useTranslation("common");
+  const { t: formT } = useTranslation("claimForm");
 
   const removeEmployer = (...indices: number[]) => {
     const employers = values.employers?.filter((_, i) => !indices.includes(i));
@@ -112,11 +114,17 @@ export const EmployerReview = () => {
 
   return (
     <>
+      <SummaryBox heading="" className={reviewStyles["no-header"]}>
+        <Trans t={formT} i18nKey="employers.reason_for_data_collection" />
+      </SummaryBox>
       {values.employers?.map((employer, idx) => (
         <FormGroup error={!!segmentErrors[idx]} key={`employer-${idx}`}>
           {/* TODO replace this with the Employer Review component used in the review page */}
           <EmployerProfileReview employer={employer} />
-          <NavLink to={`/claim/employer/${idx}`}>
+          <NavLink
+            to={`/claim/employer/${idx}`}
+            aria-label={`${t("edit")} ${employer.name}`}
+          >
             {segmentErrors[idx] ? (
               <strong>
                 {segmentErrors[idx] > 1
@@ -124,14 +132,15 @@ export const EmployerReview = () => {
                   : t("fix_one_error")}
               </strong>
             ) : (
-              t("edit_details")
+              t("edit")
             )}
           </NavLink>
           <Button
             type="button"
-            className="margin-left-1"
-            secondary
+            className="margin-left-3 text-secondary"
+            unstyled
             onClick={() => removeEmployer(idx)}
+            aria-label={`${t("remove")} ${employer.name}`}
           >
             {t("remove")}
           </Button>

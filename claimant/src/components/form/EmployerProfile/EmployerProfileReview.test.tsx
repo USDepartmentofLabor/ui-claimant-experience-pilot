@@ -31,7 +31,7 @@ describe("EmployerProfileReview component", () => {
   it("renders properly", () => {
     const { getByText } = render(<EmployerProfileReview employer={employer} />);
 
-    const cityStateZIP = getByText("Somewhere, NJ, 12345");
-    expect(cityStateZIP).toBeInTheDocument();
+    const name = getByText("ACME");
+    expect(name).toBeInTheDocument();
   });
 });
