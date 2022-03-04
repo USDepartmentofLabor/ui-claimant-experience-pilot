@@ -19,6 +19,10 @@ from launchdarkly.client import ld_client
 logger = logging.getLogger("home")
 
 
+class UnknownError(Exception):
+    pass
+
+
 @register.filter
 def get_dictionary_value(dictionary, key):
     return dictionary.get(key)
@@ -30,6 +34,10 @@ def handle_404(request, exception=None):
 
 def handle_500(request):
     return render(None, "500.html", {"base_url": base_url(request)}, status=500)
+
+
+def raise_error(request):
+    raise UnknownError("something bad")
 
 
 def active_swas_ordered_by_name():
