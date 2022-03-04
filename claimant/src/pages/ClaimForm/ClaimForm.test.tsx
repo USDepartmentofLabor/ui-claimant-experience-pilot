@@ -56,6 +56,9 @@ const myPII: WhoAmI = {
   identity_provider: "Local",
 };
 
+const mockScrollTo = jest.fn();
+window.scrollTo = mockScrollTo;
+
 describe("the ClaimForm page", () => {
   beforeEach(() => {
     jest.resetAllMocks();
