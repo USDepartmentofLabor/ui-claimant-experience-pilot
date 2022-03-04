@@ -10,6 +10,7 @@
   // namespace just so we don't accidentally step on reserved words
   const USDOL = {
     prequalFields: {
+      "filed_last_12mo": "{% translate "Filed recently" %}",
       "live_in_us": "{% translate "State residence" %}",
       "swa_code": "{% translate "State" %}" ,
       "job_last_18mo": "{% translate "Recent employment" %}",
@@ -35,6 +36,7 @@
         "job_last_18mo",
       ];
       const noProceedsFields = [
+        "filed_last_12mo",
         "recent_disaster",
         "disabled",
         "military_service",
@@ -126,7 +128,7 @@
         <h1>{% translate "Let's get started" %}</h1>
         <form method="POST" class="dol-form usa-form--large" id="prequalification-form" onsubmit="return false">
           {% include './uswds/_alert_error.html' %}
-
+          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you filed for unemployment benefits during the last 12 months?") field_name="filed_last_12mo" onchange="USDOL.onChangeLiveUSHandler" required=True %}
           <section>
             <h2>{% translate "State residence" %}</h2>
             {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" required=True %}

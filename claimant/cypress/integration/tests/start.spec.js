@@ -29,17 +29,17 @@ context("Let's get started page", { scrollBehavior: "center" }, () => {
 
   it("shows/hides error message(s) on form validation", () => {
     cy.click_next();
-    cy.contains("Correct the 9 errors");
+    cy.contains("Correct the 10 errors");
     cy.contains("This field is required");
-    cy.get("span.usa-error-message").should("have.length", 9);
+    cy.get("span.usa-error-message").should("have.length", 10);
     cy.get(".usa-alert--error").should("have.length", 1);
     cy.check_a11y();
 
     // click one answer, confirm error count changes
     cy.click_yes("live_in_us");
-    cy.get("span.usa-error-message").should("have.length", 8);
+    cy.get("span.usa-error-message").should("have.length", 9);
     cy.get(".usa-alert--error").should("have.length", 1);
-    cy.contains("Correct the 8 errors");
+    cy.contains("Correct the 9 errors");
 
     completePrequalFormProceed();
     cy.get("span").not(".usa-error-message");
@@ -74,6 +74,7 @@ const selectState = (state) => {
 };
 
 const completePrequalFormProceed = () => {
+  cy.click_no("filed_last_12mo");
   cy.click_yes("live_in_us");
   selectState("NJ");
   cy.click_yes("job_last_18mo");
