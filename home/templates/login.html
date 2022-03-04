@@ -37,6 +37,45 @@
             <option {% if ial == "2" %}selected{% endif %} value="2">2</option>
           </select>
 
+          <script type="text/javascript">
+            const randomString = (length) => {
+              let result = '';
+              const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+              const charactersLength = characters.length;
+              for ( let i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+              }
+              return result;
+            };
+
+            const fakeUser = {
+              first_name: "Fakey",
+              last_name: "McFakerson",
+              email: `fakey+${randomString(6)}@example.com`,
+              phone: "555-555-1234",
+              address: { address1: "123 Any St", address2: "Apt B", city: "Someplace", state: "KS", zipcode: "00000" },
+              birthdate: "2000-01-01",
+              ssn: "900-00-1234"
+            };
+            const populateWithFakeUser = () => {
+              if (document.getElementById("IAL").value == "2") {
+                Object.keys(fakeUser).forEach((attr) => {
+                  if (attr === "address") {
+                    Object.keys(fakeUser[attr]).forEach((addressAttr) => {
+                      document.getElementById(`address.${addressAttr}`).value = fakeUser[attr][addressAttr];
+                    });
+                  } else {
+                    document.getElementById(attr).value = fakeUser[attr];
+                  }
+                });
+              }
+            };
+          </script>
+
+          <button onclick="populateWithFakeUser()" id="fake-user-button" class="usa-button usa-button--outline" type="button" data-testid="fake-user-button">
+            Populate with Fake User
+          </button>
+
           {% include "uswds/_swa_options.html" with swas=swas swa=swa onchange=False %}
           {% include "uswds/_text_field.html" with id="first_name" label="First Name" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
@@ -77,6 +116,12 @@
                   parentGroup.classList.remove("display-none");
                 }
               });
+              const fakeUserButton = document.getElementById("fake-user-button");
+              if (ial === "1") {
+                fakeUserButton.classList.add("display-none");
+              } else {
+                fakeUserButton.classList.remove("display-none");
+              }
             }
             // start with whatever is selected
             toggleRequiredFields(document.getElementById("IAL").value);
