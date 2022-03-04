@@ -192,6 +192,7 @@ const searchSOCEntries = (searchString: string) => {
 
 export const OccupationPicker = () => {
   const { t } = useTranslation("claimForm", { keyPrefix: "occupation" });
+  const { t: tCommon } = useTranslation("common");
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
   const [searchString, setSearchString] = useState<string>("");
@@ -320,7 +321,7 @@ export const OccupationPicker = () => {
           >
             {t("list_of_occupations")}
             <span className="screen-reader-only">
-              ({t("opens_in_a_new_tab")})
+              ({tCommon("opens_in_a_new_tab")})
             </span>
             <IconLaunch size={3} aria-hidden="true" />
           </Link>

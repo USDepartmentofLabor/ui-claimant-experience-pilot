@@ -1,8 +1,9 @@
-import { act, render, waitFor, within } from "@testing-library/react";
+import { screen, act, render, waitFor, within } from "@testing-library/react";
 import { Formik } from "formik";
 import { noop } from "../../../testUtils/noop";
 import { ContactInformation } from "./ContactInformation";
 import userEvent from "@testing-library/user-event";
+import { useWhoAmI } from "../../../queries/whoami";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -12,7 +13,18 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
+jest.mock("../../../queries/whoami");
+const mockedUseWhoAmI = useWhoAmI as any;
+
 describe("ContactInformation component", () => {
+  mockedUseWhoAmI.mockImplementation(() => ({
+    data: { email: "test@test.com", phone: "(123)-456-7890" },
+    isLoading: false,
+    error: null,
+    isError: false,
+    isSuccess: true,
+  }));
+
   const initialValues = {
     email: undefined,
     phones: [],
@@ -22,13 +34,36 @@ describe("ContactInformation component", () => {
   };
 
   it("renders properly", () => {
-    const { getByRole } = render(
+    render(
       <Formik initialValues={initialValues} onSubmit={noop}>
         <ContactInformation />
       </Formik>
     );
 
-    const interpreterField = getByRole("group", {
+    const verifiedFieldsSection = screen.getByTestId("verified-fields");
+    const verifiedFields = within(verifiedFieldsSection).getAllByRole(
+      "listitem"
+    );
+    const verifiedEmailAddress = within(verifiedFieldsSection).getByText(
+      "email"
+    );
+    const verifiedEmailAddressValue = within(verifiedFieldsSection).getByText(
+      "test@test.com"
+    );
+    const verifiedPhoneNumber = within(verifiedFieldsSection).getByText(
+      "phone"
+    );
+    const verifiedPhoneNumberValue = within(verifiedFieldsSection).getByText(
+      "(123)-456-7890"
+    );
+    expect(verifiedFieldsSection).toBeInTheDocument();
+    expect(verifiedFields).toHaveLength(2);
+    expect(verifiedEmailAddress).toBeInTheDocument();
+    expect(verifiedEmailAddressValue).toBeInTheDocument();
+    expect(verifiedPhoneNumber).toBeInTheDocument();
+    expect(verifiedPhoneNumberValue).toBeInTheDocument();
+
+    const interpreterField = screen.getByRole("group", {
       name: "interpreter_required.label",
     });
     const interpreterYes = within(interpreterField).getByLabelText("yes");
@@ -36,10 +71,12 @@ describe("ContactInformation component", () => {
     expect(interpreterYes).toHaveAttribute("id", "interpreter_required.yes");
     expect(interpreterNo).toHaveAttribute("id", "interpreter_required.no");
 
-    const phoneOne = getByRole("textbox", { name: "phone.number.label" });
+    const phoneOne = screen.getByRole("textbox", {
+      name: "phone.number.label",
+    });
     expect(phoneOne).toHaveAttribute("id", "phones[0].number");
 
-    const email = getByRole("textbox", { name: "email" });
+    const email = screen.getByRole("textbox", { name: "email" });
     expect(email).toHaveAttribute("id", "email");
     expect(email).toHaveAttribute("readonly", "");
     expect(email).toHaveAttribute("disabled", "");

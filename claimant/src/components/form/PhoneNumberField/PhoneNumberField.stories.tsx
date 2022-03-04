@@ -5,13 +5,12 @@ import { Button, Fieldset } from "@trussworks/react-uswds";
 import { PhoneNumberField } from "./PhoneNumberField";
 import { yupPhone } from "../../../common/YupBuilder";
 import * as yup from "yup";
+import { noop } from "../../../testUtils/noop";
 
 export default {
   title: "Components/Form/PhoneNumberField",
   component: PhoneNumberField,
 } as ComponentMeta<typeof PhoneNumberField>;
-
-const noop = () => undefined;
 
 const Template: ComponentStory<typeof PhoneNumberField> = (args) => {
   const { t } = useTranslation("common");

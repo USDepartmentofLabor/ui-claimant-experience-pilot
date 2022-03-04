@@ -66,6 +66,7 @@
     "eslint-plugin-react": "^7.27.1",
     "http-proxy-middleware": "^2.0.1",
     "msw": "^0.38.1",
+    "msw-storybook-addon": "^1.6.1",
     "nyc-config-tsx": "^0.1.0",
     "pa11y": "^6.1.0",
     "prettier": "2.5.1",
@@ -123,7 +124,8 @@
       "!**/*.d.ts",
       "!src/**/*.stories.{jsx,tsx}",
       "!src/stories/**",
-      "!src/i18n/**"
+      "!src/i18n/**",
+      "!public/mockServiceWorker.js"
     ]
   },
   "nyc": {
@@ -142,7 +144,8 @@
       "**/reconcileCypressCoverage.js",
       "**/setupProxy.tsx",
       "**/setupTests.ts",
-      "**/*.d.ts"
+      "**/*.d.ts",
+      "!public/mockServiceWorker.js"
     ]
   },
   "browserslist": {

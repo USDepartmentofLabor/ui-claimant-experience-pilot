@@ -333,6 +333,7 @@ const ClaimFormPage = () => {
           role: "region",
           "aria-label": `progress - step ${step} of ${totalSteps}`,
         }}
+        data-testid="step-indicator"
       >
         {pages.map((page, i) => (
           <StepIndicatorStep

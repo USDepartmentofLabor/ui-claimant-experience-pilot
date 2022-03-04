@@ -9,6 +9,7 @@ import { yupPhone } from "../../../common/YupBuilder";
 import * as yup from "yup";
 import { useClearFields } from "../../../hooks/useClearFields";
 import { PHONE_SKELETON } from "../../../utils/claim_form";
+import { VerifiedFields } from "../../../components/form/VerifiedFields/VerifiedFields";
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
@@ -36,7 +37,7 @@ export const ContactInformation = () => {
   });
   const { values } = useFormikContext<ClaimantInput>();
 
-  // Remove phones[1] if unchecked TODO: Use Formik FieldArray to represent field array?
+  // Remove phones[1] if unchecked
   useClearFields(
     !values.LOCAL_more_phones && values.phones && values.phones.length > 1,
     {
@@ -47,6 +48,7 @@ export const ContactInformation = () => {
 
   return (
     <>
+      <VerifiedFields fields={["email", "phone"]} />
       <FieldArray
         name="phones"
         render={(arrayHelpers) => (

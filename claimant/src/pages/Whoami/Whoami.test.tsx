@@ -41,7 +41,7 @@ describe("component WhoAmI", () => {
     claimant_id: "321",
     first_name: "Hermione",
     last_name: "Granger",
-    birthdate: "12/22/2000",
+    birthdate: "2000-12-22",
     ssn: "555-55-5555",
     email: "test@example.com",
     phone: "555-555-5555",

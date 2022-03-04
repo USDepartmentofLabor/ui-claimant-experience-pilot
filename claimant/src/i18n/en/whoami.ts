@@ -18,6 +18,19 @@ const whoami = {
     SWAClaimantUrl: "SWA Claimant Url: {{- SWAClaimantUrl}}",
     claim: "Claim: {{claim}}",
   },
+  field_names: {
+    first_name: "First name",
+    last_name: "Last name",
+    birthdate: "Birthdate",
+    email: "Email address",
+    ssn: "Social security number",
+    phone: "Phone number",
+    address1: "Address (1)",
+    address2: "Address (2)",
+    city: "City",
+    state: "State",
+    zipcode: "ZIP code",
+  },
 };
 
 export default whoami;

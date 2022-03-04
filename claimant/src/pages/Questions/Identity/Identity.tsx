@@ -12,6 +12,7 @@ import * as yup from "yup";
 import { yupDate } from "../../../common/YupBuilder";
 import { StatesDropdown } from "../../../components/form/StatesDropdown/StatesDropdown";
 import states from "../../../fixtures/states.json";
+import { VerifiedFields } from "../../../components/form/VerifiedFields/VerifiedFields";
 
 export const Identity = () => {
   const { t } = useTranslation("claimForm");
@@ -44,6 +45,7 @@ export const Identity = () => {
 
   return (
     <>
+      <VerifiedFields fields={["ssn", "birthdate"]} />
       {/*TODO: number? format validations? auto-hyphen?*/}
       <TextField
         label={t("ssn.label")}

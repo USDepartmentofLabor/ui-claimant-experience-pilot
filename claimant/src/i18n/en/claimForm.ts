@@ -319,7 +319,6 @@ const claimForm = {
       required: "Please select the occupation that best matches your selection",
     },
     no_results: "No results. Try another search.",
-    opens_in_a_new_tab: "opens in a new tab",
   },
   disability: {
     heading: "Disability",
@@ -593,6 +592,11 @@ const claimForm = {
   validation_alert_one: "Correct the error on this page to proceed",
   validation_alert_other:
     "Correct the {{ count }} errors on this page to proceed",
+  verified_by_idp: {
+    heading: "The following information has been added to your application:",
+    to_edit_visit: "To edit your information, visit",
+    idp_url_text: "login.gov",
+  },
 };
 
 export default claimForm;

@@ -118,7 +118,9 @@ describe("the ClaimForm page", () => {
     render(<Page />);
     const [first] = pages;
     // First li to be current, everything else incomplete
-    const progressBar = screen.getByRole("list");
+    const progressBar = within(screen.getByTestId("step-indicator")).getByRole(
+      "list"
+    );
     const barItems = within(progressBar).getAllByRole("listitem");
     barItems.forEach((item) => {
       if (item.textContent?.includes(common.page_headings[first.heading])) {
@@ -136,7 +138,9 @@ describe("the ClaimForm page", () => {
     const [first, second] = pages;
     render(<Page route={second.path} />);
     // First page complete, second current, everything else incomplete
-    const progressBar = screen.getByRole("list");
+    const progressBar = within(screen.getByTestId("step-indicator")).getByRole(
+      "list"
+    );
     const barItems = within(progressBar).getAllByRole("listitem");
     barItems.forEach((item) => {
       if (item.textContent?.includes(common.page_headings[first.heading])) {
@@ -424,7 +428,7 @@ describe("the ClaimForm", () => {
     render(wrappedClaimForm);
 
     expect(useWhoAmI).toHaveBeenCalled();
-    expect(screen.getByText("First name")).toBeInTheDocument();
+    expect(screen.getByLabelText("First name")).toBeInTheDocument();
   });
 
   it("shows the loader when loading", () => {

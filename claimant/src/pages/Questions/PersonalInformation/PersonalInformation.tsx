@@ -9,10 +9,12 @@ import {
 import { yupName, yupAddress } from "../../../common/YupBuilder";
 import * as yup from "yup";
 import { TFunction } from "react-i18next";
+import { VerifiedFields } from "../../../components/form/VerifiedFields/VerifiedFields";
 
 const PersonalInformation = () => {
   return (
     <>
+      <VerifiedFields fields={["first_name", "last_name", "address"]} />
       <ClaimantNames />
       <ClaimantAddress />
     </>

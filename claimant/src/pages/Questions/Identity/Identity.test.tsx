@@ -3,6 +3,7 @@ import { screen, render, waitFor, within } from "@testing-library/react";
 import { Formik } from "formik";
 import { noop } from "../../../testUtils/noop";
 import userEvent from "@testing-library/user-event";
+import { useWhoAmI } from "../../../queries/whoami";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -12,12 +13,38 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
+jest.mock("../../../queries/whoami");
+const mockedUseWhoAmI = useWhoAmI as any;
+
 describe("Identity Information Page", () => {
+  mockedUseWhoAmI.mockImplementation(() => ({
+    data: { ssn: "123-45-6789", birthdate: "1990-11-25" },
+    isLoading: false,
+    error: null,
+    isError: false,
+    isSuccess: true,
+  }));
+
   it("renders properly", () => {
     render(
       <Formik initialValues={IdentityPage.initialValues} onSubmit={noop}>
         <Identity />
       </Formik>
+    );
+
+    const verifiedFieldsSection = screen.getByTestId("verified-fields");
+    const verifiedFields = within(verifiedFieldsSection).getAllByRole(
+      "listitem"
+    );
+    const verifiedSsn = within(verifiedFieldsSection).getByText("ssn");
+    const verifiedSsnValue = within(verifiedFieldsSection).getByText(
+      "123-45-6789"
+    );
+    const verifiedBirthdate = within(verifiedFieldsSection).getByText(
+      "birthdate"
+    );
+    const verifiedBirthdateValue = within(verifiedFieldsSection).getByText(
+      "1990-11-25"
     );
 
     const socialSecurityNumber = screen.queryByLabelText("ssn.label");
@@ -46,6 +73,13 @@ describe("Identity Information Page", () => {
     const noAuthorizedToWorkInUS = within(
       authorizedToWorkInUSRadioGroup
     ).queryByLabelText("no");
+
+    expect(verifiedFieldsSection).toBeInTheDocument();
+    expect(verifiedFields).toHaveLength(2);
+    expect(verifiedSsn).toBeInTheDocument();
+    expect(verifiedSsnValue).toBeInTheDocument();
+    expect(verifiedBirthdate).toBeInTheDocument();
+    expect(verifiedBirthdateValue).toBeInTheDocument();
 
     expect(socialSecurityNumber).toBeInTheDocument();
     expect(socialSecurityNumber).toBeDisabled();

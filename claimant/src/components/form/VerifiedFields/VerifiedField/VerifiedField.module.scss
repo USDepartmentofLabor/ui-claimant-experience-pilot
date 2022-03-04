@@ -1,0 +1,13 @@
+.field + .field {
+  margin-top: 32px;
+}
+
+.fieldValue {
+  font-weight: bold;
+}
+
+.fieldValue .icon,
+.text {
+  display: inline-block;
+  vertical-align: middle;
+}
