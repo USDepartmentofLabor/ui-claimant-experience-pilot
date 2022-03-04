@@ -112,7 +112,7 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     fein: yup
       .string()
       .nullable()
-      .matches(/^[0-9]{2}-?[0-9]{7}$/, t("employers.fein.pattern")),
+      .matches(/^(([0-9]{2}-?[0-9]{7})|)$/, t("employers.fein.pattern")),
     state_employer_payroll_number: yup.string(),
     self_employed: yup
       .boolean()
