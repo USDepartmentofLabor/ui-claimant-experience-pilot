@@ -24,12 +24,17 @@ export const ClaimFormPageHeading = ({
 
   return (
     <>
-      <h1 tabIndex={-1} ref={headingRef} className={styles.pageHeading}>
+      <h1
+        tabIndex={-1}
+        ref={headingRef}
+        className={styles.pageHeading}
+        aria-label={`${pageHeading} ${t("step_progress", {
+          step,
+          totalSteps,
+        })}`}
+      >
         {pageHeading}
       </h1>
-      <span className="usa-sr-only">
-        {t("step_progress", { step, totalSteps })}
-      </span>
     </>
   );
 };
