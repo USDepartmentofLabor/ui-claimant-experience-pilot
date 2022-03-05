@@ -11,6 +11,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from datetime import timedelta
 from api.models.swa import SWA
+from home.views import base_url
 from .decorators import authenticated_claimant_session
 from .claim_finder import ClaimFinder
 from .claim_request import ClaimRequest
@@ -346,7 +347,7 @@ def POST_completed_claim(request):
     claim_request.payload = ClaimCleaner(
         payload=claim_request.payload, whoami=claim_request.whoami
     ).cleaned()
-    claim_validator = ClaimValidator(claim_request.payload)
+    claim_validator = ClaimValidator(claim_request.payload, base_url=base_url(request))
     if not claim_validator.valid:
         return invalid_claim_response(claim_validator)
     elif not claim_validator.validate_against_whoami(claim_request.whoami):

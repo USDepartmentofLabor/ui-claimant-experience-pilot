@@ -1147,9 +1147,10 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         with open(example) as f:
             json_str = f.read()
         example_claim = json_decode(json_str)
-        cv = ClaimValidator(example_claim)
+        cv = ClaimValidator(example_claim, base_url="http://example.com")
         logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
         self.assertTrue(cv.valid)
+        self.assertEquals(cv.schema_url, "http://example.com/schemas/claim-v1.0.json")
 
     def test_example_identity_instances(self):
         for ial in [1, 2]:

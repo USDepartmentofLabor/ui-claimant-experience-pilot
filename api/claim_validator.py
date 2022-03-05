@@ -11,9 +11,14 @@ DEFAULT_SCHEMA = CLAIM_V1
 
 
 class ClaimValidator(object):
-    def __init__(self, claim_payload, schema_name=DEFAULT_SCHEMA):
+    def __init__(
+        self,
+        claim_payload,
+        schema_name=DEFAULT_SCHEMA,
+        base_url="https://unemployment.dol.gov",
+    ):
         self.schema = self.read_schema(schema_name)
-        self.schema_url = f"https://unemployment.dol.gov/schemas/{schema_name}.json"
+        self.schema_url = f"{base_url}/schemas/{schema_name}.json"
         self.claim = claim_payload
         self.valid = self.validate()
 
