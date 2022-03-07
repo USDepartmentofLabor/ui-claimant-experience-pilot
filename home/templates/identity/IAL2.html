@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %} {% load i18n %}
+<main role="main">
+  <section>
+    <h1>Welcome, {{ whoami.first_name }}</h1>
+
+    <div class="usa-alert usa-alert--success">
+      <div class="usa-alert__body">
+        <h4 class="usa-alert__heading">{% translate "Identity verified!" %}</h4>
+        <p class="usa-alert__text">
+          {% translate "Your identity verification" %}
+          <span class="claim-id">({{ claim.swa_xid }})</span>
+          {% translate "was shared with" %}
+          {{ whoami.swa.name }}
+          {% translate "on" %}
+          {{ completed_at|date }}.
+        </p>
+      </div>
+    </div>
+
+    <section>
+      <h2>{% translate "Next steps" %}</h2>
+      {% include next_steps %}
+    </section>
+
+    <section>
+      <h2>{% translate "More information" %}</h2>
+      {% include more_help %}
+    </section>
+  </section>
+</main>
+{% endblock %}

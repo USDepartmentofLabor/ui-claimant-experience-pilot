@@ -237,7 +237,11 @@ def result(request):
         # preserve all cookies
         return redirect_response
 
-    redirect_to = "/claimant/"
+    redirect_to = (
+        "/identity/"
+        if request.whoami.swa.featureset == "Identity Only"
+        else "/claimant/"
+    )
     if "redirect_to" in request.session:
         redirect_to = request.session["redirect_to"]
         del request.session["redirect_to"]
@@ -290,6 +294,7 @@ def initiate_claimant_session(request, userinfo):
 
     # wait to set this till after we've checked IAL 1vs2 above.
     request.session["authenticated"] = True
+    request.whoami = whoami
 
     # None return value means caller can proceed without redirecting immediately.
     return None

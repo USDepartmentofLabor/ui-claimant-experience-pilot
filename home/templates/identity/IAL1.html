@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %} {% load i18n %}
+<main role="main">
+  <section>
+    <h1>{% translate "Welcome" %}</h1>
+
+    <section>
+      {% translate "You must verify your identity within" %}
+      <strong>{% translate "7 calendar days" %}</strong>
+      {% translate "of submitting your application in order to process your claim." %}
+    </section>
+
+    <section>
+      <div
+        class="usa-accordion usa-accordion--bordered"
+        aria-multiselectable="true"
+      >
+        <h2 class="usa-accordion__heading">
+          <button
+            class="usa-accordion__button"
+            aria-expanded="false"
+            aria-controls="m-a1"
+          >
+            {% translate "To verify your identity, you'll need this information" %}
+          </button>
+        </h2>
+        <div id="m-a1" class="usa-accordion__content usa-prose">
+          <p>{% include "identity/requirements.html" %}</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div
+        class="border-2px border-base-lightest padding-2 margin-y-3 bg-gray-5"
+      >
+        <h2 class="margin-0">{% translate "Verify your identity" %}</h2>
+        <p class="display-flex flex-align-center">
+          <span><span class="text-bold">{% translate "Status:" %}</span> {% translate "Not started" %}</span>
+        </p>
+        <p>
+          {% translate "Verifying your identity with Login.gov speeds up processing time for your application and helps make sure your benefits payments are secure." %}
+        </p>
+        <div class="text-center">
+          <a
+            class="usa-button margin-x-auto"
+            href="{{ idp_url }}/?ial=2&amp;swa_code={{ whoami.swa.code }}"
+          >
+            {% translate "Start ID verification" %}
+            <svg
+              class="usa-icon"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlink:href="/static/img/sprite.svg#arrow_forward"></use>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>{% translate "Other ways to verify your identity" %}</h2>
+      {% include other_ways_to_verify_identity %}
+    </section>
+
+    <section>
+      <h2>{% translate "More information" %}</h2>
+      {% include more_help %}
+    </section>
+  </section>
+</main>
+{% endblock %}

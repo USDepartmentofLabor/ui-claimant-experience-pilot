@@ -8,6 +8,8 @@ from datetime import timedelta
 from core.utils import session_as_dict, register_local_login
 from django.http import JsonResponse, HttpResponse
 from api.models import SWA
+from api.whoami import WhoAmI
+from api.claim_finder import ClaimFinder
 import django.middleware.csrf
 import logging
 from core.local_idp import LocalIdentityProviderError
@@ -216,6 +218,7 @@ def login(request):
             "login.html",
             {
                 "required": False,  # to avoid uninit var warnings
+                "disabled": False,  # same
                 "whoami": request.session.get("whoami", None),  # if stepping up
                 "base_url": base_url(request),
                 "csrf_token": csrf_token,
@@ -230,7 +233,7 @@ def login(request):
         )
     elif request.method == "POST":
         try:
-            register_local_login(request)
+            whoami = register_local_login(request)
         except LocalIdentityProviderError as error:
             return render(
                 None,
@@ -239,7 +242,9 @@ def login(request):
                 status=400,
             )
 
-        redirect_to = "/claimant/"
+        redirect_to = (
+            "/identity/" if whoami.swa.featureset == "Identity Only" else "/claimant/"
+        )
         if request.session.get("redirect_to", None):
             redirect_to = request.session["redirect_to"]
             del request.session["redirect_to"]
@@ -275,6 +280,35 @@ def start(request):
             "required": False,
         },
     )
+
+
+@never_cache
+def identity(request):
+    if "whoami" not in request.session:
+        return handle_404(request, None)
+
+    whoami = WhoAmI.from_dict(request.session.get("whoami"))
+    IAL = whoami.IAL
+    claim = ClaimFinder(whoami).find()
+    try:
+        view_args = {
+            "whoami": whoami,
+            "more_help": f"_swa/{whoami.swa.code}/more_help.html",
+            "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
+            "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",
+            "idp_url": (
+                "/logindotgov/"
+                if whoami.identity_provider == "login.gov"
+                else "/login/"
+            ),
+            "completed_at": claim.completed_at(),
+            "base_url": base_url(request),
+            "claim": claim,
+        }
+        return render(None, f"identity/IAL{IAL}.html", view_args)
+    except TemplateDoesNotExist as err:
+        logger.exception(err)
+        return handle_404(request, None)
 
 
 def base_url(request):  # pragma: no cover

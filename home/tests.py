@@ -211,7 +211,7 @@ class LocalLoginTestCase(BucketableTestCase):
         )
         self.assertRedirects(
             response,
-            "/claimant/",
+            "/identity/",
             status_code=302,
             fetch_redirect_response=False,
         )

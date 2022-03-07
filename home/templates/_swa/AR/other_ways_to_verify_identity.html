@@ -1,0 +1,14 @@
+{% block content %}
+{% load i18n %}
+<section>{% translate "We need more information from you before your claim can be completed." %}</section>
+
+<section>{% translate "You must verify your identity. You may do this in person at your local office if you don’t want to verify your identity online." %}</section>
+
+<section>
+{% blocktranslate %}
+Please call the UI Hotline at 1-844-908-2178 within <strong>7 calendar days</strong> of when you submitted your application.
+{% endblocktranslate %}
+</section>
+
+<section>{% translate "UI Hotline Hours of operation: Monday to Friday, 8:00 a.m. - 3:30 p.m. Central Time" %}</section>
+{% endblock %}

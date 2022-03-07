@@ -64,7 +64,7 @@
                     Object.keys(fakeUser[attr]).forEach((addressAttr) => {
                       document.getElementById(`address.${addressAttr}`).value = fakeUser[attr][addressAttr];
                     });
-                  } else {
+                  } else if (!document.getElementById(attr).value) {
                     document.getElementById(attr).value = fakeUser[attr];
                   }
                 });
