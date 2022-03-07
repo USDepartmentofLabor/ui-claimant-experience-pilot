@@ -1,7 +1,36 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main">
-  <section class="grid-container usa-section">
-    <div class="grid-row">{% translate error %}</div>
+  <section class="grid-container">
+    <h1>Login failed</h1>
+    <section>
+      [APPNAME] uses login.gov to help you apply for unemployment benefits. You
+      must successfully create an account with a verified email address.
+    </section>
+    <section>
+      Some examples of how you might be having trouble and what to do about it.
+      <ul class="usa-list">
+        <li>Clicking cancel or "Back to DOL site"</li>
+        <li>Forgetting your email, password or second factor</li>
+        <li>Losing access to your email account</li>
+        <li>Taking too long to sign in and return to this site</li>
+        <li>
+          The login.gov clock and this server's clock are too far out of sync
+          (nothing for claimant to do but try again)
+        </li>
+        <li>
+          Starting ID verification (IAL2), missing an item, and clicking "Get
+          help at DOL site" (should not see this page if already at IAL1/AAL2)
+        </li>
+        <li>
+          Starting ID verification (IAL2), clicking "Cancel" and finally "Back
+          to DOL site" (should not see this page if already at IAL1/AAL2)
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>The error</h2>
+      {% translate error %}
+    </section>
   </section>
 </main>
 {% endblock %}
