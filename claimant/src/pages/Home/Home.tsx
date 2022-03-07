@@ -201,7 +201,7 @@ const HomePage = () => {
     });
   }
 
-  if (identityStatus === "complete" && claimStatus === "complete") {
+  if (identityStatus === "complete") {
     tasks.reverse();
   }
 

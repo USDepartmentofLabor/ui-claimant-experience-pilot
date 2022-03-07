@@ -191,8 +191,9 @@ describe("the Home page", () => {
       expect(
         within(verifiedContainer).getByText("status.not_started")
       ).toBeInTheDocument();
+      assertTaskOrder("identityNotStarted", "applicationNotReady");
     });
-    it("shows ID verification complete", () => {
+    it("shows ID verification complete and tasks in the right order", () => {
       renderWithMocks("2", "notStarted");
       const welcome = screen.getByRole("heading", { level: 1 });
       expect(welcome.textContent).toContain(`welcome, ${myPII.first_name}`);
@@ -203,6 +204,7 @@ describe("the Home page", () => {
       expect(
         within(verifiedContainer).getByText("status.complete")
       ).toBeInTheDocument();
+      assertTaskOrder("applicationNotReady", "identityComplete");
     });
     it("shows app not started", () => {
       renderWithMocks("1", "notStarted");
@@ -255,3 +257,24 @@ describe("the Home page", () => {
     });
   });
 });
+
+const taskToLabel = {
+  identityNotStarted: "identity.not_started.title",
+  identityComplete: "identity.complete.title",
+  applicationNotReady: "application.not_ready_to_submit.title",
+  applicationReady: "application.not_ready_to_submit.title",
+};
+
+function assertTaskOrder(...tasks: (keyof typeof taskToLabel)[]) {
+  const container = screen.getByRole("heading", { level: 1 }).parentElement;
+  if (!container) throw new Error("No container");
+  const headings = within(container)
+    .getAllByRole("heading", { level: 2 })
+    .filter(
+      (h) =>
+        h.textContent && tasks.some((t) => taskToLabel[t] === h.textContent)
+    );
+  tasks.forEach((t, i) => {
+    expect(headings[i].textContent).toBe(taskToLabel[t]);
+  });
+}
