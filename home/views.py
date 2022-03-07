@@ -144,6 +144,13 @@ def swa_redirect(request, swa_code):
 
 @never_cache
 def logout(request):
+    if "logout_url" in request.session:
+        logout_url = request.session["logout_url"]
+        del request.session["logout_url"]
+        request.session.modified = True
+        logger.debug("RP-initiated logout to {}".format(logout_url))
+        return redirect(logout_url)
+
     request.session.flush()
     return redirect("/")
 
@@ -169,8 +176,9 @@ def test(request):  # pragma: no cover
     if not ld_flag_set:
         return handle_404(request)
 
-    ldflags = ld_client.all_flags_state({"key": "anonymous-user"}).to_json_dict()
-    logger.debug("LD flags: {}".format(ldflags))
+    # TODO a bug in ld_client lib prevents this from working correctly for core/ld-config.json
+    # ldflags = ld_client.all_flags_state({"key": "anonymous-user"}).to_json_dict()
+    # logger.debug("LD flags: {}".format(ldflags))
 
     request.session.set_test_cookie()
     this_session = session_as_dict(request)

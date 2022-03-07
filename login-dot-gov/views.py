@@ -229,6 +229,9 @@ def result(request):
 
     userinfo = client.get_userinfo(tokens["access_token"])
     redirect_response = initiate_claimant_session(request, userinfo)
+    this_site_logout = f"{base_url(request)}/logout/"
+    logout_url = client.get_logout_url(tokens, this_site_logout, secrets.token_hex(11))
+    request.session["logout_url"] = logout_url
 
     if redirect_response:
         # preserve all cookies
