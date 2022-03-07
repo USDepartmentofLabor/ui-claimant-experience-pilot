@@ -372,6 +372,21 @@ const claimForm = {
         help_text:
           'If you are in union-required training or paid job training, choose "No."',
       },
+      training_type: {
+        label: "Select what best matches your situation:",
+        options: {
+          part_time_student_outside_working_hours:
+            "Part-time student, outside of your typical working hours",
+          part_time_student_during_working_hours:
+            "Part-time student, during your typical working hours",
+          part_time_student_online_classes_only:
+            "Part-time student, online classes only",
+          full_time_student: "Full time student, in-person or online",
+        },
+        error: {
+          required: "Select the best match for your current situation",
+        },
+      },
       full_time_student: {
         label: "Have you been a full-time student during the last 18 months?",
         required:
@@ -384,8 +399,12 @@ const claimForm = {
         label: "Are you currently registered with Vocational Rehabilitation?",
         required:
           "You must indicate whether you are currently registered with Vocational Rehabilitation",
-        help_text:
-          "Vocational Rehabilitation is a program that helps people living with disabilities find and keep jobs.",
+        help_text: {
+          description:
+            "Vocational Rehabilitation is a program that helps people living with disabilities find and keep jobs.",
+          learn_more_here:
+            "<extLink>Learn more here<span>opens in a new tab</span><icon></icon></extLink>",
+        },
       },
     },
   },

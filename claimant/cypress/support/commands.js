@@ -498,8 +498,8 @@ Cypress.Commands.add(
   "complete_education_vocational_information",
   (educationVocationalInfo) => {
     [
-      "student_fulltime_in_last_18_months",
       "attending_college_or_job_training",
+      "type_of_college_or_job_training",
       "registered_with_vocational_rehab",
     ].forEach((id) => {
       cy.get(`input[id=${id}\\.${educationVocationalInfo[id]}]`)

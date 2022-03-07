@@ -314,8 +314,12 @@ type EducationLevelOptionType =
   | "other";
 
 type EducationVocationalRehabType = Partial<{
-  student_fulltime_in_last_18_months: boolean;
   attending_college_or_job_training: boolean;
+  type_of_college_or_job_training:
+    | "part_time_student_outside_working_hours"
+    | "part_time_student_during_working_hours"
+    | "part_time_student_online_classes_only"
+    | "full_time_student";
   registered_with_vocational_rehab: boolean;
   education_level?: EducationLevelOptionType;
 }>;

@@ -118,8 +118,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
 
     // Education and Vocational Rehab page
     const educationVocation = {
-      student_fulltime_in_last_18_months: "yes",
-      attending_college_or_job_training: "no",
+      attending_college_or_job_training: "yes",
+      type_of_college_or_job_training: "full_time_student",
       registered_with_vocational_rehab: "no",
       education_level: "bachelors",
     };

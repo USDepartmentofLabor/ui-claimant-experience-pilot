@@ -174,8 +174,8 @@ class BaseClaim:
                 "name_of_corporation": "ACME Inc",
                 "related_to_owner": False,
             },
-            "student_fulltime_in_last_18_months": False,
             "attending_college_or_job_training": True,
+            "type_of_college_or_job_training": "full_time_student",
             "registered_with_vocational_rehab": False,
             "union": {
                 "is_union_member": True,
@@ -1173,13 +1173,22 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
                     f for f in listdir(fixture_dir) if isfile(join(fixture_dir, f))
                 ]
                 for case in cases:
+                    logger.debug(f"Checking fixture {fixture} / {validity} / {case}")
                     claim = self.base_claim()
                     with open(fixture_dir / case) as f:
                         json = json_decode(f.read())
                     for key in json:
-                        claim[key] = json[key]
+                        if json[key] is None and key in claim:
+                            claim.pop(key)
+                        else:
+                            claim[key] = json[key]
                     cv = ClaimValidator(claim)
-                    logger.debug(f"Checking fixture {fixture} / {validity} / {case}")
+                    if validity == "valid" and not cv.valid:
+                        logger.debug(
+                            "🚀 A valid permutation resulted in errors={}".format(
+                                cv.errors_as_dict()
+                            )
+                        )
                     self.assertEqual(
                         cv.valid,
                         validity == "valid",
@@ -1195,8 +1204,8 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234", "email": "foo"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
+        self.assertEqual(len(cv.errors), 27, error_dict)
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'foo' is not a 'email'", error_dict)
         self.assertIn("'claimant_name' is a required property", error_dict)
@@ -1325,8 +1334,8 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
         invalid_claim = {"birthdate": "1234"}
         cv = ClaimValidator(invalid_claim)
         self.assertFalse(cv.valid)
-        self.assertEqual(len(cv.errors), 28)
         error_dict = cv.errors_as_dict()
+        self.assertEqual(len(cv.errors), 27, error_dict)
         logger.debug("errors: {}".format(error_dict))
         self.assertIn("'1234' is not a 'date'", error_dict)
         self.assertIn("'ssn' is a required property", error_dict)

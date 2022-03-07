@@ -1,14 +1,27 @@
-import { Fieldset } from "@trussworks/react-uswds";
-import { Normalize, TFunction, useTranslation } from "react-i18next";
+import { Fieldset, IconLaunch, Link } from "@trussworks/react-uswds";
+import { Normalize, TFunction, Trans, useTranslation } from "react-i18next";
 import { YesNoQuestion } from "../../../components/form/YesNoQuestion/YesNoQuestion";
 import { IPageDefinition } from "../../PageDefinitions";
 import * as yup from "yup";
 import DropdownField from "../../../components/form/fields/DropdownField/DropdownField";
 import claimForm from "../../../i18n/en/claimForm";
 import HelpText from "../../../components/HelpText/HelpText";
+import { useFormikContext } from "formik";
+import { RadioField } from "../../../components/form/fields/RadioField/RadioField";
+import { useClearFields } from "../../../hooks/useClearFields";
+import { useShowErrors } from "../../../hooks/useShowErrors";
 
 export const EducationVocationalRehab = () => {
   const { t } = useTranslation("claimForm");
+  const { values } = useFormikContext<ClaimantInput>();
+  const showTrainingTypeError = useShowErrors(
+    "type_of_college_or_job_training"
+  );
+
+  useClearFields(
+    !values.attending_college_or_job_training,
+    "type_of_college_or_job_training"
+  );
 
   return (
     <>
@@ -20,19 +33,42 @@ export const EducationVocationalRehab = () => {
           id="attending_college_or_job_training"
           name="attending_college_or_job_training"
         >
-          <HelpText withLeftBorder={true}>
+          <HelpText>
             {t(
               "education_vocational_rehab.education.attending_training.help_text"
             )}
           </HelpText>
         </YesNoQuestion>
-        <YesNoQuestion
-          question={t(
-            "education_vocational_rehab.education.full_time_student.label"
-          )}
-          id="student_fulltime_in_last_18_months"
-          name="student_fulltime_in_last_18_months"
-        />
+        {values.attending_college_or_job_training && (
+          <Fieldset
+            legend={t(
+              "education_vocational_rehab.education.training_type.label"
+            )}
+            className={
+              showTrainingTypeError
+                ? "dol-fieldset usa-form-group--error"
+                : "dol-fieldset"
+            }
+          >
+            <RadioField
+              id="type_of_college_or_job_training"
+              name="type_of_college_or_job_training"
+              options={Object.keys(
+                claimForm.education_vocational_rehab.education.training_type
+                  .options
+              ).map((option) => ({
+                value: option,
+                label: t(
+                  `education_vocational_rehab.education.training_type.options.${
+                    option as Normalize<
+                      typeof claimForm.education_vocational_rehab.education.training_type.options
+                    >
+                  }`
+                ),
+              }))}
+            />
+          </Fieldset>
+        )}
         <DropdownField
           id="education_level"
           name="education_level"
@@ -62,8 +98,28 @@ export const EducationVocationalRehab = () => {
         >
           <HelpText withLeftBorder={true}>
             {t(
-              "education_vocational_rehab.vocational_rehab.is_registered.help_text"
-            )}
+              "education_vocational_rehab.vocational_rehab.is_registered.help_text.description"
+            )}{" "}
+            {/*TODO: Do not use NJ specific link below in generic pilot application
+                     Either use a USDol link, or have a lookup of links per state*/}
+            <Trans
+              t={t}
+              i18nKey="education_vocational_rehab.vocational_rehab.is_registered.help_text.learn_more_here"
+              components={{
+                extLink: (
+                  <Link
+                    variant="external"
+                    href="https://www.nj.gov/labor/career-services/special-services/individuals-with-disabilities/"
+                    target="blank"
+                    rel="noreferrer"
+                  >
+                    here
+                  </Link>
+                ),
+                span: <span key="new-tab" className="screen-reader-only" />,
+                icon: <IconLaunch key="launch" aria-hidden="true" />,
+              }}
+            />
           </HelpText>
         </YesNoQuestion>
       </Fieldset>
@@ -73,16 +129,29 @@ export const EducationVocationalRehab = () => {
 
 const pageSchema = (t: TFunction<"claimForm">) =>
   yup.object().shape({
-    student_fulltime_in_last_18_months: yup
-      .boolean()
-      .required(
-        t("education_vocational_rehab.education.full_time_student.required")
-      ),
     attending_college_or_job_training: yup
       .boolean()
       .required(
         t("education_vocational_rehab.education.attending_training.required")
       ),
+    type_of_college_or_job_training: yup
+      .string()
+      .when("attending_college_or_job_training", {
+        is: true,
+        then: yup
+          .string()
+          .oneOf(
+            Object.keys(
+              claimForm.education_vocational_rehab.education.training_type
+                .options
+            )
+          )
+          .required(
+            t(
+              "education_vocational_rehab.education.training_type.error.required"
+            )
+          ),
+      }),
     education_level: yup
       .mixed()
       .oneOf(Object.keys(claimForm.education_level.options))

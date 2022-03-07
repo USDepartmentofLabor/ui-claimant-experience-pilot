@@ -174,8 +174,8 @@ const data: Claim = {
     bls_code: "29-1141.00",
     bls_title: "Registered Nurses",
   },
-  student_fulltime_in_last_18_months: false,
   attending_college_or_job_training: true,
+  type_of_college_or_job_training: "part_time_student_during_working_hours",
   education_level: "bachelors",
   registered_with_vocational_rehab: true,
   union: {
@@ -527,14 +527,14 @@ describe("Review Page", () => {
         "page_headings.education_vocational_rehab",
         [
           [
-            "education_vocational_rehab.education.full_time_student.label",
-            0,
-            asYesNo(data.student_fulltime_in_last_18_months),
-          ],
-          [
             "education_vocational_rehab.education.attending_training.label",
             0,
             asYesNo(data.attending_college_or_job_training),
+          ],
+          [
+            "education_vocational_rehab.education.training_type.label",
+            0,
+            `education_vocational_rehab.education.training_type.options.${data.type_of_college_or_job_training}`,
           ],
           [
             "education_level.label",

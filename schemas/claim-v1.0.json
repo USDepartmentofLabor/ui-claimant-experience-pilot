@@ -667,7 +667,6 @@
     "sex",
     "ssn",
     "state_credential",
-    "student_fulltime_in_last_18_months",
     "swa_code",
     "union",
     "work_authorization",
@@ -854,13 +853,19 @@
       "description": "",
       "type": "boolean"
     },
-    "student_fulltime_in_last_18_months": {
-      "description": "If the claimant has been a full-time student during the last 18 months",
-      "type": "boolean"
-    },
     "attending_college_or_job_training": {
       "description": "If the claimant is currently attending college or job training",
       "type": "boolean"
+    },
+    "type_of_college_or_job_training": {
+      "description": "What type of education or training the claimant is enrolled in",
+      "type": "string",
+      "enum": [
+        "part_time_student_outside_working_hours",
+        "part_time_student_during_working_hours",
+        "part_time_student_online_classes_only",
+        "full_time_student"
+      ]
     },
     "registered_with_vocational_rehab": {
       "description": "If the claimant is registered with vocational rehabilitation",
@@ -885,5 +890,21 @@
     "payment": {
       "$ref": "#/definitions/payment"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "attending_college_or_job_training": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": ["attending_college_or_job_training"]
+      },
+      "then": {
+        "required": ["type_of_college_or_job_training"]
+      }
+    }
+  ]
 }
