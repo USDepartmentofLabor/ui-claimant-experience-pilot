@@ -44,6 +44,17 @@ CLAIMANT_STATUS_DELETED = "deleted"
 CLAIMANT_STATUS_UNKNOWN = "unknown"
 
 
+class DuplicateSwaXid(Exception):
+    def __init__(self, swa, claimant, swa_xid):
+        self.swa = swa
+        self.claimant = claimant
+        self.swa_xid = swa_xid
+
+    def __str__(self):
+        # don't reveal anything claimant-related for security/privacy
+        return f"SWA XID {self.swa_xid} already exists for SWA {self.swa.code}"
+
+
 class ExpiredPartialClaimManager(models.Manager):
     def delete_artifacts(self):
         count = 0
@@ -101,6 +112,27 @@ class Claim(TimeStampedModel):
 
     objects = models.Manager()
     expired_partial_claims = ExpiredPartialClaimManager()
+
+    @classmethod
+    def initiate_with_swa_xid(cls, swa, claimant, swa_xid):
+        # check first that we don't have an existing claim with a different claimant or swa
+        existing_claim = Claim.objects.filter(swa_xid=swa_xid).first()
+        if existing_claim:
+            if existing_claim.swa != swa or existing_claim.claimant != claimant:
+                raise DuplicateSwaXid(
+                    swa=existing_claim.swa,
+                    claimant=existing_claim.claimant,
+                    swa_xid=swa_xid,
+                )
+            existing_claim.events.create(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            )
+            return existing_claim
+
+        with transaction.atomic():
+            claim = Claim.objects.create(swa=swa, claimant=claimant, swa_xid=swa_xid)
+            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
+        return claim
 
     def create_stored_event(self, bucket_name):
         return self.events.create(

@@ -69,18 +69,10 @@ class LocalIdentityProvider(object):
 
         swa_xid = self.get_swa_xid(params)
         if swa_xid:
-            with transaction.atomic():
-                claim, _ = Claim.objects.get_or_create(
-                    swa=swa,
-                    claimant=claimant,
-                    swa_xid=swa_xid,
-                )
-                claim.events.create(
-                    category=Claim.EventCategories.INITIATED_WITH_SWA_XID
-                )
-                params["claim_id"] = str(claim.uuid)
-                params.pop("swa_xid", None)  # delete if exists
-                self.request.session["swa_xid"] = swa_xid
+            claim = Claim.initiate_with_swa_xid(swa, claimant, swa_xid)
+            params["claim_id"] = str(claim.uuid)
+            params.pop("swa_xid", None)  # delete if exists
+            self.request.session["swa_xid"] = swa_xid
         elif swa.is_identity_only():
             raise LocalIdentityProviderError(
                 "SWA {} is identity only, but missing swa_xid".format(swa.name)
@@ -90,12 +82,12 @@ class LocalIdentityProvider(object):
         self.claimant = claimant
 
     def get_swa_xid(self, params):
-        if "swa_xid" in self.request.session:
-            return self.request.session["swa_xid"]
         if "swa_xid" in params:
             return params["swa_xid"]
         if "swa_xid" in self.request.COOKIES:
             return self.request.COOKIES["swa_xid"]
+        if "swa_xid" in self.request.session:
+            return self.request.session["swa_xid"]
         return False
 
     def initiate_session(self):

@@ -6,9 +6,11 @@ from django.db import transaction
 import logging
 import secrets
 import os
+import appoptics_apm
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
 from core.utils import session_as_dict, hash_idp_user_xid
 from api.models import Claimant, IdentityProvider, SWA, Claim
+from api.models.claim import DuplicateSwaXid
 from django.conf import settings
 from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
 from home.views import base_url, handle_404
@@ -271,7 +273,17 @@ def initiate_claimant_session(request, userinfo):
     whoami.swa = WhoAmISWA(**swa.for_whoami())
 
     # create db artifacts, and optionally, Identity claim
-    initiate_claim_with_swa_xid(request, whoami, claimant, swa)
+    try:
+        initiate_claim_with_swa_xid(request, whoami, claimant, swa)
+    except DuplicateSwaXid as err:
+        logger.exception(err)
+        appoptics_apm.log_exception()
+        return render(
+            None,
+            "auth-error.html",
+            {"error": str(err), "base_url": base_url(request)},
+            status=500,
+        )
 
     if (
         claimant_IAL == 2
@@ -311,12 +323,8 @@ def get_swa_xid(request):
 def initiate_claim_with_swa_xid(request, whoami, claimant, swa):
     swa_xid = get_swa_xid(request)
     if swa_xid:
-        with transaction.atomic():
-            claim, _ = Claim.objects.get_or_create(
-                swa=swa, claimant=claimant, swa_xid=swa_xid
-            )
-            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
-            whoami.claim_id = str(claim.uuid)
+        claim = Claim.initiate_with_swa_xid(swa, claimant, swa_xid)
+        whoami.claim_id = str(claim.uuid)
 
 
 def complete_identity_only_claim(whoami, claimant):

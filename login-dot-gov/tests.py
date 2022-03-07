@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
+from django.test import TestCase, Client
 from unittest.mock import patch, MagicMock
 from logindotgov.mock_server import OIDC as MockServer
 from logindotgov.oidc import LoginDotGovOIDCClient
@@ -395,6 +395,32 @@ class LoginDotGovTestCase(TestCase):
                 category=Claim.EventCategories.INITIATED_WITH_SWA_XID
             ).count(),
             2,
+        )
+
+    def test_swa_xid_duplicate_error(self):
+        swa, _ = create_swa(is_active=True)
+        swa2, _ = create_swa(is_active=True, code="XX")
+        swa_xid = str(uuid.uuid4())
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+        # different SWA should raise error
+        client_shows_error = Client(raise_request_exception=False)
+        response = client_shows_error.get(
+            f"/logindotgov/?swa={swa2.code}&swa_xid={swa_xid}"
+        )
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = client_shows_error.get(
+            f"/logindotgov/result?{authorize_parsed.query}"
+        )
+        self.assertContains(
+            response, f"already exists for SWA {swa.code}", status_code=500
         )
 
     def test_identity_only_claim_same_session(self):
