@@ -6,6 +6,7 @@ from django.db import transaction
 import logging
 import secrets
 import os
+import core.context_processors
 import appoptics_apm
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
 from core.utils import session_as_dict, hash_idp_user_xid
@@ -13,7 +14,7 @@ from api.models import Claimant, IdentityProvider, SWA, Claim
 from api.models.claim import DuplicateSwaXid
 from django.conf import settings
 from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
-from home.views import base_url, handle_404
+from home.views import handle_404
 from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
 from core.exceptions import ClaimStorageError
 
@@ -106,11 +107,10 @@ def index(request):
     if not request.session.get("swa"):
         logger.debug("🚀 missing swa or swa_code")
         return render(
-            None,
+            request,
             "auth-error.html",
             {
                 "error": "missing swa or swa_code parameter",
-                "base_url": base_url(request),
             },
             status=403,
         )
@@ -134,9 +134,9 @@ def index(request):
     elif swa.is_identity_only():
         logger.debug("🚀 SWA.is_identity_only and missing swa_xid")
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": "missing swa_xid parameter", "base_url": base_url(request)},
+            {"error": "missing swa_xid parameter"},
             status=400,
         )
 
@@ -187,9 +187,9 @@ def result(request):
     except LoginDotGovOIDCError as error:
         logger.exception(error)
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": str(error), "base_url": base_url(request)},
+            {"error": str(error)},
             status=403,
         )
 
@@ -198,9 +198,9 @@ def result(request):
     if auth_state != request.session["logindotgov"]["state"]:
         logger.error("state mismatch")
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": "state mismatch", "base_url": base_url(request)},
+            {"error": "state mismatch"},
             status=403,
         )
 
@@ -210,9 +210,9 @@ def result(request):
     if "access_token" not in tokens:
         logger.error("access_token missing")
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": "missing access_token", "base_url": base_url(request)},
+            {"error": "missing access_token"},
             status=403,
         )
 
@@ -223,15 +223,16 @@ def result(request):
     except LoginDotGovOIDCError as error:
         logger.exception(error)
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": "Error exchanging token", "base_url": base_url(request)},
+            {"error": "Error exchanging token"},
             status=403,
         )
 
     userinfo = client.get_userinfo(tokens["access_token"])
     redirect_response = initiate_claimant_session(request, userinfo)
-    this_site_logout = f"{base_url(request)}/logout/"
+    base_url = core.context_processors.base_url(request)["base_url"]
+    this_site_logout = f"{base_url}/logout/"
     logout_url = client.get_logout_url(tokens, this_site_logout, secrets.token_hex(11))
     request.session["logout_url"] = logout_url
 
@@ -281,7 +282,7 @@ def initiate_claimant_session(request, userinfo):
         return render(
             None,
             "auth-error.html",
-            {"error": str(err), "base_url": base_url(request)},
+            {"error": str(err)},
             status=500,
         )
 

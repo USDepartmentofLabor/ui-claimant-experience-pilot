@@ -31,11 +31,11 @@ def get_dictionary_value(dictionary, key):
 
 
 def handle_404(request, exception=None):
-    return render(None, "404.html", {"base_url": base_url(request)}, status=404)
+    return render(request, "404.html", status=404)
 
 
 def handle_500(request):
-    return render(None, "500.html", {"base_url": base_url(request)}, status=500)
+    return render(request, "500.html", status=500)
 
 
 def raise_error(request):
@@ -55,7 +55,7 @@ def active_swas_with_featuresets():
 
 # TODO should this be a 404 or a placeholder referring viewers to a SWA finder fed site?
 def index(request):
-    return render(None, "index.html", {"base_url": base_url(request)})
+    return render(request, "index.html")
 
 
 # the swa-specific pages should be cache-able
@@ -68,11 +68,10 @@ def swa_index(request, swa_code):
             else "swa-index.html"
         )
         return render(
-            None,
+            request,
             template_file,
             {
                 "swa": swa,
-                "base_url": base_url(request),
             },
         )
     except SWA.DoesNotExist:
@@ -84,7 +83,7 @@ def swa_contact(request, swa_code):
     try:
         swa = SWA.active.get(code=swa_code)
         return render(
-            None,
+            request,
             "swa-contact.html",
             {
                 "swa": swa,
@@ -93,7 +92,6 @@ def swa_contact(request, swa_code):
                 "swa_new_claim": f"_swa/{swa.code}/new_claim.html",
                 "swa_general_information": f"_swa/{swa.code}/general_information.html",
                 "swa_help_finding_work": f"_swa/{swa.code}/help_finding_work.html",
-                "base_url": base_url(request),
             },
         )
     except TemplateDoesNotExist:
@@ -113,12 +111,11 @@ def idp(request, swa_code=None):
             return handle_404(request, None)
 
     return render(
-        None,
+        request,
         "idp.html",
         {
             "onchange": False,  # to avoid uninit var warnings
             "swa": requested_swa,
-            "base_url": base_url(request),
             "show_login_page": settings.SHOW_LOGIN_PAGE,
             "swa_featuresets": active_swas_with_featuresets(),
             "swas": active_swas_ordered_by_name(),
@@ -137,9 +134,8 @@ def swa_redirect(request, swa_code):
         view_args = {
             "swa": swa,
             "swa_redirect": f"_swa/{swa.code}/redirect.html" if swa else None,
-            "base_url": base_url(request),
         }
-        return render(None, "swa-redirect.html", view_args)
+        return render(request, "swa-redirect.html", view_args)
     except TemplateDoesNotExist:
         return handle_404(request, None)
 
@@ -160,10 +156,9 @@ def logout(request):
 @never_cache
 def ial2required(request):
     return render(
-        None,
+        request,
         "ial2required.html",
         {
-            "base_url": base_url(request),
             "swas": active_swas_ordered_by_name(),
             "idp_path": request.GET.get("idp", "logindotgov"),
         },
@@ -214,13 +209,12 @@ def login(request):
         if request.GET.get("swa", None):
             request.session["swa"] = request.GET["swa"]
         return render(
-            None,
+            request,
             "login.html",
             {
                 "required": False,  # to avoid uninit var warnings
                 "disabled": False,  # same
                 "whoami": request.session.get("whoami", None),  # if stepping up
-                "base_url": base_url(request),
                 "csrf_token": csrf_token,
                 "states": get_states(),
                 "ial": request.GET.get("ial", "1"),
@@ -236,9 +230,9 @@ def login(request):
             whoami = register_local_login(request)
         except LocalIdentityProviderError as error:
             return render(
-                None,
+                request,
                 "auth-error.html",
-                {"error": str(error), "base_url": base_url(request)},
+                {"error": str(error)},
                 status=400,
             )
 
@@ -270,10 +264,9 @@ def start(request):
         states.pop(state)
 
     return render(
-        None,
+        request,
         "start.html",
         {
-            "base_url": base_url(request),
             "swas": states,
             # set basic defaults so var key exists, override in template partials
             "onchange": None,
@@ -302,16 +295,9 @@ def identity(request):
                 else "/login/"
             ),
             "completed_at": claim.completed_at(),
-            "base_url": base_url(request),
             "claim": claim,
         }
-        return render(None, f"identity/IAL{IAL}.html", view_args)
+        return render(request, f"identity/IAL{IAL}.html", view_args)
     except TemplateDoesNotExist as err:
         logger.exception(err)
         return handle_404(request, None)
-
-
-def base_url(request):  # pragma: no cover
-    if settings.BASE_URL:
-        return settings.BASE_URL
-    return f"{request.scheme}://{request.get_host()}"

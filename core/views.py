@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 import logging
 import time
-from home.views import base_url
 from django.http import JsonResponse
 from django.db import connection
 from django.core.cache import cache
@@ -28,11 +27,10 @@ def claimant(request):
         request.session["swa"] = request.GET["swa"]
 
     return render(
-        None,
+        request,
         "build/index.html",
         {
             "LD_CLIENT_SDK_KEY": settings.LD_CLIENT_SDK_KEY,
-            "base_url": base_url(request),
         },
     )
 

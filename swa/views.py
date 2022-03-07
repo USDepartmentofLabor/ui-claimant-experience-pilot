@@ -3,8 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
-
-from home.views import base_url
+import core.context_processors
 from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
 from api.models import Claim, Claimant
@@ -31,8 +30,9 @@ def GET_v1_claims(request):
     page_of_claims = queue.page(int(page))
     next_page_url = None
     if page_of_claims.has_next():
+        base_url = core.context_processors.base_url(request)["base_url"]
         next_page_url = (
-            f"{base_url(request)}/swa/claims/?page={page_of_claims.next_page_number()}"
+            f"{base_url}/swa/claims/?page={page_of_claims.next_page_number()}"
         )
     encrypted_claims = []
     for claim in page_of_claims.object_list:

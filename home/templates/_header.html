@@ -66,11 +66,19 @@
             </li>
           </ul>
         </li>
+        {% if whoami %}
+        <li class="usa-nav__primary-item">
+          <a href="/logout/" class="usa-nav__link">
+            <span>{% translate "Logout" %}</span>
+          </a>
+        </li>
+        {% else %}
         <li class="usa-nav__primary-item">
           <a href="/idp/" class="usa-nav__link">
             <span>{% translate "Sign in" %}</span>
           </a>
         </li>
+        {% endif %}
       </ul>
     </div>
   </nav>
