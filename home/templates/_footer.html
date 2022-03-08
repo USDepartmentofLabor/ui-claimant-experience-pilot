@@ -1,10 +1,31 @@
 {% load static %}
-<footer class="usa-footer usa-footer--big">
+{% load i18n %}
+<footer class="usa-footer">
   <div class="grid-container usa-footer__return-to-top">
-    <a href="#">Return to top</a>
+    <a href="#">{% translate "Return to top" %}</a>
   </div>
 
-  <div id="dol-footer-nav" class="usa-footer__primary-section">
+  <div class="usa-footer__primary-section">
+    {% if show_navigation %}
+    <nav class="usa-footer__nav" aria-label="Footer navigation">
+      <ul class="grid-row grid-gap">
+          <li class="mobile-lg:grid-col-4 desktop:grid-col-auto usa-footer__primary-content">
+            <a class="usa-footer__primary-link" href="{{ home_path }}">
+              {% translate "Home" %}
+            </a>
+          </li>
+          {% if contact_us_path %}
+          <li class="mobile-lg:grid-col-4 desktop:grid-col-auto usa-footer__primary-content">
+            <a class="usa-footer__primary-link" href="{{ contact_us_path }}">
+              {% translate "Contact us" %}
+            </a>
+          </li>
+          {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+  <div class="usa-footer__secondary-section">
     <div class="grid-container">
       <div class="grid-row grid-gap">
         <div class="">
@@ -18,16 +39,16 @@
                     class="display-flex tablet:display-block dol-footer-seal margin-2"
                   >
                     <div class="dol-seal margin-right-2 tablet:margin-bottom-2">
-                      <a href="/" title="Home"
+                      <a href="/" title="{% translate 'Home' %}"
                         ><img
                           class="width-9"
                           src="//www.dol.gov/themes/opa_theme/img/DOL-MasterLogo_BLUE.svg"
-                          alt="United States Department of Labor"
+                          alt="{% translate 'United States Department of Labor' %}"
                       /></a>
                     </div>
                     <div class="footer-seal-block">
                       <div class="dol-name-and-seal">
-                        <span>U.S. Department of Labor</span>
+                        <span>{% translate "U.S. Department of Labor" %}</span>
                       </div>
                       <div id="block-footeraddress">
                         <div

@@ -72,6 +72,7 @@ def swa_index(request, swa_code):
             template_file,
             {
                 "swa": swa,
+                "show_navigation": False,
             },
         )
     except SWA.DoesNotExist:
@@ -79,13 +80,21 @@ def swa_index(request, swa_code):
 
 
 # Contact us per-SWA
+@never_cache
 def swa_contact(request, swa_code):
+    if "whoami" not in request.session:
+        return handle_404(request, None)
+
+    whoami = WhoAmI.from_dict(request.session.get("whoami"))
     try:
         swa = SWA.active.get(code=swa_code)
         return render(
             request,
             "swa-contact.html",
             {
+                "home_path": "/identity/" if swa.is_identity_only() else "/claimant/",
+                "contact_us_path": f"/contact/{swa_code}/",
+                "whoami": whoami,
                 "swa": swa,
                 "swa_hours_of_operation": f"_swa/{swa.code}/hours_of_operation.html",
                 "swa_weekly_benefits": f"_swa/{swa.code}/weekly_benefits.html",
@@ -114,7 +123,6 @@ def idp(request, swa_code=None):
         request,
         "idp.html",
         {
-            "onchange": False,  # to avoid uninit var warnings
             "swa": requested_swa,
             "show_login_page": settings.SHOW_LOGIN_PAGE,
             "swa_featuresets": active_swas_with_featuresets(),
@@ -212,8 +220,6 @@ def login(request):
             request,
             "login.html",
             {
-                "required": False,  # to avoid uninit var warnings
-                "disabled": False,  # same
                 "whoami": request.session.get("whoami", None),  # if stepping up
                 "csrf_token": csrf_token,
                 "states": get_states(),
@@ -286,6 +292,9 @@ def identity(request):
     try:
         view_args = {
             "whoami": whoami,
+            "swa": whoami.swa,
+            "contact_us_path": f"/contact/{whoami.swa.code}/",
+            "home_path": "/identity/",
             "more_help": f"_swa/{whoami.swa.code}/more_help.html",
             "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
             "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",

@@ -92,9 +92,10 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "Sorry", status_code=404)
 
     def test_swa_contact_page(self):
+        # active but no whoami
         nj_swa = SWA.active.get(code="NJ")
         response = self.client.get(f"/contact/{nj_swa.code}/")
-        self.assertContains(response, "Contact us", status_code=200)
+        self.assertEquals(response.status_code, 404)
 
         # active SWA, but no template
         swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
@@ -111,6 +112,20 @@ class HomeTestCase(TestCase):
         # no such SWA
         response = self.client.get("/contact/foobar/")
         self.assertEqual(response.status_code, 404)
+
+        # whoami logged in
+        self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "IAL": "1",
+                "swa_code": "AR",
+                "swa_xid": "abc123",
+            }
+            | ADDRESS,
+        )
+        response = self.client.get("/contact/AR/")
+        self.assertContains(response, "Contact us", status_code=200)
 
 
 ADDRESS = {

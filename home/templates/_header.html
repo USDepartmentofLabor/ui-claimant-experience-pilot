@@ -1,85 +1,53 @@
-{% load static %} {% load i18n %} {% include "./uswds/_banner.html" %}
+{% load static %}
+{% load i18n %}
 <div class="usa-overlay"></div>
-<header class="usa-header usa-header--extended">
+<header class="usa-header usa-header--basic">
+ {% include "./uswds/_banner.html" %}
+ <div class="usa-nav-container">
   <div class="usa-navbar">
-    <div class="usa-logo" id="extended-mega-logo">
+    <div class="usa-logo">
       <a href="/" class="navbar-brand" title="Home">
-        <span class="dol-header-logo">
-          <img class="not-responsive float-left logo"
-          src="//www.dol.gov/themes/opa_theme/img/logo-primary.svg"
-          alt={%translate "United States Department of Labor" %} title="Home" />
-        </span>
         <em class="usa-logo__text"
           >{% translate "U.S. Department of Labor" %}</em
         >
       </a>
     </div>
-    <button class="usa-menu-btn">{% translate "Menu" %}</button>
+    <button class="usa-menu-btn" type="button">{% translate "Menu" %}</button>
   </div>
+  {% if show_navigation %}
   <nav aria-label="Primary navigation" class="usa-nav">
-    <div class="usa-nav__inner">
-      <button class="usa-nav__close">
-        <!-- prettier-ignore -->
-        <img src="{% static 'img/usa-icons/close.svg' %}" role="img"
-             alt={% translate "Close" %} />
-      </button>
-      <ul class="usa-nav__primary usa-accordion">
-        <li class="usa-nav__primary-item">
-          <button
-            class="usa-accordion__button usa-nav__link usa-current"
-            aria-expanded="false"
-            aria-controls="extended-nav-section-one"
-          >
-            <span>{% translate "Current section" %}</span>
-          </button>
-
-          <ul id="extended-nav-section-one" class="usa-nav__submenu">
-            <li class="usa-nav__submenu-item">
-              <a href="#"> {% translate "&lt;Navigation link&lt;" %} </a>
-            </li>
-            <li class="usa-nav__submenu-item">
-              <a href="#">{% translate "&lt;Navigation link&gt;" %}</a>
-            </li>
-            <li class="usa-nav__submenu-item">
-              <a href="#">{% translate "&lt;Navigation link&gt;" %} </a>
-            </li>
-          </ul>
-        </li>
-        <li class="usa-nav__primary-item">
-          <button
-            class="usa-accordion__button usa-nav__link"
-            aria-expanded="false"
-            aria-controls="extended-nav-section-two"
-          >
-            <span>{% translate "&lt;Section&gt;" %}</span>
-          </button>
-
-          <ul id="extended-nav-section-two" class="usa-nav__submenu">
-            <li class="usa-nav__submenu-item">
-              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
-            </li>
-            <li class="usa-nav__submenu-item">
-              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
-            </li>
-            <li class="usa-nav__submenu-item">
-              <a href="#"> {% translate "&lt;Navigation link&gt;" %} </a>
-            </li>
-          </ul>
-        </li>
-        {% if whoami %}
-        <li class="usa-nav__primary-item">
-          <a href="/logout/" class="usa-nav__link">
-            <span>{% translate "Logout" %}</span>
-          </a>
-        </li>
-        {% else %}
-        <li class="usa-nav__primary-item">
-          <a href="/idp/" class="usa-nav__link">
-            <span>{% translate "Sign in" %}</span>
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
+    <button class="usa-nav__close">
+      <img src="{% static 'img/usa-icons/close.svg' %}" role="img" alt={% translate "Close" %} />
+    </button>
+    <ul class="usa-nav__primary usa-accordion">
+      <li class="usa-nav__primary-item">
+        <a href="{{ home_path }}"
+           {% if current_path == home_path %}aria-current="page"i{% endif %}
+           class="usa-nav__link {% if current_path == home_path %}usa-current{% endif %}"
+           >{% translate "Home" %}</a>
+      </li>
+      {% if whoami and contact_us_path %}
+      <li class="usa-nav__primary-item">
+        <a href="{{ contact_us_path }}"
+           {% if current_path == contact_us_path %}aria-current="page"{% endif %}
+           class="usa-nav__link {% if current_path == contact_us_path %}usa-current{% endif %}"
+           >{% translate "Contact us" %}</a>
+      </li>
+      {% endif %}
+      {% if whoami %}
+      <li class="usa-nav__primary-item">
+        <a href="/logout/" class="usa-nav__link">{% translate "Logout" %}</a>
+      </li>
+      {% else %}
+      <li class="usa-nav__primary-item">
+        <a href="/idp/"
+           {% if current_path == "/idp/" %}aria-current="page"{% endif %}
+           class="usa-nav__link {% if current_path == "/idp/" %}usa-current{% endif %}"
+           >{% translate "Sign in" %}</a>
+      </li>
+      {% endif %}
+    </ul>
   </nav>
+  {% endif %}
+ </div>
 </header>
