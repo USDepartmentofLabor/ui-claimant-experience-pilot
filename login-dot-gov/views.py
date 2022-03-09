@@ -3,13 +3,14 @@ from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.db import transaction
+from django.core.cache import cache
 import logging
 import secrets
 import os
 import core.context_processors
 import appoptics_apm
 from logindotgov.oidc import LoginDotGovOIDCClient, LoginDotGovOIDCError, IAL2, IAL1
-from core.utils import session_as_dict, hash_idp_user_xid
+from core.utils import session_as_dict, hash_idp_user_xid, get_session
 from api.models import Claimant, IdentityProvider, SWA, Claim
 from api.models.claim import DuplicateSwaXid
 from django.conf import settings
@@ -163,24 +164,38 @@ def index(request):
     logger.debug("redirect {}".format(login_url))
 
     request.session["logindotgov"] = {"state": state, "nonce": nonce}
+    stash_session_state(state, request.session)
 
     return redirect(login_url)
+
+
+# there are legitimate reasons that by the time login.gov redirects to our /result
+# endpoint, we might not have an active session available. Some examples:
+#
+# * the IAL2 proofing process took longer than our session TTL (30 minutes)
+# * the AAL2 email confirmation process finished in a different browser or window
+#
+# We mitigate both those scenarios (and others we haven't imagined yet)
+# by persisting the state, nonce and relevant session values in a cache
+# for 24 hours, so we can restore the user's django session if necessary.
+# The 24 hour TTL is not arbirtrary. NIST guidelines require us to force a re-auth
+# after 24 hours in any case. There is no PII here, so risk is reduced.
+def stash_session_state(state, session):
+    stash = {
+        "session_key": session.session_key,
+        "params": {
+            "IAL": session["IAL"],
+            "swa": session["swa"],
+            "swa_xid": session.get("swa_xid", None),
+        },
+        "logindotgov": session["logindotgov"],
+    }
+    cache.set(state, stash, 86400)
 
 
 # OIDC OP redirects here after auth attempt
 @never_cache
 def result(request):
-    # it's possible that a legitimate IdP request took so long to complete
-    # (e.g. when creating an account for the first time at IAL2)
-    # that our session has expired in the meantime.
-    # it's impossible to distinguish that scenario from a bad actor,
-    # so if we don't have an existing session that matches our expectations,
-    # always re-start the OIDC cycle via a redirect to our index().
-    # in the legit case, the login.gov session should still be live, and it
-    # will just redirect back here.
-    if "IAL" not in request.session or "logindotgov" not in request.session:
-        return redirect("/logindotgov/")
-
     client = logindotgov_client()
     try:
         auth_code, auth_state = client.validate_code_and_state(request.GET)
@@ -192,6 +207,28 @@ def result(request):
             {"error": str(error)},
             status=403,
         )
+
+    # if we don't have valid session available (see stash_session_state() rationale)
+    # do our best to restore a valid session. If we can't, re-start the OIDC cycle.
+    if "IAL" not in request.session or "logindotgov" not in request.session:
+        stashed_state = cache.get(auth_state)
+        if stashed_state:
+            existing_session = get_session(stashed_state["session_key"])
+            if existing_session:
+                logger.debug("🚀 found existing active session")
+                # update all keys in request.session with existing_session
+                for key, value in existing_session.items():
+                    request.session[key] = value
+            else:
+                # re-start with params from stashed_state
+                old_params = stashed_state["params"]
+                new_params = f"ial={old_params['IAL']}&swa={old_params['swa']}"
+                if old_params["swa_xid"]:
+                    new_params += f"&swa_xid={old_params['swa_xid']}"
+                return redirect(f"/logindotgov/?{new_params}")
+        else:
+            # no stash, no session, re-start
+            return redirect("/logindotgov/")
 
     logger.debug("code={} state={}".format(auth_code, auth_state))
     logger.debug("session: {}".format(session_as_dict(request)))

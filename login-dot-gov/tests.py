@@ -219,13 +219,59 @@ class LoginDotGovTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_oidc_restart_when_no_session_found(self):
-        response = self.client.get("/logindotgov/result")
+        response = self.client.get("/logindotgov/result?state=fake&code=fake")
         self.assertRedirects(
             response,
             "/logindotgov/",
             status_code=302,
             fetch_redirect_response=False,
         )
+
+    def test_oidc_stash_session_state(self):
+        # session expires
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        session = self.client.session
+        session.flush()
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(
+            response,
+            f"/logindotgov/?ial=1&swa={swa.code}",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+        session.flush()
+
+        # session expires with swa_xid
+        response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}&swa_xid=abc")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        session = self.client.session
+        session.flush()
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertRedirects(
+            response,
+            f"/logindotgov/?ial=1&swa={swa.code}&swa_xid=abc",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+        session.flush()
+
+        # session active but different browser
+        # use ial=2 to avoid automatic step up
+        client_one = self.client
+        client_two = Client()
+        response = client_one.get(f"/logindotgov/?ial=2&swa={swa.code}&swa_xid=abc")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        with self.assertLogs(level="DEBUG") as cm:
+            response = client_two.get(f"/logindotgov/result?{authorize_parsed.query}")
+            self.assertIn(
+                "DEBUG:logindotgov:🚀 found existing active session",
+                cm.output,
+            )
+        self.assertRedirects(response, "/claimant/", status_code=302)
 
     def test_oidc_errors(self):
         # missing swa is 403 error
@@ -272,7 +318,7 @@ class LoginDotGovTestCase(TestCase):
         session = self.client.session
         del session["IAL"]
         session.save()
-        response = self.client.get("/logindotgov/result")
+        response = self.client.get("/logindotgov/result?code=fake&state=fake")
         self.assertRedirects(
             response, "/logindotgov/", status_code=302, fetch_redirect_response=False
         )

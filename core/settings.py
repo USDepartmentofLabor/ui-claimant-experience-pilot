@@ -192,7 +192,7 @@ CACHES = {
             "REDIS_SECRET_KEY": redis_secret_key,
             "SERIALIZER": "secure_redis.serializer.SecureSerializer",
         },
-        "KEY_PREFIX": "claimantsapi:secure",
+        "KEY_PREFIX": "claimantsapi-secure",
         # expire in 30 minutes after last activity - TODO this might be ignored by session ttl logic
         "TIMEOUT": 60 * 30,
     },
@@ -203,7 +203,7 @@ CACHES = {
         | {
             # 'PARSER_CLASS': 'redis.connection.HiredisParser',
         },
-        "KEY_PREFIX": "claimantsapi:insecure",
+        "KEY_PREFIX": "claimantsapi-insecure",
         "TIMEOUT": 60 * 60 * 24,  # 1 day
     },
 }

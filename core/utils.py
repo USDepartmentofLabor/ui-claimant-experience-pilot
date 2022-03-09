@@ -2,8 +2,10 @@
 import hashlib
 from api.models import IdentityProvider
 from django.utils import timezone
-from django_redis import get_redis_connection
+from django.core.cache import cache
 from datetime import timedelta
+from django.contrib.sessions.backends.cache import KEY_PREFIX as SESSION_KEY_PREFIX
+from django.conf import settings
 
 
 def session_as_dict(request):
@@ -16,15 +18,23 @@ def session_as_dict(request):
 
 
 def get_session_store():
-    return get_redis_connection("default")
+    return cache.client.get_client()
+
+
+def get_session_cache_key(session_key):
+    store_prefix = settings.CACHES["default"]["KEY_PREFIX"]
+    version = "1"  # django.core.cache.backends.BaseCache defaults to this
+    return f"{store_prefix}:{version}:{SESSION_KEY_PREFIX}{session_key}"
 
 
 def get_session_expires_at(session_key):
-    r = get_session_store()
-    # TODO there's gotta be a function somewhere to derive this...
-    key = f"claimantsapi:secure:1:django.contrib.sessions.cache{session_key}"
-    ttl = r.ttl(key)
+    key = get_session_cache_key(session_key)
+    ttl = cache.ttl(key)
     return timezone.now() + timedelta(0, ttl)
+
+
+def get_session(session_key):
+    return cache.get(cache.client.reverse_key(get_session_cache_key(session_key)))
 
 
 def register_local_login(request):
