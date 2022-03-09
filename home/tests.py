@@ -12,7 +12,12 @@ logger = logging.getLogger("home.tests")
 class HomeTestCase(TestCase):
     def test_index_page(self):
         response = self.client.get("/")
-        self.assertContains(response, "Apply for benefits", status_code=200)
+        self.assertRedirects(
+            response,
+            "/about/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
 
     def test_idp_page(self):
         response = self.client.get("/idp/?redirect_to=/some/place")

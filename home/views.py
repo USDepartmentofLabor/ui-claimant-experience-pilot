@@ -53,9 +53,8 @@ def active_swas_with_featuresets():
     return swas
 
 
-# TODO should this be a 404 or a placeholder referring viewers to a SWA finder fed site?
 def index(request):
-    return render(request, "index.html")
+    return redirect("/about/")
 
 
 # the swa-specific pages should be cache-able
