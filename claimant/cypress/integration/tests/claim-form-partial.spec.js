@@ -52,6 +52,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "00000",
       },
     });
+    cy.click_next(); // must advance for dev server to find a Back button
     cy.click_save_and_exit();
 
     cy.login(email);
