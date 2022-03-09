@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}{% load i18n %}
+<div class="grid-container">
+  <main>
+    <h1>{% translate "About [PILOT APPLICATION]" %}</h1>
+    <p>
+      <!-- prettier-ignore -->
+      {% translate "This website is maintained by the U.S. Department of Labor." %}
+    </p>
+    <p>
+      {% translate "For media inquiries, contact" %}
+      <a href="/placeholder-link">{% translate "[LINK to DOL contact]" %}</a>.
+    </p>
+  </main>
+</div>
+{% endblock %}

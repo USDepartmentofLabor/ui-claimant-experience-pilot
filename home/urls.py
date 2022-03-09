@@ -16,6 +16,7 @@ urlpatterns = [
     path("start/", views.start, name="start"),
     path("raise_error/", views.raise_error, name="raise_error"),
     path("identity/", views.identity, name="identity"),
+    path("about/", views.about, name="about"),
 ]
 
 if settings.SHOW_LOGIN_PAGE:

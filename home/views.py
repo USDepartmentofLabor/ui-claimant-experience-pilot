@@ -310,3 +310,7 @@ def identity(request):
     except TemplateDoesNotExist as err:
         logger.exception(err)
         return handle_404(request, None)
+
+
+def about(request):
+    return render(request, "about.html")
