@@ -89,6 +89,9 @@ class ExpiredPartialClaimManager(models.Manager):
 class Claim(TimeStampedModel):
     class Meta:
         db_table = "claims"
+        indexes = [
+            models.Index(fields=["updated_at"]),
+        ]
 
     class EventCategories(models.IntegerChoices):
         RESOLVED = 1

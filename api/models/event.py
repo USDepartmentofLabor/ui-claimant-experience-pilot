@@ -11,6 +11,8 @@ class Event(TimeStampedModel):
         db_table = "events"
         indexes = [
             models.Index(fields=["model_name", "model_id"]),
+            models.Index(fields=["category"]),
+            models.Index(fields=["happened_at"]),
         ]
 
     model_name = models.ForeignKey(ContentType, on_delete=models.CASCADE)
