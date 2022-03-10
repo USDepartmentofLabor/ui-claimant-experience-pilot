@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unemployment.dol.gov/schemas/identity-v1.0.json",
+  "id": "29e05261-db64-4c78-ad54-4e1a75fdc508",
+  "swa_xid": "34288697-18d5-44c0-bc59-0347930095c9",
+  "claimant_id": "opaque-claimaint-string1",
+  "identity_provider": "login.gov",
+  "identity_assurance_level": 2,
+  "validated_at": "2022-02-28T13:44:02-06:00",
+  "swa_code": "XX",
+  "email": "someone@example.com",
+  "all_emails": ["someone@example.net"],
+  "first_name": "Jesús",
+  "last_name": "Peña",
+  "birthdate": "2000-02-02",
+  "ssn": "900-00-4567",
+  "address": {
+    "address1": "879 Pérez St",
+    "city": "Somewhere",
+    "state": "AR",
+    "zipcode": "72200"
+  },
+  "phone": "555-555-5309",
+  "verified_at": "2022-02-04T12:06:36-06:00"
+}
