@@ -71,6 +71,7 @@ def swa_index(request, swa_code):
             template_file,
             {
                 "swa": swa,
+                "swa_contact": f"_swa/{swa_code}/contact_details.html",
                 "show_navigation": False,
             },
         )
@@ -290,6 +291,7 @@ def identity(request):
             "contact_us_path": f"/contact/{whoami.swa.code}/",
             "home_path": "/identity/",
             "more_help": f"_swa/{whoami.swa.code}/more_help.html",
+            "swa_name": f"_swa/{whoami.swa.code}/name.html",
             "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
             "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",
             "idp_url": (

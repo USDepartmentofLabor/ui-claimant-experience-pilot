@@ -47,33 +47,33 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
 
   context("IDENTITY_ONLY featureset", () => {
     it("uses verify identity language", () => {
-      cy.visit("/start/YY/");
+      cy.visit("/start/AR/");
       cy.contains("Verify your identity online with Login.gov").should(
         "be.visible"
       );
       cy.click_yes("use-app");
       cy.click_next();
-      cy.url().should("contain", "/idp/YY/");
+      cy.url().should("contain", "/idp/AR/");
     });
   });
 
   context("swa_xid param", () => {
     it("should preserve optional swa_xid param", () => {
       const swa_xid = faker.datatype.uuid();
-      cy.visit(`/start/YY/?swa_xid=${swa_xid}`);
+      cy.visit(`/start/AR/?swa_xid=${swa_xid}`);
       cy.click_yes("use-app");
       cy.click_next();
-      cy.url().should("contain", "/idp/YY/?");
+      cy.url().should("contain", "/idp/AR/?");
       cy.url().should("contain", `swa_xid=${swa_xid}`);
       cy.getCookie("swa_xid").should("have.property", "value", swa_xid);
     });
 
     it("filters out dangerous characters", () => {
       const swa_xid = "abc123-<alert>danger!</alert>";
-      cy.visit(`/start/YY/?swa_xid=${swa_xid}`);
+      cy.visit(`/start/AR/?swa_xid=${swa_xid}`);
       cy.click_yes("use-app");
       cy.click_next();
-      cy.url().should("contain", "/idp/YY/?");
+      cy.url().should("contain", "/idp/AR/?");
       cy.url().should("contain", "swa_xid=abc123-alertdangeralert");
     });
   });

@@ -11,9 +11,9 @@
           {% translate "Your identity verification" %}
           <span class="claim-id">({{ claim.swa_xid }})</span>
           {% translate "was shared with" %}
-          {{ whoami.swa.name }}
+          {% include swa_name %}
           {% translate "on" %}
-          {{ completed_at|date }}.
+          <strong>{{ completed_at|date }}</strong>.
         </p>
       </div>
     </div>
