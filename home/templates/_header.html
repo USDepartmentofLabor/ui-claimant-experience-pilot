@@ -28,8 +28,8 @@
       </li>
       <li class="usa-nav__primary-item">
         <a href="/about/"
-           {% if current_path == about_path %}aria-current="page"i{% endif %}
-           class="usa-nav__link {% if current_path == about_path %}usa-current{% endif %}"
+           {% if current_path == "/about/" %}aria-current="page"i{% endif %}
+           class="usa-nav__link {% if current_path == "/about/" %}usa-current{% endif %}"
            >{% translate "About" %}</a>
         </li>
       {% if whoami and contact_us_path %}

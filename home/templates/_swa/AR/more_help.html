@@ -1,7 +1,10 @@
 {% block content %}
 {% load i18n %}
 <ul class="usa-list">
-  <li>find office</li>
-  <li>faq</li>
+  <li><a href="https://www.dws.arkansas.gov/contact/" class="usa-link usa-link--external">{% translate "Find my local office" %}</a></li>
+  <li><a href="https://www.dws.arkansas.gov/unemployment/" class="usa-link usa-link--external">{% translate "AWDS Unemployment Insurance" %}</a></li>
+  <li><a href="https://www.dws.arkansas.gov/src/files/Newest_Division_update_500_BOOKLET_8X11_ART_v07-2-2019_1.pdf" class="usa-link usa-link--external"
+    >{% translate "Your Unemployment Insurance Handbook" %} &mdash; {% translate "Arkansas Division of Workforce Services [PDF]" %}
+  </a></li>
 </ul>
 {% endblock %}
