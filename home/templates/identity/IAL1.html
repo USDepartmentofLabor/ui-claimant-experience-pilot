@@ -1,5 +1,8 @@
-{% extends "base.html" %} {% block content %} {% load i18n %}
-<main role="main">
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<div class="grid-container">
+ <main role="main">
   <section>
     <h1>{% translate "Welcome" %}</h1>
 
@@ -69,5 +72,6 @@
       {% include more_help %}
     </section>
   </section>
-</main>
+ </main>
+</div>
 {% endblock %}

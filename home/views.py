@@ -89,17 +89,12 @@ def swa_contact(request, swa_code):
         swa = SWA.active.get(code=swa_code)
         return render(
             request,
-            "swa-contact.html",
+            f"_swa/{swa.code}/contact.html",
             {
                 "home_path": "/identity/" if swa.is_identity_only() else "/claimant/",
                 "contact_us_path": f"/contact/{swa_code}/",
                 "whoami": whoami,
                 "swa": swa,
-                "swa_hours_of_operation": f"_swa/{swa.code}/hours_of_operation.html",
-                "swa_weekly_benefits": f"_swa/{swa.code}/weekly_benefits.html",
-                "swa_new_claim": f"_swa/{swa.code}/new_claim.html",
-                "swa_general_information": f"_swa/{swa.code}/general_information.html",
-                "swa_help_finding_work": f"_swa/{swa.code}/help_finding_work.html",
             },
         )
     except TemplateDoesNotExist:

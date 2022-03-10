@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<div class="grid-container">
+  <main>
+    <h1>{% translate "Contact us" %}</h1>
+    <section>
+      {% translate "Here's how to reach us if you have questions about unemployment benefits or need help with verifying your identity:" %}
+    </section>
+    <section>
+      <h2 class="margin-bottom-0 font-sans-sm">UI Hotline:</h2>
+      1-844-908-2178
+    </section>
+    <section>
+      <h2 class="margin-bottom-0 font-sans-sm">UI Hotline hours of operation:</h2>
+      Monday – Friday, 8:00 a.m. to 3:30 p.m.
+    </section>
+    <section>
+      <h2 class="margin-bottom-0 font-sans-sm">Email:</h2>
+      <a href="mailto:ADWS.Info@arkansas.gov">ADWS.Info@arkansas.gov</a>
+    </section>
+    <section>
+      <h2 class="margin-bottom-0 font-sans-sm">For help with Login.gov:</h2>
+      [TBD login.gov support info]
+    </section>
+  </main>
+</div>
+{% endblock %}
