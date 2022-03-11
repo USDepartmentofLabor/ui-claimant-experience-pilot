@@ -5,15 +5,6 @@
 <script>
   if (typeof USDOL === "undefined") { USDOL = {} }
   USDOL.SWAS = JSON.parse(document.getElementById("swa-featuresets").textContent);
-  {% include "_has_completed_prequal.jssnip" %}
-  if (!hasCompletedPrequal()) {
-    {% if swa %}
-    const newPath = USDOL.SWAS.{{ swa }}.featureset === "Identity Only" ? "/start/{{ swa }}/" : "/start/";
-    {% else %}
-    const newPath = "/start/";
-    {% endif %}
-    window.location.replace(newPath);
-  }
 </script>
 <main role="main">
   <section class="grid-container">
