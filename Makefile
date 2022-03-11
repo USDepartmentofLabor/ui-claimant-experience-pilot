@@ -140,10 +140,10 @@ container-build-wcms: ## Build the Django app container image (to test image con
 	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.10-slim-bullseye .
 
 container-run: ## Run the Django app in Docker
-	docker run --rm -it -p 8004:8000 $(DOCKER_IMG)
+	docker run --network arpaui_app-tier --rm -it -p 8004:8000 $(DOCKER_IMG)
 
 container-run-with-env-file: ## Run the Django app in Docker using core/.env env-file (useful in combination with container-build-wcms)
-	docker run --rm -it -p 8004:8000 --env-file=core/.env $(DOCKER_IMG)
+	docker run --network arpaui_app-tier --rm -it -p 8004:8000 --env-file=core/.env $(DOCKER_IMG)
 
 container-stop: ## Stop the Django app container with DOCKER_CONTAINER_ID
 	docker stop $(DOCKER_CONTAINER_ID)
@@ -232,9 +232,11 @@ build-cleanup: ## Common final tasks for the various Dockerfile targets (intende
 # the --mount option ignores the local build dir for what is on the image
 login: ## Log into the Django app docker container
 	docker run --rm -it \
+	--network arpaui_app-tier \
 	--name $(DOCKER_NAME) \
 	--mount type=volume,dst=/app/claimant/build \
 	--mount type=volume,dst=/app/home/static \
+	--add-host=host.docker.internal:host-gateway \
 	-v $(PWD):/app \
 	-p 8004:8000 \
 	$(DOCKER_IMG) /bin/bash

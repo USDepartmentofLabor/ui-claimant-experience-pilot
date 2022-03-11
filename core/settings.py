@@ -165,9 +165,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # caching. sessions use the same cache, but have a custom serializer
 REDIS_DB = 0
-REDIS_URL = os.environ.get(
-    "REDIS_URL", f"rediss://host.docker.internal:6379/{REDIS_DB}"
-)
+REDIS_URL = os.environ.get("REDIS_URL", f"rediss://elasticache:6379/{REDIS_DB}")
 redis_base_options = {
     "DB": REDIS_DB,
     "CLIENT_CLASS": "django_redis.client.DefaultClient",
