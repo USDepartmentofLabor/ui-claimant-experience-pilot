@@ -106,6 +106,7 @@ def swa_contact(request, swa_code):
 
 # our IdP "login" page
 # currently only one IdP offered, but could be multiple.
+# TODO support redirect_to via path arg rather than param so we can cache only on path
 def idp(request, swa_code=None):
     requested_swa = swa_code if swa_code else request.GET.get("swa", None)
     if requested_swa:

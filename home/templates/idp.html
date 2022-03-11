@@ -41,63 +41,31 @@
       setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
     </script>
     {% endif %}
-    <script type="text/javascript">
-      USDOL.appendParamsToLinks();
-    </script>
   {% else %}
-    <script type="text/javascript">
-      USDOL.clickLogin = (btn) => {
-        const form = document.getElementById("idp-picker");
-        if (btn.id === "login-dot-gov") {
-          form.action = "{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}";
-        } else if (btn.id === "test-login") {
-          form.action = "{{ base_url }}/login/?redirect_to={{ redirect_to }}";
-        }
-        return true;
-      };
-      USDOL.handleSubmit = () => {
-        USDOL.clearErrors();
-        const form = document.getElementById("idp-picker");
-        const formData = new FormData(form);
-        const proceed = formData.get("swa_code");
-        if (!proceed) {
-          USDOL.showErrors(["{% translate "Please make a selection" %}"]);
-          USDOL.decorateRequiredFields(["swa_code"]);
-          return false;
-        } else {
-          USDOL.clearErrors();
-          USDOL.passThroughParams(form);
-          return true;
-        }
-      };
-    </script>
-    <form id="idp-picker" method="GET" action="#" onsubmit="return USDOL.handleSubmit()">
-      <input type="hidden" name="redirect_to" id="redirect_to" value="{{ redirect_to }}" />
-      {% include './uswds/_alert_error.html' %}
-
-      <section>
-        {% include "uswds/_swa_options.html" with required=True swas=swas %}
+    <section>
+      {% for s in swas %}
         <div class="margin-top-2">
-          <button
-            onclick="USDOL.clickLogin(this) && USDOL.handleSubmit()"
-            id="login-dot-gov"
+          <a
+            href="{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
+            id="login-dot-gov-{{ s.code }}"
             class="usa-button"
-            type="submit"
-            >{% translate "Sign in with Login.gov" %}</button>
+            >{% translate "Sign in to" %} {{ s.name }} {% translate "with Login.gov" %}</a>
           {% if show_login_page %}
             <p>
-              <button
-                onclick="USDOL.clickLogin(this) && USDOL.handleSubmit()"
-                id="test-login"
+              <a
+                href="{{ base_url }}/login/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
+                id="test-login-{{ s.code }}"
                 class="usa-button usa-button--outline"
-                type="submit"
-                >{% translate "Test Login" %}</button>
+                >{% translate "Test Login for" %} {{ s.name }}</a>
             </p>
           {% endif %}
         </div>
-      </section>
-    </form>
+      {% endfor %}
+    </section>
   {% endif %}
+  <script type="text/javascript">
+    USDOL.appendParamsToLinks();
+  </script>
   </section>
 </main>
 {% endblock %}
