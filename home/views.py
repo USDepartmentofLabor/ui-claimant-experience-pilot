@@ -311,3 +311,7 @@ def identity(request):
 
 def about(request):
     return render(request, "about.html")
+
+
+def maintenance_mode(request):
+    return render(request, "maintenance-mode.html")

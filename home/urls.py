@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from django.conf import settings
+from launchdarkly.client import ld_client
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -21,3 +22,9 @@ urlpatterns = [
 
 if settings.SHOW_LOGIN_PAGE:
     urlpatterns.append(path("login/", views.login))
+
+in_maintenance_mode = ld_client.variation(
+    "maintenance-mode", {"key": "anonymous-user"}, True
+)
+if in_maintenance_mode:
+    urlpatterns = [re_path(r"^.*", views.maintenance_mode, name="maintenance_mode")]
