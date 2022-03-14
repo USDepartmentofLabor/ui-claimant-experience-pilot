@@ -37,6 +37,7 @@ import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
 import { SessionManager } from "./components/SessionManager/SessionManager";
 import HomePage from "./pages/Home/Home";
 import { useGetCompletedClaim } from "./queries/claim";
+import { SystemAdminMessage } from "./components/SystemAdminMessage/SystemAdminMessage";
 
 const BYPASS_COMPLETED_CHECK =
   process.env.NODE_ENV === "development" &&
@@ -136,6 +137,11 @@ function App() {
           {t("skip_to_main_content")}
         </a>
         <GovBanner />
+        {ldFlags.systemAdminMessage && (
+          <SystemAdminMessage variant={ldFlags.systemAdminMessageType}>
+            {ldFlags.systemAdminMessage}
+          </SystemAdminMessage>
+        )}
         <div className="usa-nav-container">
           <div className="usa-navbar">
             <Title>
