@@ -296,6 +296,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.base_url",
                 "core.context_processors.common_vars",
+                "core.context_processors.ld_flags",
             ],
         },
     },

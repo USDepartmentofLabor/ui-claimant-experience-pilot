@@ -3,6 +3,7 @@
 <div class="usa-overlay"></div>
 <header class="usa-header usa-header--basic">
  {% include "./uswds/_banner.html" %}
+ {% if system_admin_message %}{% include '_system-admin-message.html' %}{% endif %}
  <div class="usa-nav-container">
   <div class="usa-navbar">
     <div class="usa-logo">

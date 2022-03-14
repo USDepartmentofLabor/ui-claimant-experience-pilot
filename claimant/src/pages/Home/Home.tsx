@@ -215,7 +215,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="tablet:width-mobile-lg margin-x-auto">
+    <main id="main-content" className="tablet:width-mobile-lg margin-x-auto">
       <RequestErrorBoundary>
         {greetingName ? (
           <h1>
