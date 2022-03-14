@@ -131,7 +131,7 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./claimant/.env-example ./claimant/.env
 
 container-build: ## Build the Django app container image (local development)
-	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
+	docker build --platform linux/amd64 -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
 
 acr-login: ## Log into the Azure Container Registry
 	docker login ddphub.azurecr.io
