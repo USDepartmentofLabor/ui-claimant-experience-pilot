@@ -13,6 +13,7 @@ from api.claim_finder import ClaimFinder
 import django.middleware.csrf
 import logging
 from core.local_idp import LocalIdentityProviderError
+from core.exceptions import MissingSwaXidError, MalformedSwaXidError
 import json
 from django.template.defaulttags import register
 
@@ -231,10 +232,38 @@ def login(request):
         try:
             whoami = register_local_login(request)
         except LocalIdentityProviderError as error:
+            logger.exception(error)
             return render(
                 request,
                 "auth-error.html",
                 {"error": str(error)},
+                status=400,
+            )
+        except MissingSwaXidError as err:
+            swa_code = err.swa.code
+            logger.exception(err)
+            return render(
+                request,
+                "missing-swa-xid.html",
+                {
+                    "swa": err.swa,
+                    "swa_missing_xid": f"_swa/{swa_code}/missing-xid.html",
+                    "more_help": f"_swa/{swa_code}/more_help.html",
+                },
+                status=400,
+            )
+        except MalformedSwaXidError as err:
+            swa_code = err.swa.code
+            logger.exception(err)
+            return render(
+                request,
+                "malformed-swa-xid.html",
+                {
+                    "swa": err.swa,
+                    "swa_xid": err,
+                    "swa_missing_xid": f"_swa/{swa_code}/missing-xid.html",
+                    "more_help": f"_swa/{swa_code}/more_help.html",
+                },
                 status=400,
             )
 
@@ -285,13 +314,23 @@ def identity(request):
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     IAL = whoami.IAL
     claim = ClaimFinder(whoami).find()
+    if not claim:
+        logger.error("Missing expected claim for identity-only flow")
+        return handle_404(request, None)
+
+    template_name = f"identity/IAL{IAL}.html"
+    if claim.is_swa_xid_expired():
+        template_name = "identity/expired.html"
+
     try:
         view_args = {
             "whoami": whoami,
             "swa": whoami.swa,
+            "ial2error": request.GET.get("ial2error"),
             "contact_us_path": f"/contact/{whoami.swa.code}/",
             "home_path": "/identity/",
             "more_help": f"_swa/{whoami.swa.code}/more_help.html",
+            "expired_help": f"_swa/{whoami.swa.code}/expired_help.html",
             "swa_name": f"_swa/{whoami.swa.code}/name.html",
             "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
             "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",
@@ -303,7 +342,7 @@ def identity(request):
             "completed_at": claim.completed_at(),
             "claim": claim,
         }
-        return render(request, f"identity/IAL{IAL}.html", view_args)
+        return render(request, template_name, view_args)
     except TemplateDoesNotExist as err:
         logger.exception(err)
         return handle_404(request, None)

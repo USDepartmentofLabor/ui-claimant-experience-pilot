@@ -8,3 +8,7 @@ home/templates/_google_tag_manager.html
 home/templates/base.html
 home/templates/login.html
 home/templates/identity/*
+home/templates/missing-swa-xid.html
+home/templates/malformed-swa-xid.html
+home/templates/404.html
+home/templates/500.html

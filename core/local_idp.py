@@ -6,8 +6,10 @@ import logging
 from api.models import Claimant, Claim, SWA
 from api.whoami import WhoAmI
 from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
-from core.exceptions import ClaimStorageError
+from api.claim_finder import ClaimFinder
+from core.exceptions import ClaimStorageError, MissingSwaXidError, MalformedSwaXidError
 from core.utils import local_identity_provider, hash_idp_user_xid
+from core.swa_xid import SwaXid
 from django.utils import timezone
 from django.db import transaction
 
@@ -68,18 +70,28 @@ class LocalIdentityProvider(object):
         params["claimant_id"] = user_xid
 
         swa_xid = self.get_swa_xid(params)
+        claim = False
+
         if swa_xid:
+            sx = SwaXid(swa_xid, swa.code)
+            if not sx.format_ok():
+                raise MalformedSwaXidError(swa, swa_xid)
             claim = Claim.initiate_with_swa_xid(swa, claimant, swa_xid)
             params["claim_id"] = str(claim.uuid)
             params.pop("swa_xid", None)  # delete if exists
             self.request.session["swa_xid"] = swa_xid
-        elif swa.is_identity_only():
-            raise LocalIdentityProviderError(
-                "SWA {} is identity only, but missing swa_xid".format(swa.name)
-            )
 
         self.whoami = WhoAmI.from_dict(params)
         self.claimant = claimant
+
+        if swa.is_identity_only() and not claim:
+            claim = ClaimFinder(self.whoami).find()
+            if claim:
+                self.whoami.claim_id = str(claim.uuid)
+            else:
+                raise MissingSwaXidError(
+                    swa, "SWA {} is identity only, but missing swa_xid".format(swa.name)
+                )
 
     def get_swa_xid(self, params):
         if "swa_xid" in params:

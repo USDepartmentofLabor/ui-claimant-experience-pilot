@@ -33,6 +33,7 @@ from .test_utils import (
 )
 import logging
 from core.email import Email, InitialClaimConfirmationEmail
+from core.swa_xid import SwaXid
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ class CoreTestCase(TestCase):
 
     def test_404(self):
         resp = self.client.get("/route-that-does-not-exist")
-        self.assertContains(resp, "Sorry, we could not find that page", status_code=404)
+        self.assertContains(resp, "Page not found", status_code=404)
 
     def test_500(self):
         c = Client(raise_request_exception=False)
@@ -340,3 +341,29 @@ class LaunchDarklyTestCase(TestCase):
         self.assertRegex(
             response.content.decode("UTF-8"), r'window\.LD_CLIENT_SDK_KEY=".{24}"'
         )
+
+
+class SwaXidTestCase(TestCase):
+    def test_swa_xid_timestamp(self):
+        sx = SwaXid("20220222-123456-abc", "AR")
+        # converts to UTC
+        self.assertEqual(sx.as_isoformat(), "2022-02-22T18:34:56+00:00")
+        self.assertTrue(sx.datetime)
+        self.assertEqual(f"{sx}", "20220222-123456-abc")
+        # however the format is incorrect
+        self.assertFalse(sx.format_ok())
+
+    def test_swa_xid_format(self):
+        sx = SwaXid("20220222-123456-1234567-123456789", "AR")
+        self.assertTrue(sx.format_ok())
+
+    def test_swa_xid_setting_unknown(self):
+        sx = SwaXid("abc-123", "XX")
+        self.assertTrue(sx.format_ok())
+        self.assertFalse(sx.datetime)
+        self.assertFalse(sx.as_isoformat())
+
+    def test_swa_xid_invalid_date(self):
+        sx = SwaXid("20220222-999999-abc", "AR")
+        self.assertFalse(sx.format_ok())
+        self.assertFalse(sx.datetime)

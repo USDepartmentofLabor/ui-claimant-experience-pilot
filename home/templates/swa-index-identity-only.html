@@ -15,6 +15,7 @@
 
     <script type="text/javascript">
       if (typeof USDOL === "undefined") { USDOL = {} }
+      USDOL.requireSwaXid();
       USDOL.handleUseAppSelection = () => {
         const form = document.getElementById("use-app-form");
         const formData = new FormData(form);

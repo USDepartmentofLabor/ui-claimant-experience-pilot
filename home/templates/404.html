@@ -1,9 +1,10 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
 <main role="main">
-  <section class="grid-container usa-section">
-    <div class="grid-row">
-      {% translate "Sorry, we could not find that page." %}
-    </div>
+  <section class="grid-container">
+    <section>
+      <h1>{% translate "Page not found" %}</h1>
+      {% translate "We’re sorry — we can’t find the page you’re looking for. Try going back to the previous page." %}
+    </section>
   </section>
 </main>
 {% endblock %}

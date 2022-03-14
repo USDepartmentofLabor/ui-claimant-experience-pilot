@@ -13,6 +13,7 @@ from django.utils import timezone
 from jwcrypto.common import json_encode
 import logging
 from core.exceptions import ClaimStorageError
+from core.swa_xid import SwaXid
 from core.claim_encryption import (
     AsymmetricClaimEncryptor,
     SymmetricClaimEncryptor,
@@ -134,7 +135,17 @@ class Claim(TimeStampedModel):
 
         with transaction.atomic():
             claim = Claim.objects.create(swa=swa, claimant=claimant, swa_xid=swa_xid)
-            claim.events.create(category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
+            sx = SwaXid(swa_xid, swa.code)
+            if sx.datetime:
+                claim.events.create(
+                    category=Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                    happened_at=sx.datetime,
+                    description=sx.as_isoformat(),
+                )
+            else:
+                claim.events.create(
+                    category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+                )
         return claim
 
     def create_stored_event(self, bucket_name):
@@ -165,6 +176,26 @@ class Claim(TimeStampedModel):
                 description=event_description,
             )
         return self
+
+    def is_swa_xid_expired(self):
+        if not self.swa_xid:
+            return False
+        # find the oldest INITIATED_WITH_SWA_XID event that has a description
+        initiated_event = (
+            self.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                description__isnull=False,
+            )
+            .order_by("happened_at")
+            .first()
+        )
+        if not initiated_event:
+            return False
+        # pull the expiration from settings
+        return (
+            initiated_event.happened_at
+            + timedelta(days=settings.EXPIRE_SWA_XID_CLAIMS_AFTER.get(self.swa.code, 0))
+        ) < timezone.now()
 
     def is_completed(self):
         return self.events.filter(category=Claim.EventCategories.COMPLETED).count() > 0
