@@ -13,7 +13,6 @@ services:
     container_name: mysqlserver
     image: mysql:8.0
     restart: always
-    command: --authentication-policy=mysql_native_password
     environment:
       # So you don"t have to use root, but you can if you like
       MYSQL_USER: "user"
@@ -28,7 +27,6 @@ services:
     volumes:
       - ui-db:/var/lib/mysql
       - ./scripts/mysqld-init:/docker-entrypoint-initdb.d
-      - ./scripts/mysqlserver.cnf:/etc/my.cnf
 
   # https://github.com/localstack/localstack/ provides local mock AWS services
   localstack:

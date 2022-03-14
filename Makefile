@@ -24,8 +24,13 @@ services-clean: ## Clean up dependencies
 redis-cli: ## Connect to Redis service with redis-cli
 	redis-cli --tls --cacert certs/redisCA.crt --cert certs/redis-client.crt --key certs/redis-client.key
 
+ifeq (, $(shell which docker))
+mysql-cli: ## Connect to the MySQL server
+	mysql -h rds -u user -psecret -D unemployment
+else
 mysql-cli: ## Connect to the MySQL server
 	mysql -h 127.0.0.1 -u user -psecret -D unemployment
+endif
 
 mysql-reset: ## Reset the local database
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
