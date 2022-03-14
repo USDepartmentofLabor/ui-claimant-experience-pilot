@@ -6,6 +6,14 @@
   <section>
     <h1>{% translate "Welcome" %}</h1>
 
+    {% if ial2error %}
+      <div class="usa-alert usa-alert--error usa-alert--slim">
+        <div class="usa-alert__body">
+          <p class="usa-alert__text">{% translate "An error occured while trying to verify your information. Please try again." %}</p>
+        </div>
+      </div>
+    {% endif %}
+
     <section>
       {% translate "You must verify your identity within" %}
       <strong>{% translate "7 calendar days" %}</strong>

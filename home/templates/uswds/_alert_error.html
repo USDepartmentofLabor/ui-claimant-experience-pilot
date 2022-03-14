@@ -23,6 +23,16 @@
       document.cookie = `${param}=${value}; max-age=${maxAge}; path=/; secure; SameSite=Lax`;
     });
   };
+  USDOL.requireSwaXid = () => {
+    const params = new URLSearchParams(window.location.search);
+    const cookies = document.cookie.split("; ");
+    if (!params.has("swa_xid") && !cookies.some((row) => row.startsWith("swa_xid="))) {
+      const errEl = document.createElement("div");
+      const text = document.createTextNode("{% translate 'Missing swa_xid -- check your URL' %}");
+      errEl.appendChild(text);
+      USDOL.showAlert(errEl);
+    }
+  };
   USDOL.passThroughParams = (form) => {
     const params = new URLSearchParams(window.location.search);
     USDOL.allowedParams.forEach((param) => {
@@ -41,7 +51,7 @@
       form.appendChild(hiddenInput);
     });
   };
-  USDOL.showErrors = (errors) => {
+  USDOL.showAlert = (errElement) => {
     const errorDiv = document.getElementById("form-errors");
     // always start fresh
     errorDiv.innerHTML = "";
@@ -54,15 +64,18 @@
     alertBody.classList.add("usa-alert__body");
     const alertText = document.createElement("div");
     alertText.classList.add("usa-alert__text");
+    alertText.appendChild(errElement);
+    alertBody.appendChild(alertText);
+    alertDiv.appendChild(alertBody);
+    errorDiv.appendChild(alertDiv);
+  };
+  USDOL.showErrors = (errors) => {
     const msgSingular = "{% translate "Correct the error on this page to proceed" %}";
     const msgPlural = "{% translate "Correct the {count} errors on this page to proceed" %}".replace("{count}", errors.length);
     const errEl = document.createElement("div");
     const text = document.createTextNode(errors.length === 1 ? msgSingular : msgPlural);
     errEl.appendChild(text);
-    alertText.appendChild(errEl);
-    alertBody.appendChild(alertText);
-    alertDiv.appendChild(alertBody);
-    errorDiv.appendChild(alertDiv);
+    USDOL.showAlert(errEl);
   };
   USDOL.clearErrors = () => {
     const errorDiv = document.getElementById("form-errors");

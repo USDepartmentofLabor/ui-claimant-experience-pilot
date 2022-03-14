@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<main role="main">
+  <section class="grid-container">
+    <section>
+      <h1>{% translate "Page not found" %}</h1>
+      {% translate "We’re sorry — we can’t find the page you’re looking for. Try going back to the previous page." %}
+    </section>
+    {% if swa_missing_xid %}
+    {% include swa_missing_xid %}
+    {% endif %}
+    <section>
+      <!-- TODO this is only available when logged in -->
+      {% translate "For general inquiries, " %}<a href="/contact/{{ swa.code }}/" class="usa-link">{% translate "contact us" %}</a>.
+    </section>
+    <section>
+      <h2>{% translate "More information" %}</h2>
+      {% include more_help %}
+    </section>
+  </section>
+</main>
+{% endblock %}

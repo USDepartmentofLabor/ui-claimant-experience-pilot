@@ -16,6 +16,7 @@ from api.models.claim import (
 )
 import datetime
 from datetime import timedelta
+from dateutil.tz import gettz
 from django.utils import timezone
 from api.test_utils import create_swa, create_idp, create_claimant
 import logging
@@ -229,6 +230,55 @@ class ApiModelsTestCase(TransactionTestCase):
             claimant.bump_IAL_if_necessary("2")
         )  # only the first results in a change
         self.assertFalse(claimant.bump_IAL_if_necessary("2"))
+
+    def test_claim_initiate_with_swa_xid(self):
+        # we use AR because we know we have a swa_xid format defined
+        try:
+            swa = SWA.active.get(code="AR")
+        except SWA.DoesNotExist:
+            swa, _ = create_swa(
+                code="AR",
+                is_active=True,
+                featureset=SWA.FeatureSetOptions.IDENTITY_ONLY,
+            )
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        # use an "old" date we know will show as expired
+        swa_xid = "20000101-123456-1234567-123456789"
+        utc_swa_dt = "2000-01-01T18:34:56+00:00"
+        claim = Claim.initiate_with_swa_xid(swa, claimant, swa_xid)
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count(),
+            1,
+        )
+        event = claim.events.filter(
+            category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+        ).first()
+        self.assertEqual(event.description, utc_swa_dt)
+        self.assertEqual(event.happened_at, datetime.datetime.fromisoformat(utc_swa_dt))
+        self.assertTrue(claim.is_swa_xid_expired())
+
+        # now one not expired
+        now = datetime.datetime.now(tz=gettz("US/Central")).replace(microsecond=0)
+        now_utc = now.astimezone(gettz("UTC"))
+        swa_xid = f"{now.strftime('%Y%m%d-%H%M%S')}-1234567-123456789"
+        utc_swa_dt = now_utc.isoformat()
+        claimant = create_claimant(idp, idp_user_xid="claimant-2")
+        claim = Claim.initiate_with_swa_xid(swa, claimant, swa_xid)
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count(),
+            1,
+        )
+        event = claim.events.filter(
+            category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+        ).first()
+        self.assertEqual(event.description, utc_swa_dt)
+        self.assertEqual(event.happened_at, now_utc)
+        self.assertFalse(claim.is_swa_xid_expired())
 
     def test_claim(self):
         ks_swa, _ = create_swa()

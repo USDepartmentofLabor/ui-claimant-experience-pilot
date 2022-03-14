@@ -18,6 +18,7 @@ from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
 from home.views import handle_404
 from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
 from core.exceptions import ClaimStorageError
+from core.swa_xid import SwaXid
 
 logger = logging.getLogger("logindotgov")
 
@@ -77,9 +78,13 @@ def explain(request):
 def ial2required(request):
     # if we already have an authenticated session, redirect to frontend app
     if request.session.get("authenticated"):
-        return redirect("/claimant/")
+        whoami = WhoAmI.from_dict(request.session.get("whoami"))
+        redirect_to = (
+            "/identity/" if whoami.swa.featureset == "Identity Only" else "/claimant/"
+        )
+        return redirect(f"{redirect_to}?idp=logindotgov&ial2error=true")
 
-    return redirect("/ial2required/?idp=logindotgov")
+    return render(request, "auth-error.html", {"error": "ial2required"}, status=403)
 
 
 @never_cache
@@ -92,13 +97,19 @@ def index(request):
 
     # if we already have an authenticated session, conditionally redirect to frontend app
     if request.session.get("authenticated"):
-        whoami = request.session.get("whoami")
+        whoami = WhoAmI.from_dict(request.session.get("whoami"))
+        logger.debug("🚀  authenticated as whoami=={}".format(whoami.as_dict()))
         # if this is a step-up within the same session, allow it.
-        if whoami and int(whoami.get("IAL")) == 1 and requested_ial == 2:
+        if int(whoami.IAL) == 1 and requested_ial == 2:
             logger.debug("🚀 IAL2 step up requested")
             pass
         else:
-            return redirect("/claimant/")
+            redirect_to = (
+                "/identity/"
+                if whoami.swa.featureset == "Identity Only"
+                else "/claimant/"
+            )
+            return redirect(redirect_to)
 
     # stash selection
     if "swa" in request.GET:
@@ -107,14 +118,7 @@ def index(request):
         request.session["swa"] = request.GET["swa_code"]
     if not request.session.get("swa"):
         logger.debug("🚀 missing swa or swa_code")
-        return render(
-            request,
-            "auth-error.html",
-            {
-                "error": "missing swa or swa_code parameter",
-            },
-            status=403,
-        )
+        return handle_404(request, None)
 
     try:
         swa = SWA.active.get(code=request.session.get("swa"))
@@ -128,16 +132,35 @@ def index(request):
     # swa_xid is unique string passed by SWAs to xref claims with their systems.
     # if the swa is an Identity Only featureset, swa_xid is required. otherwise, optional.
     # The swa_xid is optional on ial=2 because we assume we captured it already at ial=1
-    if "swa_xid" in request.GET:
-        request.session["swa_xid"] = request.GET["swa_xid"]
+    swa_xid = get_swa_xid(request)
+    if swa_xid:
+        sx = SwaXid(swa_xid, swa.code)
+        if not sx.format_ok():
+            logger.debug("Malformed swa_xid: {}".format(swa_xid))
+            return render(
+                request,
+                "malformed-swa-xid.html",
+                {
+                    "swa": swa,
+                    "swa_xid": swa_xid,
+                    "swa_missing_xid": f"_swa/{swa.code}/missing-xid.html",
+                    "more_help": f"_swa/{swa.code}/more_help.html",
+                },
+                status=400,
+            )
+        request.session["swa_xid"] = swa_xid
     elif requested_ial == 2:
         pass  # step up
     elif swa.is_identity_only():
         logger.debug("🚀 SWA.is_identity_only and missing swa_xid")
         return render(
             request,
-            "auth-error.html",
-            {"error": "missing swa_xid parameter"},
+            "missing-swa-xid.html",
+            {
+                "swa": swa,
+                "swa_missing_xid": f"_swa/{swa.code}/missing-xid.html",
+                "more_help": f"_swa/{swa.code}/more_help.html",
+            },
             status=400,
         )
 
@@ -351,10 +374,12 @@ def initiate_claimant_session(request, userinfo):
 
 
 def get_swa_xid(request):
-    if "swa_xid" in request.session:
-        return request.session["swa_xid"]
+    if "swa_xid" in request.GET:
+        return request.GET["swa_xid"]
     if "swa_xid" in request.COOKIES:
         return request.COOKIES["swa_xid"]
+    if "swa_xid" in request.session:
+        return request.session["swa_xid"]
     return False
 
 

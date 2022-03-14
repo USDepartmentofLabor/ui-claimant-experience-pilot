@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<div class="grid-container">
+ <main role="main">
+  <section>
+    <h1>{% translate "Welcome" %}</h1>
+
+    <section>
+      {% translate "It looks like you didn't complete your online identity verification in time, based on when you submitted your application." %}
+    </section>
+
+    <section>
+      {% translate "If you verified your identity in person at your local office, you can disregard this message." %}
+    </section>
+
+    <section>
+      {% include expired_help %}
+    </section>
+
+    <section>
+      <h2>{% translate "More information" %}</h2>
+      {% include more_help %}
+    </section>
+  </section>
+ </main>
+</div>
+{% endblock %}

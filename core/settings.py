@@ -421,3 +421,10 @@ LD_SDK_KEY = env.str("LD_SDK_KEY")
 LD_CLIENT_SDK_KEY = env.str("LD_CLIENT_SDK_KEY")
 
 DELETE_PARTIAL_CLAIM_AFTER_DAYS = env.int("DELETE_PARTIAL_CLAIM_AFTER_DAYS", 7)
+
+# override with JSON-encoded object of swa.code -> int (days)
+EXPIRE_SWA_XID_CLAIMS_AFTER = env.json("EXPIRE_SWA_XID_CLAIMS_AFTER", {"AR": 47})
+# override with JSON-encoded object of swa.code -> pytz timezone string
+SWA_XID_TIMEZONES = env.json("SWA_XID_TIMEZONES", {"AR": "US/Central"})
+# override with JSON-encoded object of swa.code -> regex string
+SWA_XID_PATTERNS = env.json("SWA_XID_PATTERNS", {"AR": "^\\d{8}-\\d{6}-\\d{7}-\\d{9}$"})

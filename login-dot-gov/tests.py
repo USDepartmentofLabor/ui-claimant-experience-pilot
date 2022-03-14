@@ -6,7 +6,7 @@ from logindotgov.oidc import LoginDotGovOIDCClient
 from urllib.parse import urlparse, parse_qsl
 from django.test.utils import override_settings
 from django.conf import settings
-from api.test_utils import create_swa
+from api.test_utils import create_swa, create_whoami
 from api.models import IdentityProvider, Claimant, Claim, SWA
 from core.test_utils import create_s3_bucket, delete_s3_bucket
 import logging
@@ -209,10 +209,17 @@ class LoginDotGovTestCase(TestCase):
     def test_session_authenticated(self):
         session = self.client.session
         session["authenticated"] = True
+        session["whoami"] = create_whoami()
+        session["swa"] = session["whoami"]["swa"]["code"]
         session.save()
 
         response = self.client.get("/logindotgov/")
-        self.assertRedirects(response, "/claimant/", status_code=302)
+        self.assertRedirects(
+            response,
+            "/claimant/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
 
     def test_explain(self):
         response = self.client.get("/logindotgov/explain")
@@ -274,9 +281,9 @@ class LoginDotGovTestCase(TestCase):
         self.assertRedirects(response, "/claimant/", status_code=302)
 
     def test_oidc_errors(self):
-        # missing swa is 403 error
+        # missing swa is 404 error
         response = self.client.get("/logindotgov/")
-        self.assertEquals(response.status_code, 403)
+        self.assertEquals(response.status_code, 404)
 
         # invalid swa is 404 not found
         response = self.client.get("/logindotgov/?swa=XX")
@@ -343,7 +350,7 @@ class LoginDotGovTestCase(TestCase):
         # existing session at IAL1, request to step up to IAL2
         session = self.client.session
         session["authenticated"] = True
-        session["whoami"] = {"IAL": "1"}
+        session["whoami"] = create_whoami() | {"IAL": "1"}
         session.save()
         swa, _ = create_swa(is_active=True)
         response = self.client.get(f"/logindotgov/?swa={swa.code}&ial=2")
@@ -359,19 +366,19 @@ class LoginDotGovTestCase(TestCase):
     # this is the "escape" url from login.gov where users can opt-out of proofing
     def test_ial2required(self):
         response = self.client.get("/logindotgov/ial2required")
-        self.assertRedirects(
-            response,
-            "/ial2required/?idp=logindotgov",
-            status_code=302,
-            fetch_redirect_response=False,
-        )
+        self.assertContains(response, "Login failed", status_code=403)
 
         session = self.client.session
         session["authenticated"] = True
+        session["whoami"] = create_whoami() | {"IAL": "1"}
+        session["whoami"]["swa"]["featureset"] = "Identity Only"
         session.save()
         response = self.client.get("/logindotgov/ial2required")
         self.assertRedirects(
-            response, "/claimant/", status_code=302, fetch_redirect_response=False
+            response,
+            "/identity/?ial2error=true&idp=logindotgov",
+            status_code=302,
+            fetch_redirect_response=False,
         )
 
     def test_swa_selection(self):
@@ -430,7 +437,7 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get(f"/logindotgov/?swa={swa.code}")
         authorize_parsed = mimic_oidc_server_authorized(response.url)
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
-        self.assertFalse(self.client.session.get("swa_xid"))
+        self.assertEqual(swa_xid, self.client.session.get("swa_xid"))
         claimant = Claimant.objects.last()
         self.assertEqual(claimant.claim_set.count(), 1)
         claim = claimant.claim_set.last()
@@ -476,7 +483,7 @@ class LoginDotGovTestCase(TestCase):
 
         # swa_xid param required for identity only swa
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
-        self.assertContains(response, "missing swa_xid", status_code=400)
+        self.assertContains(response, "Page not found", status_code=400)
 
         swa_xid = str(uuid.uuid4())
         response = self.client.get(
