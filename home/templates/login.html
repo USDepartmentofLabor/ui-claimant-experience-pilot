@@ -81,7 +81,7 @@
           {% include "uswds/_text_field.html" with id="last_name" label="Last Name" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="email" label="Email" required=True type="email" disabled=whoami %}
           {% include "uswds/_text_field.html" with id="birthdate" label="Birthdate (YYYY-MM-DD)" type="date" required=True %}
-          {% include "uswds/_text_field.html" with id="ssn" label="SSN (900-nn-nnnn)" type="text" required=True pattern="^900-[0-9]{2}-[0-9]{4}$" %}
+          {% include "uswds/_text_field.html" with id="ssn" label="SSN (900-nn-nnnn or 666-nn-nnnn)" type="text" required=True pattern="^(900|666)-[0-9]{2}-[0-9]{4}$" %}
           {% include "uswds/_text_field.html" with id="phone" label="Phone (nnn-nnn-nnnn)" type="tel" required=True pattern="[0-9]{3}-?[0-9]{3}-?[0-9]{4}" %}
           {% include "uswds/_text_field.html" with id="address.address1" label="Address (1)" type="text" required=True %}
           {% include "uswds/_text_field.html" with id="address.address2" label="Address (2)" type="text" required=False %}
