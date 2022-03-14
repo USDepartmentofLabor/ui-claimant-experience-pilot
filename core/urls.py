@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.urls import include, path, re_path
 
+from home.views import maintenance_mode
 from core.views import claimant as claimant_app, live, raise_error
+from launchdarkly.client import ld_client
+
 
 handler404 = "home.views.handle_404"
 handler500 = "home.views.handle_500"
@@ -31,3 +34,9 @@ urlpatterns = [
     path("swa/", include("swa.urls")),
     path("live/", live, name="live"),
 ]
+
+in_maintenance_mode = ld_client.variation(
+    "maintenance-mode", {"key": "anonymous-user"}, True
+)
+if in_maintenance_mode:
+    urlpatterns = [re_path(r"^.*", maintenance_mode, name="maintenance_mode")]
