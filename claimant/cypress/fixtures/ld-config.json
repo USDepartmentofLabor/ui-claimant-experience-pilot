@@ -1,4 +1,18 @@
 {
+  "system-admin-message": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": true,
+    "variation": 0,
+    "trackEvents": false
+  },
+  "system-admin-message-type": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": true,
+    "variation": 0,
+    "trackEvents": false
+  },
   "test-flag-server": {
     "version": 1,
     "flagVersion": 1,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 import logging
-
+from launchdarkly.client import ld_client
 
 logger = logging.getLogger(__name__)
 
@@ -28,3 +28,14 @@ def common_vars(request):
         "home_path": "/",
     }
     return params
+
+
+def ld_flags(request):
+    return {
+        "system_admin_message": ld_client.variation(
+            "system-admin-message", {"key": "anonymous-user"}, ""
+        ),
+        "system_admin_message_type": ld_client.variation(
+            "system-admin-message-type", {"key": "anonymous-user"}, "info"
+        ),
+    }

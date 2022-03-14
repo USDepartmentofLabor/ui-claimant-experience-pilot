@@ -2,6 +2,8 @@
   "flagValues": {
     "test-flag-server": true,
     "allow-1099g-upload": true,
-    "allow-claim-resolution": true
+    "allow-claim-resolution": true,
+    "system-admin-message": "",
+    "system-admin-message-type": "info"
   }
 }
