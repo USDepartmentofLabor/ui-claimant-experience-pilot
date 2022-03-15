@@ -2,5 +2,5 @@ awscli==1.22.71
 coverage==6.3.2
 django-extensions
 graphviz
-pytest==7.0.1
+pytest==7.1.0
 time_machine==2.6.0
