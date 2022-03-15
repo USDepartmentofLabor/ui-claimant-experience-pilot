@@ -26,5 +26,12 @@
     "value": true,
     "variation": 0,
     "trackEvents": false
+  },
+  "maintenance-mode": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": false,
+    "variation": 0,
+    "trackEvents": false
   }
 }

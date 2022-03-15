@@ -4,6 +4,7 @@
     "allow-1099g-upload": true,
     "allow-claim-resolution": true,
     "system-admin-message": "",
-    "system-admin-message-type": "info"
+    "system-admin-message-type": "info",
+    "maintenance-mode": false
   }
 }
