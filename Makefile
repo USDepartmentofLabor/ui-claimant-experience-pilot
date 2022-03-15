@@ -191,6 +191,9 @@ create-swa: ## Create a SWA model record. Requires SWA=code, URL=url, and NAME=n
 activate-swa: ## Set SWA record status=Active
 	python manage.py activate_swa $(SWA)
 
+deactivate-swa: ## Set SWA record status=Inactive
+	python manage.py deactivate_swa $(SWA)
+
 bucket: ## Create S3 bucket in localstack service (run inside container)
 	python manage.py create_bucket
 
