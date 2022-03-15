@@ -39,6 +39,9 @@ class SWA(TimeStampedModel):
     active = ActiveSwaManager()
 
     def public_key_as_jwk(self):
+        if not self.public_key:
+            raise ValueError("SWA {} is missing a public_key".format(self.code))
+
         from jwcrypto import jwk
 
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))
