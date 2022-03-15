@@ -29,6 +29,7 @@
             class="usa-accordion__button"
             aria-expanded="false"
             aria-controls="m-a1"
+            onclick="sendToGA('View_IDV_info')"
           >
             {% translate "To verify your identity, you'll need this information" %}
           </button>
@@ -54,6 +55,7 @@
           <a
             class="usa-button margin-x-auto"
             href="{{ idp_url }}/?ial=2&amp;swa_code={{ whoami.swa.code }}"
+            onclick="sendToGA('Begin_IAL2')"
           >
             {% translate "Start ID verification" %}
             <svg

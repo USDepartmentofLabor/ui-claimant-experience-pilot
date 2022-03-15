@@ -44,10 +44,11 @@
         const formData = new FormData(form);
         const proceed = formData.get("use-app");
         if (!proceed) {
-          USDOL.showErrors(["{% translate "Please make a selection" %}"]);
+          USDOL.showErrors(['{% translate "Please make a selection" %}']);
           USDOL.decorateRequiredFields(["use-app"]);
           return false;
         } else {
+          window.sendToGA(proceed === "yes"? "Verify_online" : "Verify_inperson");
           USDOL.clearErrors();
           USDOL.passThroughParams(form);
           {% include "_set_prequal_cookie.jssnip" %}
