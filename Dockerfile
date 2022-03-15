@@ -70,6 +70,7 @@ COPY login-dot-gov ./login-dot-gov
 COPY launchdarkly ./launchdarkly
 COPY api ./api
 COPY swa ./swa
+COPY reference ./reference
 COPY certs ./certs
 COPY schemas ./schemas
 # settings.py will ignore this copy for FIXTURE_DIR

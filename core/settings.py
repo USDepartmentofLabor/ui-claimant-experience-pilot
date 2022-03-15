@@ -135,6 +135,7 @@ INSTALLED_APPS = [
     "secure_redis",
     "home",
     "swa",
+    "reference",
     "appoptics_apm.djangoware",
     "launchdarkly.apps.LaunchdarklyConfig",
 ]
@@ -157,6 +158,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
+    "reference.middleware.visible.ReferenceVisibility",
 ]
 
 ROOT_URLCONF = "core.urls"
