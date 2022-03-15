@@ -13,17 +13,21 @@
 
       // Shorthand script for reporting events
       window.sendToGA = function(event, options) {
-        if (window.gtag) {
-          window.gtag('event', event, options);
+        if (window.dataLayer) {
+          window.dataLayer.push({event, ...options});
         } else {
-          console.warn("gtag event not sent:", event, options);
+          console.warn("event not queued:", event, options);
         }
       }
 
       // Basic error reporting
       window.onerror = function(err, file, line, col) {
-        const msg = `${file}@${line}:${col}, ${err}`;
-        sendToGA("JS_error", {msg});
+        try {
+          const msg = `${file}@${line}:${col}, ${err}`;
+          sendToGA("JS_error", {msg});
+        } catch(err) {
+          console.error(err);
+        }
       }
     </script>
     <!-- End Google Tag Manager -->
