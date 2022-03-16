@@ -12,7 +12,7 @@
       })(window, document, "script", "dataLayer", "GTM-W66H9LT");
 
       // Shorthand script for reporting events
-      function sendToGA(event, options) {
+      window.sendToGA = function(event, options) {
         if (window.gtag) {
           window.gtag('event', event, options);
         } else {
@@ -23,7 +23,7 @@
       // Basic error reporting
       window.onerror = function(err, file, line, col) {
         const msg = `${file}@${line}:${col}, ${err}`;
-        sendToGA("error", {msg});
+        sendToGA("JS_error", {msg});
       }
     </script>
     <!-- End Google Tag Manager -->

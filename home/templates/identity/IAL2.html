@@ -1,4 +1,8 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
+<script>
+  const xid = "{{ claim.swa_xid }}";
+  window.sendToGA("IAL2", {xid})
+</script>
 <div>
   <section>
     <h1>Welcome, {{ whoami.first_name }}</h1>
