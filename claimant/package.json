@@ -74,7 +74,7 @@
     "retire": "^3.0.3",
     "sass": "1.49.7",
     "typescript": "^4.5.5",
-    "webpack": "^5.69.1"
+    "webpack": "^5.70.0"
   },
   "resolutions": {
     "coa": "2.0.2",
