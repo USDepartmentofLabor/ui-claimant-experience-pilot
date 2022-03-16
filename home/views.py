@@ -349,7 +349,6 @@ def identity(request):
             "home_path": "/identity/",
             "more_help": f"_swa/{whoami.swa.code}/more_help.html",
             "expired_help": f"_swa/{whoami.swa.code}/expired_help.html",
-            "swa_name": f"_swa/{whoami.swa.code}/name.html",
             "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
             "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",
             "idp_url": (

@@ -24,6 +24,7 @@ class SWA(TimeStampedModel):
 
     code = models.CharField(max_length=2, unique=True)
     name = models.CharField(max_length=255, unique=True)
+    fullname = models.CharField(max_length=255, unique=True, null=True)
     public_key_fingerprint = models.CharField(max_length=255, null=True)
     public_key = models.TextField(null=True)
     claimant_url = models.CharField(max_length=255, null=True)
