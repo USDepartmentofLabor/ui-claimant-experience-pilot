@@ -75,6 +75,8 @@ def swa_index(request, swa_code):
                 "swa": swa,
                 "swa_contact": f"_swa/{swa_code}/contact_details.html",
                 "show_navigation": False,
+                "swa_missing_xid": f"_swa/{swa_code}/missing-xid.html",
+                "more_help": f"_swa/{swa_code}/more_help.html",
             },
         )
     except SWA.DoesNotExist:

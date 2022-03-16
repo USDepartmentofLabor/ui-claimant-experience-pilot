@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 {% load i18n %}
-<div id="what-to-expect">
+<div id="missing-swa-xid" aria-hidden="true" class="display-none">
+ {% include "_missing-swa-xid-content.html" %}
+</div>
+<div id="start-identity-only" aria-hidden="true" class="display-none">
     <h1>{% translate "Verify your identity online with Login.gov" %}</h1>
     {% include './uswds/_alert_error.html' %}
     <section>
@@ -13,8 +16,18 @@
     </section>
 
     <script type="text/javascript">
-      if (typeof USDOL === "undefined") { USDOL = {} }
       USDOL.requireSwaXid();
+      const errorDiv = document.getElementById("form-errors");
+      const alertDiv = errorDiv.getElementsByClassName("usa-alert")[0];
+      if (alertDiv) {
+        const errorPage = document.getElementById("missing-swa-xid");
+        errorPage.classList.remove("display-none");
+        errorPage.removeAttribute("aria-hidden");
+      } else {
+        const startPage = document.getElementById("start-identity-only");
+        startPage.classList.remove("display-none");
+        startPage.removeAttribute("aria-hidden");
+      }
       USDOL.handleUseAppSelection = () => {
         const form = document.getElementById("use-app-form");
         const formData = new FormData(form);

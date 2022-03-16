@@ -486,7 +486,7 @@ class LoginDotGovTestCase(TestCase):
 
         # swa_xid param required for identity only swa
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
-        self.assertContains(response, "Page not found", status_code=400)
+        self.assertContains(response, "Application not found", status_code=400)
 
         swa_xid = str(uuid.uuid4())
         response = self.client.get(

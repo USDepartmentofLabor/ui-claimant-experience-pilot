@@ -32,6 +32,14 @@
       errEl.appendChild(text);
       USDOL.showAlert(errEl);
     }
+    const swaXid = params.get("swa_xid") || cookies.find((row) => row.startsWith("swa_xid="));
+    // TODO this regex is AR specific. generalize like backend does.
+    if (swaXid && !swaXid.match(/^\d{8}-\d{6}-\d{7}-\d{9}$/)) {
+      const errEl = document.createElement("div");
+      const text = document.createTextNode("{% translate 'Malformed swa_xid -- check your typing' %}");
+      errEl.appendChild(text);
+      USDOL.showAlert(errEl);
+    }
   };
   USDOL.passThroughParams = (form) => {
     const params = new URLSearchParams(window.location.search);
