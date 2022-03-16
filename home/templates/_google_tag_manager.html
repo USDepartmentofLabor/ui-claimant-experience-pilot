@@ -15,6 +15,7 @@
       window.sendToGA = function(event, options) {
         if (window.dataLayer) {
           window.dataLayer.push({event, ...options});
+          console.log("event:", event, options);
         } else {
           console.warn("event not queued:", event, options);
         }

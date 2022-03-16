@@ -17,7 +17,7 @@
     <div class="margin-top-2">
       <a class="usa-button width-auto"
         id="continue-button"
-        onclick="sendToGA('AR_login')"
+        onclick="sendToGA('{{ swa }}_login')"
         href="{{ base_url }}/logindotgov/?swa={{ swa }}&redirect_to={{ redirect_to }}"
         >{% translate "Continue" %}</a
       >
@@ -30,7 +30,7 @@
       </p>
     {% else %}
     <script type="text/javascript">
-      sendToGA("AR_autologin");
+      sendToGA("{{ swa }}_autologin");
       setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
     </script>
     {% endif %}
