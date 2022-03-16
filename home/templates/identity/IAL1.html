@@ -4,8 +4,7 @@
 
 <script>
   const xid = "{{ claim.swa_xid }}";
-  const swa = "{{ claim.swa.code }}"
-  window.sendToGA("IAL1", {swa, xid})
+  window.sendToGA("{{ claim.swa.code }}_IAL1", {xid})
 </script>
 <div>
   <section>
