@@ -369,7 +369,7 @@ class LoginDotGovTestCase(TestCase):
     # this is the "escape" url from login.gov where users can opt-out of proofing
     def test_ial2required(self):
         response = self.client.get("/logindotgov/ial2required")
-        self.assertContains(response, "Login failed", status_code=403)
+        self.assertContains(response, "Log in failed", status_code=403)
 
         session = self.client.session
         session["authenticated"] = True

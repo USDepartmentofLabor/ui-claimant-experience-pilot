@@ -84,7 +84,15 @@ def ial2required(request):
         )
         return redirect(f"{redirect_to}?idp=logindotgov&ial2error=true")
 
-    return render(request, "auth-error.html", {"error": "ial2required"}, status=403)
+    return render(
+        request,
+        "auth-error.html",
+        {
+            "error": "ial2required",
+            "swa_login_help": None,
+        },
+        status=403,
+    )
 
 
 @never_cache
@@ -227,10 +235,15 @@ def result(request):
         auth_code, auth_state = client.validate_code_and_state(request.GET)
     except LoginDotGovOIDCError as error:
         logger.exception(error)
+        swa = SWA.active.get(code=request.session.get("swa"))
         return render(
             request,
             "auth-error.html",
-            {"error": str(error)},
+            {
+                "error": str(error),
+                "swa": swa,
+                "swa_login_help": f"_swa/{swa.code}/login_help.html",
+            },
             status=403,
         )
 
@@ -266,7 +279,7 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "state mismatch"},
+            {"error": "state mismatch", "swa_login_help": None},
             status=403,
         )
 
@@ -278,7 +291,10 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "missing access_token"},
+            {
+                "error": "missing access_token",
+                "swa_login_help": None,
+            },
             status=403,
         )
 
@@ -291,7 +307,10 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "Error exchanging token"},
+            {
+                "error": "Error exchanging token",
+                "swa_login_help": None,
+            },
             status=403,
         )
 
@@ -346,9 +365,13 @@ def initiate_claimant_session(request, userinfo):
         logger.exception(err)
         appoptics_apm.log_exception()
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": str(err)},
+            {
+                "error": str(err),
+                "swa": swa,
+                "swa_login_help": f"_swa/{swa.code}/login_help.html",
+            },
             status=500,
         )
 

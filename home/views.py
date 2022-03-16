@@ -10,6 +10,7 @@ from django.http import JsonResponse, HttpResponse
 from api.models import SWA
 from api.whoami import WhoAmI
 from api.claim_finder import ClaimFinder
+from api.models.claim import DuplicateSwaXid
 import django.middleware.csrf
 import logging
 from core.local_idp import LocalIdentityProviderError
@@ -238,8 +239,21 @@ def login(request):
             return render(
                 request,
                 "auth-error.html",
-                {"error": str(error)},
+                {"error": str(error), "swa_login_help": None},
                 status=400,
+            )
+        except DuplicateSwaXid as err:
+            logger.exception(err)
+            swa = err.swa
+            return render(
+                request,
+                "auth-error.html",
+                {
+                    "error": str(err),
+                    "swa": swa,
+                    "swa_login_help": f"_swa/{swa.code}/login_help.html",
+                },
+                status=500,
             )
         except MissingSwaXidError as err:
             swa_code = err.swa.code

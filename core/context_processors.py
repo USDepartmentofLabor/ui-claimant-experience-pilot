@@ -23,6 +23,7 @@ def base_url(request):  # pragma: no cover
 # errors, even when the vars are not used.
 def common_vars(request):
     params = {
+        "swa": None,
         "whoami": None,
         "required": None,
         "onchange": None,
