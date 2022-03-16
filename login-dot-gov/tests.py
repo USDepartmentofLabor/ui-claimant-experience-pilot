@@ -268,10 +268,13 @@ class LoginDotGovTestCase(TestCase):
 
         # session active but different browser
         # use ial=2 to avoid automatic step up
-        client_one = self.client
+        client_one = Client()
         client_two = Client()
         response = client_one.get(f"/logindotgov/?ial=2&swa={swa.code}&swa_xid=abc")
         authorize_parsed = mimic_oidc_server_authorized(response.url)
+        logger.debug(
+            "⚡️ client_one session key {}".format(client_one.session.session_key)
+        )
         with self.assertLogs(level="DEBUG") as cm:
             response = client_two.get(f"/logindotgov/result?{authorize_parsed.query}")
             self.assertIn(

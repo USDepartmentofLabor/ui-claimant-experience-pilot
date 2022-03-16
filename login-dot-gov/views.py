@@ -187,6 +187,8 @@ def index(request):
     logger.debug("redirect {}".format(login_url))
 
     request.session["logindotgov"] = {"state": state, "nonce": nonce}
+    # save immediately so that we always have a .session_key
+    request.session.save()
     stash_session_state(state, request.session)
 
     return redirect(login_url)
@@ -214,6 +216,7 @@ def stash_session_state(state, session):
         "logindotgov": session["logindotgov"],
     }
     cache.set(state, stash, 86400)
+    logger.debug("⚡️ session {} stashed with key {}".format(session.session_key, state))
 
 
 # OIDC OP redirects here after auth attempt
@@ -236,6 +239,9 @@ def result(request):
     if "IAL" not in request.session or "logindotgov" not in request.session:
         stashed_state = cache.get(auth_state)
         if stashed_state:
+            logger.debug(
+                "🚀 found stashed state {} {}".format(auth_state, stashed_state)
+            )
             existing_session = get_session(stashed_state["session_key"])
             if existing_session:
                 logger.debug("🚀 found existing active session")
