@@ -49,7 +49,7 @@
           return false;
         } else {
           window.sendToGA(proceed === "yes"?
-            "{{ swa.code }}_verify_online" : "{{ swa.code }}verify_inperson");
+            "{{ swa.code }}_verify_online" : "{{ swa.code }}_verify_inperson");
           USDOL.clearErrors();
           USDOL.passThroughParams(form);
           {% include "_set_prequal_cookie.jssnip" %}
