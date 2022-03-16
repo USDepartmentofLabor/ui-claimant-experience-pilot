@@ -3,14 +3,29 @@
 <div class="usa-overlay"></div>
 <header class="usa-header usa-header--basic">
  {% include "./uswds/_banner.html" %}
+ <section role="banner" class="usa-banner dol-banner bg-primary-darker">
+   <header class="usa-banner__header">
+     <div class="usa-banner__inner">
+       <a href="//www.dol.gov/">
+         <div class="grid-col-auto">
+           <img class="float-left height-205 margin-right-05" src="//dol.gov/themes/opa_theme/img/Agency_DOL_Logo_dark.svg"
+                alt="{% translate 'United States Department of Labor' %}" />
+         </div>
+         <div class="grid-col-fill tablet:grid-col-auto padding-top-05">
+           <p class="usa-banner__header-text usdol-title">
+             <strong class="text-base-lightest TEXT-UPPER">{% translate "U.S. Department of Labor" %}</strong>
+           </p>
+         </div>
+       </a>
+     </div>
+   </header>
+ </section>
  {% if system_admin_message %}{% include '_system-admin-message.html' %}{% endif %}
  <div class="usa-nav-container">
   <div class="usa-navbar">
     <div class="usa-logo">
       <a href="/" class="navbar-brand" title="Home">
-        <em class="usa-logo__text"
-          >{% translate "U.S. Department of Labor" %}</em
-        >
+        <em class="usa-logo__text">{% translate appname %}</em>
       </a>
     </div>
     <button class="usa-menu-btn" type="button">{% translate "Menu" %}</button>

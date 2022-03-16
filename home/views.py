@@ -99,9 +99,11 @@ def swa_contact(request, swa_code):
                 "swa": swa,
             },
         )
-    except TemplateDoesNotExist:
+    except TemplateDoesNotExist as err:
+        logger.exception(err)
         return handle_404(request, None)
     except SWA.DoesNotExist:
+        logger.debug("No such SWA: {}".format(swa_code))
         return handle_404(request, None)
 
 

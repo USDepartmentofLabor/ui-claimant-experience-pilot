@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="mobile-lg:grid-col-12">
+  <h4 class="usa-accordion__heading">
+    <button class="usa-accordion__button TEXT-UPPER" aria-controls="footer-nav-about">{% translate "About the Site" %}</button>
+  </h4>
+  <div id="footer-nav-about" class="usa-accordion__content usa-prose">
+    <ul class="usa-list usa-list--unstyled">
+      <li class="usa-footer__secondary-link">
+        <a href="//www.dol.gov/general/foia">{% translate "Freedom of Information Act" %}</a>
+      </li>
+
+      <li class="usa-footer__secondary-link">
+        <a href="//www.dol.gov/general/disclaim">{% translate "Disclaimers" %}</a>
+      </li>
+
+      <li class="usa-footer__secondary-link">
+        <a href="//www.dol.gov/general/aboutdol/accessibility">{% translate "Accessibility Statement" %}</a>
+      </li>
+    </ul>
+  </div>
+</div>

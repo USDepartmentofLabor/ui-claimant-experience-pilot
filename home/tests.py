@@ -38,10 +38,6 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "You will now be transferred", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
-    def test_ial2required_page(self):
-        response = self.client.get("/ial2required/?idp=foo")
-        self.assertContains(response, "foo/?ial=1", status_code=200)
-
     def test_logout_page(self):
         swa, _ = create_swa(is_active=True)
         self.client.post(

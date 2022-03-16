@@ -6,16 +6,16 @@
   if (typeof USDOL === "undefined") { USDOL = {} }
   USDOL.SWAS = JSON.parse(document.getElementById("swa-featuresets").textContent);
 </script>
-<main role="main">
-  <section class="grid-container">
-    <h1>{% translate "Create account or sign in" %}</h1>
-    {% include './uswds/_alert_error.html' %}
+<div>
+  <h1>{% translate "Create account or sign in" %}</h1>
+  {% include './uswds/_alert_error.html' %}
   {% if swa %}
-    <div>
-      {% translate "You will now be transferred to Login.gov to sign in and verify your identity." %}
-    </div>
+  <div>
+    {% translate "You will now be transferred to Login.gov to sign in and verify your identity." %}
+  </div>
+  <div class="text-center">
     <div class="margin-top-2">
-      <a class="usa-button"
+      <a class="usa-button width-auto"
         id="continue-button"
         href="{{ base_url }}/logindotgov/?swa={{ swa }}&redirect_to={{ redirect_to }}"
         >{% translate "Continue" %}</a
@@ -23,7 +23,7 @@
     </div>
     {% if show_login_page %}
       <p>
-        <a class="usa-button usa-button--outline"
+        <a class="usa-button usa-button--outline width-auto"
           href="{{ base_url }}/login/?redirect_to={{ redirect_to }}&swa={{ swa }}"
           >Test login</a>
       </p>
@@ -32,31 +32,31 @@
       setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
     </script>
     {% endif %}
+  </div>
   {% else %}
-    <section>
-      {% for s in swas %}
-        <div class="margin-top-2">
-          <a
-            href="{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
-            id="login-dot-gov-{{ s.code }}"
-            class="usa-button"
-            >{% translate "Sign in to" %} {{ s.name }} {% translate "with Login.gov" %}</a>
-          {% if show_login_page %}
-            <p>
-              <a
-                href="{{ base_url }}/login/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
-                id="test-login-{{ s.code }}"
-                class="usa-button usa-button--outline"
-                >{% translate "Test Login for" %} {{ s.name }}</a>
-            </p>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </section>
+  <section class="text-center">
+    {% for s in swas %}
+      <div class="margin-top-2">
+        <a
+          href="{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
+          id="login-dot-gov-{{ s.code }}"
+          class="usa-button width-auto"
+          >{% translate "Sign in to" %} {{ s.name }} {% translate "with Login.gov" %}</a>
+        {% if show_login_page %}
+          <p>
+            <a
+              href="{{ base_url }}/login/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
+              id="test-login-{{ s.code }}"
+              class="usa-button usa-button--outline width-auto"
+              >{% translate "Test Login for" %} {{ s.name }}</a>
+          </p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
   {% endif %}
   <script type="text/javascript">
     USDOL.appendParamsToLinks();
   </script>
-  </section>
-</main>
+</div>
 {% endblock %}

@@ -1,6 +1,5 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
-<div class="grid-container">
- <main role="main">
+<div>
   <section>
     <h1>Welcome, {{ whoami.first_name }}</h1>
 
@@ -28,6 +27,5 @@
       {% include more_help %}
     </section>
   </section>
- </main>
 </div>
 {% endblock %}

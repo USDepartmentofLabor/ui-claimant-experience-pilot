@@ -1,6 +1,7 @@
-{% extends "base.html" %} {% load i18n %} {% block content %}
-<main role="main">
-  <div class="grid-container">
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div>
     <h1>{% translate "Test Login" %}</h1>
     <div class="grid-row">
       <form class="usa-form usa-form--large" action="/login/" method="POST">
@@ -135,6 +136,5 @@
         </fieldset>
       </form>
     </div>
-  </div>
-</main>
+</div>
 {% endblock %}

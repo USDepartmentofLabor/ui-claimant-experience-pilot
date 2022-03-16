@@ -12,7 +12,11 @@ def base_url(request):  # pragma: no cover
         if settings.BASE_URL
         else f"{request.scheme}://{request.get_host()}"
     )
-    return {"base_url": base_url, "current_path": request.path}
+    return {
+        "base_url": base_url,
+        "current_path": request.path,
+        "appname": "Unemployment.dol.gov",
+    }
 
 
 # initialize common vars to None to sidestep VariableDoesNotExist

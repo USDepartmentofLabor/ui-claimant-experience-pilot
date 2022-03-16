@@ -122,59 +122,69 @@
     },
   };
 </script>
-<!-- prettier-ignore -->
-<div class="grid-container">
-    <main>
-        <h1>{% translate "Let's get started" %}</h1>
-        <form method="POST" class="dol-form usa-form--large" id="prequalification-form" onsubmit="return false">
-          {% include './uswds/_alert_error.html' %}
-          {% include './uswds/_yes_no_radio.html' with field_label=_("Have you filed for unemployment benefits during the last 12 months?") field_name="filed_last_12mo" onchange="USDOL.onChangeLiveUSHandler" required=True %}
-          <section>
-            <h2>{% translate "State residence" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" required=True %}
-            <div class="display-none" id="swa-options">
-              {% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" required=True %}
-            </div>
-          </section>
+<div>
+  <h1>{% translate "Let's get started" %}</h1>
+  <form
+    method="POST"
+    class="dol-form usa-form--large"
+    id="prequalification-form"
+    onsubmit="return false"
+  >
+    {% include './uswds/_alert_error.html' %}
+    {% include './uswds/_yes_no_radio.html' with field_label=_("Have you filed for unemployment benefits during the last 12 months?") field_name="filed_last_12mo" onchange="USDOL.onChangeLiveUSHandler" required=True %}
+    <section>
+      <h2>{% translate "State residence" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Do you currently live in the United States?") field_name="live_in_us" onchange="USDOL.onChangeLiveUSHandler" required=True %}
+      <div class="display-none" id="swa-options">
+        {% include './uswds/_combo_box.html' with dict_options=swas field_label=_("Select your state") field_name="swa_code" required=True %}
+      </div>
+    </section>
 
-          <section>
-            <h2>{% translate "Recent employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" required=True %}
-            <div class="margin-top-4">
-              {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" required=True %}
-            </div>
-          </section>
+    <section>
+      <h2>{% translate "Recent employment" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Have you had a job during the last 18 months?") field_name="job_last_18mo" required=True %}
+      <div class="margin-top-4">
+        {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?") field_name="worked_other_state" required=True %}
+      </div>
+    </section>
 
-          <section>
-            <h2>{% translate "Disaster" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" required=True %}
-          </section>
+    <section>
+      <h2>{% translate "Disaster" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?") field_name="recent_disaster" required=True %}
+    </section>
 
-          <section>
-            <h2>{% translate "Disability" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" required=True %}
-          </section>
+    <section>
+      <h2>{% translate "Disability" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Are you currently disabled and unable to work?") field_name="disabled" required=True %}
+    </section>
 
-          <section>
-            <h2>{% translate "Military service" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" required=True %}
-          </section>
+    <section>
+      <h2>{% translate "Military service" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Have you served in the United States military in the last 18 months?") field_name="military_service" required=True %}
+    </section>
 
-          <section>
-            <h2>{% translate "Federal employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" required=True %}
-          </section>
+    <section>
+      <h2>{% translate "Federal employment" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for the federal government in the last 18 months (not including military service)?") field_name="federal_employment" required=True %}
+    </section>
 
-          <section>
-            <h2>{% translate "Maritime employment" %}</h2>
-            {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" required=True %}
-          </section>
+    <section>
+      <h2>{% translate "Maritime employment" %}</h2>
+      {% include './uswds/_yes_no_radio.html' with field_label=_("Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?") field_name="maritime_employment" required=True %}
+    </section>
 
-          <section class="text-center">
-            <a href="/" class="usa-button usa-button--outline width-auto">{% translate "Back" %}</a>
-            <button type="submit" class="usa-button width-auto" onclick="USDOL.submitPrequalifications()">{% translate "Next" %}</button>
-          </section>
-        </form>
-    </main>
+    <section class="text-center">
+      <a href="/" class="usa-button usa-button--outline width-auto"
+        >{% translate "Back" %}</a
+      >
+      <button
+        type="submit"
+        class="usa-button width-auto"
+        onclick="USDOL.submitPrequalifications()"
+      >
+        {% translate "Next" %}
+      </button>
+    </section>
+  </form>
 </div>
 {% endblock %}
