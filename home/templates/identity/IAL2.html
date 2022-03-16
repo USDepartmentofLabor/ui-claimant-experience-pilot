@@ -1,4 +1,7 @@
-{% extends "base.html" %} {% block content %} {% load i18n %}
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+
 <script>
   const xid = "{{ claim.swa_xid }}";
   window.sendToGA("IAL2", {xid})
