@@ -115,7 +115,16 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     self_employed: yup
       .boolean()
       .required(t("employers.self_employed.required")),
-    separation_comment: yup.string().max(1024),
+    separation_comment: yup
+      .string()
+      .max(1024)
+      .when("separation_reason", {
+        is: "laid_off",
+        otherwise: yup
+          .string()
+          .max(1024)
+          .required(t("employers.separation.comment.errors.required")),
+      }),
   });
 
 // defined here to satisfy the IPageDefinition
@@ -152,6 +161,7 @@ const segmentSchema = (
       }),
   });
 };
+
 export const EmployerInformationPage: IPageDefinition = {
   path: "employer",
   heading: "recent_employer",

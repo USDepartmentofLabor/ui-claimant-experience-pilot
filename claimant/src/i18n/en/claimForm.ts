@@ -118,6 +118,9 @@ const claimForm = {
       comment: {
         required_label: "Please share more details below",
         optional_label: "Please share more details below (optional)",
+        errors: {
+          required: "More detail about the separation reason is required",
+        },
       },
       reasons: {
         laid_off: {
