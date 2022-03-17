@@ -62,13 +62,3 @@ def live(request):
         },
         status=status,
     )
-
-
-@never_cache
-def maintenance_mode(request):
-    return JsonResponse(
-        {
-            "error": "Sorry, this system is undergoing maintenance. Please check back later."
-        },
-        status=503,
-    )

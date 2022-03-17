@@ -16,9 +16,7 @@ Including another URLconf
 """
 from django.urls import include, path, re_path
 
-from core.views import claimant as claimant_app, live, raise_error, maintenance_mode
-from launchdarkly.client import ld_client
-
+from core.views import claimant as claimant_app, live, raise_error
 
 handler404 = "home.views.handle_404"
 handler500 = "home.views.handle_500"
@@ -33,13 +31,3 @@ urlpatterns = [
     path("swa/", include("swa.urls")),
     path("live/", live, name="live"),
 ]
-
-
-if ld_client.variation("maintenance-mode", {"key": "anonymous-user"}, True):
-    urlpatterns = [
-        path("500/", raise_error),
-        re_path(r"logindotgov/.*", maintenance_mode),
-        re_path(r"api/.*", maintenance_mode),
-        re_path(r"swa/.*", maintenance_mode),
-        path("", include(("home.urls", "home"), namespace="home")),
-    ]
