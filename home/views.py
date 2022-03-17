@@ -100,6 +100,7 @@ def swa_contact(request, swa_code):
                 "contact_us_path": f"/contact/{swa_code}/",
                 "whoami": whoami,
                 "swa": swa,
+                "show_navigation": True,
             },
         )
     except TemplateDoesNotExist as err:
@@ -130,6 +131,7 @@ def idp(request, swa_code=None):
             "swa_featuresets": active_swas_with_featuresets(),
             "swas": active_swas_ordered_by_name(),
             "redirect_to": request.GET.get("redirect_to", ""),
+            "show_navigation": False,
         },
     )
 
@@ -144,6 +146,7 @@ def swa_redirect(request, swa_code):
         view_args = {
             "swa": swa,
             "swa_redirect": f"_swa/{swa.code}/redirect.html" if swa else None,
+            "show_navigation": False,
         }
         return render(request, "swa-redirect.html", view_args)
     except TemplateDoesNotExist:
@@ -159,8 +162,10 @@ def logout(request):
         logger.debug("RP-initiated logout to {}".format(logout_url))
         return redirect(logout_url)
 
+    whoami = WhoAmI.from_dict(request.session.get("whoami"))
+    swa_url = whoami.swa.claimant_url
     request.session.flush()
-    return redirect("/")
+    return redirect(swa_url if whoami.swa.featureset == "Identity Only" else "/")
 
 
 @never_cache
@@ -349,7 +354,6 @@ def identity(request):
             "home_path": "/identity/",
             "more_help": f"_swa/{whoami.swa.code}/more_help.html",
             "expired_help": f"_swa/{whoami.swa.code}/expired_help.html",
-            "swa_name": f"_swa/{whoami.swa.code}/name.html",
             "next_steps": f"_swa/{whoami.swa.code}/next_steps.html",
             "other_ways_to_verify_identity": f"_swa/{whoami.swa.code}/other_ways_to_verify_identity.html",
             "idp_url": (
@@ -359,6 +363,7 @@ def identity(request):
             ),
             "completed_at": claim.completed_at(),
             "claim": claim,
+            "show_navigation": True,
         }
         return render(request, template_name, view_args)
     except TemplateDoesNotExist as err:

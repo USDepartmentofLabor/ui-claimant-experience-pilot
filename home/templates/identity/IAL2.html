@@ -16,8 +16,8 @@
         <p class="usa-alert__text">
           {% translate "Your identity verification" %}
           <span class="claim-id">({{ claim.swa_xid }})</span>
-          {% translate "was shared with" %}
-          {% include swa_name %}
+          {% translate "was shared with the" %}
+          {{ swa.fullname }}
           {% translate "on" %}
           <strong>{{ completed_at|date }}</strong>.
         </p>

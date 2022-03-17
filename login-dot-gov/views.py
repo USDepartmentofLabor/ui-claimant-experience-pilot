@@ -159,7 +159,7 @@ def index(request):
         request.session["swa_xid"] = swa_xid
     elif requested_ial == 2:
         pass  # step up
-    elif swa.is_identity_only():
+    elif swa.is_identity_only() and not request.GET.get("skip-xid-check"):
         logger.debug("🚀 SWA.is_identity_only and missing swa_xid")
         return render(
             request,

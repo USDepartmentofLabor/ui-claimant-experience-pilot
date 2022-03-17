@@ -23,12 +23,13 @@ def base_url(request):  # pragma: no cover
 # errors, even when the vars are not used.
 def common_vars(request):
     params = {
+        "pattern": None,
         "swa": None,
         "whoami": None,
         "required": None,
         "onchange": None,
         "disabled": None,
-        "show_navigation": True,
+        "show_navigation": False,
         "contact_us_path": None,
         "home_path": "/",
     }

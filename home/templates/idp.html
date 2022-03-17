@@ -7,7 +7,7 @@
   USDOL.SWAS = JSON.parse(document.getElementById("swa-featuresets").textContent);
 </script>
 <div>
-  <h1>{% translate "Create account or sign in" %}</h1>
+  <h1>{% translate "Log in" %}</h1>
   {% include './uswds/_alert_error.html' %}
   {% if swa %}
   <div>
@@ -31,19 +31,21 @@
     {% else %}
     <script type="text/javascript">
       sendToGA("{{ swa }}_autologin");
-      setTimeout(() => { document.getElementById("continue-button").click() }, 3000);
+      setTimeout(() => { document.getElementById("continue-button").click() }, 1000);
     </script>
     {% endif %}
   </div>
   {% else %}
+  <div>{% translate "Select your State Workforce Agency to continue" %}</div>
   <section class="text-center">
     {% for s in swas %}
       <div class="margin-top-2">
+        <div class="text-bold margin-bottom-2">{{ s.fullname }}</div>
         <a
-          href="{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}&swa={{ s.code }}"
+          href="{{ base_url }}/logindotgov/?redirect_to={{ redirect_to }}&swa={{ s.code }}&skip-xid-check=true"
           id="login-dot-gov-{{ s.code }}"
           class="usa-button width-auto"
-          >{% translate "Sign in to" %} {{ s.name }} {% translate "with Login.gov" %}</a>
+          >{% translate "Continue to" %} {{ s.name }}</a>
         {% if show_login_page %}
           <p>
             <a

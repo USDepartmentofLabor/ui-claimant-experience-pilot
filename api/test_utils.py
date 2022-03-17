@@ -47,6 +47,7 @@ def create_swa(
     is_active=False,
     code="KS",
     name=None,
+    fullname=None,
     claimant_url=None,
     featureset=SWA.FeatureSetOptions.CLAIM_AND_IDENTITY,
 ):
@@ -56,6 +57,7 @@ def create_swa(
     swa = SWA(
         code=code,
         name=name or f"{code} state name",
+        fullname=fullname or f"{code} full name",
         public_key=public_key_jwk.export_to_pem().decode("utf-8"),
         public_key_fingerprint=public_key_jwk.thumbprint(),
         claimant_url=claimant_url or "https://some.fake.url",

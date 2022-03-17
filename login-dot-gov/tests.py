@@ -453,6 +453,40 @@ class LoginDotGovTestCase(TestCase):
             2,
         )
 
+    def test_swa_xid_check_skip(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        swa_xid = str(uuid.uuid4())
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&swa_xid={swa_xid}")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertEquals(self.client.session["swa_xid"], swa_xid)
+        claimant = Claimant.objects.last()
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertTrue(claim.is_initiated_with_swa_xid())
+
+        # logging in again from /idp/ page link skips check
+        self.client.session.flush()
+
+        response = self.client.get(f"/logindotgov/?swa={swa.code}&skip-xid-check=true")
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+        response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
+        self.assertFalse(self.client.session.get("swa_xid"))
+        claimant = Claimant.objects.last()
+        self.assertEqual(claimant.claim_set.count(), 1)
+        claim = claimant.claim_set.last()
+        self.assertEquals(claim.swa_xid, swa_xid)
+        self.assertEquals(claim.swa, swa)
+        self.assertEqual(
+            claim.events.filter(
+                category=Claim.EventCategories.INITIATED_WITH_SWA_XID
+            ).count(),
+            1,
+        )
+
     def test_swa_xid_duplicate_error(self):
         swa, _ = create_swa(is_active=True)
         swa2, _ = create_swa(is_active=True, code="XX")

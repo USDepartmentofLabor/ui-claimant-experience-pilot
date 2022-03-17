@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from django.test.utils import override_settings
 from api.models import Claimant, SWA
 from api.test_utils import create_swa, create_swa_xid
 from unittest.mock import patch
@@ -20,8 +21,13 @@ class HomeTestCase(TestCase):
         )
 
     def test_idp_page(self):
+        response = self.client.get("/idp/?swa=XX")
+        self.assertEqual(response.status_code, 404)
+
+    @override_settings(SHOW_LOGIN_PAGE=True)
+    def test_idp_page_show_login_page(self):
         response = self.client.get("/idp/?redirect_to=/some/place")
-        self.assertContains(response, "Sign in", status_code=200)
+        self.assertContains(response, "Log in", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
         # active swa must exist if requested
@@ -39,21 +45,23 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
     def test_logout_page(self):
-        swa, _ = create_swa(is_active=True)
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
         self.client.post(
             "/login/",
             {
                 "email": "some@example.com",
-                "first_name": "Some",
-                "last_name": "Body",
-                "IAL": "2",
+                "IAL": "1",
                 "swa_code": swa.code,
+                "swa_xid": create_swa_xid(swa),
             },
         )
+        self.assertTrue(self.client.session["whoami"])
         response = self.client.get("/logout/")
         self.assertRedirects(
             response,
-            "/",
+            swa.claimant_url,
             status_code=302,
             fetch_redirect_response=False,
         )
