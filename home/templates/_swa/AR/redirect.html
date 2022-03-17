@@ -4,14 +4,7 @@
 {% translate "ADWS needs more information from you before your claim can be processed." %}
 </section>
 <section>
-    {% blocktranslate %}
-        Please call the <span class="text-bold">ADWS UI Hotline</span> at:
-    {% endblocktranslate %}
-        <span class="text-bold">{% include "_swa/AR/phone.html" %}</span>
-        {% include "_swa/AR/hours_of_operation.html" %}
-    {% blocktranslate %}
-        within <span class="text-bold">7 calendar days</span> of when you submitted your application.
-    {% endblocktranslate %}
+ {% translate "Please" %}{% include "_swa/AR/call_instructions.html" %}
 </section>
 <section>
  <h2>{% translate "More information" %}</h2>
