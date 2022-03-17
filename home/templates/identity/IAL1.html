@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 {% load i18n %}
+
+<script>
+  const xid = "{{ claim.swa_xid }}";
+  window.sendToGA("{{ claim.swa.code }}_IAL1", {xid})
+</script>
 <div>
   <section>
     <h1>{% translate "Welcome" %}</h1>
@@ -29,6 +34,7 @@
             class="usa-accordion__button"
             aria-expanded="false"
             aria-controls="m-a1"
+            onclick="sendToGA('View_IDV_info')"
           >
             {% translate "To verify your identity, you'll need this information" %}
           </button>
@@ -54,6 +60,7 @@
           <a
             class="usa-button margin-x-auto"
             href="{{ idp_url }}/?ial=2&amp;swa_code={{ whoami.swa.code }}"
+            onclick="sendToGA('{{ whoami.swa.code }}_begin_IAL2')"
           >
             {% translate "Start ID verification" %}
             <svg

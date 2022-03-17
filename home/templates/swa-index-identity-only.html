@@ -44,10 +44,12 @@
         const formData = new FormData(form);
         const proceed = formData.get("use-app");
         if (!proceed) {
-          USDOL.showErrors(["{% translate "Please make a selection" %}"]);
+          USDOL.showErrors(['{% translate "Please make a selection" %}']);
           USDOL.decorateRequiredFields(["use-app"]);
           return false;
         } else {
+          window.sendToGA(proceed === "yes"?
+            "{{ swa.code }}_verify_online" : "{{ swa.code }}_verify_inperson");
           USDOL.clearErrors();
           USDOL.passThroughParams(form);
           {% include "_set_prequal_cookie.jssnip" %}
@@ -93,7 +95,7 @@
           </div>
         </fieldset>
         <div class="margin-top-2 text-center">
-          <button class="usa-button" type="submit" onclick="USDOL.handleNext()">{% translate "Next" %}</button>
+          <button class="usa-button" type="submit">{% translate "Next" %}</button>
         </div>
       </form>
     </section>
