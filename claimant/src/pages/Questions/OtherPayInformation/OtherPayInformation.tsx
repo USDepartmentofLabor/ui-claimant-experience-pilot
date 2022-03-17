@@ -6,7 +6,7 @@ import OtherPay from "../../../components/form/OtherPay/OtherPay";
 import { TFunction } from "react-i18next";
 
 import { payTypeOptions } from "../../../components/form/OtherPay/OtherPay";
-import { yupDate } from "../../../common/YupBuilder";
+import { yupCurrency, yupDate } from "../../../common/YupBuilder";
 
 const OtherPayInformation = () => {
   return <OtherPay />;
@@ -27,17 +27,15 @@ const pageSchema = (t: TFunction<"claimForm">) =>
     other_pay: yup.array().of(
       yup.object({
         pay_type: yup.mixed().oneOf(payTypeOptions.map(({ value }) => value)),
-        total: yup
-          .number()
-          .typeError(t("other_pay_detail.total.errors.number"))
-          .when("pay_type", {
+        total: yupCurrency(t("other_pay_detail.total.errors.number")).when(
+          "pay_type",
+          {
             is: "no_other_pay",
             otherwise: yup
-              .number()
-              .typeError(t("other_pay_detail.total.errors.number"))
-              .min(0)
+              .string()
               .required(t("other_pay_detail.total.errors.required")),
-          }),
+          }
+        ),
         date_received: yup.date().when("pay_type", {
           is: "no_other_pay",
           otherwise: yupDate(

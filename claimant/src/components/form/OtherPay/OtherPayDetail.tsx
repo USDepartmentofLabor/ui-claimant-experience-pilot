@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { FormGroup } from "@trussworks/react-uswds";
 
 import TextAreaField from "../fields/TextAreaField/TextAreaField";
-import TextField from "../fields/TextField/TextField";
 import { DateInputField } from "../fields/DateInputField/DateInputField";
+import CurrencyField from "../fields/CurrencyField/CurrencyField";
 import React from "react";
 
 const OtherPayDetail = (props: {
@@ -23,16 +23,13 @@ const OtherPayDetail = (props: {
       <h2 className="font-heading-sm">{label}</h2>
       <p className="font-body-xs">{description}</p>
       <FormGroup>
-        <TextField
+        <CurrencyField
           id={`${name}.total`}
           name={`${name}.total`}
           label={t("other_pay_detail.total.label", {
             payType: lowerLabel,
           })}
-          inputPrefix="$"
-          type="number"
-          min="0"
-          step=".01"
+          inputPrefix={t("other_pay_detail.total.currencyPrefix")}
         />
         <DateInputField
           legend={t("other_pay_detail.date_received.label", {

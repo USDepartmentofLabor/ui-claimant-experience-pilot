@@ -96,7 +96,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     const otherPay = [
       {
         pay_type: "severance",
-        total: 500000,
+        total: 5000.25,
         date_received: "2021-01-15",
         note: "All one payment for layoff",
       },

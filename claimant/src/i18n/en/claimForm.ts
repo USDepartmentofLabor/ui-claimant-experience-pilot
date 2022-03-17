@@ -603,10 +603,12 @@ const claimForm = {
     },
     total: {
       label: "Total {{- payType }} received",
+      currencyPrefix: "$",
       errors: {
-        required: "Total pay is required",
+        required: "Total pay is required, in dollars",
         min: "Total pay must be greater than 0",
-        number: "Total must be a number",
+        number:
+          "Total must be a number in dollars or cents, like 150, or 150.75",
       },
     },
     date_received: {
