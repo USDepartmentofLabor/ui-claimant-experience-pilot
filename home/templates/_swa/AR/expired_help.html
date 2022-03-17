@@ -1,6 +1,7 @@
 {% load i18n %}
-{% translate "Please call the" %}
-<strong>{% translate "ADWS UI Hotline" %}</strong>
-at <strong>{% include "_swa/AR/phone.html" %}</strong>
+{% blocktranslate %}
+    Please call the <strong>ADWS UI Hotline </strong> at
+{%  endblocktranslate %}
+<strong>{% include "_swa/AR/phone.html" %}</strong>
 ({% include "_swa/AR/hours_of_operation.html" %})
 {% translate "if you have any questions" %}.

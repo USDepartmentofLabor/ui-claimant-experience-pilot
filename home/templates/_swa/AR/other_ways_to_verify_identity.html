@@ -1,11 +1,7 @@
-{% block content %}
 {% load i18n %}
-<section>{% translate "We need more information from you before your claim can be completed." %}</section>
-
-<section>{% translate "You must verify your identity. You may do this in person at your local office if you don’t want to verify your identity online." %}</section>
+<section>{% translate "ADWS needs more information from you before your claim can be processed." %}</section>
 
 <section>
 {% translate "Please" %}
 {% include "_swa/AR/call_instructions.html" %}
 </section>
-{% endblock %}

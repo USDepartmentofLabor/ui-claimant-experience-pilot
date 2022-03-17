@@ -7,47 +7,27 @@
   window.sendToGA("{{ claim.swa.code }}_IAL1", {xid})
 </script>
 <div>
+  <h1>{% translate "Welcome" %}</h1>
+
+  {% if ial2error %}
+    <div class="usa-alert usa-alert--error usa-alert--slim">
+      <div class="usa-alert__body">
+        <p class="usa-alert__text">{% translate "An error occured while trying to verify your information. Please try again." %}</p>
+      </div>
+    </div>
+  {% endif %}
+
   <section>
-    <h1>{% translate "Welcome" %}</h1>
+    {% blocktranslate %}
+    You must verify your identity within <strong>7 calendar days</strong>
+    of submitting your application in order to process your claim.
+    {% endblocktranslate %}
+  </section>
 
-    {% if ial2error %}
-      <div class="usa-alert usa-alert--error usa-alert--slim">
-        <div class="usa-alert__body">
-          <p class="usa-alert__text">{% translate "An error occured while trying to verify your information. Please try again." %}</p>
-        </div>
-      </div>
-    {% endif %}
-
-    <section>
-      {% translate "You must verify your identity within" %}
-      <strong>{% translate "7 calendar days" %}</strong>
-      {% translate "of submitting your application in order to process your claim." %}
-    </section>
-
-    <section>
+  <div class="grid-row grid-gap">
+    <section class="tablet:grid-col">
       <div
-        class="usa-accordion usa-accordion--bordered"
-        aria-multiselectable="true"
-      >
-        <h2 class="usa-accordion__heading">
-          <button
-            class="usa-accordion__button"
-            aria-expanded="false"
-            aria-controls="m-a1"
-            onclick="sendToGA('View_IDV_info')"
-          >
-            {% translate "To verify your identity, you'll need this information" %}
-          </button>
-        </h2>
-        <div id="m-a1" class="usa-accordion__content usa-prose">
-          <p>{% include "identity/requirements.html" %}</p>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div
-        class="border-2px border-base-lightest padding-2 margin-y-3 bg-gray-5"
+        class="border-2px border-base-lightest padding-2 bg-gray-5"
       >
         <h2 class="margin-0">{% translate "Verify your identity" %}</h2>
         <p class="display-flex flex-align-center">
@@ -61,30 +41,25 @@
             class="usa-button margin-x-auto"
             href="{{ idp_url }}/?ial=2&amp;swa_code={{ whoami.swa.code }}"
             onclick="sendToGA('{{ whoami.swa.code }}_begin_IAL2')"
-          >
-            {% translate "Start ID verification" %}
-            <svg
-              class="usa-icon"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-            >
-              <use xlink:href="/static/img/sprite.svg#arrow_forward"></use>
-            </svg>
-          </a>
+          >{% translate "Start ID verification" %}</a>
         </div>
       </div>
     </section>
 
-    <section>
-      <h2>{% translate "Other ways to verify your identity" %}</h2>
-      {% include other_ways_to_verify_identity %}
+    <section class="tablet:grid-col">
+      <h3 class="text-normal margin-top-0">{% translate "You will need to have these items to verify your identity online with Login.gov:" %}</h3>
+      {% include "identity/requirements.html" %}
     </section>
+  </div>
 
-    <section>
-      <h2>{% translate "More information" %}</h2>
-      {% include more_help %}
-    </section>
+  <section>
+    <h2>{% translate "Other ways to verify your identity" %}</h2>
+    {% include other_ways_to_verify_identity %}
+  </section>
+
+  <section>
+    <h2>{% translate "More information" %}</h2>
+    {% include more_help %}
   </section>
 </div>
 {% endblock %}

@@ -1,16 +1,28 @@
-{% block content %}
 {% load i18n %}
-<ul class="usa-list">
+<ol class="usa-list">
   <li>
-    {% translate "If you have not yet called the UI Hotline, please call" %}
+    {% blocktranslate %}
+    If you have not yet called the <strong>ADWS UI Hotline</strong>, please call
+    {% endblocktranslate %}
     <strong>{% include "_swa/AR/phone.html" %}</strong>
     {% translate "to have your claim processed." %}
   </li>
   <li>
     {% translate "Register for work online using Arkansas JobLink (AJL) at" %}
-    <a class="usa-link usa-link--external" onclick="sendToGA('AR_register_for_work')"
-      href="http://www.arjoblink.arkansas.gov/">www.arjoblink.arkansas.gov</a>.
-    {% translate "Visit your local DWS office for assistance." %}
+    <a target="_blank"
+       rel="noopener noreferrer"
+       class="usa-link usa-link--external"
+       onclick="sendToGA('AR_register_for_work')"
+       href="http://www.arjoblink.arkansas.gov/">www.arjoblink.arkansas.gov</a>.
+    {% translate "Visit your local ADWS office for assistance." %}
   </li>
-</ul>
-{% endblock %}
+</ol>
+<div class="text-center margin-top-4">
+   <a
+     class="usa-button margin-x-auto"
+     href="https://www.dws.arkansas.gov/unemployment/"
+     target="_blank"
+     rel="noopener noreferrer"
+     onclick="sendToGA('AR_ADWS_FAQ')"
+   >{% translate "Go to ADWS FAQ" %}</a>
+</div>

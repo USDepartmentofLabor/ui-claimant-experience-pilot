@@ -28,7 +28,9 @@
         <em class="usa-logo__text">{% translate appname %}</em>
       </a>
     </div>
+    {% if show_navigation %}
     <button class="usa-menu-btn" type="button">{% translate "Menu" %}</button>
+    {% endif %}
   </div>
   {% if show_navigation %}
   <nav aria-label="Primary navigation" class="usa-nav">

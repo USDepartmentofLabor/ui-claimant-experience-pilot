@@ -84,6 +84,7 @@ def swa_index(request, swa_code):
 
 
 # Contact us per-SWA
+# No cache because only available on authenticated session
 @never_cache
 def swa_contact(request, swa_code):
     if "whoami" not in request.session:
@@ -146,7 +147,6 @@ def swa_redirect(request, swa_code):
         view_args = {
             "swa": swa,
             "swa_redirect": f"_swa/{swa.code}/redirect.html" if swa else None,
-            "show_navigation": False,
         }
         return render(request, "swa-redirect.html", view_args)
     except TemplateDoesNotExist:
@@ -348,7 +348,7 @@ def identity(request):
     try:
         view_args = {
             "whoami": whoami,
-            "swa": whoami.swa,
+            "swa": claim.swa,
             "ial2error": request.GET.get("ial2error"),
             "contact_us_path": f"/contact/{whoami.swa.code}/",
             "home_path": "/identity/",

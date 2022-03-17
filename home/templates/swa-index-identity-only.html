@@ -10,7 +10,12 @@
     <section>
       {% translate "Using Login.gov may be faster and more convenient than visiting a local unemployment insurance office. It is a secure way for you to verify your identity online." %}
     </section>
+
+    <section>
+    {% translate "You will need to have these items to verify your identity online with Login.gov:" %}
     {% include "identity/requirements.html" %}
+    </section>
+
     <section>
       <strong>{% translate "You must verify your identity within seven (7) calendar days of submitting your application in order to process your claim." %}</strong>
     </section>
@@ -58,6 +63,12 @@
       };
     </script>
 
+    <section>
+      {% blocktranslate with swa_name=swa.fullname %}
+      If you verify your identity online, that information will be shared with the <strong>U.S. Department of Labor</strong> and the <strong>{{ swa_name }}</strong>.
+      {% endblocktranslate %}
+    </section>
+
     <section class="padding-2 bg-accent-cool-lighter">
       <form id="use-app-form" class="dol-form" method="GET" action="#" onsubmit="return USDOL.handleNext()">
         <fieldset class="usa-fieldset">
@@ -102,11 +113,13 @@
 
     <section>
       {% blocktranslate %}
-      Using {{ appname }} will not affect your ability to receive unemployment benefits. State staff will process your application following all applicable laws and regulations.
+      The method you choose to verify your identity will not affect your ability to receive unemployment benefits.
+      State staff will process your application following all applicable laws and regulations.
       {% endblocktranslate %}
     </section>
 
     <section>
+      <section>{% translate "Here's how to reach us if you have questions about unemployment benefits or need help with verifying your identity:" %}</section>
       {% include swa_contact %}
     </section>
 </div>
