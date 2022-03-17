@@ -6,3 +6,4 @@ home/templates/missing-swa-xid.html
 home/templates/malformed-swa-xid.html
 home/templates/404.html
 home/templates/500.html
+reference/templates/reference/*.html

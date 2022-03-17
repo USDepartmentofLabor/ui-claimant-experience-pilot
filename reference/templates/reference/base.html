@@ -34,6 +34,11 @@
     {% include "./_google_tag_manager.html" %}
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
+    <style>
+      .usa-prose > p {
+        max-width: 100%;
+      }
+    </style>
   </head>
   <body class="">
     <script src="{% static 'js/uswds.min.js' %}"></script>
@@ -55,7 +60,7 @@
                 An official website of the United States government
               </p>
               <p class="usa-banner__header-action" aria-hidden="true">
-                Here’s how you know
+                Here's how you know
               </p>
             </div>
             <button
@@ -63,7 +68,7 @@
               aria-expanded="false"
               aria-controls="gov-banner"
             >
-              <span class="usa-banner__button-text">Here’s how you know</span>
+              <span class="usa-banner__button-text">Here's how you know</span>
             </button>
           </div>
         </header>
@@ -118,7 +123,7 @@
                         d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
                       /></svg
                   ></span>
-                  ) or <strong>https://</strong> means you’ve safely connected
+                  ) or <strong>https://</strong> means you've safely connected
                   to the .gov website. Share sensitive information only on
                   official, secure websites.
                 </p>
@@ -202,38 +207,46 @@
       </div>
     </header>
 
-    <div class="usa-section">
+    <div>
       <div class="grid-container">
         <div class="grid-row grid-gap">
-          <div class="usa-layout-docs__sidenav desktop:grid-col-3">
-            <nav aria-label="Secondary navigation">
-              <ul class="usa-sidenav">
-                <li class="usa-sidenav__item">
-                  <a href="javascript:void(0);" class="usa-current"
-                    >Introduction</a
-                  >
-                </li>
-                <li class="usa-sidenav__item">
-                  <a href="javascript:void(0);">Feature 1 </a>
-                </li>
-                <li class="usa-sidenav__item">
-                  <a href="javascript:void(0);">Feature 2 </a>
-                </li>
-                <li class="usa-sidenav__item">
-                  <a href="javascript:void(0);">Feature 3 </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
+          <nav class="usa-breadcrumb margin-y-5" aria-label="Breadcrumbs">
+            <ol class="usa-breadcrumb__list">
+              <li class="usa-breadcrumb__list-item">
+                <a href="/reference/" class="usa-breadcrumb__link">
+                  <span>Home</span>
+                </a>
+              </li>
+              <li
+                property="itemListElement"
+                typeof="ListItem"
+                class="usa-breadcrumb__list-item usa-current"
+                aria-current="page"
+              >
+                <span property="name"
+                  >{% block breadcrumb %}{% endblock %}</span
+                >
+                <meta property="position" content="2" />
+              </li>
+            </ol>
+          </nav>
           <main
-            class="usa-layout-docs__main desktop:grid-col-9 usa-prose usa-layout-docs"
+            class="usa-layout-docs__main desktop:grid-col-12 usa-prose usa-layout-docs"
             id="main-content"
           >
+            <h1>{% block title %}{% endblock %}</h1>
+
             {% block content %}{% endblock %}
+            <section class="usa-section">
+              [CTA to provide feedback on the site]
+            </section>
+            <section class="usa-section">
+              [CTA for states to engage with DOL]
+            </section>
           </main>
         </div>
       </div>
     </div>
+    <section>{% include '_footer.html' %}</section>
   </body>
 </html>
