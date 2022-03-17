@@ -157,6 +157,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
+    "core.middleware.maintenance_mode",
 ]
 
 ROOT_URLCONF = "core.urls"
