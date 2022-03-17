@@ -4,6 +4,37 @@ from core.test_utils import generate_keypair
 from datetime import timedelta
 from django.utils import timezone
 import time_machine
+import copy
+
+RESIDENCE_ADDRESS = {
+    "address1": "123 Any St",
+    "city": "Somewhere",
+    "state": "KS",
+    "zipcode": "00000",
+}
+
+WHOAMI_IAL2 = {
+    "email": "someone@example.com",
+    "IAL": "2",
+    "first_name": "Some",
+    "last_name": "One",
+    "birthdate": "1990-05-04",
+    "ssn": "900001234",  # omit hyphen to test claim cleaner
+    "phone": "555-555-1234",
+    "address": RESIDENCE_ADDRESS,
+    "verified_at": "2022-02-17T17:28:27-06:00",
+}
+
+TEST_SWA = {
+    "claimant_url": "https://somestate.gov",
+    "name": "SomeState",
+    "code": "XX",
+    "featureset": "Claim And Identity",
+}
+
+
+def create_whoami():
+    return copy.deepcopy(WHOAMI_IAL2 | {"swa": TEST_SWA})
 
 
 def create_idp():
@@ -16,6 +47,7 @@ def create_swa(
     is_active=False,
     code="KS",
     name=None,
+    fullname=None,
     claimant_url=None,
     featureset=SWA.FeatureSetOptions.CLAIM_AND_IDENTITY,
 ):
@@ -25,6 +57,7 @@ def create_swa(
     swa = SWA(
         code=code,
         name=name or f"{code} state name",
+        fullname=fullname or f"{code} full name",
         public_key=public_key_jwk.export_to_pem().decode("utf-8"),
         public_key_fingerprint=public_key_jwk.thumbprint(),
         claimant_url=claimant_url or "https://some.fake.url",
@@ -34,6 +67,14 @@ def create_swa(
         swa.status = SWA.StatusOptions.ACTIVE
     swa.save()
     return swa, private_key_jwk
+
+
+def create_swa_xid(swa):
+    if swa.code == "AR":
+        now = timezone.now()
+        return f"{now.strftime('%Y%m%d-%H%M%S')}-1234567-123456789"
+    else:
+        return "abc-123"
 
 
 def create_claimant(idp, **kwargs):

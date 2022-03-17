@@ -39,3 +39,6 @@ export const addressToString = (address: AddressType) => {
     .filter((el) => !!el)
     .join(", ");
 };
+
+export const centsRegex = /^[1-9][0-9]+$/;
+export const currencyRegex = /^[0-9]+(\.[0-9][0-9])?$/;

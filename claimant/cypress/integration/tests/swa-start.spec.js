@@ -1,5 +1,3 @@
-import faker from "@faker-js/faker";
-
 /* eslint-disable no-undef */
 
 context("SWA start page", { scrollBehavior: "center" }, () => {
@@ -47,7 +45,7 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
 
   context("IDENTITY_ONLY featureset", () => {
     it("uses verify identity language", () => {
-      cy.visit("/start/AR/");
+      cy.visit("/start/AR/?swa_xid=12345678-123456-1234567-123456789");
       cy.contains("Verify your identity online with Login.gov").should(
         "be.visible"
       );
@@ -55,11 +53,15 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
       cy.click_next();
       cy.url().should("contain", "/idp/AR/");
     });
+    it("shows not found for missing swa_xid", () => {
+      cy.visit(`/start/AR/`);
+      cy.contains("Application not found");
+    });
   });
 
   context("swa_xid param", () => {
     it("should preserve optional swa_xid param", () => {
-      const swa_xid = faker.datatype.uuid();
+      const swa_xid = "12345678-123456-1234567-123456789";
       cy.visit(`/start/AR/?swa_xid=${swa_xid}`);
       cy.click_yes("use-app");
       cy.click_next();
@@ -69,12 +71,10 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
     });
 
     it("filters out dangerous characters", () => {
-      const swa_xid = "abc123-<alert>danger!</alert>";
+      const swa_xid =
+        "12345678-123456-1234567-123456789-<alert>danger!</alert>";
       cy.visit(`/start/AR/?swa_xid=${swa_xid}`);
-      cy.click_yes("use-app");
-      cy.click_next();
-      cy.url().should("contain", "/idp/AR/?");
-      cy.url().should("contain", "swa_xid=abc123-alertdangeralert");
+      cy.contains("Application not found");
     });
   });
 });

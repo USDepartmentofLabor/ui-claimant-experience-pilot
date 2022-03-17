@@ -1,8 +1,6 @@
 {% extends "base.html" %} {% block content %} {% load i18n %}
-<main role="main">
-  <section class="grid-container">
-    <h1>{% translate "Something's wrong" %}</h1>
-    <div class="grid-row">{% translate "Sorry, we had a problem." %}</div>
-  </section>
-</main>
+<div>
+  <h1>{% translate "Something's wrong" %}</h1>
+  <div>{% translate "Sorry, we had a problem." %}</div>
+</div>
 {% endblock %}

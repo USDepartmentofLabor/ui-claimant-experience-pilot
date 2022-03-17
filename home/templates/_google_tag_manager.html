@@ -10,5 +10,25 @@
         j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-W66H9LT");
+
+      // Shorthand script for reporting events
+      window.sendToGA = function(event, options) {
+        if (window.dataLayer) {
+          window.dataLayer.push({event, ...options});
+          console.log("event:", event, options);
+        } else {
+          console.warn("event not queued:", event, options);
+        }
+      }
+
+      // Basic error reporting
+      window.onerror = function(err, file, line, col) {
+        try {
+          const msg = `${file}@${line}:${col}, ${err}`;
+          sendToGA("JS_error", {msg});
+        } catch(err) {
+          console.error(err);
+        }
+      }
     </script>
     <!-- End Google Tag Manager -->

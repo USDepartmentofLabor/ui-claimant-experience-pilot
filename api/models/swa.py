@@ -24,6 +24,7 @@ class SWA(TimeStampedModel):
 
     code = models.CharField(max_length=2, unique=True)
     name = models.CharField(max_length=255, unique=True)
+    fullname = models.CharField(max_length=255, unique=True, null=True)
     public_key_fingerprint = models.CharField(max_length=255, null=True)
     public_key = models.TextField(null=True)
     claimant_url = models.CharField(max_length=255, null=True)
@@ -39,6 +40,9 @@ class SWA(TimeStampedModel):
     active = ActiveSwaManager()
 
     def public_key_as_jwk(self):
+        if not self.public_key:
+            raise ValueError("SWA {} is missing a public_key".format(self.code))
+
         from jwcrypto import jwk
 
         return jwk.JWK.from_pem(self.public_key.encode("utf-8"))

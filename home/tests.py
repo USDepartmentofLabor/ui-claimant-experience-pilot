@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from django.test.utils import override_settings
 from api.models import Claimant, SWA
-from api.test_utils import create_swa
+from api.test_utils import create_swa, create_swa_xid
 from unittest.mock import patch
 import logging
 from core.tests import BucketableTestCase
@@ -20,8 +21,13 @@ class HomeTestCase(TestCase):
         )
 
     def test_idp_page(self):
+        response = self.client.get("/idp/?swa=XX")
+        self.assertEqual(response.status_code, 404)
+
+    @override_settings(SHOW_LOGIN_PAGE=True)
+    def test_idp_page_show_login_page(self):
         response = self.client.get("/idp/?redirect_to=/some/place")
-        self.assertContains(response, "Sign in", status_code=200)
+        self.assertContains(response, "Log in", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
         # active swa must exist if requested
@@ -38,26 +44,24 @@ class HomeTestCase(TestCase):
         self.assertContains(response, "You will now be transferred", status_code=200)
         self.assertContains(response, "redirect_to=/some/place", status_code=200)
 
-    def test_ial2required_page(self):
-        response = self.client.get("/ial2required/?idp=foo")
-        self.assertContains(response, "foo/?ial=1", status_code=200)
-
     def test_logout_page(self):
-        swa, _ = create_swa(is_active=True)
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
         self.client.post(
             "/login/",
             {
                 "email": "some@example.com",
-                "first_name": "Some",
-                "last_name": "Body",
-                "IAL": "2",
+                "IAL": "1",
                 "swa_code": swa.code,
+                "swa_xid": create_swa_xid(swa),
             },
         )
+        self.assertTrue(self.client.session["whoami"])
         response = self.client.get("/logout/")
         self.assertRedirects(
             response,
-            "/",
+            swa.claimant_url,
             status_code=302,
             fetch_redirect_response=False,
         )
@@ -94,7 +98,7 @@ class HomeTestCase(TestCase):
 
         # not found or inactive SWA, we get 404
         response = self.client.get("/start/XX/")
-        self.assertContains(response, "Sorry", status_code=404)
+        self.assertContains(response, "Page not found", status_code=404)
 
     def test_swa_contact_page(self):
         # active but no whoami
@@ -119,13 +123,15 @@ class HomeTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
         # whoami logged in
+        swa = SWA.active.get(code="AR")
+        swa_xid = create_swa_xid(swa)
         self.client.post(
             "/login/",
             {
                 "email": "some@example.com",
                 "IAL": "1",
                 "swa_code": "AR",
-                "swa_xid": "abc123",
+                "swa_xid": swa_xid,
             }
             | ADDRESS,
         )
@@ -241,6 +247,46 @@ class LocalLoginTestCase(BucketableTestCase):
         self.assertEqual(self.client.session["whoami"]["claim_id"], str(claim.uuid))
         self.assertTrue(claim.is_initiated_with_swa_xid())
         self.assertTrue(claim.completed_artifact_exists())
+
+    def test_local_login_swa_xid_existing_claim(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "IAL": "1",
+                "swa_code": swa.code,
+                "swa_xid": "abc-123",
+            },
+        )
+        self.assertRedirects(
+            response,
+            "/identity/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        claim_id = self.client.session["whoami"]["claim_id"]
+        self.assertTrue(claim_id)
+        self.client.session.flush()  # logout
+
+        # login again w/o swa_xid should find the existing claim
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "IAL": "1",
+                "swa_code": swa.code,
+            },
+        )
+        self.assertRedirects(
+            response,
+            "/identity/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        self.assertEquals(claim_id, self.client.session["whoami"]["claim_id"])
 
     def test_IAL_bump(self):
         swa, _ = create_swa(is_active=True)

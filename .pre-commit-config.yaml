@@ -9,7 +9,7 @@ repos:
             scripts/gen-docs-index|
           )$
 
-  - repo: git://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.1.0
     hooks:
       - id: check-ast
@@ -26,7 +26,7 @@ repos:
     hooks:
       - id: flake8
 
-  - repo: git://github.com/detailyang/pre-commit-shell
+  - repo: https://github.com/detailyang/pre-commit-shell
     rev: 1.0.5
     hooks:
       - id: shell-lint

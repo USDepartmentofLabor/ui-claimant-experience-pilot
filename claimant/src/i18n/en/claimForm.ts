@@ -118,6 +118,9 @@ const claimForm = {
       comment: {
         required_label: "Please share more details below",
         optional_label: "Please share more details below (optional)",
+        errors: {
+          required: "More detail about the separation reason is required",
+        },
       },
       reasons: {
         laid_off: {
@@ -600,10 +603,12 @@ const claimForm = {
     },
     total: {
       label: "Total {{- payType }} received",
+      currencyPrefix: "$",
       errors: {
-        required: "Total pay is required",
+        required: "Total pay is required, in dollars",
         min: "Total pay must be greater than 0",
-        number: "Total must be a number",
+        number:
+          "Total must be a number in dollars or cents, like 150, or 150.75",
       },
     },
     date_received: {

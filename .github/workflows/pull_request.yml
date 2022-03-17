@@ -78,7 +78,7 @@ jobs:
           cache-dependency-path: "claimant/yarn.lock"
       - uses: actions/cache@v2
         with:
-          key: pre-commit-dot-cache-{{ hashFiles(".pre-commit-config.yaml") }}
+          key: pre-commit-dot-cache-${{ hashFiles('.pre-commit-config.yaml') }}
           path: ~/.cache/pre-commit
       - name: Install Dev Dependencies
         run: make dev-deps && cd claimant && make deps

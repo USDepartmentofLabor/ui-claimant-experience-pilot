@@ -30,4 +30,5 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("swa/", include("swa.urls")),
     path("live/", live, name="live"),
+    path("reference/", include("reference.urls")),
 ]

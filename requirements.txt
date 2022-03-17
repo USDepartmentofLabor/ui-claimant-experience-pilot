@@ -1,5 +1,5 @@
 appoptics-apm==5.2.0
-boto3==1.21.12
+boto3==1.21.19
 celery==5.2.3
 colorlog==6.6.0
 dacite==1.6.0
@@ -17,6 +17,7 @@ launchdarkly-server-sdk==7.4.0
 git+https://github.com/trussworks/logindotgov-oidc-py.git@7cc5218#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0
+python-dateutil==2.8.2
 redis==4.1.4
 request-id-django-log==0.2.0
 requests==2.27.1

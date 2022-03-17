@@ -12,18 +12,24 @@ def base_url(request):  # pragma: no cover
         if settings.BASE_URL
         else f"{request.scheme}://{request.get_host()}"
     )
-    return {"base_url": base_url, "current_path": request.path}
+    return {
+        "base_url": base_url,
+        "current_path": request.path,
+        "appname": "Unemployment.dol.gov",
+    }
 
 
 # initialize common vars to None to sidestep VariableDoesNotExist
 # errors, even when the vars are not used.
 def common_vars(request):
     params = {
+        "pattern": None,
+        "swa": None,
         "whoami": None,
         "required": None,
         "onchange": None,
         "disabled": None,
-        "show_navigation": True,
+        "show_navigation": False,
         "contact_us_path": None,
         "home_path": "/",
     }

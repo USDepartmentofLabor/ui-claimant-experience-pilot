@@ -11,6 +11,9 @@ class SessionTimeout(object):
         self.get_response = get_response
 
     def __call__(self, request):
+        if not request.path.startswith("/api/"):
+            return self.get_response(request)
+
         expires_at = request.session.get("expires_at")
 
         #  End session if expired_at is in the past

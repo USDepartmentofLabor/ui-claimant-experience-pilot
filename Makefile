@@ -24,8 +24,13 @@ services-clean: ## Clean up dependencies
 redis-cli: ## Connect to Redis service with redis-cli
 	redis-cli --tls --cacert certs/redisCA.crt --cert certs/redis-client.crt --key certs/redis-client.key
 
+ifeq (, $(shell which docker))
+mysql-cli: ## Connect to the MySQL server
+	mysql -h rds -u user -psecret -D unemployment
+else
 mysql-cli: ## Connect to the MySQL server
 	mysql -h 127.0.0.1 -u user -psecret -D unemployment
+endif
 
 mysql-reset: ## Reset the local database
 	mysql -h 127.0.0.1 -u root -psecretpassword -e "DROP DATABASE unemployment"
@@ -185,6 +190,9 @@ create-swa: ## Create a SWA model record. Requires SWA=code, URL=url, and NAME=n
 
 activate-swa: ## Set SWA record status=Active
 	python manage.py activate_swa $(SWA)
+
+deactivate-swa: ## Set SWA record status=Inactive
+	python manage.py deactivate_swa $(SWA)
 
 bucket: ## Create S3 bucket in localstack service (run inside container)
 	python manage.py create_bucket

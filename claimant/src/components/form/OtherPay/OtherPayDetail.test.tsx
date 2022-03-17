@@ -27,7 +27,7 @@ describe("OtherPayDetail component", () => {
     );
 
     expect(
-      screen.getByRole("spinbutton", {
+      screen.getByRole("textbox", {
         name: `other_pay_detail.total.label`,
       })
     ).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe("OtherPayDetail component", () => {
       </Formik>
     );
 
-    const totalField = screen.getByRole("spinbutton", {
+    const totalField = screen.getByRole("textbox", {
       name: "other_pay_detail.total.label",
     });
     const dateGroup = screen.getByRole("group", {
@@ -77,7 +77,7 @@ describe("OtherPayDetail component", () => {
       name: `other_pay_detail.note.label`,
     });
 
-    userEvent.type(totalField, "5000");
+    userEvent.type(totalField, "5000.75");
     userEvent.clear(monthField);
     userEvent.type(monthField, "08");
     userEvent.clear(dayField);
@@ -87,7 +87,7 @@ describe("OtherPayDetail component", () => {
     userEvent.type(noteField, "I did an extra favor");
 
     await act(async () => {
-      expect(totalField).toHaveValue(5000);
+      expect(totalField).toHaveValue("5000.75");
       expect(monthField).toHaveValue("08");
       expect(dayField).toHaveValue("15");
       expect(yearField).toHaveValue("2020");

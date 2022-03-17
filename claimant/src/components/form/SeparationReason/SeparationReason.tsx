@@ -109,7 +109,7 @@ const SeparationReasonLabel = (props: {
 
 export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
-  const { values } = useFormikContext<ClaimantInput>();
+  const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
   const segmentIdx = parseInt(segment);
   const segmentExists = !!values.employers?.[segmentIdx];
@@ -147,6 +147,12 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
               value: reason,
             };
           })}
+          onChange={() =>
+            setFieldValue(
+              `employers[${segmentIdx}].separation_option`,
+              undefined
+            )
+          }
         />
       </Fieldset>
       {employer.separation_reason && selectedReason?.options && (

@@ -15,7 +15,7 @@ else
 fi
 
 wait-for-it -t 60 ${RDS_HOSTNAME}:3306
-wait-for-it 127.0.0.1:8000
+wait-for-it -t 60 127.0.0.1:8000
 until make celery-status
 do
   echo "waiting for celery to be ready"

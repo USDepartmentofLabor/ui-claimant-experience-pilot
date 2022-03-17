@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<main role="main">
+  <section class="grid-container">
+    <section>
+      <h1>{% translate "Invalid transaction ID" %}</h1>
+      {% translate "Check the swa_xid value you entered:" %} <code>{{ swa_xid }}</code>
+    </section>
+    {% if swa_missing_xid %}
+    {% include swa_missing_xid %}
+    {% endif %}
+    <section>
+      <h2>{% translate "More information" %}</h2>
+      {% include more_help %}
+    </section>
+  </section>
+</main>
+{% endblock %}

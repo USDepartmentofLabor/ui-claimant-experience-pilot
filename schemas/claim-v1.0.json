@@ -166,6 +166,24 @@
             },
             "required": ["last_work_date"]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "separation_reason": {
+                "not": {
+                  "type": "string",
+                  "enum": ["laid_off"]
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "separation_comment": { "type": "string", "maxLength": 1024 }
+            },
+            "required": ["separation_comment"]
+          }
         }
       ]
     },

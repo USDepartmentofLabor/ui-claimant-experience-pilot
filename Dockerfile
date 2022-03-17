@@ -56,7 +56,7 @@ EXPOSE 8000
 COPY requirements*.txt ./
 
 RUN apt-get update -y && apt-get install -y \
-  --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools iputils-ping \
+  --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools iputils-ping mariadb-client \
   && rm -rf /var/lib/apt/lists/* \
   && pip install --no-cache-dir -r requirements.txt
 
@@ -70,6 +70,7 @@ COPY login-dot-gov ./login-dot-gov
 COPY launchdarkly ./launchdarkly
 COPY api ./api
 COPY swa ./swa
+COPY reference ./reference
 COPY certs ./certs
 COPY schemas ./schemas
 # settings.py will ignore this copy for FIXTURE_DIR

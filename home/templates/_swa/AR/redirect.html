@@ -1,13 +1,10 @@
 {% load i18n %}
 <h1>{% translate "Verify your identity in person at a local office" %}</h1>
 <section>
-{% translate "You may verify your identity in-person at your local office if you do not wish to verify your identity online." %}
+{% translate "ADWS needs more information from you before your claim can be processed." %}
 </section>
 <section>
-{% translate "We need additional information from you before your claim can be completed." %}
-</section>
-<section>
-{% translate "Please call your local office or" %} {% include "_swa/AR/phone.html" %} {% translate "within seven (7) calendar days of when you submitted your application." %}
+ {% translate "Please" %}{% include "_swa/AR/call_instructions.html" %}
 </section>
 <section>
  <h2>{% translate "More information" %}</h2>

@@ -18,6 +18,7 @@ from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
 from home.views import handle_404
 from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
 from core.exceptions import ClaimStorageError
+from core.swa_xid import SwaXid
 
 logger = logging.getLogger("logindotgov")
 
@@ -77,9 +78,21 @@ def explain(request):
 def ial2required(request):
     # if we already have an authenticated session, redirect to frontend app
     if request.session.get("authenticated"):
-        return redirect("/claimant/")
+        whoami = WhoAmI.from_dict(request.session.get("whoami"))
+        redirect_to = (
+            "/identity/" if whoami.swa.featureset == "Identity Only" else "/claimant/"
+        )
+        return redirect(f"{redirect_to}?idp=logindotgov&ial2error=true")
 
-    return redirect("/ial2required/?idp=logindotgov")
+    return render(
+        request,
+        "auth-error.html",
+        {
+            "error": "ial2required",
+            "swa_login_help": None,
+        },
+        status=403,
+    )
 
 
 @never_cache
@@ -92,13 +105,19 @@ def index(request):
 
     # if we already have an authenticated session, conditionally redirect to frontend app
     if request.session.get("authenticated"):
-        whoami = request.session.get("whoami")
+        whoami = WhoAmI.from_dict(request.session.get("whoami"))
+        logger.debug("🚀  authenticated as whoami=={}".format(whoami.as_dict()))
         # if this is a step-up within the same session, allow it.
-        if whoami and int(whoami.get("IAL")) == 1 and requested_ial == 2:
+        if int(whoami.IAL) == 1 and requested_ial == 2:
             logger.debug("🚀 IAL2 step up requested")
             pass
         else:
-            return redirect("/claimant/")
+            redirect_to = (
+                "/identity/"
+                if whoami.swa.featureset == "Identity Only"
+                else "/claimant/"
+            )
+            return redirect(redirect_to)
 
     # stash selection
     if "swa" in request.GET:
@@ -107,14 +126,7 @@ def index(request):
         request.session["swa"] = request.GET["swa_code"]
     if not request.session.get("swa"):
         logger.debug("🚀 missing swa or swa_code")
-        return render(
-            request,
-            "auth-error.html",
-            {
-                "error": "missing swa or swa_code parameter",
-            },
-            status=403,
-        )
+        return handle_404(request, None)
 
     try:
         swa = SWA.active.get(code=request.session.get("swa"))
@@ -128,16 +140,35 @@ def index(request):
     # swa_xid is unique string passed by SWAs to xref claims with their systems.
     # if the swa is an Identity Only featureset, swa_xid is required. otherwise, optional.
     # The swa_xid is optional on ial=2 because we assume we captured it already at ial=1
-    if "swa_xid" in request.GET:
-        request.session["swa_xid"] = request.GET["swa_xid"]
+    swa_xid = get_swa_xid(request)
+    if swa_xid:
+        sx = SwaXid(swa_xid, swa.code)
+        if not sx.format_ok():
+            logger.debug("Malformed swa_xid: {}".format(swa_xid))
+            return render(
+                request,
+                "malformed-swa-xid.html",
+                {
+                    "swa": swa,
+                    "swa_xid": swa_xid,
+                    "swa_missing_xid": f"_swa/{swa.code}/missing-xid.html",
+                    "more_help": f"_swa/{swa.code}/more_help.html",
+                },
+                status=400,
+            )
+        request.session["swa_xid"] = swa_xid
     elif requested_ial == 2:
         pass  # step up
-    elif swa.is_identity_only():
+    elif swa.is_identity_only() and not request.GET.get("skip-xid-check"):
         logger.debug("🚀 SWA.is_identity_only and missing swa_xid")
         return render(
             request,
-            "auth-error.html",
-            {"error": "missing swa_xid parameter"},
+            "missing-swa-xid.html",
+            {
+                "swa": swa,
+                "swa_missing_xid": f"_swa/{swa.code}/missing-xid.html",
+                "more_help": f"_swa/{swa.code}/more_help.html",
+            },
             status=400,
         )
 
@@ -164,6 +195,8 @@ def index(request):
     logger.debug("redirect {}".format(login_url))
 
     request.session["logindotgov"] = {"state": state, "nonce": nonce}
+    # save immediately so that we always have a .session_key
+    request.session.save()
     stash_session_state(state, request.session)
 
     return redirect(login_url)
@@ -191,6 +224,7 @@ def stash_session_state(state, session):
         "logindotgov": session["logindotgov"],
     }
     cache.set(state, stash, 86400)
+    logger.debug("⚡️ session {} stashed with key {}".format(session.session_key, state))
 
 
 # OIDC OP redirects here after auth attempt
@@ -201,10 +235,15 @@ def result(request):
         auth_code, auth_state = client.validate_code_and_state(request.GET)
     except LoginDotGovOIDCError as error:
         logger.exception(error)
+        swa = SWA.active.get(code=request.session.get("swa"))
         return render(
             request,
             "auth-error.html",
-            {"error": str(error)},
+            {
+                "error": str(error),
+                "swa": swa,
+                "swa_login_help": f"_swa/{swa.code}/login_help.html",
+            },
             status=403,
         )
 
@@ -213,6 +252,9 @@ def result(request):
     if "IAL" not in request.session or "logindotgov" not in request.session:
         stashed_state = cache.get(auth_state)
         if stashed_state:
+            logger.debug(
+                "🚀 found stashed state {} {}".format(auth_state, stashed_state)
+            )
             existing_session = get_session(stashed_state["session_key"])
             if existing_session:
                 logger.debug("🚀 found existing active session")
@@ -237,7 +279,7 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "state mismatch"},
+            {"error": "state mismatch", "swa_login_help": None},
             status=403,
         )
 
@@ -249,7 +291,10 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "missing access_token"},
+            {
+                "error": "missing access_token",
+                "swa_login_help": None,
+            },
             status=403,
         )
 
@@ -262,7 +307,10 @@ def result(request):
         return render(
             request,
             "auth-error.html",
-            {"error": "Error exchanging token"},
+            {
+                "error": "Error exchanging token",
+                "swa_login_help": None,
+            },
             status=403,
         )
 
@@ -317,9 +365,13 @@ def initiate_claimant_session(request, userinfo):
         logger.exception(err)
         appoptics_apm.log_exception()
         return render(
-            None,
+            request,
             "auth-error.html",
-            {"error": str(err)},
+            {
+                "error": str(err),
+                "swa": swa,
+                "swa_login_help": f"_swa/{swa.code}/login_help.html",
+            },
             status=500,
         )
 
@@ -351,10 +403,12 @@ def initiate_claimant_session(request, userinfo):
 
 
 def get_swa_xid(request):
-    if "swa_xid" in request.session:
-        return request.session["swa_xid"]
+    if "swa_xid" in request.GET:
+        return request.GET["swa_xid"]
     if "swa_xid" in request.COOKIES:
         return request.COOKIES["swa_xid"]
+    if "swa_xid" in request.session:
+        return request.session["swa_xid"]
     return False
 
 

@@ -1,0 +1,17 @@
+{% load i18n %}
+<section>
+  <h1>{% translate "Application not found" %}</h1>
+  <section>
+    {% translate "We’re sorry — we’re having trouble connecting your ID verification account with your unemployment application." %}
+  </section>
+  <section>
+    {% translate "This might be because the URL found on your unemployment application’s confirmation page was typed incorrectly. Please try copying the URL again." %}
+  </section>
+  {% if swa_missing_xid %}
+    {% include swa_missing_xid %}
+  {% endif %}
+  <section>
+    <h2>{% translate "More information" %}</h2>
+    {% include more_help %}
+  </section>
+</section>

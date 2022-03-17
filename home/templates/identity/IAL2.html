@@ -1,19 +1,26 @@
-{% extends "base.html" %} {% block content %} {% load i18n %}
-<div class="grid-container">
- <main role="main">
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+
+<script>
+  const xid = "{{ claim.swa_xid }}";
+  window.sendToGA("{{ claim.swa.code }}_IAL2", {xid})
+</script>
+
+<div>
   <section>
     <h1>Welcome, {{ whoami.first_name }}</h1>
 
     <div class="usa-alert usa-alert--success">
       <div class="usa-alert__body">
-        <h4 class="usa-alert__heading">{% translate "Identity verified!" %}</h4>
+        <h4 class="usa-alert__heading">{% translate "Identity verification submitted" %}</h4>
         <p class="usa-alert__text">
-          {% translate "Your identity verification" %}
-          <span class="claim-id">({{ claim.swa_xid }})</span>
-          {% translate "was shared with" %}
-          {% include swa_name %}
-          {% translate "on" %}
-          <strong>{{ completed_at|date }}</strong>.
+          {% blocktranslate with claim_id=claim.swa_xid claim_date=completed_at|date swa_name=swa.fullname %}
+          Your identity verification
+          <span class="claim-id">({{ claim_id }})</span>
+          was shared with the {{ swa_name }} on
+          <strong>{{ claim_date }}</strong>.
+          {% endblocktranslate %}
         </p>
       </div>
     </div>
@@ -28,6 +35,5 @@
       {% include more_help %}
     </section>
   </section>
- </main>
 </div>
 {% endblock %}

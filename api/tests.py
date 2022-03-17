@@ -10,7 +10,15 @@ from jwcrypto.common import json_decode
 from botocore.stub import Stubber
 from dacite import from_dict
 from core.tasks_tests import CeleryTestCase
-from .test_utils import create_idp, create_swa, create_claimant
+from .test_utils import (
+    create_idp,
+    create_swa,
+    create_claimant,
+    create_whoami,
+    RESIDENCE_ADDRESS,
+    WHOAMI_IAL2,
+    TEST_SWA,
+)
 from .models import Claim, Claimant, SWA
 from .models.claim import CLAIMANT_STATUS_PROCESSING
 from core.test_utils import create_s3_bucket, delete_s3_bucket
@@ -58,39 +66,13 @@ MAILING_ADDRESS = {
     "zipcode": "00000",
 }
 
-RESIDENCE_ADDRESS = {
-    "address1": "123 Any St",
-    "city": "Somewhere",
-    "state": "KS",
-    "zipcode": "00000",
-}
-
-WHOAMI_IAL2 = {
-    "email": "someone@example.com",
-    "IAL": "2",
-    "first_name": "Some",
-    "last_name": "One",
-    "birthdate": "1990-05-04",
-    "ssn": "900001234",  # omit hyphen to test claim cleaner
-    "phone": "555-555-1234",
-    "address": RESIDENCE_ADDRESS,
-    "verified_at": "2022-02-17T17:28:27-06:00",
-}
-
-TEST_SWA = {
-    "claimant_url": "https://somestate.gov",
-    "name": "SomeState",
-    "code": "XX",
-    "featureset": "Claim And Identity",
-}
-
 
 class SessionAuthenticator:
     def authenticate_session(self, client=None):
         client = client if client else self.client
         session = client.session
         session["authenticated"] = True
-        session["whoami"] = WHOAMI_IAL2 | {"swa": TEST_SWA}
+        session["whoami"] = create_whoami()
         session.save()
         return session
 
