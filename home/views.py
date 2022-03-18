@@ -376,4 +376,12 @@ def about(request):
 
 
 def maintenance_mode(request):
-    return render(request, "maintenance-mode.html")
+    return render(
+        request,
+        "maintenance-mode.html",
+        {
+            "maintenance_mode_message": ld_client.variation(
+                "maintenance-mode-message", {"key": "anonymous-user"}, ""
+            )
+        },
+    )
