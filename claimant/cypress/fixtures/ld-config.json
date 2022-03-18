@@ -33,5 +33,12 @@
     "value": false,
     "variation": 0,
     "trackEvents": false
+  },
+  "maintenance-mode-message": {
+    "version": 1,
+    "flagVersion": 1,
+    "value": "Sorry, this system is currently unavailable. Please try again later.",
+    "variation": 0,
+    "trackEvents": false
   }
 }
