@@ -1,19 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 {% load i18n %}
-<main role="main">
-  <section class="grid-container">
-    <section>
-      <h1>{% translate "Invalid transaction ID" %}</h1>
-      {% translate "Check the swa_xid value you entered:" %} <code>{{ swa_xid }}</code>
-    </section>
-    {% if swa_missing_xid %}
-    {% include swa_missing_xid %}
-    {% endif %}
-    <section>
-      <h2>{% translate "More information" %}</h2>
-      {% include more_help %}
-    </section>
+<div>
+  <h1>{% translate "Web address invalid" %}</h1>
+  <section>
+  {% translate "We’re sorry — we’re having trouble connecting your ID verification account with your unemployment application." %}
   </section>
-</main>
+  <section>
+  {% blocktranslate with xid=swa_xid %}
+  This might be because the URL found on your unemployment application’s confirmation page was typed incorrectly. Please try copying the URL again.
+  Check the ID value you entered: {{ xid }}
+  {% endblocktranslate %}
+  </section>
+  {% if swa_missing_xid %}
+    {% include swa_missing_xid %}
+  {% endif %}
+  <section>
+    <h2>{% translate "More information" %}</h2>
+    {% include more_help %}
+  </section>
+</div>
 {% endblock %}

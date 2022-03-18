@@ -369,7 +369,7 @@ class LoginDotGovTestCase(TestCase):
     # this is the "escape" url from login.gov where users can opt-out of proofing
     def test_ial2required(self):
         response = self.client.get("/logindotgov/ial2required")
-        self.assertContains(response, "Log in failed", status_code=403)
+        self.assertContains(response, "Log in unsuccessful", status_code=403)
 
         session = self.client.session
         session["authenticated"] = True
@@ -520,7 +520,7 @@ class LoginDotGovTestCase(TestCase):
 
         # swa_xid param required for identity only swa
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
-        self.assertContains(response, "Application not found", status_code=400)
+        self.assertContains(response, "Web address incomplete", status_code=400)
 
         swa_xid = str(uuid.uuid4())
         response = self.client.get(
