@@ -5,6 +5,7 @@
     "allow-claim-resolution": true,
     "system-admin-message": "",
     "system-admin-message-type": "info",
-    "maintenance-mode": false
+    "maintenance-mode": false,
+    "maintenance-mode-message": "down for maintenance"
   }
 }
