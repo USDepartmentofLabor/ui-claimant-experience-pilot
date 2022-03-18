@@ -128,6 +128,7 @@ if os.environ.get("COLOR_LOGGING", "false").lower() == "true":  # pragma: no cov
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
+    "include_strip_tag",
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "api",

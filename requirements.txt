@@ -6,6 +6,7 @@ dacite==1.6.0
 Django==3.2.12
 django-csp==3.7
 django-environ==0.8.1
+git+https://github.com/pkarman/django-include-strip-tag@70ba69f#egg=django-include-strip-tag
 git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg=django-redis-secure
 gunicorn==20.1.0
 hiredis==2.0.0
