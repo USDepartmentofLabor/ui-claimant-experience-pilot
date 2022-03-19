@@ -162,22 +162,14 @@ def logout(request):
         logger.debug("RP-initiated logout to {}".format(logout_url))
         return redirect(logout_url)
 
+    if "authenticated" not in request.session:
+        request.session.flush()
+        return redirect("/")
+
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     swa_url = whoami.swa.claimant_url
     request.session.flush()
     return redirect(swa_url if whoami.swa.featureset == "Identity Only" else "/")
-
-
-@never_cache
-def ial2required(request):
-    return render(
-        request,
-        "ial2required.html",
-        {
-            "swas": active_swas_ordered_by_name(),
-            "idp_path": request.GET.get("idp", "logindotgov"),
-        },
-    )
 
 
 @never_cache

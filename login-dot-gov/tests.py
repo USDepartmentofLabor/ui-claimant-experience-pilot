@@ -379,7 +379,7 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get("/logindotgov/ial2required")
         self.assertRedirects(
             response,
-            "/identity/?ial2error=true&idp=logindotgov",
+            "/contact/XX/?ial2error=true&idp=logindotgov",
             status_code=302,
             fetch_redirect_response=False,
         )

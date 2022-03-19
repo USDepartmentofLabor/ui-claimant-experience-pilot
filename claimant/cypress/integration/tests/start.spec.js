@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
-context("Let's get started page", { scrollBehavior: "center" }, () => {
+// skipped for MVP
+xcontext("Let's get started page", { scrollBehavior: "center" }, () => {
   beforeEach(() => {
     cy.visit("/start/");
   });
