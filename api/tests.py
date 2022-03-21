@@ -966,6 +966,7 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
             )
         )
         self.assertFalse(finder.find())
+        self.assertFalse(finder.all())
 
         finder = ClaimFinder(
             WhoAmI.from_dict(
@@ -1144,6 +1145,25 @@ class ClaimValidatorTestCase(TestCase, BaseClaim):
             cv = ClaimValidator(json_decode(json_str), schema_name="identity-v1.0")
             logger.debug("🚀 IAL{} identity errors={}".format(ial, cv.errors_as_dict()))
             self.assertTrue(cv.valid)
+
+    def test_whoami_mismatch(self):
+        whoami = WhoAmI.from_dict(create_whoami())
+        example = settings.BASE_DIR / "schemas" / "claim-v1.0-example.json"
+        with open(example) as f:
+            json_str = f.read()
+
+        example_claim = json_decode(json_str)
+        del example_claim["email"]
+        cv = ClaimValidator(example_claim, base_url="http://example.com")
+        self.assertFalse(cv.validate_against_whoami(whoami))
+
+        example_claim["email"] = "someone-else@example.com"
+        cv = ClaimValidator(example_claim, base_url="http://example.com")
+        self.assertFalse(cv.validate_against_whoami(whoami))
+
+        example_claim["email"] = whoami.email
+        cv = ClaimValidator(example_claim, base_url="http://example.com")
+        self.assertTrue(cv.validate_against_whoami(whoami))
 
     def test_claim_permutations(self):
         dirlist = settings.FIXTURE_DIR

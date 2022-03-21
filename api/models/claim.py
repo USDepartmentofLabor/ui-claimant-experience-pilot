@@ -186,8 +186,8 @@ class Claim(TimeStampedModel):
         initiated_event = (
             self.events.filter(
                 category=Claim.EventCategories.INITIATED_WITH_SWA_XID,
-                description__isnull=False,
             )
+            .exclude(description="")
             .order_by("happened_at")
             .first()
         )
