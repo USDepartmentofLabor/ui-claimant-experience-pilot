@@ -324,6 +324,7 @@ const claimForm = {
     what_is_your_occupation: {
       label: "What is your occupation?",
       required: "Occupation is required",
+      min_length: "Occupation must be at least three characters",
     },
     hint: "If you're not sure, see our",
     list_of_occupations: "list of occupations",
