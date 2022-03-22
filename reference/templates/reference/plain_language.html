@@ -1,23 +1,106 @@
 {% extends "./base.html" %}
 
-{% block breadcrumb %} Plain Language {% endblock %}
-
-{% block title %} Plain Language {% endblock %}
+{% block title %} Plain Language for Unemployment Applications {% endblock %}
 
 {%block content %}
 <section class="usa-section">
   <p>
-    When applicants don't understand a question or a notice, language becomes an equity issue.
+    When applicants don't understand a question on the unemployment insurance (UI) application, not only does it often result in them providing inaccurate responses that SWA staff must later investigate and resolve, but it also becomes an equity issue. The examples shown here represent steps States can draw inspiration from to make their application questions more approachable for any claimant to answer, whether they speak English as a second language, have disabilities, or have a 6th - 8th grade reading level.
+  </p>
+</section>
+
+<section class="usa-section">
+  <h2>Define Complex Terms</h2>
+  <p>
+    Many languages do not have different words for "laid off," "fired," and "quit," and even in English the definitions of those terms differ from state to state. In the UI application context, it is important that applicants understand these concepts so they can make an accurate selection. Without clear definitions or additional context, applicants who speak English as a second language, or who don't correctly interpret what a term means for the state in question, may face insurmountable barriers to applying, or may submit an inaccurate response that SWAs must investigate and correct. This creates burdens not only for the applicants, but also for SWA staff.
   </p>
   <p>
-    Many languages do not have different words for "laid off," "fired," and "quit." However,
-    in the UI application context, it is important that applicants understand these concepts.
-    Without clear definitions or additional context, applicants who speak English as a second
-    language may face insurmountable barriers to or delays in receiving the benefits to which
-    they are entitled.
+    When applicants were shown definitions, they slowed down, read this screen more carefully, and chose the correct answer, leading us to believe that this would also result in submissions that are easier and faster for SWA staff to process.
+  </p>
+  <div class="grid-row">
+    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
+      <!-- TODO: refactor to correct static img tag -->
+      {% include 'reference/separation.svg' %}
+    </div>
+    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+      <div>
+        <h3>How this content tested</h3>
+        <p><span class="text-primary text-italic">"I like the explanations here because if it just said laid off, fired, etc. I would not understand it."</span> - UI Applicant</p>
+      </div>
+      <div>
+        <h3>Take action</h3>
+        <p>When possible, provide short, clear definitions on the same page as the question being asked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="usa-section">
+  <h2>Use Simpler Terms When Possible</h2>
+  <p>
+    There are tools and resources available for free that can analyze web content for readability. Word processing applications can also assess the grade level of your website or form content. If content is above grade 8, make edits to simplify the language. Small changes can remove barriers to access and reduce errors in applications.
+  </p>
+  <div class="grid-row width-auto">
+    <div class="border-3 border-base-lightest">
+      <!-- TODO: refactor to correct static img tag -->
+      {% include 'reference/payments.svg' %}
+    </div>
+  </div>
+  <div class="margin-top-5">
+      {% include 'reference/beforeafter.svg' %}
+  </div>
+</section>
+
+<section class="usa-section">
+  <h2>Break Up Long Sentences</h2>
+  <p>
+    Previously, the attestation sentence before the signature caused confusion. Splitting this sentence into two sentences without changing the content brought the reading level down to grade 8.
+  </p>
+  <div class="grid-row">
+    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
+      <!-- todo: refactor to correct static img tag -->
+      {% include 'reference/sentences.svg' %}
+    </div>
+    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+      <div>
+        <h3>Take action</h3>
+        <p>Break a long sentence into two, use bullets, eliminate passive voice and unnecessary words, and edit sentences that are hard to read.when possible, provide short, clear definitions on the same page as the question being asked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="usa-section">
+  <h2>Include Helper Text</h2>
+  <p>
+    People applying for unemployment insurance may be experiencing stress and anxiety as a result of their recent unemployment. When they are confronted with questions they don’t know how to answer, those feelings are compounded by their concern that an incorrect choice will lead to their application being rejected or denied.
   </p>
   <p>
-    [EXAMPLE/IMAGE]
+  “Helper text” can supplement existing information or questions on the application, giving applicants more context or examples so they can provide the most relevant and accurate information.
   </p>
+  <div class="grid-row">
+    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
+      <!-- todo: refactor to correct static img tag -->
+      {% include 'reference/demographic.svg' %}
+    </div>
+    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+      <div>
+        <h3>How this content tested</h3>
+        <p>Applicants felt more comfortable providing information when they understood why a question was being asked, and how the information would be used.</p>
+      </div>
+    </div>
+  </div>
+  <div class="grid-row margin-top-5">
+    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
+      <!-- todo: refactor to correct static img tag -->
+      {% include 'reference/confirm.svg' %}
+    </div>
+    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+      <div>
+        <h3>Take action</h3>
+        <p>Helper text can guide applications to a more efficient or easier option.</p>
+      </div>
+    </div>
+  </div>
 </section>
 {% endblock %}
