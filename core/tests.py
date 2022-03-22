@@ -346,7 +346,7 @@ class LaunchDarklyTestCase(TestCase):
     @patch("core.middleware.maintenance_mode.ld_client")
     def test_maintenance_mode(self, patched_ld_client_core):
         patched_ld_client_core.variation.return_value = True
-        response = self.client.get("/home/")
+        response = self.client.get("/about/")
         self.assertContains(response, "down for maintenance")
 
 
