@@ -342,6 +342,12 @@ class LaunchDarklyTestCase(TestCase):
             response.content.decode("UTF-8"), r'window\.LD_CLIENT_SDK_KEY=".{24}"'
         )
 
+    @patch("core.middleware.maintenance_mode.ld_client")
+    def test_maintenance_mode(self, patched_ld_client):
+        patched_ld_client.variation.return_value = True
+        response = self.client.get("/home/")
+        self.assertContains(response, "Sorry, this system is currently unavailable")
+
 
 class SwaXidTestCase(TestCase):
     def test_swa_xid_timestamp(self):

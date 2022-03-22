@@ -381,7 +381,9 @@ def maintenance_mode(request):
         "maintenance-mode.html",
         {
             "maintenance_mode_message": ld_client.variation(
-                "maintenance-mode-message", {"key": "anonymous-user"}, ""
+                "maintenance-mode-message",
+                {"key": "anonymous-user"},
+                "Sorry, this system is currently unavailable. Please try again later.",
             )
         },
     )

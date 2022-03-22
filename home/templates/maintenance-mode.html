@@ -1,9 +1,7 @@
 {% extends "base.html" %} {% block content %}{% load i18n %}
 <div class="grid-container">
-  <main>
-    <p>
-      {%  include maintenance_mode_message %}
-    </p>
-  </main>
+  <p>
+    {% translate maintenance_mode_message %}
+  </p>
 </div>
 {% endblock %}
