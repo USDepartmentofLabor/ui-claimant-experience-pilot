@@ -38,6 +38,41 @@
       .usa-prose > p {
         max-width: 100%;
       }
+      pre {
+        background-color: #222;
+        color: #eee;
+        padding: 2rem;
+        margin: 2rem 0;
+        border-radius: 0.5rem;
+        overflow-x: scroll;
+      }
+      p > code {
+        background-color: #eee;
+        padding: 0.1rem;
+        font-size: 1rem;
+      }
+      .usa-card {
+        padding: 1.5rem 0;
+      }
+      .usa-card__container {
+        border-width: 1px 0 0 0;
+        border-radius: 0;
+        border-color: #1b1b1b;
+      }
+      .usa-header--basic .usa-navbar {
+        width: auto;
+        flex-shrink: 0;
+      }
+      .usa-section {
+        padding: 1rem 0;
+        margin: 0;
+      }
+      .usa-prose h1 {
+        font-family: Source Sans Pro Web,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+      }
+      .usa-header--basic .usa-nav-container {
+        align-items: center;
+      }
     </style>
   </head>
   <body class="">
@@ -140,9 +175,10 @@
           <div class="usa-logo" id="basic-logo">
             <em class="usa-logo__text">
               <a href="javascript:void(0)" title="&lt;Project title&gt;">
-                Reference Site Name
+                U.S. Department of Labor
               </a>
             </em>
+            <span>Employment and Training Administration</span>
           </div>
           <button class="usa-menu-btn">Menu</button>
         </div>
@@ -208,40 +244,54 @@
     </header>
 
     <div>
-      <div class="grid-container">
+      <div class="grid-container margin-top-5">
         <div class="grid-row grid-gap">
-          <nav class="usa-breadcrumb margin-y-5" aria-label="Breadcrumbs">
-            <ol class="usa-breadcrumb__list">
-              <li class="usa-breadcrumb__list-item">
-                <a href="/reference/" class="usa-breadcrumb__link">
-                  <span>Home</span>
-                </a>
-              </li>
-              <li
-                property="itemListElement"
-                typeof="ListItem"
-                class="usa-breadcrumb__list-item usa-current"
-                aria-current="page"
-              >
-                <span property="name"
-                  >{% block breadcrumb %}{% endblock %}</span
-                >
-                <meta property="position" content="2" />
-              </li>
-            </ol>
-          </nav>
+          <div class="usa-layout-docs__sidenav desktop:grid-col-3">
+            <nav aria-label="Secondary navigation">
+              <ul class="usa-sidenav">
+                <li class="usa-sidenav__item">
+                  <a href="/reference/" class="{%if active == 'introduction' %}usa-current{% endif %}">Unemployment CX Guidance</a>
+                  <ul class="usa-sidenav__sublist">
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/plain-language/" class="{%if active == 'plain_language' %}usa-current{% endif %}">Plain Language</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/" class="{%if active == 'open_source' %}usa-current{% endif %}">Open Source</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="javascript:void(0);">TBD</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
           <main
-            class="usa-layout-docs__main desktop:grid-col-12 usa-prose usa-layout-docs"
+            class="usa-layout-docs__main desktop:grid-col-9 usa-prose usa-layout-docs"
             id="main-content"
           >
             <h1>{% block title %}{% endblock %}</h1>
-
             {% block content %}{% endblock %}
             <section class="usa-section">
-              [CTA to provide feedback on the site]
+              <h2>Provide feedback on this site:</h2>
+              <form method="get" action="#">
+                <label for="feedback">Has this information been helpful for you? Tell us why or why not.</label>
+                <textarea id="feedback" class="usa-textarea" maxlength="255" aria-describedby="hint"></textarea>
+                <span id="hint" class="text-base display-block margin-bottom-2">250 characters allowed</span>
+                <button type="submit" class="usa-button">Submit Feedback</button>
+              </form>
             </section>
             <section class="usa-section">
-              [CTA for states to engage with DOL]
+              <h2>How to engage with USDOL:</h2>
+              <form method="get" action="#">
+                <label for="meet-with-us">
+                  Want to know how USDOL can help you implement these CX tactics? Meet with us so we can work
+                  together. Send us a message and we'll respond with more information.
+                </label>
+                <textarea id="meet-with-us" class="usa-textarea" maxlength="255" aria-describedby="hint"></textarea>
+                <span id="hint" class="text-base display-block margin-bottom-2">250 characters allowed</span>
+                <button type="submit" class="usa-button">Send Message</button>
+              </form>
             </section>
           </main>
         </div>

@@ -1,6 +1,7 @@
-{% extends "./base.html" %} {% block breadcrumb %} Introduction {% endblock %}
-{% block title %} USDOL's recommended customer experience guidance for states to
-improve claimant experience {% endblock %} {%block content %}
+{% extends "./base.html" %}
+{% block breadcrumb %} Introduction {% endblock %}
+{% block title %} Best Practices for Improved Unemployment Insurance Claimant Experience {% endblock %}
+{%block content %}
 <section class="usa-section">
   <p>
     U.S. Department of Labor (USDOL) is providing [describe features] to help State
@@ -29,7 +30,7 @@ improve claimant experience {% endblock %} {%block content %}
     <li class="tablet:grid-col-12 usa-card">
       <div class="usa-card__container">
         <header class="usa-card__header">
-          <h2 class="usa-card__heading">Plain language</h2>
+          <h2 class="usa-card__heading text-primary font-sans-lg">Plain language</h2>
         </header>
         <div class="usa-card__body">
           <p>
@@ -48,7 +49,7 @@ improve claimant experience {% endblock %} {%block content %}
     <li class="tablet:grid-col-12 usa-card">
       <div class="usa-card__container">
         <header class="usa-card__header">
-          <h2 class="usa-card__heading">Open source</h2>
+          <h2 class="usa-card__heading text-primary font-sans-lg">Open source</h2>
         </header>
         <div class="usa-card__body">
           <p>
@@ -58,7 +59,9 @@ improve claimant experience {% endblock %} {%block content %}
           </p>
         </div>
         <div class="usa-card__footer">
-          <button class="usa-button">View the code</button>
+          <a href="/reference/open-source/" class="usa-button"
+            >View the code</a
+          >
         </div>
       </div>
     </li>
