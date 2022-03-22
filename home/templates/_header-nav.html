@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load static %}
+<div class="usa-nav-container">
+ <div class="usa-navbar">
+   <div class="usa-logo">
+     <a href="/" class="navbar-brand" title="Home">
+       <em class="usa-logo__text"><!-- placeholder to preserve DOM for layout --></em>
+     </a>
+   </div>
+   <button class="usa-menu-btn" type="button">{% translate "Menu" %}</button>
+ </div>
+ <nav aria-label="Primary navigation" class="usa-nav">
+   <button class="usa-nav__close">
+     <img src="{% static 'img/usa-icons/close.svg' %}" role="img" alt={% translate "Close" %} />
+   </button>
+   <ul class="usa-nav__primary usa-accordion">
+     <li class="usa-nav__primary-item">
+       <a href="{{ home_path }}"
+          {% if current_path == home_path %}aria-current="page"{% endif %}
+          class="usa-nav__link {% if current_path == home_path %}usa-current{% endif %}"
+          >{% translate "Home" %}</a>
+     </li>
+     <!--
+     <li class="usa-nav__primary-item">
+       <a href="/about/"
+          {% if current_path == "/about/" %}aria-current="page"i{% endif %}
+          class="usa-nav__link {% if current_path == "/about/" %}usa-current{% endif %}"
+          >{% translate "About" %}</a>
+       </li>
+     -->
+     {% if whoami and contact_us_path %}
+     <li class="usa-nav__primary-item">
+       <a href="{{ contact_us_path }}"
+          {% if current_path == contact_us_path %}aria-current="page"{% endif %}
+          class="usa-nav__link {% if current_path == contact_us_path %}usa-current{% endif %}"
+          >{% translate "Contact us" %}</a>
+     </li>
+     {% endif %}
+     {% if whoami %}
+     <li class="usa-nav__primary-item">
+       <a href="/logout/" class="usa-nav__link">{% translate "Logout" %}</a>
+     </li>
+     {% else %}
+     <li class="usa-nav__primary-item">
+       <a href="/idp/"
+          {% if current_path == "/idp/" %}aria-current="page"{% endif %}
+          class="usa-nav__link {% if current_path == "/idp/" %}usa-current{% endif %}"
+          >{% translate "Sign in" %}</a>
+     </li>
+     {% endif %}
+   </ul>
+ </nav>
+</div>

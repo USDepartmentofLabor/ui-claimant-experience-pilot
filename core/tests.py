@@ -31,6 +31,7 @@ from .test_utils import (
     generate_keypair,
     generate_symmetric_encryption_key,
 )
+from .exceptions import SwaXidError
 import logging
 from core.email import Email, InitialClaimConfirmationEmail
 from core.swa_xid import SwaXid
@@ -373,3 +374,10 @@ class SwaXidTestCase(TestCase):
         sx = SwaXid("20220222-999999-abc", "AR")
         self.assertFalse(sx.format_ok())
         self.assertFalse(sx.datetime)
+
+
+class CoreExceptionsTestCase(TestCase):
+    def test_swa_xid_error(self):
+        swa, _ = create_swa()
+        err = SwaXidError(swa, "oops!")
+        self.assertEqual(err.swa, swa)

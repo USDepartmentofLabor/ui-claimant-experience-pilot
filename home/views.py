@@ -23,10 +23,6 @@ from launchdarkly.client import ld_client
 logger = logging.getLogger("home")
 
 
-class UnknownError(Exception):
-    pass
-
-
 @register.filter
 def get_dictionary_value(dictionary, key):
     return dictionary.get(key)
@@ -38,10 +34,6 @@ def handle_404(request, exception=None):
 
 def handle_500(request):
     return render(request, "500.html", status=500)
-
-
-def raise_error(request):
-    raise UnknownError("something bad")
 
 
 def active_swas_ordered_by_name():
@@ -122,13 +114,15 @@ def idp(request, swa_code=None):
             SWA.active.get(code=requested_swa)
         except SWA.DoesNotExist:
             return handle_404(request, None)
+    elif not settings.SHOW_IDP_PAGE_FOR_ALL_SWAS:
+        return handle_404(request, None)
 
     return render(
         request,
         "idp.html",
         {
             "swa": requested_swa,
-            "show_login_page": settings.SHOW_LOGIN_PAGE,
+            "show_login_page": settings.ENABLE_TEST_LOGIN,
             "swa_featuresets": active_swas_with_featuresets(),
             "swas": active_swas_ordered_by_name(),
             "redirect_to": request.GET.get("redirect_to", ""),
@@ -162,22 +156,14 @@ def logout(request):
         logger.debug("RP-initiated logout to {}".format(logout_url))
         return redirect(logout_url)
 
+    if "authenticated" not in request.session:
+        request.session.flush()
+        return redirect("/")
+
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     swa_url = whoami.swa.claimant_url
     request.session.flush()
     return redirect(swa_url if whoami.swa.featureset == "Identity Only" else "/")
-
-
-@never_cache
-def ial2required(request):
-    return render(
-        request,
-        "ial2required.html",
-        {
-            "swas": active_swas_ordered_by_name(),
-            "idp_path": request.GET.get("idp", "logindotgov"),
-        },
-    )
 
 
 @never_cache
@@ -211,7 +197,7 @@ def test(request):  # pragma: no cover
     return JsonResponse(response)
 
 
-# NOTE this login page is for testing only, see the SHOW_LOGIN_PAGE setting in views.py
+# NOTE this login page is for testing only, see the ENABLE_TEST_LOGIN setting in views.py
 @never_cache
 def login(request):
     if request.method == "GET":
@@ -343,6 +329,11 @@ def identity(request):
 
     template_name = f"identity/IAL{IAL}.html"
     if claim.is_swa_xid_expired():
+        logger.debug(
+            "claim has expired swa_xid: {} events: {}".format(
+                claim.__dict__, claim.public_events()
+            )
+        )
         template_name = "identity/expired.html"
 
     try:

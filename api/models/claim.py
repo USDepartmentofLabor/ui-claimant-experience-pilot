@@ -52,8 +52,10 @@ class DuplicateSwaXid(Exception):
         self.swa_xid = swa_xid
 
     def __str__(self):
-        # don't reveal anything claimant-related for security/privacy
-        return f"SWA XID {self.swa_xid} already exists for SWA {self.swa.code}"
+        # don't reveal anything PII, but claimant.idp_user_xid helpful to debug/audit.
+        return "SWA XID {} already exists for SWA {}, cannot use it for Claimant {}".format(
+            self.swa_xid, self.swa.code, self.claimant.idp_user_xid
+        )
 
 
 class ExpiredPartialClaimManager(models.Manager):
@@ -125,7 +127,7 @@ class Claim(TimeStampedModel):
             if existing_claim.swa != swa or existing_claim.claimant != claimant:
                 raise DuplicateSwaXid(
                     swa=existing_claim.swa,
-                    claimant=existing_claim.claimant,
+                    claimant=claimant,
                     swa_xid=swa_xid,
                 )
             existing_claim.events.create(
@@ -184,8 +186,8 @@ class Claim(TimeStampedModel):
         initiated_event = (
             self.events.filter(
                 category=Claim.EventCategories.INITIATED_WITH_SWA_XID,
-                description__isnull=False,
             )
+            .exclude(description="")
             .order_by("happened_at")
             .first()
         )

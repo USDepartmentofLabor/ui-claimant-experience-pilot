@@ -152,7 +152,7 @@
   <body class="">
     <script src="{% static 'js/uswds.min.js' %}"></script>
     {% include '_header.html' %}
-    <section class="usa-section">
+    <section class="{% if show_navigation %}usa-section{% endif %}">
       <section id="main-content" class="tablet:width-tablet margin-x-auto">
         <div class="grid-container">
           <main role="main">

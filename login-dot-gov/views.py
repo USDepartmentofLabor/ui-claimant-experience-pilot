@@ -80,7 +80,9 @@ def ial2required(request):
     if request.session.get("authenticated"):
         whoami = WhoAmI.from_dict(request.session.get("whoami"))
         redirect_to = (
-            "/identity/" if whoami.swa.featureset == "Identity Only" else "/claimant/"
+            f"/contact/{whoami.swa.code}/"
+            if whoami.swa.featureset == "Identity Only"
+            else "/claimant/"
         )
         return redirect(f"{redirect_to}?idp=logindotgov&ial2error=true")
 

@@ -14,5 +14,5 @@ urlpatterns = [
     path("logout/", views.logout, name="logout"),
 ]
 
-if settings.SHOW_LOGIN_PAGE:
+if settings.ENABLE_TEST_LOGIN:
     urlpatterns.append(path("login/", views.login))

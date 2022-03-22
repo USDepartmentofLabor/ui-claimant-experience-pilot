@@ -1,8 +1,13 @@
 {% load i18n %}
+<div>
+  <section>
+    {% translate "Here's how to reach us if you have questions about unemployment benefits or need help with verifying your identity:" %}
+  </section>
+  {% include "_swa/AR/contact_details.html" %}
+  {% include "_logindotgov-help.html" %}
 
-{% include "_swa/AR/missing-xid.html" %}
-
-<section>
- <h2>{% translate "More information" %}</h2>
- {% include "_swa/AR/more_help.html" %}
-</section>
+  <section>
+   <h2>{% translate "More information" %}</h2>
+   {% include "_swa/AR/more_help.html" %}
+  </section>
+</div>

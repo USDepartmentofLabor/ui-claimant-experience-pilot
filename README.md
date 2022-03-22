@@ -365,7 +365,7 @@ Example run inside the container:
 > make prepackage-claim SWA=XX CLAIMANT=abc123 IDP=login.gov JSON=schemas/claim-v1.0-example.json SCHEMA=claim-v1.0
 ```
 
-Valid `IDP` values include `login.gov` and (if `SHOW_LOGIN_PAGE` is active in your environment) `Local`.
+Valid `IDP` values include `login.gov` and (if `ENABLE_TEST_LOGIN` is active in your environment) `Local`.
 
 ## LaunchDarkly
 
