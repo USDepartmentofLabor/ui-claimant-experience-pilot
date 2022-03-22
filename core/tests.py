@@ -343,6 +343,12 @@ class LaunchDarklyTestCase(TestCase):
             response.content.decode("UTF-8"), r'window\.LD_CLIENT_SDK_KEY=".{24}"'
         )
 
+    @patch("core.middleware.maintenance_mode.ld_client")
+    def test_maintenance_mode(self, patched_ld_client_core):
+        patched_ld_client_core.variation.return_value = True
+        response = self.client.get("/about/")
+        self.assertContains(response, "down for maintenance")
+
 
 class SwaXidTestCase(TestCase):
     def test_swa_xid_timestamp(self):

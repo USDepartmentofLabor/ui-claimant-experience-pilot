@@ -160,6 +160,7 @@ MIDDLEWARE = [
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
     "reference.middleware.visible.ReferenceVisibility",
+    "core.middleware.maintenance_mode.MaintenanceMode",
 ]
 
 ROOT_URLCONF = "core.urls"
