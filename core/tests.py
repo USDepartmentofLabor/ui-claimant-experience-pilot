@@ -344,10 +344,12 @@ class LaunchDarklyTestCase(TestCase):
         )
 
     @patch("core.middleware.maintenance_mode.ld_client")
-    def test_maintenance_mode(self, patched_ld_client):
-        patched_ld_client.variation.return_value = True
+    @patch("home.views.ld_client")
+    def test_maintenance_mode(self, patched_ld_client_core, patched_ld_client_home):
+        patched_ld_client_core.variation.return_value = True
+        patched_ld_client_home.variation.return_value = "System down"
         response = self.client.get("/home/")
-        self.assertContains(response, "Sorry, this system is currently unavailable")
+        self.assertContains(response, "System down")
 
 
 class SwaXidTestCase(TestCase):
