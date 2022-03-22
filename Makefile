@@ -315,6 +315,9 @@ soc-clean: ## Clean up the SOC code temp files
 hourly-tasks: ## runs named tasks to be called on an hourly schedule
 	python manage.py delete_expired_partial_claims
 
+swa_xid: ## Generate a swa_xid based off the current timestamp
+	printf "%s-%s-%s-%s\n" `date +%Y%m%d` `date +%H%M%S` "1234567" "123456789";
+
 default: help
 
 .PHONY: services-start services-stop services-logs ci-start ci-stop
