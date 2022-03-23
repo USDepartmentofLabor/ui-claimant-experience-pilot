@@ -31,12 +31,7 @@ class HomeTestCase(TestCase):
 
     def test_index_page(self):
         response = self.client.get("/")
-        self.assertRedirects(
-            response,
-            "/about/",
-            status_code=302,
-            fetch_redirect_response=False,
-        )
+        self.assertContains(response, "Web address incomplete")
 
     @override_settings(SHOW_IDP_PAGE_FOR_ALL_SWAS=False)
     def test_idp_page_show_idp_false(self):
@@ -459,7 +454,9 @@ class IdentityTestCase(BucketableTestCase):
             fetch_redirect_response=False,
         )
         response = self.client.get("/identity/")
-        self.assertContains(response, "You must verify your identity", status_code=200)
+        self.assertContains(
+            response, "You will need to verify your identity", status_code=200
+        )
 
     def test_level_two(self):
         whoami = create_whoami()

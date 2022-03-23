@@ -15,7 +15,6 @@ urlpatterns = [
     # prequal page disabled for MVP launch.
     # path("start/", views.start, name="start"),
     path("identity/", views.identity, name="identity"),
-    path("about/", views.about, name="about"),
 ]
 
 if settings.ENABLE_TEST_LOGIN:

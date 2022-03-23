@@ -48,7 +48,7 @@ def active_swas_with_featuresets():
 
 
 def index(request):
-    return redirect("/about/")
+    return render(request, "index.html", status=200)
 
 
 # the swa-specific pages should be cache-able
@@ -360,10 +360,6 @@ def identity(request):
     except TemplateDoesNotExist as err:
         logger.exception(err)
         return handle_404(request, None)
-
-
-def about(request):
-    return render(request, "about.html")
 
 
 def maintenance_mode(request):

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+{% load i18n %}
+<div>
+  <h1>{% translate "Web address incomplete" %}</h1>
+  <section>
+  {% blocktranslate %}
+  To access this information, you need a unique link found on your unemployment application’s confirmation page.
+  If you are trying to file for unemployment and don’t have the link, please contact
+  <a href="https://www.careeronestop.org/localhelp/unemploymentbenefits/unemployment-benefits.aspx" class="usa-link">your state unemployment agency</a>.
+  {% endblocktranslate %}
+  </section>
+</div>
+{% endblock %}

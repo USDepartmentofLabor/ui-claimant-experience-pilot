@@ -5,6 +5,10 @@ context("Home page", { scrollBehavior: "center" }, () => {
     cy.login();
     cy.visit("/claimant/");
     cy.contains("Log out").click();
-    cy.url().should("contain", "/about/");
+    cy.contains("Web address incomplete");
+    cy.pa11y({
+      runners: ["htmlcs"],
+      standard: "WCAG2AA",
+    });
   });
 });
