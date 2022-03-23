@@ -38,6 +38,10 @@ export const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
   const { t: formT } = useTranslation("claimForm");
+  const { t: commonT } = useTranslation("common", {
+    keyPrefix: "page_headings",
+  });
+
   const navigate = useNavigate();
 
   const {
@@ -285,6 +289,12 @@ export const ClaimForm = () => {
               <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
                 <FormGroup>
+                  {pages[currentPageIndex + 1] && (
+                    <div className="text-center text-italic margin-bottom-2">
+                      {t("pagination.nextStep")}{" "}
+                      {commonT(`${pages[currentPageIndex + 1].heading}`)}
+                    </div>
+                  )}
                   <div className="text-center">
                     {previousPageLink(claimForm)}
                     {nextPageLink(claimForm)}

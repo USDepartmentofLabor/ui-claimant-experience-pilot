@@ -16,11 +16,13 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         zipcode: "00000",
       },
     });
+    cy.contains("Next: Contact information");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
 
     cy.complete_contact_information();
+    cy.contains("Next: Demographics");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -30,6 +32,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       ethnicity: "not_hispanic",
       races: ["asian", "hawaiian_or_pacific_islander"],
     });
+    cy.contains("Next: Identity information");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -44,6 +47,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     };
 
     cy.complete_identity_information(identityInformation);
+    cy.contains("Next: Add employer");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -69,11 +73,13 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     };
     cy.complete_employer_form(employer0);
     cy.click_more_employers("no");
+    cy.contains("Next: Your recent work history");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
 
     // employer-review
+    cy.contains("Next: Self-employment");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -89,6 +95,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       corporation_or_partnership: "no",
     };
     cy.complete_self_employment_information(selfEmployment);
+    cy.contains("Next: Other pay");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -101,8 +108,8 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
         note: "All one payment for layoff",
       },
     ];
-
     cy.complete_other_pay_information(otherPay);
+    cy.contains("Next: Occupation information");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -112,6 +119,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       description: "I am a nurse",
       bls_code: "29-1141.00",
     });
+    cy.contains("Next: Education and training");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -124,6 +132,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       education_level: "bachelors",
     };
     cy.complete_education_vocational_information(educationVocation);
+    cy.contains("Next: Union membership");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -134,6 +143,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       union_name: "United ACME",
       union_local_number: "12345",
     });
+    cy.contains("Next: Disability");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -148,6 +158,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       contacted_last_employer_after_recovery: "yes",
     };
     cy.complete_disability_status_information(disabilityStatus);
+    cy.contains("Next: Availability");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -162,6 +173,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       is_prevented_from_accepting_full_time_work_reason: undefined,
     };
     cy.complete_availability_information(availability);
+    cy.contains("Next: Payment");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
@@ -175,6 +187,7 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
       account_number: "abcdefg",
     };
     cy.complete_payment_information(paymentInformation);
+    cy.contains("Next: Review");
     cy.check_a11y();
     cy.click_next();
     cy.get("h1").should("have.focus");
