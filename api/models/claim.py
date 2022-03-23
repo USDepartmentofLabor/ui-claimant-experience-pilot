@@ -65,6 +65,16 @@ class ExpiredPartialClaimManager(models.Manager):
             status = claim.delete_artifacts()
             if status == SUCCESS:
                 count += 1
+            elif status == NOOP:
+                # nothing happened but the query matched this claim,
+                # which means that a DELETED event does not yet exist for this claim.
+                # create one, to avoid matching this claim in future calls.
+                # NOTE this only happens in local env where s3 buckets are not persistent
+                # and artifacts disappear w/o sync with the db.
+                claim.events.create(
+                    category=Claim.EventCategories.DELETED,
+                    description="zero artifacts found",
+                )
             logger.info(f"Total expired partial claims deleted: {count}")
         return count
 
