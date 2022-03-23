@@ -5,7 +5,7 @@ from api.models import Claimant, SWA
 from api.test_utils import create_swa, create_swa_xid, RESIDENCE_ADDRESS, create_whoami
 from unittest.mock import patch
 import logging
-from core.tests import BucketableTestCase
+from core.test_utils import BucketableTestCase
 from .views import get_dictionary_value
 
 logger = logging.getLogger("home.tests")
