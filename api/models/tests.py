@@ -149,6 +149,11 @@ class ApiModelsManagerTestCase(TestCase):
 
 class ApiModelsTestCase(TransactionTestCase):
     def test_swa(self):
+        keyless_swa = SWA(code="NO", name="NO", claimant_url="no")
+        keyless_swa.save()
+        with self.assertRaises(ValueError) as context:
+            keyless_swa.public_key_as_jwk()
+
         ks_swa, private_key_jwk = create_swa()
 
         self.assertTrue(ks_swa.created_at)
@@ -243,6 +248,13 @@ class ApiModelsTestCase(TransactionTestCase):
             )
         idp = create_idp()
         claimant = create_claimant(idp)
+
+        # simple case: no swa_xid returns false
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        self.assertFalse(claim.is_swa_xid_expired())
+        self.assertFalse(claimant.pending_identity_only_claim())
+
         # use an "old" date we know will show as expired
         swa_xid = "20000101-123456-1234567-123456789"
         utc_swa_dt = "2000-01-01T18:34:56+00:00"
@@ -375,20 +387,31 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(
             cancelled_claim.status_for_claimant(), CLAIMANT_STATUS_CANCELLED
         )
+        self.assertTrue(cancelled_claim.is_resolved())
+        self.assertTrue(cancelled_claim.is_deleted())
+        self.assertTrue(cancelled_claim.deleted_at())
+        self.assertFalse(cancelled_claim.resolution_description())
 
         resolved_claim = Claim(swa=swa, claimant=claimant)
         resolved_claim.save()
         resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
         resolved_claim.events.create(category=Claim.EventCategories.FETCHED)
         resolved_claim.events.create(category=Claim.EventCategories.DELETED)
-        resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        resolved_claim.events.create(
+            category=Claim.EventCategories.RESOLVED, description="good stuff"
+        )
         self.assertEqual(resolved_claim.status_for_claimant(), CLAIMANT_STATUS_RESOLVED)
+        self.assertTrue(resolved_claim.is_resolved())
+        self.assertTrue(resolved_claim.resolved_at())
+        self.assertEqual(resolved_claim.resolution_description(), "good stuff")
 
         active_claim = Claim(swa=swa, claimant=claimant)
         active_claim.save()
         active_claim.events.create(category=Claim.EventCategories.COMPLETED)
         active_claim.events.create(category=Claim.EventCategories.FETCHED)
         self.assertEqual(active_claim.status_for_claimant(), CLAIMANT_STATUS_ACTIVE)
+        self.assertTrue(active_claim.is_fetched())
+        self.assertTrue(active_claim.fetched_at())
 
         processing_claim = Claim(swa=swa, claimant=claimant)
         processing_claim.save()

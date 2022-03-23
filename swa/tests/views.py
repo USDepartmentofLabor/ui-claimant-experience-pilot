@@ -378,6 +378,30 @@ class SwaTestCase(BucketableTestCase):
         }
         self.assertEqual(response.json(), expected_response)
 
+    @patch("swa.views.ld_client")
+    def test_v1_POST_1099G_flag_off(self, patched_ld_client):
+        patched_ld_client.variation.return_value = False
+        idp = create_idp()
+        swa, private_key_jwk = create_swa(True)
+        claimant = create_claimant(idp)
+
+        # happy path
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        example_1099G_file = settings.BASE_DIR / "swa" / "f1099g-recipient-example.pdf"
+        with open(example_1099G_file, "rb") as fh:
+            file_bytes = fh.read()
+        response = self.client.post(
+            f"/swa/v1/claimants/{claimant.idp_user_xid}/1099G/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+            data={
+                "file": base64url_encode(file_bytes),
+                "filename": "path/to/f1099g-recipient-example.pdf",
+                "year": "2022",
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
     def test_v1_POST_1099G(self):
         idp = create_idp()
         swa, private_key_jwk = create_swa(True)

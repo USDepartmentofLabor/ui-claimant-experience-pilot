@@ -4,7 +4,7 @@ from django.core import mail
 from django.utils import timezone
 from django.conf import settings
 from django.test.utils import override_settings
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from core.tasks_tests import CeleryTestCase
 from core.test_utils import BucketableTestCase
 from api.test_utils import (
@@ -18,7 +18,7 @@ from api.test_utils import (
     BaseClaim,
 )
 from api.models import Claim, Claimant
-from api.models.claim import CLAIMANT_STATUS_PROCESSING
+from api.models.claim import CLAIMANT_STATUS_PROCESSING, FAILURE
 from api.claim_request import (
     ClaimRequest,
     MISSING_SWA_CODE,
@@ -110,6 +110,7 @@ class ApiViewsTestCase(
     def test_whoami_swa(self):
         session = self.authenticate_session()
         session["swa"] = "XX"
+        del session["whoami"]["swa"]
         session.save()
 
         response = self.client.get("/api/whoami/")
@@ -278,6 +279,44 @@ class ApiViewsTestCase(
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
         self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
 
+    def test_schematically_valid_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(trigger_cookie=True)
+        url = "/api/partial-claim/"
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=csrf_client.session["whoami"]["email"],
+            swa_code=swa.code,
+        )
+        del payload["is_complete"]
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
+        self.assertEqual(response.status_code, 202)
+        claim = claimant.claim_set.all()[0]
+        partial_artifact = claim.read_partial()
+        self.assertTrue("validated_at" in partial_artifact)
+
+    def test_get_completed_claim_at_partial_endpoint(self):
+        # heavily contrived example to exercise the edges of caching logic.
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        csrf_client = self.csrf_client(trigger_cookie=True, swa=swa, claimant=claimant)
+        session = csrf_client.session
+        session["partial_claim"] = {"abc": "foo"}
+        session.save()
+        url = "/api/partial-claim/"
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.get(url, content_type=JSON, **headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["remaining_time"], "00:00:00")
+
     def test_get_claims(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -338,6 +377,76 @@ class ApiViewsTestCase(
         self.assertTrue(claim.is_deleted())
         self.assertTrue(claim.is_resolved())
         self.assertEqual(claim.resolution_description(), "cancelled by Claimant")
+
+    def test_cancel_claim_ld_flag_off(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cw = ClaimWriter(claim, "test", path=claim.completed_payload_path())
+        self.assertTrue(cw.write())
+        with patch("api.views.ld_client.variation") as patched_ld_client:
+            patched_ld_client.return_value = False
+            headers = self.csrf_headers(client)
+            response = client.delete(
+                f"/api/cancel-claim/{claim.uuid}/",
+                content_type=JSON,
+                **headers,
+            )
+            self.assertEqual(
+                response.json(), {"status": "error", "error": "No such route"}
+            )
+            self.assertEqual(response.status_code, 404)
+
+    def test_cancel_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        cw = ClaimWriter(claim, "test", path=claim.partial_payload_path())
+        self.assertTrue(cw.write())
+        headers = self.csrf_headers(client)
+        response = client.delete(
+            f"/api/cancel-claim/{claim.uuid}/",
+            content_type=JSON,
+            **headers,
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "No eligible claim found"}
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_cancel_claim_write_error(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        with patch("api.views.ClaimFinder") as mocked_finder:
+            mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
+            mocked_claim.swa = swa
+            mocked_claim.delete_artifacts.return_value = FAILURE
+            mocked_claim.is_completed.return_value = True
+            mocked_claim.is_fetched.return_value = False
+            mocked_finder.return_value.find.return_value = mocked_claim
+            headers = self.csrf_headers(client)
+            with self.assertLogs(level="DEBUG") as cm:
+                response = client.delete(
+                    "/api/cancel-claim/ignored-uuid-value/",
+                    content_type=JSON,
+                    **headers,
+                )
+                self.assertEqual(
+                    response.json(),
+                    {"status": "error", "error": "failed to save change"},
+                )
+                self.assertEqual(response.status_code, 500)
+                # the -2 means our logging exception is the 2nd to last in the list
+                self.assertIn("Exception: Failed to delete artifacts", cm.output[-2])
 
     def test_rotation_encrypted_partial_claim(self):
         idp = create_idp()

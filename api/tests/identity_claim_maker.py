@@ -11,10 +11,14 @@ from api.whoami import WhoAmI
 from core.test_utils import BucketableTestCase
 from core.claim_encryption import AsymmetricClaimDecryptor
 from core.claim_storage import ClaimReader
+from core.exceptions import ClaimStorageError
 
-from api.identity_claim_maker import IdentityClaimMaker
+from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
 
 import logging
+from unittest.mock import patch
+import boto3
+from botocore.stub import Stubber
 
 
 logger = logging.getLogger(__name__)
@@ -56,3 +60,35 @@ class IdentityClaimMakerTestCase(BucketableTestCase):
             decrypted_claim["$schema"],
             "https://unemployment.dol.gov/schemas/identity-v1.0.json",
         )
+
+    def test_invalid_payload(self):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        claim = Claim(swa_xid="abc-123", swa=self.swa, claimant=claimant)
+        claim.save()
+        whoami = WhoAmI.from_dict(create_whoami() | {"swa": self.swa.for_whoami()})
+        whoami.email = ""
+        claim_maker = IdentityClaimMaker(claim, whoami)
+        with self.assertRaises(IdentityClaimValidationError) as context:
+            claim_maker.create()
+        self.assertIn("is not a 'email'", str(context.exception))
+
+    @patch("core.claim_storage.ClaimStore.s3_client")
+    def test_claim_writer_error(self, mock_boto3_client):
+        idp = create_idp()
+        claimant = create_claimant(idp)
+        claim = Claim(swa_xid="abc-123", swa=self.swa, claimant=claimant)
+        claim.save()
+        whoami = WhoAmI.from_dict(create_whoami() | {"swa": self.swa.for_whoami()})
+
+        client = boto3.client("s3")
+        stubber = Stubber(client)
+        stubber.add_client_error("put_object")
+        stubber.activate()
+        mock_boto3_client.return_value = client
+
+        claim_maker = IdentityClaimMaker(claim, whoami)
+
+        with self.assertRaises(ClaimStorageError) as context:
+            claim_maker.create()
+        self.assertIn("failed to write Identity claim", str(context.exception))

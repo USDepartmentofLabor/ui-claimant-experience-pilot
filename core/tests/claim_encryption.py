@@ -124,10 +124,9 @@ class CoreClaimEncryptionTestCase(TestCase):
 
         # wrong key should raise error
         with self.assertRaises(ValueError):
-            sd = SymmetricClaimDecryptor(
+            SymmetricClaimDecryptor(
                 packaged_claim.as_json(), symmetric_encryption_key(list_of_keys[0])
             )
-            sd.decrypt()
 
         with self.assertRaises(ValueError):
             rotable_decryptor = RotatableSymmetricClaimDecryptor(

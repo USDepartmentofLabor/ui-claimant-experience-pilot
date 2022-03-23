@@ -392,7 +392,7 @@ class Claim(TimeStampedModel):
             return CLAIMANT_STATUS_RESOLVED
         if self.is_deleted():
             return CLAIMANT_STATUS_DELETED
-        return CLAIMANT_STATUS_UNKNOWN
+        return CLAIMANT_STATUS_UNKNOWN  # pragma: no cover
 
     def should_be_deleted_after(self):
         if self.is_deleted() or self.is_completed():

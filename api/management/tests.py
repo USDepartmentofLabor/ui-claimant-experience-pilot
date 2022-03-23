@@ -9,6 +9,7 @@ from core.claim_encryption import (
     SymmetricClaimEncryptor,
 )
 from core.claim_storage import ClaimWriter
+from core.exceptions import ClaimStorageError
 from core.test_utils import (
     create_s3_bucket,
     delete_s3_bucket,
@@ -18,6 +19,9 @@ from api.test_utils import create_idp, create_swa
 from api.models import Claim, Claimant, ClaimantFile
 import uuid
 import tempfile
+from unittest.mock import patch
+import boto3
+from botocore.stub import Stubber
 
 
 class BucketTestCase(TestCase):
@@ -64,6 +68,24 @@ class ClaimPackagerTestCase(BucketTestCase):
                     json_file=fp.name,
                     schema="claim-v1.0",
                 )
+
+    @patch("core.claim_storage.ClaimStore.s3_client")
+    def test_claim_writer_error(self, mock_boto3_client):
+        client = boto3.client("s3")
+        stubber = Stubber(client)
+        stubber.add_client_error("put_object")
+        stubber.activate()
+        mock_boto3_client.return_value = client
+
+        claimant = Claimant(idp=self.idp, idp_user_xid="i-am-a-test")
+        claimant.save()
+        example = str(settings.BASE_DIR / "schemas" / "claim-v1.0-example.json")
+        packager = ClaimPackager(
+            swa=self.swa, claimant=claimant, json_file=example, schema="claim-v1.0"
+        )
+        with self.assertRaises(ClaimStorageError) as context:
+            packager.package()
+        self.assertIn("Failed to pre-package claim", str(context.exception))
 
 
 class ClaimantKeyRotatorTestCase(BucketTestCase):
