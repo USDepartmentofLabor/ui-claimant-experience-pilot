@@ -135,6 +135,9 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
 	cp ./claimant/.env-example ./claimant/.env
 
+dev-ld-config: ## Reset ld-config.json based on ld-config-test.json
+	cp ./core/ld-config-test.json ./core/ld-config.json
+
 container-build: ## Build the Django app container image (local development)
 	docker build --platform linux/amd64 -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
 
