@@ -97,12 +97,13 @@ def create_claimant(idp, **kwargs):
     return claimant
 
 
-def build_claim_updated_by_event(idp, swa, idp_user_xid, uuid, events):
+def build_claim_updated_by_event(idp, swa, idp_user_xid, uuid, events, swa_xid=None):
     claimant = create_claimant(idp, idp_user_xid=idp_user_xid)
 
     claim = Claim(
         uuid=uuid,
         swa=swa,
+        swa_xid=swa_xid,
         claimant=claimant,
         status="something",
     )
@@ -112,7 +113,7 @@ def build_claim_updated_by_event(idp, swa, idp_user_xid, uuid, events):
         claim.events.create(
             category=event["category"],
             happened_at=timezone.now() - timedelta(days=event["days_ago_happened"]),
-            description="some other thing",
+            description=event.get("description", "some other thing"),
         )
     traveller = time_machine.travel(
         timezone.now() - timedelta(days=events[-1]["days_ago_happened"])

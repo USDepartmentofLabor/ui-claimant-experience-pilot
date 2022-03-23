@@ -377,13 +377,8 @@ def initiate_claimant_session(request, userinfo):
             status=500,
         )
 
-    if (
-        claimant_IAL == 2
-        and request_IAL == 2
-        and swa.is_identity_only()
-        and claimant.pending_identity_only_claim()
-    ):
-        complete_identity_only_claim(whoami, claimant)
+    if swa.is_identity_only() and claimant.pending_identity_only_claim():
+        write_identity_only_claim(whoami, claimant)
 
     request.session["logindotgov"]["userinfo"] = userinfo
     request.session["whoami"] = whoami.as_dict()
@@ -421,7 +416,7 @@ def initiate_claim_with_swa_xid(request, whoami, claimant, swa):
         whoami.claim_id = str(claim.uuid)
 
 
-def complete_identity_only_claim(whoami, claimant):
+def write_identity_only_claim(whoami, claimant):
     claim = claimant.pending_identity_only_claim()
     claim_maker = IdentityClaimMaker(claim, whoami)
     try:

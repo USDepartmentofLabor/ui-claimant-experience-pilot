@@ -83,6 +83,47 @@ class ExpiredPartialClaimManager(models.Manager):
             )
             .exclude(events__category=Claim.EventCategories.COMPLETED)
             .exclude(events__category=Claim.EventCategories.DELETED)
+            .exclude(events__category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
+            .distinct()
+        )
+
+        return claims
+
+
+class ExpiredIdentityClaimsManager(models.Manager):
+    def complete_all(self):
+        count = 0
+        for claim in self.all():
+            if not claim.is_swa_xid_expired():
+                logger.debug(
+                    "Skipping claim {} -- not swa_xid_expired".format(claim.uuid)
+                )
+                continue
+            partial_artifact = claim.read_partial()
+            if not partial_artifact:
+                logger.error("Missing partial artifact for claim {}".format(claim.uuid))
+                continue
+
+            if claim.write_completed(partial_artifact):
+                claim.delete_artifacts(partial_only=True)
+                count += 1
+            else:
+                raise ClaimStorageError("failed to write Identity claim")
+        logger.info(f"Total expired partial claims completed: {count}")
+        return count
+
+    def get_queryset(self):
+        # different SWAs can have different retention definitions,
+        # so find all the incomplete claims with a swa_xid event,
+        # and let complete_all() determine whether they should be completed.
+
+        claims = (
+            super()
+            .get_queryset()
+            .filter(events__category=Claim.EventCategories.STORED)
+            .filter(events__category=Claim.EventCategories.INITIATED_WITH_SWA_XID)
+            .exclude(events__category=Claim.EventCategories.COMPLETED)
+            .exclude(events__category=Claim.EventCategories.DELETED)
             .distinct()
         )
 
@@ -118,6 +159,7 @@ class Claim(TimeStampedModel):
 
     objects = models.Manager()
     expired_partial_claims = ExpiredPartialClaimManager()
+    expired_identity_claims = ExpiredIdentityClaimsManager()
 
     @classmethod
     def initiate_with_swa_xid(cls, swa, claimant, swa_xid):
@@ -272,12 +314,14 @@ class Claim(TimeStampedModel):
             )
         )
 
-    def delete_artifacts(self):
+    def delete_artifacts(self, partial_only=False):
         completed_artifact = ClaimReader(self, path=self.completed_payload_path())
         partial_artifact = ClaimReader(self, path=self.partial_payload_path())
         with transaction.atomic():
             to_delete = []
             for cr in [completed_artifact, partial_artifact]:
+                if partial_only and cr == completed_artifact:
+                    continue
                 logger.debug("🚀 read {}".format(cr.path))
                 if cr.exists():
                     to_delete.append(cr.path)
@@ -301,7 +345,7 @@ class Claim(TimeStampedModel):
                 return FAILURE
 
             # only create Event if something actually happened
-            if len(resp["Deleted"]) > 0:
+            if len(resp["Deleted"]) > 0 and not partial_only:
                 self.events.create(
                     category=Claim.EventCategories.DELETED,
                     description=json_encode({"deleted": resp["Deleted"]}),

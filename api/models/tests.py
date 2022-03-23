@@ -29,6 +29,7 @@ from core.test_utils import (
     create_s3_bucket,
     delete_s3_bucket,
 )
+from core.test_utils import BucketableTestCase
 from api.test_utils import build_claim_updated_by_event
 
 logger = logging.getLogger(__name__)
@@ -145,6 +146,96 @@ class ApiModelsManagerTestCase(TestCase):
         self.assertEqual(claim_ids, [expired_claim_uuid])
         self.assertEqual(claims.count(), 1)
         self.assertEqual(str(claims[0].uuid), expired_claim_uuid)
+
+
+class ExpiredIdentityClaimManagerTestCase(BucketableTestCase):
+    def test_expired_identity_claim_manager(self):
+        from api.identity_claim_maker import IdentityClaimMaker
+        from core.test_utils import generate_keypair
+
+        swa = SWA.active.get(code="AR")
+        _, public_key_jwk = generate_keypair()
+        swa.public_key = public_key_jwk.export_to_pem().decode("utf-8")
+        swa.public_key_fingerprint = public_key_jwk.thumbprint()
+        swa.save()
+
+        idp = create_idp()
+        expired_claim_uuid = "0a5cf608-0c72-4d37-8695-85497ad53d34"
+        unexpired_claim_uuid = "b2edb136-d166-4e28-8e83-b0ea48eef7e0"
+        claim_lifespan = settings.EXPIRE_SWA_XID_CLAIMS_AFTER[swa.code]
+        test_data_cases = [
+            {
+                "idp_user_xid": 1,
+                "uuid": expired_claim_uuid,
+                "days_ago_created": claim_lifespan + 1,
+                "swa_xid": "20000203-123456-1234567-123456789",
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                    {
+                        "category": Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                        "description": "2000-02-03T12:34:56+00:00",
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                ],
+            },
+            {
+                "idp_user_xid": 2,
+                "uuid": unexpired_claim_uuid,
+                "days_ago_created": claim_lifespan + 3,
+                "swa_xid": "20010203-123456-1234567-123456789",
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                    {
+                        "category": Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                        "description": "2001-02-03T12:34:56+00:00",
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                ],
+            },
+            {
+                "idp_user_xid": 4,
+                "uuid": "4912139b-71bc-4c69-ac6e-5564f2f1091c",
+                "days_ago_created": claim_lifespan - 1,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                ],
+            },
+        ]
+        for case in test_data_cases:
+            build_claim_updated_by_event(
+                idp=idp,
+                swa=swa,
+                idp_user_xid=case["idp_user_xid"],
+                uuid=case["uuid"],
+                events=case["events"],
+                swa_xid=case.get("swa_xid", None),
+            )
+
+        # since expiration is SWA-dependent, we expect the query to return all those with swa_xid
+        claims = Claim.expired_identity_claims.all()
+        claim_ids = list(map(lambda c: str(c.uuid), claims))
+        self.assertEqual(claims.count(), 2)
+        self.assertCountEqual(claim_ids, [expired_claim_uuid, unexpired_claim_uuid])
+        # however, the complete_all method should operate on only one.
+        # must create a partial artifact for it to operate on. Contents are irrelevant (we test contents elsewhere).
+        claim = Claim.objects.get(uuid=expired_claim_uuid)
+        maker = IdentityClaimMaker(claim, whoami=None)
+        maker.write_partial({"id": expired_claim_uuid, "foo": "bar"})
+        with self.assertLogs(level="DEBUG") as cm:
+            self.assertEqual(Claim.expired_identity_claims.complete_all(), 1)
+            self.assertIn(
+                f"DEBUG:api.models.claim:Skipping claim {unexpired_claim_uuid} -- not swa_xid_expired",
+                cm.output,
+            )
 
 
 class ApiModelsTestCase(TransactionTestCase):

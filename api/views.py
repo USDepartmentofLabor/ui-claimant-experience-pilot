@@ -372,6 +372,8 @@ def POST_completed_claim(request):
         if request.session["whoami"].get("claim_id"):
             del request.session["whoami"]["claim_id"]
 
+        claim_request.claim.delete_artifacts(partial_only=True)
+
         return JsonResponse(
             {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=201
         )

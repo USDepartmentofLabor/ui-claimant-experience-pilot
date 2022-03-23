@@ -3,6 +3,8 @@ from django.test import TestCase, Client
 from django.test.utils import override_settings
 from api.models import Claimant, SWA
 from api.test_utils import create_swa, create_swa_xid, RESIDENCE_ADDRESS, create_whoami
+from api.claim_finder import ClaimFinder
+from api.whoami import WhoAmI
 from unittest.mock import patch
 import logging
 from core.test_utils import BucketableTestCase
@@ -454,9 +456,14 @@ class IdentityTestCase(BucketableTestCase):
             fetch_redirect_response=False,
         )
         response = self.client.get("/identity/")
+
         self.assertContains(
             response, "You will need to verify your identity", status_code=200
         )
+        claim = ClaimFinder(WhoAmI.from_dict(self.client.session["whoami"])).find()
+        partial_claim = claim.read_partial()
+        self.assertEqual(partial_claim["email"], whoami["email"])
+        self.assertEqual(partial_claim["identity_assurance_level"], 1)
 
     def test_level_two(self):
         whoami = create_whoami()
@@ -490,6 +497,12 @@ class IdentityTestCase(BucketableTestCase):
         self.assertContains(
             response, "Identity verification submitted", status_code=200
         )
+        claim = ClaimFinder(WhoAmI.from_dict(self.client.session["whoami"])).find()
+        # we cannot read the completed claim, can only verify it exists
+        partial_claim = claim.read_partial()
+        self.assertEqual(partial_claim["email"], whoami["email"])
+        self.assertEqual(partial_claim["identity_assurance_level"], 1)
+        self.assertTrue(claim.completed_artifact_exists())
 
     def test_swa_xid_expired(self):
         swa, _ = create_swa(
