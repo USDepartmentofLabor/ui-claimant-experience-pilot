@@ -65,7 +65,7 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
     "http-proxy-middleware": "^2.0.1",
-    "msw": "^0.38.1",
+    "msw": "^0.38.2",
     "msw-storybook-addon": "^1.6.1",
     "nyc-config-tsx": "^0.1.0",
     "pa11y": "^6.1.0",
