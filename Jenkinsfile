@@ -6,7 +6,7 @@ sharedPipeline(
     dev:'dev02',
     test:'test02',
     prod:'prod02',
-    kanikoBuildParams: "--build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.10-slim-bullseye --single-snapshot --target djangobase-wcms --skip-unused-stages",
+    kanikoBuildParams: "--build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.11-slim-bullseye --single-snapshot --target djangobase-wcms --skip-unused-stages",
 
     APPLICATION_VERSION: "true",
     APPLICATION_TIMESTAMP: "true"

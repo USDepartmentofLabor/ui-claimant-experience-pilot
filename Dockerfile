@@ -1,5 +1,5 @@
 ARG BASE_PYTHON_IMAGE_REGISTRY=docker.io/library
-ARG BASE_PYTHON_IMAGE_VERSION=3.9.10-slim-bullseye
+ARG BASE_PYTHON_IMAGE_VERSION=3.9.11-slim-bullseye
 
 FROM node:14.18.0 as reactapps
 WORKDIR /app
