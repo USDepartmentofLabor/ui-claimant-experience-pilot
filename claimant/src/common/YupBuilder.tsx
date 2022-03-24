@@ -2,11 +2,8 @@ import { TFunction } from "react-i18next";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import {
-  centsRegex,
-  ISO_8601_DATE,
-  USER_FACING_DATE_INPUT_FORMAT,
-} from "../utils/format";
+import { ISO_8601_DATE, USER_FACING_DATE_INPUT_FORMAT } from "../utils/format";
+import { CENTS_REGEX } from "../utils/currencyFormat";
 import states from "../fixtures/states.json";
 
 // TODO setLocale to customize min/max/matches errors
@@ -75,5 +72,5 @@ export const yupDate = (t: TFunction<"claimForm">, fieldName: string) =>
     .required(t("date.required", { fieldName: fieldName }));
 
 export const yupCurrency = (errorMsg = "") => {
-  return yup.string().matches(centsRegex, errorMsg);
+  return yup.string().matches(CENTS_REGEX, errorMsg);
 };
