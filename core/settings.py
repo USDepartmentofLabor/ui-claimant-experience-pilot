@@ -81,47 +81,46 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("core")
-if os.environ.get("COLOR_LOGGING", "false").lower() == "true":  # pragma: no cover
-    LOGGING_CONFIG = None  # This empties out Django's logging config
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "filters": {
-            "request_id": {"()": "request_id_django_log.filters.RequestIDFilter"}
-        },
-        "formatters": {
-            "colored": {
-                "()": "colorlog.ColoredFormatter",  # colored output
-                # --> %(log_color)s is very important, that's what colors the line
-                "format": "%(log_color)s[%(levelname)s] %(reset)s %(green)s[%(request_id)s] %(reset)s%(blue)s%(name)s - %(asctime)s :: %(reset)s %(message)s",
-                "log_colors": {
-                    "DEBUG": "blue",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "bold_red",
-                },
-            },
-            # TODO determine config for CloudWatch
-            "aws": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
-                "datefmt": "%Y-%m-%d %H:%M:%S",
+LOGGING_CONFIG = None  # This empties out Django's logging config
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"request_id": {"()": "request_id_django_log.filters.RequestIDFilter"}},
+    "formatters": {
+        "colored": {
+            "()": "colorlog.ColoredFormatter",  # colored output
+            # --> %(log_color)s is very important, that's what colors the line
+            "format": "%(log_color)s[%(levelname)s] %(reset)s %(green)s[%(request_id)s] %(reset)s%(blue)s%(name)s - %(asctime)s :: %(reset)s %(message)s",
+            "log_colors": {
+                "DEBUG": "blue",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
             },
         },
-        "handlers": {
-            "console": {
-                "level": "DEBUG",
-                "class": "colorlog.StreamHandler",
-                "formatter": "colored",
-                "filters": ["request_id"],
-            },
+        "verbose": {
+            "format": "[%(levelname)s] [%(request_id)s] %(name)s - %(asctime)s :: %(message)s",
         },
-        "loggers": {
-            "django.utils.autoreload": {"level": "INFO"},
-            "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+    },
+    "handlers": {
+        "console": {
+            "level": ("DEBUG" if DEBUG else "INFO"),
+            "class": "colorlog.StreamHandler",
+            "formatter": (
+                "colored"
+                if os.environ.get("COLOR_LOGGING", "false").lower() == "true"
+                else "verbose"
+            ),
+            "filters": ["request_id"],
         },
-    }
-    logging.config.dictConfig(LOGGING)  # Finally replace our config in python logging
+    },
+    "loggers": {
+        "django.utils.autoreload": {"level": "INFO"},
+        "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+    },
+}
+logging.config.dictConfig(LOGGING)  # Finally replace our config in python logging
 
 # Application definition
 
