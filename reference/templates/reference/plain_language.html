@@ -1,106 +1,486 @@
 {% extends "./base.html" %}
+{% load static %}
 
 {% block title %} Plain Language for Unemployment Applications {% endblock %}
 
 {%block content %}
 <section class="usa-section">
   <p>
-    When applicants don't understand a question on the unemployment insurance (UI) application, it often leads to inaccurate responses that State Workforce Agency (SWA) staff must later investigate and resolve. Questions that are hard to understand also creates an equity issue, because it gives an unfair advantage to claimants with advanced reading levels, and who speak English as their first language. Leverage the examples below to learn about plain language best practices, and to inspire improvements in your own state or territory's unemployment application questions.
+    When applicants don't understand a question on the unemployment insurance (UI) application (paper or online form), it often leads to inaccurate responses that can delay eligibility determinations and payment. Complicated questions also creates an equity issue, giving an unfair advantage to claimants with advanced reading and English fluency levels. Leverage the examples below to learn about plain language best practices, and to inspire improvements in your own state or territory's unemployment application questions.
   </p>
 </section>
 
 <section class="usa-section">
-  <h2>Define Complex Terms</h2>
+  <a id="define-terms"></a>
+  <h2>Define complex terms</h2>
   <p>
-    Many languages do not have different words for "laid off," "fired," and "quit," and even in English the definitions of those terms differ from state to state. In the UI application context, it is important that applicants understand these concepts so they can make an accurate selection. Without clear definitions or additional context, applicants who speak English as a second language, or who don't correctly interpret what a term means for the state in question, may face insurmountable barriers to applying, or may submit an inaccurate response that SWAs must investigate and correct. This creates burdens not only for the applicants, but also for SWA staff.
+    Many English words or terms do not have direct or intuitive translations to different languages. Many UI terms such as "laid off," "fired," and "quit," may have different nuances depending on the states and territories. In the UI application context, it is important that applicants understand UI terminology and concepts so they can make an accurate selection. Without clear definitions or additional context, applicants who speak English as a second language, or who don't correctly interpret what a term means for the state in question, may face insurmountable barriers to applying, or may submit an inaccurate response that SWAs must investigate and correct. This creates burdens not only for the applicants, but also for SWA staff.
   </p>
   <p>
-    When applicants were shown definitions, they slowed down, read this screen more carefully, and chose the correct answer, leading us to believe that this would also result in submissions that are easier and faster for SWA staff to process.
+    When possible, provide short, clear definitions on the same page as the question being asked.
   </p>
-  <div class="grid-row">
-    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
-      <!-- TODO: refactor to correct static img tag -->
-      {% include 'reference/separation.svg' %}
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col flex-1 border-3 margin-right-3 border-base-lightest">
+      <form>
+        <fieldset class="usa-fieldset">
+          <legend class="usa-legend text-bold margin-bottom-2">Separation</legend>
+          <fieldset class="usa-fieldset">
+            <legend class="usa-legend">What was your reason for separation?</legend>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="laid-off" type="radio" name="separation" value="laid-off" />
+              <label class="usa-radio__label" for="laid-off">
+                <span class="text-bold">Laid off</span>
+                <span class="usa-checkbox__label-description">
+                  Your job ended due to lack of work, downsizing, your contract ending, or your place of work closing or moving.
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="fired" type="radio" name="separation" value="fired" />
+              <label class="usa-radio__label" for="fired">
+                <span class="text-bold">Fired, discharged, or terminated</span>
+                <span class="usa-checkbox__label-description">
+                  Your employer ended your job, claiming you had performance or behavioral issues.
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="still-employed" type="radio" name="separation" value="still-employed" />
+              <label class="usa-radio__label" for="still-employed">
+                <span class="text-bold">Still employed</span>
+                <span class="usa-checkbox__label-description">
+                  You're still working for your employer, but you may have fewer hours or be on a leave/break.
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="quit" type="radio" name="separation" value="quit" />
+              <label class="usa-radio__label" for="quit">
+                <span class="text-bold">Quit</span>
+                <span class="usa-checkbox__label-description">
+                  You voluntarily left your job (this does not include retirement).
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="strike" type="radio" name="separation" value="strike" />
+              <label class="usa-radio__label" for="strike">
+                <span class="text-bold">Strike or lock out by employer</span>
+                <span class="usa-checkbox__label-description">
+                  During a labor dispute, you chose to stop work or your employer stopped work.
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="retired" type="radio" name="separation" value="retired" />
+              <label class="usa-radio__label" for="retired">
+                <span class="text-bold">Retired</span>
+                <span class="usa-checkbox__label-description">
+                  You have concluded your working career. Retiring can be voluntary or mandatory.
+                </span>
+              </label>
+            </div>
+
+            <div class="usa-radio bg-base-lightest">
+              <input class="usa-radio__input usa-radio__input--tile" id="shutdown" type="radio" name="separation" value="shutdown" />
+              <label class="usa-radio__label" for="shutdown">
+                <span class="text-bold">Federal or State shutdown</span>
+                <span class="usa-checkbox__label-description">
+                  Your job ended due to lack of government funding.
+                </span>
+              </label>
+            </div>
+          </fieldset>
+        </fieldset>
+      </form>
     </div>
-    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+    <div class="grid-col flex-1 display-flex flex-column">
       <div>
-        <h3>How this content tested</h3>
+        <h3>What we learned from testing</h3>
+        <p>When applicants were shown definitions, they slowed down, read this screen more carefully, and chose the correct answer, leading us to believe that this would also result in submissions that are easier and faster for SWA staff to process.</p>
         <p><span class="text-primary text-italic">"I like the explanations here because if it just said laid off, fired, etc. I would not understand it."</span> - UI Applicant</p>
-      </div>
-      <div>
-        <h3>Take action</h3>
-        <p>When possible, provide short, clear definitions on the same page as the question being asked.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section class="usa-section">
-  <h2>Use Simpler Terms When Possible</h2>
+  <a id="simpler-terms"></a>
+  <h2>Use simpler terms when possible</h2>
   <p>
     There are tools and resources available for free that can analyze web content for readability. Word processing applications can also assess the grade level of your website or form content. If content is above grade 8, make edits to simplify the language. Small changes can remove barriers to access and reduce errors in applications.
   </p>
-  <div class="grid-row width-auto">
-    <div class="border-3 border-base-lightest">
-      <!-- TODO: refactor to correct static img tag -->
-      {% include 'reference/payments.svg' %}
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col-6 border-3 margin-right-3 border-base-lightest">
+      <h3 class="margin-top-0">Payment information</h3>
+      <fieldset class="usa-fieldset">
+        <legend class="usa-legend usa-legend">Would you like to have 10% federal income take withheld from your benefits payments?</legend>
+        <div class="usa-radio">
+          <input class="usa-radio__input" id="withhold-yes" type="radio" name="withholdings" value="yes" />
+          <label class="usa-radio__label" for="withhold-yes">Yes</label>
+        </div>
+        <div class="usa-radio">
+          <input class="usa-radio__input" id="withhold-no" type="radio" name="withholdings" value="no" />
+          <label class="usa-radio__label" for="withhold-no">No</label>
+        </div>
+        <p class="font-sans-3xs text-base border-base-light border-left-05 padding-left-1">
+          Federal tax withholding will only be made after amounts are deducted and withheld from any unemployment overpayments, child support, obligations, or any other amounts required to be deducted and withheld by law.
+        </p>
+      </fieldset>
+
+      <fieldset class="usa-fieldset margin-top-2">
+
+        <div class="arrow-content-wrapper">
+          <legend class="usa-legend usa-legend">How would you like to receive your benefits payments?</legend>
+          <div class="arrow-container">
+            <div class="arrow">
+              <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+              </svg>
+              <div class="arrow-label">A</div>
+            </div>
+            <div class="arrow-description">
+              Some states include options like "debit card" or "direct deposit." However, people new to unemployment insurance lacked context for these options and were confused about why they were being offered. The image below shows the new version of this question, which provides additional information and context for the options. Research participants responded well to this version.
+            </div>
+          </div>
+        </div>
+
+        <div class="usa-radio">
+          <input class="usa-radio__input" id="payment-debit" type="radio" name="payment" value="debit" />
+          <label class="usa-radio__label" for="payment-debit">Prepaid debit card mailed to me</label>
+        </div>
+        <div class="usa-radio">
+          <input class="usa-radio__input" id="payment-deposit" type="radio" name="payment" value="deposit" />
+          <label class="usa-radio__label" for="payment-deposit">Direct deposit to my bank account</label>
+        </div>
+
+      </fieldset>
+      <div class="display-flex flex-justify-center margin-bottom-1 margin-top-3">
+        <button class="usa-button usa-button--outline">Back</button>
+        <button class="usa-button">Next</button>
+      </div>
+      <div class="display-flex flex-column flex-align-center">
+        <button class="usa-button usa-button--unstyled margin-y-2">Save and exit</button>
+        <p class="text-center font-sans-xs margin-bottom-0">Your progress is automatically saved when you complete a page and click Next.</p>
+      </div>
     </div>
   </div>
+
   <div class="margin-top-5">
-      {% include 'reference/beforeafter.svg' %}
+    <h3>Improving unemployment application questions</h3>
+    <table class="usa-table usa-table--borderless">
+      <thead>
+        <tr>
+          <th scope="col">Before</th>
+          <th scope="col">After</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Have you been employed in the past 18 months?
+          </td>
+          <td>
+            Have you <span class="text-bold">had a job</span> during the last <span class="text-bold">18</span> months?
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Please select your gender
+          </td>
+          <td>
+            <span class="text-bold">What is your sex?</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Do you currently reside in the United States?
+          </td>
+          <td>
+            Do you currently <span class="text-bold">live</span> in the United States?
+          </td>
+        </tr>
+        <tr>
+          <td>SSN</td>
+          <td>
+            <span class="text-bold">Social Security Number</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="margin-top-5">
+      The examples above demonstrate simple language shifts that have significant impact on the claimant experience.  Each of these tested well and showed that comprehension increased.
+    </p>
   </div>
 </section>
 
 <section class="usa-section">
-  <h2>Break Up Long Sentences</h2>
+  <a id="break-long-sentences"></a>
+  <h2>Break up long sentences</h2>
   <p>
     Previously, the attestation sentence before the signature caused confusion. Splitting this sentence into two sentences without changing the content brought the reading level down to grade 8.
   </p>
-  <div class="grid-row">
-    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
-      <!-- todo: refactor to correct static img tag -->
-      {% include 'reference/sentences.svg' %}
-    </div>
-    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
-      <div>
-        <h3>Take action</h3>
-        <p>Break a long sentence into two, use bullets, eliminate passive voice and unnecessary words, and edit sentences that are hard to read.when possible, provide short, clear definitions on the same page as the question being asked.</p>
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col-6 border-3 margin-right-3 border-base-lightest">
+
+      <fieldset class="usa-fieldset">
+
+        <div class="arrow-content-wrapper">
+          <legend class="margin-top-0">
+            I certify that my responses to the preceding questions are true. I am aware that the law imposes penalties for false answers.
+          </legend>
+          <div class="arrow-container">
+            <div class="arrow">
+              <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+              </svg>
+              <div class="arrow-label">B</div>
+            </div>
+            <div class="arrow-description">
+              Break a long sentence into two, use bullets, eliminate passive voice and unnecessary words, and edit sentences that are hard to read.
+            </div>
+          </div>
+        </div>
+
+        <div class="usa-checkbox">
+          <input
+            class="usa-checkbox__input"
+            id="agree"
+            type="checkbox"
+            name="agree"
+            value="yes"
+          />
+          <label class="usa-checkbox__label" for="agree"
+            >Yes</label
+          >
+        </div>
+      </fieldset>
+
+      <button class="usa-button usa-button--unstyled margin-y-2">Download this page for your records
+
+      <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+        <use xlink:href="{% static '/img/sprite.svg#save_alt' %}"></use>
+      </svg>
+
+      </button>
+      <div class="display-flex flex-justify-center margin-y-1">
+        <button class="usa-button usa-button--outline">Back</button>
+        <button class="usa-button">Submit</button>
+      </div>
+      <div class="display-flex flex-column flex-align-center">
+        <button class="usa-button usa-button--unstyled margin-y-2">Save and exit</button>
+        <p class="text-center font-sans-xs margin-bottom-0">Your progress is automatically saved when you complete a page and click Next.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section class="usa-section">
-  <h2>Include Helper Text</h2>
+  <a id="helper-text"></a>
+  <h2>Include helper text</h2>
   <p>
     People applying for unemployment insurance may be experiencing stress and anxiety as a result of their recent unemployment. When they are confronted with questions they don’t know how to answer, those feelings are compounded by their concern that an incorrect choice will lead to their application being rejected or denied.
   </p>
   <p>
   “Helper text” can supplement existing information or questions on the application, giving applicants more context or examples so they can provide the most relevant and accurate information.
   </p>
-  <div class="grid-row">
-    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
-      <!-- todo: refactor to correct static img tag -->
-      {% include 'reference/demographic.svg' %}
-    </div>
-    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
-      <div>
-        <h3>How this content tested</h3>
-        <p>Applicants felt more comfortable providing information when they understood why a question was being asked, and how the information would be used.</p>
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col-6 border-3 margin-right-3 border-base-lightest">
+      <h3 class="margin-top-0">Your demographic information</h3>
+      <div class="usa-alert usa-alert--info usa-alert--slim">
+
+
+        <div class="arrow-content-wrapper">
+          <div id="demographic-alert" class="usa-alert__body">
+            <p class="usa-alert__text">
+              We ask for your demographic information only for our reporting requirements. The information you share does not affect your application or your benefit amount.
+            </p>
+          </div>
+          <div class="arrow-container">
+            <div class="arrow">
+              <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+              </svg>
+              <div class="arrow-label">C</div>
+            </div>
+            <div class="arrow-description">
+              Applicants felt more comfortable providing information when they understood why a question was being asked, and how the information would be used.
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+
   <div class="grid-row margin-top-5">
-    <div class="grid-col flex-2 border-3 margin-right-3 border-base-lightest">
-      <!-- todo: refactor to correct static img tag -->
-      {% include 'reference/confirm.svg' %}
+    <div class="ui-example grid-col-6 border-3 margin-right-3 border-base-lightest">
+      <h3 class="margin-top-0">Confirm address</h3>
+      <form class="usa-form">
+        <fieldset class="usa-fieldset">
+          <div class="arrow-content-wrapper">
+            <legend class="usa-legend">Which address do you want to use for your primary address?</legend>
+            <div class="arrow-container">
+              <div class="arrow">
+                <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+                </svg>
+                <div class="arrow-label">D</div>
+              </div>
+              <div class="arrow-description">
+                Helper text can guide applicants to a more efficient or easier option.
+              </div>
+            </div>
+          </div>
+
+          <div class="usa-radio bg-base-lightest">
+            <input
+              class="usa-radio__input usa-radio__input--tile"
+              id="user-entry"
+              type="radio"
+              name="address"
+              value="user-entry"
+            />
+            <label class="usa-radio__label" for="user-entry">
+              <span class="text-bold">You entered:</span>
+              <span class="usa-checkbox__label-description">
+                540 8th St.<br />ABC City, XY 00112
+              </span>
+            </label>
+          </div>
+
+          <div class="usa-radio bg-base-lightest">
+            <input
+              class="usa-radio__input usa-radio__input--tile"
+              id="recommended"
+              type="radio"
+              name="address"
+              value="recommended"
+            />
+            <label class="usa-radio__label" for="recommended">
+              <span class="text-bold">U.S. Postal Service recommends:</span>
+              <span class="usa-checkbox__label-description">
+                540 8TH ST.<br />ABC CITY, XY 00112-3345
+              </span>
+            </label>
+          </div>
+        </fieldset>
+        <p class="font-sans-3xs text-base border-base-light border-left-05 padding-left-1">
+          Choosing the U.S. Postal Service recommendation ensures that it meets the postal address standards. Unless it's wrong, we suggest using this to avoid mail delays. <a class="usa-link" href="javascript:void(0)">Learn more here</a>.
+        </p>
+      </form>
     </div>
-    <div class="grid-col flex-3 display-flex flex-column flex-justify-center">
+  </div>
+
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col-6 border-3 margin-right-3 border-base-lightest">
+      <form>
+        <fieldset class="usa-fieldset">
+          <legend class="usa-legend text-bold">Your most recent employer:</legend>
+          <label class="usa-label" for="employer-name">Employer name</label>
+          <input type="text" id="employer-name" class="usa-input" aria-describedby="employer-description" />
+
+          <div class="arrow-content-wrapper">
+            <p class="font-sans-3xs text-base">
+              You can usually find your employer or company's name on your paystub or W2.
+            </p>
+            <div class="arrow-container">
+              <div class="arrow">
+                <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+                </svg>
+                <div class="arrow-label">E</div>
+              </div>
+              <div class="arrow-description">
+                Helper text can provide a hint if the applicant is unsure of where or how to find information.
+              </div>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid-row margin-top-5">
+    <div class="ui-example grid-col-6 border-3 border-base-lightest">
+      <h3 class="margin-top-0">Education and training</h3>
+      <fieldset class="usa-fieldset">
+        <legend class="usa-legend usa-legend text-bold">Your education</legend>
+        <fieldset class="usa-fieldset margin-top-2">
+          <legend class="usa-legend usa-legend">Are you currently attending school, college, or job training?</legend>
+          <div class="usa-radio">
+            <input class="usa-radio__input" id="school-yes" type="radio" name="school" value="yes" />
+            <label class="usa-radio__label" for="school-yes">Yes</label>
+          </div>
+          <div class="usa-radio">
+            <input class="usa-radio__input" id="school-no" type="radio" name="school" value="school-no" />
+            <label class="usa-radio__label" for="school-no">No</label>
+          </div>
+          <p class="font-sans-3xs text-base">
+            If you are in union-required training or paid job training, choose "No."
+          </p>
+        </fieldset>
+        <label class="usa-label" for="education-level">What is the highest level of education you have completed?</label>
+        <select class="usa-select" name="options" id="options">
+          <option value>- Select -</option>
+          <option value="none">None</option>
+          <option value="primary_school">Primary school (pre-school to 8th grade)</option>
+          <option value="some_high_school">Some high school</option>
+          <option value="high_school_ged">High school/GED</option>
+          <option value="technical">Technical or Associates degree</option>
+          <option value="bachelors">Bachelor's degree</option>
+          <option value="masters">Master's degree</option>
+          <option value="doctorate">Ph.D or higher</option>
+          <option value="other">Other</option>
+        </select>
+      </fieldset>
+      <fieldset class="usa-fieldset margin-top-4">
+        <legend class="usa-legend usa-legend text-bold">Vocational rehabilitation</legend>
+        <fieldset class="usa-fieldset margin-top-2">
+          <legend class="usa-legend usa-legend">Are you currently registered with Vocational Rehabilitation?</legend>
+          <div class="usa-radio">
+            <input class="usa-radio__input" id="vr-yes" type="radio" name="vr" value="yes" />
+            <label class="usa-radio__label" for="vr-yes">Yes</label>
+          </div>
+          <div class="usa-radio">
+            <input class="usa-radio__input" id="vr-no" type="radio" name="vr" value="no" />
+            <label class="usa-radio__label" for="vr-no">No</label>
+          </div>
+
+          <div class="arrow-content-wrapper">
+            <p class="font-sans-3xs text-base border-base-light border-left-05 padding-left-1">
+              Vocational Rehabilitation is a program that helps people living with disabilities find and keep jobs. <a class="usa-link" href="javascript:void(0)">Learn more here</a>.
+            </p>
+            <div class="arrow-container">
+              <div class="arrow">
+                <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
+                </svg>
+                <div class="arrow-label">F</div>
+              </div>
+              <div class="arrow-description">
+                Add helper text to provide additional context, explanations, and examples to make the application process easier.
+              </div>
+            </div>
+          </div>
+
+        </fieldset>
+    </div>
+    <div class="position-relative grid-col-6 padding-left-3 display-flex flex-column">
       <div>
-        <h3>Take action</h3>
-        <p>Helper text can guide applications to a more efficient or easier option.</p>
+        <h3>What we learned from testing</h3>
+        <p>In a recent usability test, all participants had a positive reaction to the helper text that we displayed.</p>
+        <p><span class="text-primary text-italic">"They are useful, they are very short which is important. They convey important information."</span> - UI Applicant</p>
       </div>
     </div>
   </div>
 </section>
+
 {% endblock %}
