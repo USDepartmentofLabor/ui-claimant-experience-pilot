@@ -118,7 +118,7 @@ class ExpiredIdentityClaimsManager(models.Manager):
                 claim.delete_artifacts(partial_only=True)
                 count += 1
             else:
-                raise ClaimStorageError("failed to write Identity claim")
+                raise ClaimStorageError("Failed to write Identity claim")
         logger.info(f"Total expired partial claims completed: {count}")
         return count
 

@@ -5,7 +5,7 @@ from botocore.stub import Stubber
 from api.test_utils import create_idp, create_swa, create_claimant
 from api.models import Claim
 
-from core.claim_storage import ClaimWriter, ClaimReader, ClaimStore
+from core.claim_storage import ClaimWriter, ClaimReader, ClaimStore, ClaimBucket
 from core.claim_encryption import (
     SymmetricClaimEncryptor,
     SymmetricClaimDecryptor,
@@ -113,3 +113,7 @@ class CoreClaimStorageTestCase(BucketableTestCase):
 
         cs = ClaimStore()
         self.assertFalse(cs.delete("foo"))
+
+    def test_claim_bucket_type(self):
+        with self.assertRaises(ValueError):
+            ClaimBucket(bucket_type="foobar")

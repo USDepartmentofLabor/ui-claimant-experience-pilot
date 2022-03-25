@@ -31,3 +31,7 @@ class SwaXidTestCase(TestCase):
         sx = SwaXid("20220222-999999-abc", "AR")
         self.assertFalse(sx.format_ok())
         self.assertFalse(sx.datetime)
+
+        sx = SwaXid("20220222-999999-1234567-123456789", "AR")
+        self.assertFalse(sx.format_ok())
+        self.assertFalse(sx.datetime)

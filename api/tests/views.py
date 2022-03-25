@@ -619,6 +619,50 @@ class ApiViewsTestCase(
             "is_complete payload false/missing at completed-claim endpoint",
         )
 
+    def test_completed_claim_with_whoami_email_mismatch(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        url = "/api/completed-claim/"
+        headers = self.csrf_headers(csrf_client)
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email="a.stranger@example.com",
+            swa_code=swa.code,
+        )
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "invalid claim")
+        self.assertEqual(response.json()["errors"], {})
+
+    def test_session_claim_id_cleaned_up(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        headers = self.csrf_headers(csrf_client)
+
+        response = csrf_client.get("/api/partial-claim/")
+        self.assertEqual(response.status_code, 200)
+        partial_claim = claimant.claim_set.last()
+        self.assertEqual(
+            str(partial_claim.uuid), csrf_client.session["whoami"]["claim_id"]
+        )
+
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=csrf_client.session["whoami"]["email"],
+            swa_code=swa.code,
+        )
+        response = csrf_client.post(
+            "/api/completed-claim/", content_type=JSON, data=payload, **headers
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertFalse(csrf_client.session["whoami"].get("claim_id"))
+
     def write_partial_claim_payload(self, claim, payload):
         sym_encryptor = SymmetricClaimEncryptor(payload, symmetric_encryption_key())
         packaged_claim = sym_encryptor.packaged_claim()

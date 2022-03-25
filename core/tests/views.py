@@ -17,6 +17,10 @@ class CoreTestCase(TestCase):
         response = self.client.get("/claimant/")
         self.assertContains(response, "Unemployment Insurance Claim", status_code=200)
 
+        response = self.client.get("/claimant/?swa=foo")
+        self.assertContains(response, "Unemployment Insurance Claim", status_code=200)
+        self.assertEqual(self.client.session.get("swa"), "foo")
+
     def test_email(self):
         to = "fake@example.com"
         Email(to=to, subject="test", body="hello world").send()

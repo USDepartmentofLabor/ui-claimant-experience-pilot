@@ -368,7 +368,7 @@ else:  # pragma: no cover
         LOGIN_DOT_GOV_PRIVATE_KEY = False
 
 # The /login/ page bypasses all other IdP so never allow in production
-if BASE_URL == "https://unemployment.dol.gov":
+if BASE_URL == "https://unemployment.dol.gov":  # pragma: no cover
     ENABLE_TEST_LOGIN = False
 else:
     ENABLE_TEST_LOGIN = os.environ.get("ENABLE_TEST_LOGIN", "false").lower() == "true"
@@ -407,7 +407,7 @@ if claim_secret_key.startswith("["):
     for idx, key in enumerate(claim_secret_keys):
         validate_secret_key(key, f"CLAIM_SECRET_KEY[{idx}]")
     CLAIM_SECRET_KEY = claim_secret_keys
-else:
+else:  # pragma: no cover
     validate_secret_key(claim_secret_key, "CLAIM_SECRET_KEY")
     CLAIM_SECRET_KEY = [claim_secret_key]
 

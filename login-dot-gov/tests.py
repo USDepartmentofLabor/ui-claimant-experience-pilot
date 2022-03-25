@@ -565,3 +565,19 @@ class LoginDotGovTestCase(TestCase):
         self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertTrue(claim.is_initiated_with_swa_xid())
         self.assertTrue(claim.is_completed())
+
+    def test_profile_redirect(self):
+        response = self.client.get("/logindotgov/profile")
+        self.assertRedirects(
+            response,
+            "https://mockhost.login.gov/account",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+    def test_malformed_swa_xid(self):
+        swa = SWA.active.get(code="AR")
+        response = self.client.get(
+            f"/logindotgov/?ial=1&swa={swa.code}&swa_xid=badtoken"
+        )
+        self.assertContains(response, "Web address invalid", status_code=400)

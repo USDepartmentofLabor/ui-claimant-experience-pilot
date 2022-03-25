@@ -95,6 +95,15 @@ class HomeTestCase(TestCase):
         )
         self.assertFalse(client.session.get("logout_url"))
 
+    def test_logout_when_not_authenticated(self):
+        response = self.client.get("/logout/")
+        self.assertRedirects(
+            response,
+            "/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
     def test_start_page(self):
         self.skipTest("skipped for MVP")  # TODO
         response = self.client.get("/start/")
@@ -277,6 +286,35 @@ class LocalLoginTestCase(BucketableTestCase):
         self.assertEqual(self.client.session["whoami"]["claim_id"], str(claim.uuid))
         self.assertTrue(claim.is_initiated_with_swa_xid())
         self.assertTrue(claim.completed_artifact_exists())
+
+    def test_local_login_swa_xid_exists_in_session(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        session = self.client.session
+        session["swa_xid"] = "abc-123"
+        session.save()
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "ssn": "900001234",
+                "swa_code": swa.code,
+                "phone": "555-555-5555",
+                "birthdate": "1970-01-01",
+            }
+            | ADDRESS,
+        )
+        self.assertRedirects(
+            response,
+            "/identity/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        self.assertTrue(self.client.session["whoami"]["claim_id"])
 
     def test_local_login_missing_swa_xid(self):
         swa, _ = create_swa(

@@ -17,10 +17,6 @@ def session_as_dict(request):
     return this_session
 
 
-def get_session_store():
-    return cache.client.get_client()
-
-
 def get_session_cache_key(session_key):
     store_prefix = settings.CACHES["default"]["KEY_PREFIX"]
     version = "1"  # django.core.cache.backends.BaseCache defaults to this

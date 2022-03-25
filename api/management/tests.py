@@ -104,6 +104,17 @@ class ClaimantKeyRotatorTestCase(BucketTestCase):
         packaged_payload = packaged_claim.as_json()
         cw = ClaimWriter(claim, packaged_payload, path=claim.partial_payload_path())
         self.assertTrue(cw.write())
+
+        # create some with no artifacts to exercise failure logic
+        completed_claim = Claim(swa=self.swa, claimant=claimant)
+        completed_claim.save()
+        completed_claim.events.create(category=Claim.EventCategories.COMPLETED)
+        partial_claim = Claim(swa=self.swa, claimant=claimant)
+        partial_claim.save()
+        deleted_claim = Claim(swa=self.swa, claimant=claimant)
+        deleted_claim.save()
+        deleted_claim.events.create(category=Claim.EventCategories.DELETED)
+
         return claimant
 
     def create_claimant_file(self, claimant, key):
@@ -166,3 +177,40 @@ class ClaimantKeyRotatorTestCase(BucketTestCase):
         claimant_with_null_hash.refresh_from_db()
         self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
         self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_s3_error_file(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant = self.create_claim_with_key(old_key)
+        claimant.encryption_key_hash = encryption_key_hash(old_key)
+        claimant.save()
+        self.create_claimant_file(claimant, old_key)
+
+        with patch("core.claim_storage.ClaimWriter") as mock_writer:
+            mock_writer.return_value.write.return_value = False
+            with self.assertRaises(ClaimStorageError) as context:
+                ckr = ClaimantKeyRotator(old_key, new_key)
+                ckr.rotate()
+            # files are attempted first so will trigger error first
+            self.assertIn(
+                "Failed to write re-encrypted claimant file", str(context.exception)
+            )
+
+    def test_rotate_s3_error_claim(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant = self.create_claim_with_key(old_key)
+        claimant.encryption_key_hash = encryption_key_hash(old_key)
+        claimant.save()
+
+        with patch("core.claim_storage.ClaimWriter") as mock_writer:
+            mock_writer.return_value.write.return_value = False
+            with self.assertRaises(ClaimStorageError) as context:
+                ckr = ClaimantKeyRotator(old_key, new_key)
+                ckr.rotate()
+            # no file exists so we trigger the partial claim error
+            self.assertIn(
+                "Failed to write re-encrypted partial claim", str(context.exception)
+            )
