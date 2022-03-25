@@ -17,7 +17,7 @@ export const CheckboxField = ({
   onChange,
   ...inputProps
 }: React.ComponentProps<typeof Checkbox>) => {
-  const [fieldProps] = useField({ name: name, type: "checkbox" });
+  const [fieldProps] = useField({ name, type: "checkbox" });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     fieldProps.onChange(e);

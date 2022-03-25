@@ -16,6 +16,28 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("DateInputField Component", () => {
+  const { t } = useTranslation("claimForm");
+  const submittableDateInputField = (
+    <Formik
+      initialValues={{ dateInputField: "" }}
+      validationSchema={yup.object().shape({
+        dateInputField: yupDate(t, "a test date"),
+      })}
+      onSubmit={noop}
+    >
+      {({ submitForm }) => {
+        return (
+          <>
+            <DateInputField id={"dateInputField"} name={"dateInputField"} />
+            <button type="submit" onClick={submitForm}>
+              Submit
+            </button>
+          </>
+        );
+      }}
+    </Formik>
+  );
+
   it("renders the elements that make up the field", () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ dateInputField: "" }} onSubmit={noop}>
@@ -100,26 +122,7 @@ describe("DateInputField Component", () => {
   });
 
   it("Displays an error when the field is touched and blurred", async () => {
-    const { getByLabelText, queryByRole } = render(
-      <Formik
-        initialValues={{ dateInputField: "" }}
-        validationSchema={yup.object().shape({
-          dateInputField: yup.date().required(),
-        })}
-        onSubmit={noop}
-      >
-        {({ submitForm }) => {
-          return (
-            <>
-              <DateInputField id={"dateInputField"} name={"dateInputField"} />
-              <button type="submit" onClick={submitForm}>
-                Submit
-              </button>
-            </>
-          );
-        }}
-      </Formik>
-    );
+    const { getByLabelText, queryByRole } = render(submittableDateInputField);
 
     const monthField = getByLabelText("date.month.label");
     const dayField = getByLabelText("date.day.label");
@@ -162,26 +165,7 @@ describe("DateInputField Component", () => {
   });
 
   it("Allows the user to enter a date", async () => {
-    const { getByLabelText, queryByRole } = render(
-      <Formik
-        initialValues={{ dateInputField: "" }}
-        validationSchema={yup.object().shape({
-          dateInputField: yup.date().required(),
-        })}
-        onSubmit={noop}
-      >
-        {({ submitForm }) => {
-          return (
-            <>
-              <DateInputField id={"dateInputField"} name={"dateInputField"} />
-              <button type="submit" onClick={submitForm}>
-                Submit
-              </button>
-            </>
-          );
-        }}
-      </Formik>
-    );
+    const { getByLabelText, queryByRole } = render(submittableDateInputField);
 
     const monthField = getByLabelText("date.month.label");
     const dayField = getByLabelText("date.day.label");
@@ -244,27 +228,7 @@ describe("DateInputField Component", () => {
   });
 
   it("Allows the user to enter a date with single digit month and day", async () => {
-    const { t } = useTranslation("claimForm");
-    const { getByLabelText, queryByRole } = render(
-      <Formik
-        initialValues={{ dateInputField: "" }}
-        validationSchema={yup.object().shape({
-          dateInputField: yupDate(t, "a test date"),
-        })}
-        onSubmit={noop}
-      >
-        {({ submitForm }) => {
-          return (
-            <>
-              <DateInputField id={"dateInputField"} name={"dateInputField"} />
-              <button type="submit" onClick={submitForm}>
-                Submit
-              </button>
-            </>
-          );
-        }}
-      </Formik>
-    );
+    const { getByLabelText, queryByRole } = render(submittableDateInputField);
 
     const monthField = getByLabelText("date.month.label");
     const dayField = getByLabelText("date.day.label");

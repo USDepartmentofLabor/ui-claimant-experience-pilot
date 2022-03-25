@@ -65,11 +65,11 @@ export const yupDate = (t: TFunction<"claimForm">, fieldName: string) =>
     })
     .typeError(
       t("date.typeError", {
-        fieldName: fieldName,
+        fieldName,
         dateFormat: USER_FACING_DATE_INPUT_FORMAT,
       })
     )
-    .required(t("date.required", { fieldName: fieldName }));
+    .required(t("date.required", { fieldName }));
 
 export const yupCurrency = (errorMsg = "") => {
   return yup.string().matches(CENTS_REGEX, errorMsg);

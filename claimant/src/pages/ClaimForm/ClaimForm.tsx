@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { useQueryClient } from "react-query";
 import { Formik, Form, FormikHelpers, FormikProps } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
@@ -23,8 +24,6 @@ import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErr
 import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
 import { Routes } from "../../routes";
 import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
-import { useRef } from "react";
-import { useEffect } from "react";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -76,10 +75,8 @@ export const ClaimForm = () => {
 
   const navigateToNextPage = (values: FormValues) => {
     let nextPage;
-    if (repeatable) {
-      if (repeatable(segment, values) && nextSegment) {
-        nextPage = `/claim/${currentPagePath}/${nextSegment(segment)}/`;
-      }
+    if (repeatable && repeatable(segment, values) && nextSegment) {
+      nextPage = `/claim/${currentPagePath}/${nextSegment(segment)}/`;
     }
     if (!nextPage && pages[currentPageIndex + 1]) {
       nextPage = `/claim/${pages[currentPageIndex + 1].path}`;

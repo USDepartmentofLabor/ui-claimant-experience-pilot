@@ -22,8 +22,7 @@ import { useShowErrors } from "../../../../hooks/useShowErrors";
 import styles from "./DateInputField.module.scss";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type DateInputProps = Omit<
-  ComponentProps<typeof DateInput>,
+type DateInputOmitProps =
   | "id"
   | "name"
   | "label"
@@ -32,7 +31,10 @@ type DateInputProps = Omit<
   | "unit"
   | "onBlur"
   | "readOnly"
-  | "disabled"
+  | "disabled";
+type DateInputProps = Omit<
+  ComponentProps<typeof DateInput>,
+  DateInputOmitProps
 >;
 
 type DateFieldProps = {

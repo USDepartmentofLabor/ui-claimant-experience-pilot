@@ -120,7 +120,6 @@ const searchSOCEntries = (searchString: string) => {
      - sort by scores
   */
   const tokens = searchString.split(/ +/);
-  // console.log({ tokens });
   const matchingOccupations: OccupationOption[] = [];
 
   tokens.forEach((token) => {
@@ -157,9 +156,9 @@ const searchSOCEntries = (searchString: string) => {
           matches[code].tokens.push(token);
         } else {
           matches[code] = {
-            score: score,
+            score,
             tokens: [token],
-            occupation: occupation,
+            occupation,
           };
         }
       }
@@ -168,8 +167,6 @@ const searchSOCEntries = (searchString: string) => {
 
   // TODO if we wanted AND boolean logic, filter matches by tokens.length == match.tokens.length
   // TODO since we now sort by rank, consider only returning 10 matches to make it simpler to scroll.
-
-  // console.log({ matches });
 
   const matchingCodes = Object.keys(matches);
   matchingCodes.sort((a, b) => {
@@ -180,7 +177,7 @@ const searchSOCEntries = (searchString: string) => {
   });
   matchingCodes.forEach((code) => {
     matchingOccupations.push({
-      code: code,
+      code,
       title: matches[code].occupation.t,
       description: matches[code].occupation.d,
       examples: matches[code].occupation.e,
@@ -258,14 +255,13 @@ export const OccupationPicker = () => {
 
   // no results behavior. We want it to present just like a form validation error,
   // but it's dependent on search results, which is not a yup-testable thing.
-  const hasNoResults = () => {
-    if (occupationOptions && occupationOptions.length) {
-      return false;
-    } else if (debouncedSearchString.length > MIN_JOB_TITLE_LENGTH) {
-      return true;
-    } else if (debouncedSearchString.length === 0) {
-      return false;
-    }
+  const hasNoResults = (): boolean => {
+    const claimantHasTypedEnoughCharacters =
+      debouncedSearchString.length > MIN_JOB_TITLE_LENGTH;
+    const relevantResultsWereFound =
+      occupationOptions && occupationOptions.length;
+
+    return claimantHasTypedEnoughCharacters && !relevantResultsWereFound;
   };
 
   const noResultsFlag = hasNoResults();

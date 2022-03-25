@@ -219,10 +219,7 @@ describe("the ClaimForm page", () => {
     expect(
       isEqual(restoredClaim.residence_address, restoredClaim.mailing_address)
     ).toBe(true);
-    const mergedValues = await mergeClaimFormValues(
-      initialValues,
-      restoredClaim
-    );
+    const mergedValues = mergeClaimFormValues(initialValues, restoredClaim);
     expect(mergedValues.LOCAL_mailing_address_same).toBe(true);
     expect(mergedValues.LOCAL_claimant_has_alternate_names).toEqual(true);
     expect(mergedValues.employers[0].LOCAL_same_address).toEqual(false);

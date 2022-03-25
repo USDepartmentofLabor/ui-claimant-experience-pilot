@@ -18,12 +18,14 @@ export const FormErrorSummary = ({ errors }: IFormErrorSummary) => {
   );
 };
 
-function countErrors(errors: FormikErrors<Claim>) {
+const countErrors = (errors: FormikErrors<Claim>) => {
   let totalErrors = 0;
   const objects: Record<string, any>[] = [errors];
   while (objects.length) {
     const cur = objects.pop();
-    if (!cur) return;
+    if (!cur) {
+      continue;
+    }
     Object.values(cur).forEach((val) => {
       if (typeof val === "string") {
         totalErrors++;
@@ -33,4 +35,4 @@ function countErrors(errors: FormikErrors<Claim>) {
     });
   }
   return totalErrors;
-}
+};

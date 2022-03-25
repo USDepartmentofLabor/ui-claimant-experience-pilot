@@ -192,8 +192,6 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     cy.click_next();
     cy.get("h1").should("have.focus");
 
-    // TODO all the other pages go here as we write them
-
     // Review page
     cy.click_legal_affirmation();
     cy.check_a11y();
