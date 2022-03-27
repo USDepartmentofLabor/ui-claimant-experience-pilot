@@ -57,6 +57,7 @@ COPY requirements*.txt ./
 
 RUN apt-get update -y && apt-get install -y \
   --no-install-recommends \
+  libexpat1 \
   libc6=2.31-13+deb11u3 \
   libc-bin=2.31-13+deb11u3 \
   gcc \
