@@ -56,7 +56,18 @@ EXPOSE 8000
 COPY requirements*.txt ./
 
 RUN apt-get update -y && apt-get install -y \
-  --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools iputils-ping mariadb-client \
+  --no-install-recommends \
+  libc6=2.31-13+deb11u3 \
+  libc-bin=2.31-13+deb11u3 \
+  gcc \
+  libmariadb-dev \
+  wait-for-it \
+  git \
+  make \
+  gettext \
+  redis-tools \
+  iputils-ping \
+  mariadb-client \
   && rm -rf /var/lib/apt/lists/* \
   && pip install --no-cache-dir -r requirements.txt
 
