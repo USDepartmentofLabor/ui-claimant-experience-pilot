@@ -32,6 +32,7 @@ def common_vars(request):
         "show_navigation": False,
         "contact_us_path": None,
         "home_path": "/",
+        "show_test_banner": settings.DISPLAY_TEST_SITE_BANNER,
     }
     return params
 

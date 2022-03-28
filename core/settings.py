@@ -414,7 +414,7 @@ else:  # pragma: no cover
 # all sites except production should have this turned on, as policy.
 # we make it an env var so that we can test locally w/o it
 DISPLAY_TEST_SITE_BANNER = (
-    os.environ.get("DISPLAY_TEST_SITE_BANNER", "true").lower() == "true"
+    os.environ.get("DISPLAY_TEST_SITE_BANNER", "false").lower() == "true"
 )
 
 LD_SDK_KEY = env.str("LD_SDK_KEY")
