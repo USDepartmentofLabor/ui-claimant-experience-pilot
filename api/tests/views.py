@@ -4,25 +4,22 @@ from django.core import mail
 from django.utils import timezone
 from django.conf import settings
 from django.test.utils import override_settings
-from unittest.mock import patch
-import boto3
-from jwcrypto.common import json_decode
-from botocore.stub import Stubber
-from dacite import from_dict
+from unittest.mock import patch, MagicMock
 from core.tasks_tests import CeleryTestCase
-from .test_utils import (
+from core.test_utils import BucketableTestCase
+from api.test_utils import (
     create_idp,
     create_swa,
     create_claimant,
     create_whoami,
     RESIDENCE_ADDRESS,
-    WHOAMI_IAL2,
+    MAILING_ADDRESS,
     TEST_SWA,
+    BaseClaim,
 )
-from .models import Claim, Claimant, SWA
-from .models.claim import CLAIMANT_STATUS_PROCESSING
-from core.test_utils import create_s3_bucket, delete_s3_bucket
-from .claim_request import (
+from api.models import Claim, Claimant
+from api.models.claim import CLAIMANT_STATUS_PROCESSING, FAILURE
+from api.claim_request import (
     ClaimRequest,
     MISSING_SWA_CODE,
     INVALID_SWA_CODE,
@@ -30,9 +27,6 @@ from .claim_request import (
     INVALID_CLAIMANT_ID,
     INVALID_CLAIM_ID,
 )
-from .claim_validator import ClaimValidator
-import uuid
-import logging
 from core.claim_encryption import (
     AsymmetricClaimDecryptor,
     SymmetricClaimEncryptor,
@@ -46,25 +40,18 @@ from core.claim_storage import (
     ClaimStore,
     ClaimWriter,
 )
-from .claim_finder import ClaimFinder
-from .whoami import WhoAmI, WhoAmISWA
-from .claim_cleaner import ClaimCleaner
-from .identity_claim_maker import IdentityClaimMaker
-from os import listdir
-from os.path import isfile, join, isdir
+
+import uuid
+import logging
 from datetime import timedelta
 import time_machine
+import boto3
+from jwcrypto.common import json_decode
+from botocore.stub import Stubber
 
-logger = logging.getLogger("api.tests")
+logger = logging.getLogger(__name__)
 
 JSON = "application/json"
-
-MAILING_ADDRESS = {
-    "address1": "456 Any St",
-    "city": "Somewhere",
-    "state": "KS",
-    "zipcode": "00000",
-}
 
 
 class SessionAuthenticator:
@@ -77,136 +64,10 @@ class SessionAuthenticator:
         return session
 
 
-class BaseClaim:
-    def base_claim(
-        self, id=str(uuid.uuid4()), claimant_id=None, email=None, swa_code=None
-    ):
-        identity = from_dict(
-            data_class=WhoAmI,
-            data=WHOAMI_IAL2
-            | {
-                "claim_id": id,
-                "swa": TEST_SWA | {"code": (swa_code or TEST_SWA["code"])},
-                "claimant_id": (claimant_id or "random-claimaint-string"),
-            },
-        ).as_identity()
-        claim = {
-            "is_complete": True,
-            "claimant_id": identity["claimant_id"],
-            "idp_identity": identity,
-            "swa_code": identity["swa_code"],
-            "ssn": "900-00-1234",
-            "email": email or "foo@example.com",
-            "claimant_name": {"first_name": "first", "last_name": "last"},
-            "residence_address": RESIDENCE_ADDRESS,
-            "mailing_address": MAILING_ADDRESS,
-            "birthdate": "2000-01-01",
-            "sex": "female",
-            "ethnicity": "opt_out",
-            "race": ["american_indian_or_alaskan"],
-            "education_level": "bachelors",
-            "state_credential": {
-                "drivers_license_or_state_id_number": "111222333",
-                "issuer": "GA",
-            },
-            "employers": [
-                {
-                    "name": "ACME Stuff",
-                    "days_employed": 123,
-                    "LOCAL_still_working": "no",
-                    "first_work_date": "2020-02-02",
-                    "last_work_date": "2020-11-30",
-                    "recall_date": "2020-12-13",
-                    "fein": "001234567",
-                    "self_employed": False,
-                    "address": {
-                        "address1": "999 Acme Way",
-                        "address2": "Suite 888",
-                        "city": "Elsewhere",
-                        "state": "KS",
-                        "zipcode": "11111-9999",
-                    },
-                    "LOCAL_same_address": "no",
-                    "work_site_address": {
-                        "address1": "888 Sun Ave",
-                        "city": "Elsewhere",
-                        "state": "KS",
-                        "zipcode": "11111-8888",
-                    },
-                    "LOCAL_same_phone": "yes",
-                    "phones": [{"number": "555-555-1234", "sms": False}],
-                    "separation_reason": "laid_off",
-                    "separation_option": "position_eliminated",
-                    "separation_comment": "they ran out of money",
-                }
-            ],
-            "other_pay": [
-                {
-                    "pay_type": "severance",
-                    "total": 500000,
-                    "date_received": "2021-01-15",
-                    "note": "All one payment for layoff",
-                }
-            ],
-            "self_employment": {
-                "is_self_employed": False,
-                "ownership_in_business": True,
-                "name_of_business": "BusinessCo",
-                "is_corporate_officer": True,
-                "name_of_corporation": "ACME Inc",
-                "related_to_owner": False,
-            },
-            "attending_college_or_job_training": True,
-            "type_of_college_or_job_training": "full_time_student",
-            "registered_with_vocational_rehab": False,
-            "union": {
-                "is_union_member": True,
-                "union_name": "foo",
-                "union_local_number": "1234",
-                "required_to_seek_work_through_hiring_hall": False,
-            },
-            "interpreter_required": True,
-            "phones": [{"number": "555-555-1234"}],
-            "disability": {
-                "has_collected_disability": True,
-                "disabled_immediately_before": False,
-                "type_of_disability": "state_plan",
-                "date_disability_began": "2020-01-01",
-                "recovery_date": "2022-01-08",
-                "contacted_last_employer_after_recovery": False,
-            },
-            "availability": {
-                "can_begin_work_immediately": False,
-                "cannot_begin_work_immediately_reason": "I have to deal with a family emergency for the next 2 weeks",
-                "can_work_full_time": True,
-                "is_prevented_from_accepting_full_time_work": False,
-            },
-            "federal_income_tax_withheld": False,
-            "payment": {
-                "payment_method": "direct_deposit",
-                "account_type": "checking",
-                "routing_number": "12-345678",
-                "account_number": "00983-543=001",
-            },
-            "occupation": {
-                "job_title": "nurse",
-                "job_description": "ER nurse",
-                "bls_description": "29-0000  Healthcare Practitioners and Technical Occupations",
-                "bls_code": "29-1141",
-                "bls_title": "Registered Nurses",
-            },
-            "work_authorization": {
-                "authorization_type": "permanent_resident",
-                "alien_registration_number": "111-111-111",
-                "authorized_to_work": True,
-            },
-        }
-        if id:
-            claim["id"] = id
-        return claim
-
-
-class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
+# IMPORTANT that BucketableTestCase comes before CeleryTestCase
+class ApiViewsTestCase(
+    BucketableTestCase, CeleryTestCase, SessionAuthenticator, BaseClaim
+):
     maxDiff = None
 
     def setUp(self):
@@ -219,18 +80,6 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             name=TEST_SWA["name"],
             claimant_url=TEST_SWA["claimant_url"],
         )
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_s3_bucket()
-        create_s3_bucket(is_archive=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        delete_s3_bucket()
-        delete_s3_bucket(is_archive=True)
 
     def csrf_client(self, claimant=None, swa=None, trigger_cookie=False):
         # by default self.client relaxes the CSRF check, so we create our own client to test.
@@ -261,6 +110,7 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
     def test_whoami_swa(self):
         session = self.authenticate_session()
         session["swa"] = "XX"
+        del session["whoami"]["swa"]
         session.save()
 
         response = self.client.get("/api/whoami/")
@@ -429,6 +279,44 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertEqual(decrypted_claim["ssn"], "900-00-1234")
         self.assertEqual(decrypted_claim["LOCAL_mailing_address_same"], False)
 
+    def test_schematically_valid_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(trigger_cookie=True)
+        url = "/api/partial-claim/"
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=csrf_client.session["whoami"]["email"],
+            swa_code=swa.code,
+        )
+        del payload["is_complete"]
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
+        self.assertEqual(response.status_code, 202)
+        claim = claimant.claim_set.all()[0]
+        partial_artifact = claim.read_partial()
+        self.assertTrue("validated_at" in partial_artifact)
+
+    def test_get_completed_claim_at_partial_endpoint(self):
+        # heavily contrived example to exercise the edges of caching logic.
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        csrf_client = self.csrf_client(trigger_cookie=True, swa=swa, claimant=claimant)
+        session = csrf_client.session
+        session["partial_claim"] = {"abc": "foo"}
+        session.save()
+        url = "/api/partial-claim/"
+        headers = self.csrf_headers(csrf_client)
+        response = csrf_client.get(url, content_type=JSON, **headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["remaining_time"], "00:00:00")
+
     def test_get_claims(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -489,6 +377,76 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
         self.assertTrue(claim.is_deleted())
         self.assertTrue(claim.is_resolved())
         self.assertEqual(claim.resolution_description(), "cancelled by Claimant")
+
+    def test_cancel_claim_ld_flag_off(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        claim.events.create(category=Claim.EventCategories.COMPLETED)
+        cw = ClaimWriter(claim, "test", path=claim.completed_payload_path())
+        self.assertTrue(cw.write())
+        with patch("api.views.ld_client.variation") as patched_ld_client:
+            patched_ld_client.return_value = False
+            headers = self.csrf_headers(client)
+            response = client.delete(
+                f"/api/cancel-claim/{claim.uuid}/",
+                content_type=JSON,
+                **headers,
+            )
+            self.assertEqual(
+                response.json(), {"status": "error", "error": "No such route"}
+            )
+            self.assertEqual(response.status_code, 404)
+
+    def test_cancel_partial_claim(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        cw = ClaimWriter(claim, "test", path=claim.partial_payload_path())
+        self.assertTrue(cw.write())
+        headers = self.csrf_headers(client)
+        response = client.delete(
+            f"/api/cancel-claim/{claim.uuid}/",
+            content_type=JSON,
+            **headers,
+        )
+        self.assertEqual(
+            response.json(), {"status": "error", "error": "No eligible claim found"}
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_cancel_claim_write_error(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        with patch("api.views.ClaimFinder") as mocked_finder:
+            mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
+            mocked_claim.swa = swa
+            mocked_claim.delete_artifacts.return_value = FAILURE
+            mocked_claim.is_completed.return_value = True
+            mocked_claim.is_fetched.return_value = False
+            mocked_finder.return_value.find.return_value = mocked_claim
+            headers = self.csrf_headers(client)
+            with self.assertLogs(level="DEBUG") as cm:
+                response = client.delete(
+                    "/api/cancel-claim/ignored-uuid-value/",
+                    content_type=JSON,
+                    **headers,
+                )
+                self.assertEqual(
+                    response.json(),
+                    {"status": "error", "error": "failed to save change"},
+                )
+                self.assertEqual(response.status_code, 500)
+                # the -2 means our logging exception is the 2nd to last in the list
+                self.assertIn("Exception: Failed to delete artifacts", cm.output[-2])
 
     def test_rotation_encrypted_partial_claim(self):
         idp = create_idp()
@@ -660,6 +618,50 @@ class ApiTestCase(CeleryTestCase, SessionAuthenticator, BaseClaim):
             response.json()["error"],
             "is_complete payload false/missing at completed-claim endpoint",
         )
+
+    def test_completed_claim_with_whoami_email_mismatch(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        url = "/api/completed-claim/"
+        headers = self.csrf_headers(csrf_client)
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email="a.stranger@example.com",
+            swa_code=swa.code,
+        )
+        response = csrf_client.post(url, content_type=JSON, data=payload, **headers)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "invalid claim")
+        self.assertEqual(response.json()["errors"], {})
+
+    def test_session_claim_id_cleaned_up(self):
+        idp = create_idp()
+        swa, _ = create_swa()
+        claimant = create_claimant(idp)
+        csrf_client = self.csrf_client(claimant, swa, trigger_cookie=True)
+        headers = self.csrf_headers(csrf_client)
+
+        response = csrf_client.get("/api/partial-claim/")
+        self.assertEqual(response.status_code, 200)
+        partial_claim = claimant.claim_set.last()
+        self.assertEqual(
+            str(partial_claim.uuid), csrf_client.session["whoami"]["claim_id"]
+        )
+
+        payload = self.base_claim(
+            id=None,
+            claimant_id=claimant.idp_user_xid,
+            email=csrf_client.session["whoami"]["email"],
+            swa_code=swa.code,
+        )
+        response = csrf_client.post(
+            "/api/completed-claim/", content_type=JSON, data=payload, **headers
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertFalse(csrf_client.session["whoami"].get("claim_id"))
 
     def write_partial_claim_payload(self, claim, payload):
         sym_encryptor = SymmetricClaimEncryptor(payload, symmetric_encryption_key())
@@ -909,142 +911,6 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim_request = ClaimRequest(request)
         return claim_request
 
-    def test_claim_finder(self):
-        idp = create_idp()
-        swa, _ = create_swa()
-        claimant = create_claimant(idp)
-        claimant2 = Claimant(idp_user_xid="otheridp id", idp=idp)
-        claimant2.save()
-        claim = Claim(claimant=claimant, swa=swa)
-        claim.save()
-        claim.events.create(category=Claim.EventCategories.COMPLETED)
-
-        finder = ClaimFinder(
-            WhoAmI.from_dict(
-                {
-                    "email": "foo@example.com",
-                    "claimant_id": claimant.idp_user_xid,
-                    "swa": swa.for_whoami(),
-                }
-            )
-        )
-        self.assertEqual(claim, finder.find())
-
-        finder = ClaimFinder(WhoAmI(email="foo@example.com", claim_id=claim.uuid))
-        self.assertEqual(claim, finder.find())
-
-        # error conditions
-        finder = ClaimFinder(WhoAmI(email="foo@example.com"))
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI(email="foo@example.com", claimant_id=claimant.idp_user_xid)
-        )
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI.from_dict(
-                {
-                    "email": "foo@example.com",
-                    "claimant_id": "nonesuch",
-                    "swa": swa.for_whoami(),
-                }
-            )
-        )
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI.from_dict({"email": "foo@example.com", "swa": swa.for_whoami()})
-        )
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI(
-                email="foo@example.com",
-                claimant_id=claimant.idp_user_xid,
-                swa=WhoAmISWA(code="nonesuch", name="nope", featureset="none"),
-            )
-        )
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI.from_dict(
-                {
-                    "email": "foo@example.com",
-                    "claimant_id": claimant2.idp_user_xid,
-                    "swa": swa.for_whoami(),
-                }
-            )
-        )
-        self.assertFalse(finder.find())
-
-        finder = ClaimFinder(
-            WhoAmI(email="foo@example.com", claim_id=str(uuid.uuid4()))
-        )
-        self.assertFalse(finder.find())
-
-        # multiple completed claims will ignore any resolved even if newer
-        claim2 = Claim(claimant=claimant, swa=swa)
-        claim2.save()
-        claim2.events.create(category=Claim.EventCategories.COMPLETED)
-        finder = ClaimFinder(
-            WhoAmI.from_dict(
-                {
-                    "email": "foo@example.com",
-                    "claimant_id": claimant.idp_user_xid,
-                    "swa": swa.for_whoami(),
-                }
-            )
-        )
-        self.assertEqual(claim2, finder.find())
-        claim2.events.create(category=Claim.EventCategories.RESOLVED)
-        self.assertEqual(claim, finder.find())
-
-        # .all returns everything regardless of events
-        finder = ClaimFinder(
-            WhoAmI.from_dict(
-                {
-                    "email": "foo@example.com",
-                    "claimant_id": claimant.idp_user_xid,
-                    "swa": swa.for_whoami(),
-                }
-            )
-        )
-        self.assertEqual(finder.all().count(), 2)
-
-    def test_claim_cleaner(self):
-        idp = create_idp()
-        swa, _ = create_swa()
-        claimant = create_claimant(idp)
-        self.authenticate_session()
-
-        body = self.base_claim() | {
-            "claimant_id": claimant.idp_user_xid,
-            "swa_code": swa.code,
-            "ssn": "666000000",
-            "email": "fake@example.com",
-            "birthdate": "1999-12-12",
-            "work_authorization": {
-                "authorization_type": "permanent_resident",
-                "alien_registration_number": "111111111",
-                "authorized_to_work": True,
-            },
-        }
-        claim_request = self.create_api_claim_request(body)
-        claim_cleaner = ClaimCleaner(
-            payload=claim_request.payload, whoami=claim_request.whoami
-        )
-        cleaned_claim = claim_cleaner.cleaned()
-        logger.debug("🚀 cleaned_claim={}".format(cleaned_claim))
-        self.assertEqual(cleaned_claim["ssn"], "666-00-0000")
-        self.assertEqual(cleaned_claim["email"], "fake@example.com")
-        self.assertEqual(cleaned_claim["birthdate"], "1999-12-12")
-        self.assertEqual(cleaned_claim["employers"][0]["fein"], "00-1234567")
-        self.assertEqual(
-            cleaned_claim["work_authorization"]["alien_registration_number"],
-            "111-111-111",
-        )
-
     def test_claim_request(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -1121,356 +987,3 @@ class ClaimApiTestCase(TestCase, SessionAuthenticator, BaseClaim):
         claim_request = self.create_api_claim_request(body)
         self.assertFalse(claim_request.error)
         self.assertEqual(claim.id, claim_request.claim.id)
-
-
-class ClaimValidatorTestCase(TestCase, BaseClaim):
-    def test_example_claim_instance(self):
-        example = settings.BASE_DIR / "schemas" / "claim-v1.0-example.json"
-        with open(example) as f:
-            json_str = f.read()
-        example_claim = json_decode(json_str)
-        cv = ClaimValidator(example_claim, base_url="http://example.com")
-        logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
-        self.assertTrue(cv.valid)
-        self.assertEquals(cv.schema_url, "http://example.com/schemas/claim-v1.0.json")
-
-    def test_example_identity_instances(self):
-        for ial in [1, 2]:
-            example = (
-                settings.BASE_DIR / "schemas" / f"identity-v1.0-example-ial{ial}.json"
-            )
-            with open(example) as f:
-                json_str = f.read()
-            cv = ClaimValidator(json_decode(json_str), schema_name="identity-v1.0")
-            logger.debug("🚀 IAL{} identity errors={}".format(ial, cv.errors_as_dict()))
-            self.assertTrue(cv.valid)
-
-    def test_claim_permutations(self):
-        dirlist = settings.FIXTURE_DIR
-        fixtures = [f for f in listdir(dirlist) if isdir(join(dirlist, f))]
-        for fixture in fixtures:
-            for validity in ["valid", "invalid"]:
-                fixture_dir = dirlist / fixture / validity
-                cases = [
-                    f for f in listdir(fixture_dir) if isfile(join(fixture_dir, f))
-                ]
-                for case in cases:
-                    logger.debug(f"Checking fixture {fixture} / {validity} / {case}")
-                    claim = self.base_claim()
-                    with open(fixture_dir / case) as f:
-                        json = json_decode(f.read())
-                    for key in json:
-                        if json[key] is None and key in claim:
-                            claim.pop(key)
-                        else:
-                            claim[key] = json[key]
-                    cv = ClaimValidator(claim)
-                    if validity == "valid" and not cv.valid:
-                        logger.debug(
-                            "🚀 A valid permutation resulted in errors={}".format(
-                                cv.errors_as_dict()
-                            )
-                        )
-                    self.assertEqual(
-                        cv.valid,
-                        validity == "valid",
-                        f"{fixture} / {validity} / {case}",
-                    )
-
-    def test_claim_validator(self):
-        claim = self.base_claim()
-        cv = ClaimValidator(claim)
-        logger.debug("🚀 claim errors={}".format(cv.errors_as_dict()))
-        self.assertTrue(cv.valid)
-
-        invalid_claim = {"birthdate": "1234", "email": "foo"}
-        cv = ClaimValidator(invalid_claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertEqual(len(cv.errors), 27, error_dict)
-        self.assertIn("'1234' is not a 'date'", error_dict)
-        self.assertIn("'foo' is not a 'email'", error_dict)
-        self.assertIn("'claimant_name' is a required property", error_dict)
-
-        invalid_ssn = {"ssn": "1234"}
-        cv = ClaimValidator(invalid_ssn)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertIn(
-            "'1234' does not match",
-            list(filter(lambda e: "does not match" in e, error_dict.keys()))[0],
-        )
-
-        claim = self.base_claim() | {"random_field": "value"}
-        cv = ClaimValidator(claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertIn(
-            "Additional properties are not allowed ('random_field' was unexpected)",
-            error_dict,
-        )
-
-    def test_swa_required_fields(self):
-        claim = self.base_claim() | {
-            "worked_in_other_states": ["CA", "WV"],
-        }
-        cv = ClaimValidator(claim)
-        self.assertTrue(cv.valid)
-
-        claim = self.base_claim() | {
-            "worked_in_other_states": ["CA", "WV", "XX"],
-        }
-        del claim["claimant_name"]
-        cv = ClaimValidator(claim)
-        error_dict = cv.errors_as_dict()
-        self.assertFalse(cv.valid)
-        self.assertIn("'claimant_name' is a required property", error_dict)
-        self.assertIn(
-            "'XX' is not one of",
-            list(filter(lambda e: "XX" in e, error_dict.keys()))[0],
-        )
-
-        claim = self.base_claim() | {
-            "work_authorization": {
-                "authorization_type": "permanent_resident",
-                "alien_registration_number": "111-111-111",
-                "authorized_to_work": True,
-            }
-        }
-        cv = ClaimValidator(claim)
-        logger.debug("errors={}".format(cv.errors_as_dict()))
-        self.assertTrue(cv.valid)
-
-        claim = self.base_claim() | {
-            "work_authorization": {
-                "authorization_type": "US_citizen_or_national",
-                "alien_registration_number": "111-111-111",
-                "authorized_to_work": True,
-            }
-        }
-        # schema is valid but non-sensical
-        cv = ClaimValidator(claim)
-        logger.debug("errors={}".format(cv.errors_as_dict()))
-        self.assertTrue(cv.valid)
-
-        claim = self.base_claim() | {
-            "work_authorization": {
-                "authorization_type": "US_citizen_or_national",
-                "authorized_to_work": False,
-            }
-        }
-        cv = ClaimValidator(claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        logger.debug("errors={}".format(error_dict))
-        self.assertIn(
-            "'not_authorized_to_work_explanation' is a required property",
-            list(error_dict.keys()),
-        )
-
-        claim = self.base_claim() | {
-            "work_authorization": {
-                "authorization_type": "US_citizen_or_national",
-                "authorized_to_work": False,
-                "not_authorized_to_work_explanation": "something is wrong",
-            }
-        }
-        cv = ClaimValidator(claim)
-        self.assertTrue(cv.valid)
-
-        # union membership
-        union_claim = self.base_claim() | {"union": {"is_union_member": False}}
-        cv = ClaimValidator(union_claim)
-        error_dict = cv.errors_as_dict()
-        logger.debug("🚀 errors={}".format(error_dict))
-        self.assertTrue(cv.valid)
-        union_claim = self.base_claim() | {"union": {"is_union_member": True}}
-        cv = ClaimValidator(union_claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        logger.debug("🚀 errors={}".format(error_dict))
-        self.assertIn(
-            "'union_name' is a required property",
-            list(error_dict.keys()),
-        )
-        union_claim = self.base_claim() | {
-            "union": {
-                "is_union_member": True,
-                "union_name": "foo",
-                "union_local_number": "1234",
-                "required_to_seek_work_through_hiring_hall": False,
-            }
-        }
-        cv = ClaimValidator(union_claim)
-        self.assertTrue(cv.valid)
-
-    def test_completed_claim_validator(self):
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        cv = ClaimValidator(claim)
-        logger.debug("🚀 LOCAL_")
-        logger.debug(cv.errors_as_dict())
-        self.assertTrue(cv.valid)
-
-        invalid_claim = {"birthdate": "1234"}
-        cv = ClaimValidator(invalid_claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertEqual(len(cv.errors), 27, error_dict)
-        logger.debug("errors: {}".format(error_dict))
-        self.assertIn("'1234' is not a 'date'", error_dict)
-        self.assertIn("'ssn' is a required property", error_dict)
-        self.assertIn("'email' is a required property", error_dict)
-        self.assertIn("'residence_address' is a required property", error_dict)
-        self.assertIn("'mailing_address' is a required property", error_dict)
-        self.assertIn("'claimant_name' is a required property", error_dict)
-        self.assertIn("'payment' is a required property", error_dict)
-
-    def test_employer_conditionals(self):
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        del claim["employers"][0]["last_work_date"]
-        cv = ClaimValidator(claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertIn("'last_work_date' is a required property", error_dict)
-
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        claim["employers"][0]["separation_reason"] = "still_employed"
-        del claim["employers"][0]["last_work_date"]
-        cv = ClaimValidator(claim)
-        self.assertTrue(cv.valid)
-
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        del claim["employers"][0]["separation_option"]
-        cv = ClaimValidator(claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertIn("'separation_option' is a required property", error_dict)
-
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        claim["employers"][0]["separation_reason"] = "retired"
-        del claim["employers"][0]["separation_option"]
-        cv = ClaimValidator(claim)
-        self.assertTrue(cv.valid)
-
-    def test_local_validation_rules(self):
-        # first work date later than last work date
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        claim["employers"][0]["first_work_date"] = "2022-02-01"
-        claim["employers"][0]["last_work_date"] = "2022-01-01"
-        cv = ClaimValidator(claim)
-        self.assertFalse(cv.valid)
-        error_dict = cv.errors_as_dict()
-        self.assertIn("first_work_date is later than last_work_date", error_dict)
-
-    def test_nested_conditional_validation(self):
-        claim = self.base_claim() | {
-            "validated_at": timezone.now().isoformat(),
-        }
-        # Delete attribute required by nested conditional
-        del claim["disability"]["contacted_last_employer_after_recovery"]
-        cv = ClaimValidator(claim)
-        logger.debug(cv.errors_as_dict())
-        self.assertFalse(cv.valid)
-
-        # Delete attribute requiring previously-deleted conditional
-        del claim["disability"]["recovery_date"]
-        cv = ClaimValidator(claim)
-        logger.debug(cv.errors_as_dict())
-        self.assertTrue(cv.valid)
-
-        del claim["payment"]["account_type"]
-        cv = ClaimValidator(claim)
-        logger.debug(cv.errors_as_dict())
-        self.assertFalse(cv.valid)
-
-
-class WhoAmITestCase(TestCase):
-    def test_whoami_address(self):
-        attrs = WHOAMI_IAL2 | {"address": {"address1": "123 Any St", "state": "XX"}}
-        whoami = from_dict(data_class=WhoAmI, data=attrs)
-        self.assertEqual(whoami.address.state, "XX")
-
-    def test_whoami_optional_attributes(self):
-        whoami = from_dict(
-            data_class=WhoAmI, data={"email": "foo@example.com", "claimant_id": None}
-        )
-        self.assertEqual(whoami.claimant_id, None)
-
-    def test_whoami_as_identity(self):
-        whoami = from_dict(
-            data_class=WhoAmI,
-            data=(
-                WHOAMI_IAL2
-                | {
-                    "swa": TEST_SWA,
-                    "verified_at": "1234567890",
-                }
-            ),
-        )
-        self.assertEqual(
-            whoami.as_identity()["verified_at"], "2009-02-13T23:31:30+00:00"
-        )
-
-
-class IdentityClaimMakerTestCase(TestCase):
-    def setUp(self):
-        super().setUp()
-        # Empty the test outbox
-        mail.outbox = []
-        swa, private_key_jwk = create_swa(
-            is_active=True,
-            code=TEST_SWA["code"],
-            name=TEST_SWA["name"],
-            claimant_url=TEST_SWA["claimant_url"],
-            featureset=SWA.FeatureSetOptions.IDENTITY_ONLY,
-        )
-        self.swa = swa
-        self.swa_private_key = private_key_jwk
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_s3_bucket()
-        create_s3_bucket(is_archive=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        delete_s3_bucket()
-        delete_s3_bucket(is_archive=True)
-
-    def test_identity_claim(self):
-        idp = create_idp()
-        claimant = create_claimant(idp)
-        claim = Claim(swa_xid="abc-123", swa=self.swa, claimant=claimant)
-        claim.save()
-        whoami = WhoAmI.from_dict(WHOAMI_IAL2 | {"swa": self.swa.for_whoami()})
-        claim_maker = IdentityClaimMaker(claim, whoami)
-        self.assertTrue(claim_maker.create())
-
-        # fetch the encrypted claim from the S3 bucket directly and decrypt it.
-        self.assertTrue(claim.is_completed())
-        claim_id = str(claim.uuid)
-        cr = ClaimReader(claim)
-        packaged_claim_str = cr.read()
-        acd = AsymmetricClaimDecryptor(packaged_claim_str, self.swa_private_key)
-        decrypted_claim = acd.decrypt()
-        self.assertEqual(acd.packaged_claim["claim_id"], claim_id)
-        self.assertEqual(decrypted_claim["id"], claim_id)
-        self.assertEqual(decrypted_claim["claimant_id"], claimant.idp_user_xid)
-        self.assertEqual(
-            decrypted_claim["$schema"],
-            "https://unemployment.dol.gov/schemas/identity-v1.0.json",
-        )

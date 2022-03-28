@@ -5,6 +5,7 @@ from .claim_storage import BUCKET_TYPE_ARCHIVE, ClaimBucket, ClaimStore
 import secrets
 import time
 import base64
+from django.test import TestCase
 
 
 def generate_keypair():
@@ -50,3 +51,17 @@ def generate_auth_token(private_key, swa_code):
 
 def generate_symmetric_encryption_key():
     return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("utf-8")
+
+
+class BucketableTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_s3_bucket()
+        create_s3_bucket(is_archive=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        delete_s3_bucket()
+        delete_s3_bucket(is_archive=True)

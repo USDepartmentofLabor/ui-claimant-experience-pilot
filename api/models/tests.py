@@ -29,6 +29,7 @@ from core.test_utils import (
     create_s3_bucket,
     delete_s3_bucket,
 )
+from core.test_utils import BucketableTestCase
 from api.test_utils import build_claim_updated_by_event
 
 logger = logging.getLogger(__name__)
@@ -146,9 +147,141 @@ class ApiModelsManagerTestCase(TestCase):
         self.assertEqual(claims.count(), 1)
         self.assertEqual(str(claims[0].uuid), expired_claim_uuid)
 
+        # calling .delete_artifacts() should do nothing because no artifacts exist
+        self.assertEqual(Claim.expired_partial_claims.delete_artifacts(), 0)
+
+
+class ExpiredIdentityClaimManagerTestCase(BucketableTestCase):
+    def test_expired_identity_claim_manager(self):
+        from api.identity_claim_maker import IdentityClaimMaker
+        from core.test_utils import generate_keypair
+        from core.exceptions import ClaimStorageError
+
+        swa = SWA.active.get(code="AR")
+        _, public_key_jwk = generate_keypair()
+        swa.public_key = public_key_jwk.export_to_pem().decode("utf-8")
+        swa.public_key_fingerprint = public_key_jwk.thumbprint()
+        swa.save()
+
+        idp = create_idp()
+        expired_claim_uuid = "0a5cf608-0c72-4d37-8695-85497ad53d34"
+        expired_claim_uuid_2 = "1a5cf608-0c72-4d37-8695-85497ad53d3a"
+        unexpired_claim_uuid = "b2edb136-d166-4e28-8e83-b0ea48eef7e0"
+        claim_lifespan = settings.EXPIRE_SWA_XID_CLAIMS_AFTER[swa.code]
+        test_data_cases = [
+            {
+                "idp_user_xid": 1,
+                "uuid": expired_claim_uuid,
+                "days_ago_created": claim_lifespan + 1,
+                "swa_xid": "20000203-123456-1234567-123456789",
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                    {
+                        "category": Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                        "description": "2000-02-03T12:34:56+00:00",
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                ],
+            },
+            {
+                "idp_user_xid": 3,
+                "uuid": expired_claim_uuid_2,
+                "days_ago_created": claim_lifespan + 1,
+                "swa_xid": "20000204-123456-1234567-123456789",
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                    {
+                        "category": Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                        "description": "2000-02-04T12:34:56+00:00",
+                        "days_ago_happened": claim_lifespan + 1,
+                    },
+                ],
+            },
+            {
+                "idp_user_xid": 2,
+                "uuid": unexpired_claim_uuid,
+                "days_ago_created": claim_lifespan + 3,
+                "swa_xid": "20010203-123456-1234567-123456789",
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                    {
+                        "category": Claim.EventCategories.INITIATED_WITH_SWA_XID,
+                        "description": "2001-02-03T12:34:56+00:00",
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                ],
+            },
+            {
+                "idp_user_xid": 4,
+                "uuid": "4912139b-71bc-4c69-ac6e-5564f2f1091c",
+                "days_ago_created": claim_lifespan - 1,
+                "events": [
+                    {
+                        "category": Claim.EventCategories.STORED,
+                        "days_ago_happened": claim_lifespan - 1,
+                    },
+                ],
+            },
+        ]
+        for case in test_data_cases:
+            build_claim_updated_by_event(
+                idp=idp,
+                swa=swa,
+                idp_user_xid=case["idp_user_xid"],
+                uuid=case["uuid"],
+                events=case["events"],
+                swa_xid=case.get("swa_xid", None),
+            )
+
+        # since expiration is SWA-dependent, we expect the query to return all those with swa_xid
+        claims = Claim.expired_identity_claims.all()
+        claim_ids = list(map(lambda c: str(c.uuid), claims))
+        self.assertEqual(claims.count(), 3)
+        self.assertCountEqual(
+            claim_ids, [expired_claim_uuid, expired_claim_uuid_2, unexpired_claim_uuid]
+        )
+        # however, the complete_all method should operate on only one.
+        # must create a partial artifact for it to operate on. Contents are irrelevant (we test contents elsewhere).
+        claim = Claim.objects.get(uuid=expired_claim_uuid)
+        maker = IdentityClaimMaker(claim, whoami=None)
+        maker.write_partial({"id": expired_claim_uuid, "foo": "bar"})
+
+        # run it once with mocked writer to simulate failure
+        with patch("api.models.claim.ClaimWriter") as mock_writer:
+            mock_writer.return_value.write.return_value = False
+            with self.assertRaises(ClaimStorageError) as context:
+                Claim.expired_identity_claims.complete_all()
+            self.assertIn("Failed to write Identity claim", str(context.exception))
+
+        # run it again for real
+        with self.assertLogs(level="DEBUG") as cm:
+            self.assertEqual(Claim.expired_identity_claims.complete_all(), 1)
+            self.assertIn(
+                f"DEBUG:api.models.claim:Skipping claim {unexpired_claim_uuid} -- not swa_xid_expired",
+                cm.output,
+            )
+            self.assertIn(
+                f"ERROR:api.models.claim:Missing partial artifact for claim {expired_claim_uuid_2}",
+                cm.output,
+            )
+
 
 class ApiModelsTestCase(TransactionTestCase):
     def test_swa(self):
+        keyless_swa = SWA(code="NO", name="NO", claimant_url="no")
+        keyless_swa.save()
+        with self.assertRaises(ValueError) as context:
+            keyless_swa.public_key_as_jwk()
+
         ks_swa, private_key_jwk = create_swa()
 
         self.assertTrue(ks_swa.created_at)
@@ -243,6 +376,13 @@ class ApiModelsTestCase(TransactionTestCase):
             )
         idp = create_idp()
         claimant = create_claimant(idp)
+
+        # simple case: no swa_xid returns false
+        claim = Claim(swa=swa, claimant=claimant)
+        claim.save()
+        self.assertFalse(claim.is_swa_xid_expired())
+        self.assertFalse(claimant.pending_identity_only_claim())
+
         # use an "old" date we know will show as expired
         swa_xid = "20000101-123456-1234567-123456789"
         utc_swa_dt = "2000-01-01T18:34:56+00:00"
@@ -375,20 +515,31 @@ class ApiModelsTestCase(TransactionTestCase):
         self.assertEqual(
             cancelled_claim.status_for_claimant(), CLAIMANT_STATUS_CANCELLED
         )
+        self.assertTrue(cancelled_claim.is_resolved())
+        self.assertTrue(cancelled_claim.is_deleted())
+        self.assertTrue(cancelled_claim.deleted_at())
+        self.assertFalse(cancelled_claim.resolution_description())
 
         resolved_claim = Claim(swa=swa, claimant=claimant)
         resolved_claim.save()
         resolved_claim.events.create(category=Claim.EventCategories.COMPLETED)
         resolved_claim.events.create(category=Claim.EventCategories.FETCHED)
         resolved_claim.events.create(category=Claim.EventCategories.DELETED)
-        resolved_claim.events.create(category=Claim.EventCategories.RESOLVED)
+        resolved_claim.events.create(
+            category=Claim.EventCategories.RESOLVED, description="good stuff"
+        )
         self.assertEqual(resolved_claim.status_for_claimant(), CLAIMANT_STATUS_RESOLVED)
+        self.assertTrue(resolved_claim.is_resolved())
+        self.assertTrue(resolved_claim.resolved_at())
+        self.assertEqual(resolved_claim.resolution_description(), "good stuff")
 
         active_claim = Claim(swa=swa, claimant=claimant)
         active_claim.save()
         active_claim.events.create(category=Claim.EventCategories.COMPLETED)
         active_claim.events.create(category=Claim.EventCategories.FETCHED)
         self.assertEqual(active_claim.status_for_claimant(), CLAIMANT_STATUS_ACTIVE)
+        self.assertTrue(active_claim.is_fetched())
+        self.assertTrue(active_claim.fetched_at())
 
         processing_claim = Claim(swa=swa, claimant=claimant)
         processing_claim.save()

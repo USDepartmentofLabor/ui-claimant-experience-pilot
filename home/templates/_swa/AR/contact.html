@@ -3,13 +3,6 @@
 {% load i18n %}
 <div>
   <h1>{% translate "Contact us" %}</h1>
-  <section>
-    {% translate "Here's how to reach us if you have questions about unemployment benefits or need help with verifying your identity:" %}
-  </section>
-  {% include "_swa/AR/contact_details.html" %}
-  <section>
-    <h2 class="margin-bottom-0 font-sans-sm">For help with Login.gov:</h2>
-    <a href="https://www.login.gov/contact/" class="usa-link usa-link--external" target="_blank" rel="noopener noreferrer">https://www.login.gov/contact/</a>
-  </section>
+  {% include "_swa/AR/login_help.html" %}
 </div>
 {% endblock %}

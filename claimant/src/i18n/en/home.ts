@@ -18,6 +18,7 @@ const home = {
     notZipCode: "This is not a valid zip code",
   },
   pagination: {
+    nextStep: "Next:",
     next: "Next",
     previous: "Back",
     save_and_exit: "Save and exit",

@@ -1,8 +1,10 @@
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormikContext } from "formik";
 import { ReviewElement, ReviewSection } from "./ReviewSection";
 import { OtherPayInformationPage } from "../OtherPayInformation/OtherPayInformation";
 import claimForm from "../../../i18n/en/claimForm";
+import { convertCentsToDollars } from "../../../utils/currencyFormat";
 
 type PayTypeOption = {
   value: string;
@@ -29,7 +31,7 @@ export const OtherPayReview = () => {
       )}
       {values.other_pay &&
         values.other_pay.map((otherPay, idx) => (
-          <>
+          <Fragment key={`${otherPay.pay_type}-${idx}`}>
             <ReviewElement
               key={`other-pay-total-${idx}`}
               title={t("total.label", {
@@ -39,7 +41,10 @@ export const OtherPayReview = () => {
                   }.description`
                 ),
               })}
-              text={`$${(otherPay.total || "0.00")
+              text={`$${(otherPay.total
+                ? convertCentsToDollars(otherPay.total)
+                : "0.00"
+              )
                 .toString()
                 .replace(/^\$/, "")}`}
             />
@@ -69,7 +74,7 @@ export const OtherPayReview = () => {
                 text={otherPay.note}
               />
             )}
-          </>
+          </Fragment>
         ))}
     </ReviewSection>
   );

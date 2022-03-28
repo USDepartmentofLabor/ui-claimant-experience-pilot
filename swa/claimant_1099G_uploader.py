@@ -61,7 +61,7 @@ class Claimant1099GUploader(object):
             return False
 
     def form_uuid(self):
-        if not self.claimant_file:
+        if not hasattr(self, "claimant_file"):
             return False
         return str(self.claimant_file.uuid)
 

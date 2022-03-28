@@ -16,8 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Prep env
-        run: |
-          cp core/ld-config-test.json core/ld-config.json
+        run: make dev-ld-config
       - name: Start CI docker compose
         run: make ci-start
         env:

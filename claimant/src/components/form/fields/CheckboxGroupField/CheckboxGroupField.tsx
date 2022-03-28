@@ -6,13 +6,12 @@ import CheckboxField from "../CheckboxField/CheckboxField";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
+type OptionOmitProps = "id" | "name" | "value" | "label";
+
 type CheckboxOption = {
   value: string;
   label: ReactNode;
-  checkboxProps?: Omit<
-    ComponentProps<typeof CheckboxField>,
-    "id" | "name" | "value" | "label"
-  >;
+  checkboxProps?: Omit<ComponentProps<typeof CheckboxField>, OptionOmitProps>;
 };
 
 interface ICheckBoxGroupFieldProps {

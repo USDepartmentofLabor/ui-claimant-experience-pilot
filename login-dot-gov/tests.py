@@ -369,7 +369,7 @@ class LoginDotGovTestCase(TestCase):
     # this is the "escape" url from login.gov where users can opt-out of proofing
     def test_ial2required(self):
         response = self.client.get("/logindotgov/ial2required")
-        self.assertContains(response, "Log in failed", status_code=403)
+        self.assertContains(response, "Log in unsuccessful", status_code=403)
 
         session = self.client.session
         session["authenticated"] = True
@@ -379,7 +379,7 @@ class LoginDotGovTestCase(TestCase):
         response = self.client.get("/logindotgov/ial2required")
         self.assertRedirects(
             response,
-            "/identity/?ial2error=true&idp=logindotgov",
+            "/contact/XX/?ial2error=true&idp=logindotgov",
             status_code=302,
             fetch_redirect_response=False,
         )
@@ -520,7 +520,7 @@ class LoginDotGovTestCase(TestCase):
 
         # swa_xid param required for identity only swa
         response = self.client.get(f"/logindotgov/?ial=1&swa={swa.code}")
-        self.assertContains(response, "Application not found", status_code=400)
+        self.assertContains(response, "Web address incomplete", status_code=400)
 
         swa_xid = str(uuid.uuid4())
         response = self.client.get(
@@ -565,3 +565,19 @@ class LoginDotGovTestCase(TestCase):
         self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertTrue(claim.is_initiated_with_swa_xid())
         self.assertTrue(claim.is_completed())
+
+    def test_profile_redirect(self):
+        response = self.client.get("/logindotgov/profile")
+        self.assertRedirects(
+            response,
+            "https://mockhost.login.gov/account",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+
+    def test_malformed_swa_xid(self):
+        swa = SWA.active.get(code="AR")
+        response = self.client.get(
+            f"/logindotgov/?ial=1&swa={swa.code}&swa_xid=badtoken"
+        )
+        self.assertContains(response, "Web address invalid", status_code=400)

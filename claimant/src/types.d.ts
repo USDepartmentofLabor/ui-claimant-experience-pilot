@@ -286,7 +286,7 @@ type OtherPayType = Partial<{
 
 type OtherPayDetailType = {
   pay_type: OtherPayOptionType;
-  total?: number | string;
+  total?: string;
   date_received?: string;
   note?: string;
 };

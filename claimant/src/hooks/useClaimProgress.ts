@@ -10,8 +10,9 @@ export const useClaimProgress = (
   const [continuePath, setContinuePath] = useState(Routes.CLAIM_FORM_HOME);
 
   useEffect(() => {
-    if (!partialClaimResponse) return;
-    if (!partialClaimResponse.claim) return;
+    if (!partialClaimResponse || !partialClaimResponse.claim) {
+      return;
+    }
 
     const claim = partialClaimResponse.claim;
 
