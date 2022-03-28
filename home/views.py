@@ -127,6 +127,7 @@ def idp(request, swa_code=None):
             "swas": active_swas_ordered_by_name(),
             "redirect_to": request.GET.get("redirect_to", ""),
             "show_navigation": False,
+            "require_prequal_start_page": settings.REQUIRE_PREQUAL_START_PAGE,
         },
     )
 
@@ -298,6 +299,9 @@ def get_states():
 
 
 def start(request):
+    if not settings.REQUIRE_PREQUAL_START_PAGE:
+        return handle_404(request, None)
+
     states = get_states()
     states_without_swa = ["AS", "FM", "GU", "MH", "MP", "PW"]
     for state in states_without_swa:

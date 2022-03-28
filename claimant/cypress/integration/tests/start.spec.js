@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
-// skipped for MVP
-xcontext("Let's get started page", { scrollBehavior: "center" }, () => {
+context("Let's get started page", { scrollBehavior: "center" }, () => {
   beforeEach(() => {
     cy.visit("/start/");
   });
@@ -54,6 +53,19 @@ xcontext("Let's get started page", { scrollBehavior: "center" }, () => {
     // Redirect part
     cy.visit("/start/");
     cy.url().should("contain", "/idp/");
+  });
+
+  it("redirects to prequal when trying to visit IdP first", () => {
+    cy.visit("/idp/");
+    cy.url().should("contain", "/start/");
+  });
+
+  it("ignores expired prequal cookie", () => {
+    cy.setCookie("prequal_complete", "true", {
+      expiry: new Date().getTime() / 1000 - 10,
+    });
+    cy.visit("/idp/");
+    cy.url().should("contain", "/start/");
   });
 });
 

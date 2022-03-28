@@ -97,10 +97,15 @@ class HomeViewsTestCase(TestCase):
             fetch_redirect_response=False,
         )
 
-    def test_start_page(self):
-        self.skipTest("skipped for MVP")  # TODO
+    @override_settings(REQUIRE_PREQUAL_START_PAGE=True)
+    def test_start_page_required(self):
         response = self.client.get("/start/")
         self.assertContains(response, "Let's get started", status_code=200)
+
+    @override_settings(REQUIRE_PREQUAL_START_PAGE=False)
+    def test_start_page_not_required(self):
+        response = self.client.get("/start/")
+        self.assertContains(response, "Page not found", status_code=404)
 
     def test_swa_redirect_page(self):
         # with active SWA we get a link to the SWA
