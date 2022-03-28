@@ -321,20 +321,22 @@ def identity(request):
         return handle_404(request, None)
 
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
-    IAL = whoami.IAL
     claim = ClaimFinder(whoami).find()
     if not claim:
         logger.error("Missing expected claim for identity-only flow")
         return handle_404(request, None)
 
-    template_name = f"identity/IAL{IAL}.html"
-    if claim.is_swa_xid_expired():
+    if claim.is_completed():
+        template_name = "identity/IAL2.html"
+    elif claim.is_swa_xid_expired():
         logger.debug(
             "claim has expired swa_xid: {} events: {}".format(
                 claim.__dict__, claim.public_events()
             )
         )
         template_name = "identity/expired.html"
+    else:
+        template_name = "identity/IAL1.html"
 
     try:
         view_args = {

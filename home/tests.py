@@ -509,6 +509,7 @@ class IdentityTestCase(BucketableTestCase):
             is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
         )
         whoami["swa"] = swa.for_whoami()
+        swa_xid = create_swa_xid(swa)
 
         response = self.client.post(
             "/login/",
@@ -516,7 +517,7 @@ class IdentityTestCase(BucketableTestCase):
                 "email": whoami["email"],
                 "IAL": "1",
                 "swa_code": swa.code,
-                "swa_xid": create_swa_xid(swa),
+                "swa_xid": swa_xid,
             },
         )
         # coerce payload into expected format
@@ -541,6 +542,22 @@ class IdentityTestCase(BucketableTestCase):
         self.assertEqual(partial_claim["email"], whoami["email"])
         self.assertEqual(partial_claim["identity_assurance_level"], 1)
         self.assertTrue(claim.completed_artifact_exists())
+
+        # logout, login again should immediately show success page
+        self.client.get("/logout/")
+        self.client.post(
+            "/login/",
+            {
+                "email": whoami["email"],
+                "IAL": "1",
+                "swa_code": swa.code,
+                "swa_xid": swa_xid,
+            },
+        )
+        response = self.client.get("/identity/")
+        self.assertContains(
+            response, "Identity verification submitted", status_code=200
+        )
 
     def test_swa_xid_expired(self):
         swa, _ = create_swa(
