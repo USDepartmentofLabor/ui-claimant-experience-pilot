@@ -53,6 +53,7 @@ export const TextAreaField = ({
         value={fieldProps.value || ""}
         {...textareaProps}
         inputRef={textareaRef}
+        error={showError}
       />
 
       {showError && <ErrorMessage>{metaProps.error}</ErrorMessage>}
