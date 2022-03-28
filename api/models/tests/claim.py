@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.test import TransactionTestCase, TestCase
-from django.db import IntegrityError
 from django.db.models import ProtectedError
 from django.conf import settings
-from api.models import SWA, IdentityProvider, Claimant, Claim
+from api.models import SWA, Claim
 from api.models.claim import (
     SUCCESS,
     FAILURE,
@@ -18,41 +16,26 @@ import datetime
 from datetime import timedelta
 from dateutil.tz import gettz
 from django.utils import timezone
-from api.test_utils import create_swa, create_idp, create_claimant
+from api.test_utils import (
+    create_swa,
+    create_idp,
+    create_claimant,
+    build_claim_updated_by_event,
+)
 import logging
 from jwcrypto.common import json_decode
 import boto3
 from botocore.stub import Stubber
 from core.claim_storage import ClaimWriter
 from unittest.mock import patch
-from core.test_utils import (
-    create_s3_bucket,
-    delete_s3_bucket,
-)
-from core.test_utils import BucketableTestCase
-from api.test_utils import build_claim_updated_by_event
+from core.test_utils import BucketableTestCase, generate_keypair
+from api.identity_claim_maker import IdentityClaimMaker
+from core.exceptions import ClaimStorageError
 
 logger = logging.getLogger(__name__)
 
 
-class ApiModelsManagerTestCase(TestCase):
-    def test_swa_manager(self):
-        ks_swa, _ = create_swa()
-        swas = SWA.active.all()
-        for swa in swas:
-            logger.debug("SWA: {} {}".format(swa.code, swa.get_status_display()))
-        # 2 default + filters out ks_swa because not active
-        self.assertEqual(len(swas), 2)
-
-        ks_swa.status = SWA.StatusOptions.ACTIVE
-        ks_swa.save()
-        another_swa = SWA(code="AA", name="Alpha", status=SWA.StatusOptions.ACTIVE)
-        another_swa.save()
-        swas = SWA.active.order_by("name").all()
-        self.assertEqual(
-            list(map(lambda swa: swa.code, swas)), ["AA", "AR", "KS", "NJ"]
-        )
-
+class ClaimTestCase(BucketableTestCase):
     def test_expired_claim_manager(self):
         claim_lifespan = settings.DELETE_PARTIAL_CLAIM_AFTER_DAYS
         swa, _ = create_swa()
@@ -150,13 +133,7 @@ class ApiModelsManagerTestCase(TestCase):
         # calling .delete_artifacts() should do nothing because no artifacts exist
         self.assertEqual(Claim.expired_partial_claims.delete_artifacts(), 0)
 
-
-class ExpiredIdentityClaimManagerTestCase(BucketableTestCase):
     def test_expired_identity_claim_manager(self):
-        from api.identity_claim_maker import IdentityClaimMaker
-        from core.test_utils import generate_keypair
-        from core.exceptions import ClaimStorageError
-
         swa = SWA.active.get(code="AR")
         _, public_key_jwk = generate_keypair()
         swa.public_key = public_key_jwk.export_to_pem().decode("utf-8")
@@ -274,50 +251,6 @@ class ExpiredIdentityClaimManagerTestCase(BucketableTestCase):
                 cm.output,
             )
 
-
-class ApiModelsTestCase(TransactionTestCase):
-    def test_swa(self):
-        keyless_swa = SWA(code="NO", name="NO", claimant_url="no")
-        keyless_swa.save()
-        with self.assertRaises(ValueError) as context:
-            keyless_swa.public_key_as_jwk()
-
-        ks_swa, private_key_jwk = create_swa()
-
-        self.assertTrue(ks_swa.created_at)
-        self.assertTrue(ks_swa.updated_at)
-        self.assertIsInstance(ks_swa.created_at, datetime.datetime)
-        self.assertIsInstance(ks_swa.updated_at, datetime.datetime)
-
-        # cannot create another KS row
-        with self.assertRaises(IntegrityError) as context:
-            SWA(code="KS", name="Duplicate KS").save()
-        self.assertIn("Duplicate entry", str(context.exception))
-
-        # public key round-trip works
-        self.assertEqual(
-            ks_swa.public_key_as_jwk().thumbprint(), ks_swa.public_key_fingerprint
-        )
-
-        # FK constraint works
-        foobar_idp = IdentityProvider(name="foobar")
-        foobar_idp.save()
-        ks_swa.idp = foobar_idp
-        ks_swa.save()
-        self.assertEqual(foobar_idp.id, ks_swa.idp_id)
-
-        foobar_idp.delete()
-        ks_swa.refresh_from_db()
-        self.assertEqual(ks_swa.idp, None)
-
-        # status enum works
-        self.assertEqual(ks_swa.get_status_display(), "Inactive")
-        self.assertEqual(ks_swa.status, SWA.StatusOptions.INACTIVE)
-        # NOTE there is no constraint with enum -- possible to set a value not in our options list
-        ks_swa.status = 2
-        ks_swa.save()
-        self.assertEqual(ks_swa.get_status_display(), 2)
-
     def test_swa_claim_queue(self):
         swa, _ = create_swa()
         idp = create_idp()
@@ -341,39 +274,9 @@ class ApiModelsTestCase(TransactionTestCase):
         claim2.events.create(category=Claim.EventCategories.DELETED)
         self.assertEqual(swa.claim_queue().count(), 0)
 
-    def test_claimant(self):
-        idp = create_idp()
-
-        claimant = create_claimant(idp)
-
-        # claimant will not be deleted if the idp is deleted
-        with self.assertRaises(ProtectedError):
-            idp.delete()
-
-        claimant_copy = Claimant.objects.get(id=claimant.id)
-        self.assertEqual(claimant_copy.idp, idp)
-
-    def test_claimant_IAL(self):
-        idp = create_idp()
-        claimant = create_claimant(idp)
-
-        self.assertFalse(claimant.bump_IAL_if_necessary("3"))
-        self.assertFalse(claimant.bump_IAL_if_necessary("1"))
-        self.assertTrue(
-            claimant.bump_IAL_if_necessary("2")
-        )  # only the first results in a change
-        self.assertFalse(claimant.bump_IAL_if_necessary("2"))
-
     def test_claim_initiate_with_swa_xid(self):
         # we use AR because we know we have a swa_xid format defined
-        try:
-            swa = SWA.active.get(code="AR")
-        except SWA.DoesNotExist:
-            swa, _ = create_swa(
-                code="AR",
-                is_active=True,
-                featureset=SWA.FeatureSetOptions.IDENTITY_ONLY,
-            )
+        swa = SWA.active.get(code="AR")
         idp = create_idp()
         claimant = create_claimant(idp)
 
@@ -552,61 +455,6 @@ class ApiModelsTestCase(TransactionTestCase):
         deleted_claim.save()
         deleted_claim.events.create(category=Claim.EventCategories.DELETED)
         self.assertEqual(deleted_claim.status_for_claimant(), CLAIMANT_STATUS_DELETED)
-
-    def test_events(self):
-        idp = create_idp()
-        claimant = create_claimant(idp)
-        ks_swa, _ = create_swa()
-        claim = Claim(swa=ks_swa, claimant=claimant)
-        claim.save()
-
-        event_time = timezone.now()
-        claim_event = claim.events.create(
-            category=Claim.EventCategories.STORED, happened_at=event_time
-        )
-        self.assertIsInstance(claim_event.happened_at, datetime.datetime)
-        self.assertEqual(
-            claim.events.filter(category=Claim.EventCategories.STORED).all()[0],
-            claim_event,
-        )
-        self.assertEqual(claim_event.get_category_display(), "Stored")
-        self.assertEqual(
-            claim_event.as_public_dict(),
-            {
-                "happened_at": str(event_time),
-                "category": "Stored",
-                "description": "",
-            },
-        )
-
-        yesterday = timezone.now() - timedelta(days=1)
-        claimant_event = claimant.events.create(
-            category=Claimant.EventCategories.LOGGED_IN, happened_at=yesterday
-        )
-        self.assertEqual(
-            claimant.events.filter(category=Claimant.EventCategories.LOGGED_IN).all()[
-                0
-            ],
-            claimant_event,
-        )
-        self.assertEqual(claimant_event.get_category_display(), "Logged In")
-        self.assertEqual(claimant_event.happened_at, yesterday)
-
-        # our enum is not enforced, so exercise the error case
-        unknown_event = claim.events.create(category=0)
-        self.assertEqual(unknown_event.get_category_display(), "Unknown")
-
-
-class ApiModelClaimArtifactsTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_s3_bucket()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        delete_s3_bucket()
 
     def test_claim_delete_artifacts(self):
         idp = create_idp()

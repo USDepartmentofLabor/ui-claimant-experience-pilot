@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
 from django.conf import settings
 from .claimant_key_rotator import ClaimantKeyRotator
 from .claim_packager import ClaimPackager, SchemaError
@@ -11,8 +10,7 @@ from core.claim_encryption import (
 from core.claim_storage import ClaimWriter
 from core.exceptions import ClaimStorageError
 from core.test_utils import (
-    create_s3_bucket,
-    delete_s3_bucket,
+    BucketableTestCase,
     generate_symmetric_encryption_key,
 )
 from api.test_utils import create_idp, create_swa
@@ -24,19 +22,7 @@ import boto3
 from botocore.stub import Stubber
 
 
-class BucketTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_s3_bucket()
-        create_s3_bucket(is_archive=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        delete_s3_bucket()
-        delete_s3_bucket(is_archive=True)
-
+class BucketTestCase(BucketableTestCase):
     def setUp(self):
         super().setUp()
         self.idp = create_idp()

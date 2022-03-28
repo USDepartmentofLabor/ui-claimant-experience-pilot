@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-from .models import IdentityProvider, SWA, Claim, Claimant
+from .models import IdentityProvider, SWA, Claim, Claimant, ClaimantFile
 from core.test_utils import generate_keypair
+from core.claim_encryption import SymmetricClaimEncryptor
+from core.claim_storage import ClaimWriter
+from core.exceptions import ClaimStorageError
 from datetime import timedelta
 from django.utils import timezone
 from api.whoami import WhoAmI
@@ -95,6 +98,30 @@ def create_claimant(idp, **kwargs):
     )
     claimant.save()
     return claimant
+
+
+def create_claimant_file(claimant, swa, key):
+    claimant_file = ClaimantFile(
+        claimant=claimant,
+        year="2022",
+        fileext="pdf",
+        filetype=ClaimantFile.FileTypeOptions.F1099G,
+        swa=swa,
+    )
+    claimant_file.save()
+
+    payload = {
+        "claimant_id": claimant.idp_user_xid,
+        "swa_code": swa.code,
+        "id": str(claimant_file.uuid),
+    }
+    sym_encryptor = SymmetricClaimEncryptor(payload, key)
+    packaged_file = sym_encryptor.packaged_claim()
+    packaged_payload = packaged_file.as_json()
+    cw = ClaimWriter(claim=claimant_file, payload=packaged_payload)
+    if not cw.write():  # pragma: no cover
+        raise ClaimStorageError("Failed to write claimant file")
+    return claimant_file
 
 
 def build_claim_updated_by_event(idp, swa, idp_user_xid, uuid, events, swa_xid=None):
