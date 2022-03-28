@@ -229,7 +229,8 @@ update-translations: ## Update the .po files (run manually inside the container)
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
 	rm -f requirements*.txt
-	apt-get purge -y --auto-remove gcc git libmariadb-dev
+	apt-get purge -y --auto-remove gcc git
+	apt-get remove -y linux-libc-dev
 	chown -R doluiapp:doluiapp /app
 	# Use /run/celery in these commands rather than /var/run/celery
 	# due to differences in how the docker engine and kaniko handle
