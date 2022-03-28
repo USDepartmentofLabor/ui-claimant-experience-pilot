@@ -12,8 +12,7 @@ urlpatterns = [
     path("idp/<swa_code>/", views.idp, name="idp"),
     path("test/", views.test, name="test"),
     path("logout/", views.logout, name="logout"),
-    # prequal page disabled for MVP launch.
-    # path("start/", views.start, name="start"),
+    path("start/", views.start, name="start"),
     path("identity/", views.identity, name="identity"),
 ]
 

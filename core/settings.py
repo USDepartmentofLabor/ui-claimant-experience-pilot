@@ -428,3 +428,7 @@ EXPIRE_SWA_XID_CLAIMS_AFTER = env.json("EXPIRE_SWA_XID_CLAIMS_AFTER", {"AR": 47}
 SWA_XID_TIMEZONES = env.json("SWA_XID_TIMEZONES", {"AR": "US/Central"})
 # override with JSON-encoded object of swa.code -> regex string
 SWA_XID_PATTERNS = env.json("SWA_XID_PATTERNS", {"AR": "^\\d{8}-\\d{6}-\\d{7}-\\d{9}$"})
+
+REQUIRE_PREQUAL_START_PAGE = (
+    os.environ.get("REQUIRE_PREQUAL_START_PAGE", "false").lower() == "true"
+)

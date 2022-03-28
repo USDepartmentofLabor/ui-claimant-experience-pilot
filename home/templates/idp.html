@@ -5,6 +5,17 @@
 <script>
   if (typeof USDOL === "undefined") { USDOL = {} }
   USDOL.SWAS = JSON.parse(document.getElementById("swa-featuresets").textContent);
+  {% if require_prequal_start_page %}
+  {% include "_has_completed_prequal.jssnip" %}
+  if (!hasCompletedPrequal()) {
+    {% if swa %}
+    const newPath = USDOL.SWAS.{{ swa }}.featureset === "Identity Only" ? "/start/{{ swa }}/" : "/start/";
+    {% else %}
+    const newPath = "/start/";
+    {% endif %}
+    window.location.replace(newPath);
+  }
+  {% endif %}
 </script>
 <div>
   <h1>{% translate "Log in" %}</h1>
