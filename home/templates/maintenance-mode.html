@@ -1,7 +1,9 @@
 {% extends "base.html" %} {% block content %}{% load i18n %}
 <div>
   <p>
-    {% translate maintenance_mode_message %}
+    {% blocktranslate with msg=maintenance_mode_message|safe%}
+    {{ msg }}
+    {% endblocktranslate %}
   </p>
 </div>
 {% endblock %}

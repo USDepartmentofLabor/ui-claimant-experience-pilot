@@ -369,14 +369,14 @@ def identity(request):
 
 
 def maintenance_mode(request):
+    default_msg = "Sorry, this system is currently unavailable. Please try again later."
+    msg = ld_client.variation(
+        "maintenance-mode-message", {"key": "anonymous-user"}, default_msg
+    )
+    # since LD might return an empty string, fallback to the default in both variation
+    # and setting context args.
     return render(
         request,
         "maintenance-mode.html",
-        {
-            "maintenance_mode_message": ld_client.variation(
-                "maintenance-mode-message",
-                {"key": "anonymous-user"},
-                "Sorry, this system is currently unavailable. Please try again later.",
-            )
-        },
+        {"maintenance_mode_message": msg or default_msg},
     )
