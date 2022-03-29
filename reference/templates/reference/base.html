@@ -54,11 +54,6 @@
       .usa-card {
         padding: 1.5rem 0;
       }
-      .usa-card__container {
-        border-width: 1px 0 0 0;
-        border-radius: 0;
-        border-color: #1b1b1b;
-      }
       .usa-header--basic .usa-navbar {
         width: auto;
         flex-shrink: 0;
@@ -309,10 +304,10 @@
                       {% endif %}
                     </li>
                     <li class="usa-sidenav__item">
-                      <a href="#" class="{%if active == 'open_source' %}usa-current{% endif %}">TBD</a>
+                      <a href="#" class="{%if active == 'open_source' %}usa-current{% endif %}">View Application Code</a>
                     </li>
                     <li class="usa-sidenav__item">
-                      <a href="javascript:void(0);">TBD</a>
+                      <a href="/reference/iterating/" class="{%if active == 'iterating' %}usa-current{% endif %}">Iterating Despite Tech Challenges</a>
                     </li>
                   </ul>
                 </li>
