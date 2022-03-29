@@ -131,7 +131,7 @@ type ClaimantAddressType = {
 
 type PersonalInformationType = ClaimantNamesType & ClaimantAddressType;
 
-type SexOptionType = "female" | "male";
+type SexOptionType = "female" | "male" | "x";
 
 type EthnicityOptionType = "hispanic" | "not_hispanic" | "opt_out";
 

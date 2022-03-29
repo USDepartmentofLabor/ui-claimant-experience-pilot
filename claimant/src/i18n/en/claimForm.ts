@@ -23,10 +23,11 @@ const claimForm = {
     },
   },
   sex: {
-    label: "What is your sex?",
+    label: "What is your gender?",
     options: {
       female: "Female",
       male: "Male",
+      x: "X",
     },
     required: "Sex is a required field",
   },

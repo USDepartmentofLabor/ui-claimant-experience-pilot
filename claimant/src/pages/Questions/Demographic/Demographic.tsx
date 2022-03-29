@@ -86,7 +86,6 @@ export const Demographic = () => {
               value: option.value,
             };
           })}
-          className="display-inline-block margin-right-7"
         />
       </Fieldset>
       <Fieldset legend={t("ethnicity.label")} className={formStyles.field}>
