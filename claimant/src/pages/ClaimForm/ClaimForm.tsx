@@ -22,6 +22,7 @@ import {
 import { pages } from "../PageDefinitions";
 import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
 import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
+import { ClaimFormSideNav } from "../../components/ClaimFormSideNav/ClaimFormSideNav";
 import { Routes } from "../../routes";
 import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
 
@@ -331,9 +332,9 @@ const ClaimFormPage = () => {
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
 
   return (
-    <div className="display-flex flex-column margin-top-5">
+    <div className="grid-row grid-gap">
       <StepIndicator
-        className="overflow-hidden"
+        className="overflow-hidden width-mobile-lg margin-x-auto"
         counters="none"
         headingLevel="h2"
         divProps={{
@@ -350,7 +351,11 @@ const ClaimFormPage = () => {
           />
         ))}
       </StepIndicator>
-      <main className="tablet:width-mobile-lg margin-x-auto" id="main-content">
+      <ClaimFormSideNav className="desktop:grid-col-3 margin-top-4" />
+      <main
+        className="maxw-tablet margin-x-auto desktop:margin-0 desktop:grid-col-6"
+        id="main-content"
+      >
         <RequestErrorBoundary>
           <ScrollToTop
             headingRef={pageHeadingRef}

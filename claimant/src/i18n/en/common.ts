@@ -4,6 +4,7 @@ const common = {
   opens_in_a_new_tab: "opens in a new tab",
   pageLoader: "Loading. . .",
   logout: "Log out",
+  login_gov: "Account",
   yes: "Yes",
   no: "No",
   none: "None provided",

@@ -10,6 +10,7 @@ $theme-show-notifications: false;
 @import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-color.scss";
 @import "node_modules/uswds/src/stylesheets/theme/_uswds-theme-utilities.scss";
 @import "node_modules/uswds/src/stylesheets/packages/required";
+@import "node_modules/uswds/src/stylesheets/packages/uswds-utilities";
 
 // App customizations and overrides
 
@@ -24,7 +25,7 @@ $theme-font-type-sans: "public-sans";
 $theme-style-body-element: true;
 
 /* SPACING */
-$theme-grid-container-max-width: "desktop-lg";
+$theme-grid-container-max-width: "desktop";
 
 /* COLOR */
 

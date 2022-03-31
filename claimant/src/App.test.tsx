@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
-import { useGetCompletedClaim } from "./queries/claim";
+import { useGetCompletedClaim, useGetPartialClaim } from "./queries/claim";
 import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
 
 const server = setupServer(
@@ -20,6 +20,14 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 jest.mock("./queries/claim");
+const mockedUseGetPartialClaim = useGetPartialClaim as jest.Mock;
+mockedUseGetPartialClaim.mockImplementation(() => ({
+  isLoading: false,
+  isError: false,
+  error: null,
+  isSuccess: true,
+  data: { status: "ok", claim: {} },
+}));
 const mockedUseGetCompletedClaim = useGetCompletedClaim as jest.Mock;
 mockedUseGetCompletedClaim.mockImplementation(() => ({
   data: {},
@@ -44,7 +52,7 @@ test("renders whoami link", () => {
       </BrowserRouter>
     </I18nextProvider>
   );
-  const linkElement = screen.getByText(/who am i/i);
+  const linkElement = screen.getByText(/Account/i);
   expect(linkElement).toBeInTheDocument();
 });
 

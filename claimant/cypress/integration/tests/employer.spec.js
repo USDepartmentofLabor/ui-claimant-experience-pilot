@@ -74,7 +74,7 @@ context(
       createEmployer1();
       cy.click_more_employers("no", "1");
       cy.click_next();
-      cy.contains("Your recent work history").should("be.visible");
+      cy.contains("Add another employer (optional)").should("be.visible");
       cy.contains("ACME 0").should("be.visible");
       cy.contains("ACME 1").should("be.visible");
       cy.click_next();
@@ -97,7 +97,7 @@ context(
 
       cy.login(email);
       cy.visit("/claimant/claim/employer-review/");
-      cy.contains("Your recent work history").should("be.visible");
+      cy.contains("Add another employer (optional)").should("be.visible");
       cy.contains("ACME 0").should("be.visible");
       cy.contains("ACME 1").should("be.visible");
       cy.contains("ACME 2").should("be.visible");
@@ -112,7 +112,7 @@ context(
       cy.click_more_employers("yes", "0");
       cy.click_next();
       cy.visit("/claimant/claim/employer-review/");
-      cy.contains("Your recent work history").should("be.visible");
+      cy.contains("Add another employer (optional)").should("be.visible");
       cy.contains("ACME 0").should("be.visible");
       cy.contains("errors").should("not.exist");
     });
@@ -123,7 +123,7 @@ context(
       createEmployer0();
       cy.click_more_employers("no", "0");
       cy.click_next();
-      cy.contains("Your recent work history").should("be.visible");
+      cy.contains("Add another employer (optional)").should("be.visible");
       cy.contains("ACME 0").should("be.visible");
       cy.get("a").contains("Add another employer (optional)").click();
       cy.url().should("contain", "/claimant/claim/employer/1");

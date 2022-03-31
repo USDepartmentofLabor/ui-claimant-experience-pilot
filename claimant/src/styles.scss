@@ -39,7 +39,7 @@
 // @import 'packages/usa-process-list';
 // @import 'packages/usa-search';
 // @import "node_modules/uswds/src/stylesheets/packages/usa-section";
-// @import 'packages/usa-sidenav';
+@import "node_modules/uswds/src/stylesheets/packages/usa-sidenav";
 @import "node_modules/uswds/src/stylesheets/packages/usa-site-alert";
 // @import 'packages/usa-skipnav';
 @import "node_modules/uswds/src/stylesheets/packages/usa-step-indicator";
@@ -289,3 +289,31 @@ $pagination-hover-token: nth($pagination-link-tokens, 2);
 }
 
 // End of copied styles
+
+.nav-future {
+  cursor: not-allowed;
+  display: block;
+  @extend .line-height-sans-3, .text-base-light;
+}
+.usa-sidenav .nav-future {
+  padding: units(1) units(2);
+  padding-left: units(2);
+}
+.usa-step-indicator__segment-label {
+  display: none;
+}
+@media all and (max-width: units("desktop")) {
+  #appMenu .nav-future {
+    padding: units(1) units(2);
+    padding-left: units(4);
+    line-height: inherit;
+  }
+  .usa-sidenav {
+    display: none;
+  }
+}
+@media all and (min-width: units("desktop")) {
+  .usa-step-indicator {
+    display: none;
+  }
+}

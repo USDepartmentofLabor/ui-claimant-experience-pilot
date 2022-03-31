@@ -2,11 +2,10 @@ import { EmployerProfileReview } from "../../../components/form/EmployerProfile/
 import { pageSchema } from "../EmployerInformation/EmployerInformation";
 import { IPageDefinition, IPreviousSegment } from "../../PageDefinitions";
 import { NavLink } from "react-router-dom";
-import { Button, FormGroup, SummaryBox } from "@trussworks/react-uswds";
+import { Button, FormGroup } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
 import { useTranslation, Trans } from "react-i18next";
 import { ValidationError } from "yup";
-import reviewStyles from "./EmployerReview.module.scss";
 
 type SegmentError = number;
 
@@ -114,9 +113,13 @@ export const EmployerReview = () => {
 
   return (
     <>
-      <SummaryBox heading="" className={reviewStyles["no-header"]}>
-        <Trans t={formT} i18nKey="employers.reason_for_data_collection" />
-      </SummaryBox>
+      <div className="usa-summary-box margin-bottom-6">
+        <div className="usa-summary-box__body">
+          <div className="usa-summary-box__text">
+            <Trans t={formT} i18nKey="employers.reason_for_data_collection" />
+          </div>
+        </div>
+      </div>
       {values.employers?.map((employer, idx) => (
         <FormGroup error={!!segmentErrors[idx]} key={`employer-${idx}`}>
           {/* TODO replace this with the Employer Review component used in the review page */}
