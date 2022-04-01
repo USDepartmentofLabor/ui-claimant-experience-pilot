@@ -4,6 +4,166 @@
 
 {%block content %}
 <section class="usa-section">
-  TBD
+  <p>
+    All state workforce agencies (SWAs) are working in challenging environments that include legacy technology. States have limited resources and a workload that can be unpredictable. These factors can make large scale modernization difficult, expensive, and/or time-consuming. However, there are opportunities to make incremental and impactful changes.
+  </p>
+  <p>
+    The case study below demonstrates how the state of New Jersey has successfully iterated despite their current technical challenges.
+  </p>
+  <h2>Go mobile-friendly with existing technology</h2>
+  <p>
+    Mobile-friendly systems and websites are critical given that smart phones are the most accessible (and often only device) for many applicants. Currently, few states have mobile-friendly experiences today.
+  </p>
+  <p>
+    Using CSS media queries, you can make huge improvements to the mobile-friendliness of your site, often without the need to upgrade your software stack or infrastructure. Have a conversation with your engineering experts and share this code to see what’s possible in the short term.
+  </p>
+  <h3>Media query example</h3>
+  <p>
+    The following code snippet shows a couple sections of text aligned side-by-side on a page using the CSS flex display property. This works well for wide screens, but appears too narrow on mobile.
+  </p>
+  <p>
+  <pre><code>&lt;style&gt;
+  .container {
+    display: flex;
+    gap: 1rem;
+  }
+  .container div {
+    background-color: #eee;
+    padding: 1rem;
+    flex-grow: 1;
+  }
+&lt;/style&gt;
+&lt;div class="container"&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  </p>
+
+  <p>
+    To fix this, we can add a media query. The added code in the following snippet translates to "apply these styles if the viewport width is less than or equal to 480 pixels." In this case, we change the container from <code>display: flex</code> to <code>display: block</code> and add some margin around the container's children.
+  </p>
+
+  <p><pre><code>&lt;style&gt;
+  .container {
+    display: flex;
+    gap: 1rem;
+  }
+  .container div {
+    background-color: #eee;
+    padding: 1rem;
+    flex-grow: 1;
+  }
+  /* Added media query */
+  @media (max-width: 480px) {
+    .container {
+      display: block;
+    }
+    .container div {
+      margin: 1rem;
+    }
+  }
+&lt;/style&gt;
+&lt;div class="container"&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  </p>
+
+  <p>
+    With this change in hand, we can adjust our screen size and see that, when we cross the 480px breakpoint, our layout changes to be more mobile-friendly.
+  </p>
+  <div class="grid-row">
+    <div class="grid-col-12 tablet:grid-col-7 tablet:padding-right-4">
+      <h3>Desktop</h3>
+      <div style="gap: 1rem" class="display-flex">
+        <div class="padding-2 bg-base-lighter">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </div>
+        <div class="padding-2 bg-base-lighter">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </div>
+      </div>
+    </div>
+    <div class="grid-col-12 tablet:grid-col-5 tablet:padding-left-4">
+      <h3>Mobile</h3>
+      <div class="padding-2 bg-base-lighter margin-bottom-2">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </div>
+      <div class="padding-2 bg-base-lighter">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </div>
+    </div>
+  </div>
+
+  <h2>Building outside your existing systems</h2>
+  <p>
+    When you're not constrained by legacy systems and process, you can make headway fast and may uncover ideas that you otherwise wouldn't have.
+  </p>
+  <h3>Experiment from scratch</h3>
+  <p>
+    USDS and USDOL build a pilot application with New Jersey on a brand new site entirely outside of their existing website and application. New Jersey is not releasing this pilot app as their new system, but they are taking pieces of it to incorporate into their existing system for improvement. You can try building out a specific interaction on the side, you may eventually incorporate it into your overall system, or you may just learn new things that inform your system’s roadmap.
+  </p>
+  <p>
+    Access the code repository [insert link here] and explore your own implementation of the application.
+  </p>
+
+  <h3>Decouple content from code</h3>
+  <p>
+    Decoupling content updates from shipping code may help you deliver content changes faster to production. This can be especially helpful if pushing code changes to production is challenging or finicky or if you simply want to have different personnel/processes that manage content than write code.
+  </p>
+  <p>
+    If this sounds beneficial, consider looking into commercial software-as-a-service products under the <em>headless content management system (CMS)</em> category. Typically, these products give you an intuitive, no-code user interface in which you can manage the content that appears in your application. Your developers can use the tool's Application Programming Interface (API) to dynamically pull the content into the application. Your application will therefore always be up-to-date with the content management tool you use and you won't have to redeploy your application to make simple content updates.
+  </p>
+
+  <h3>Change the frontend without requiring changes on the backend</h3>
+  <p>
+    One challenge with making changes to form questions is that changing language or new response options would seem to require changes to the application's database. While true in some cases, it may be possible to perform updates on the user-facing front-end of the application without having to change the database. This can be done by mapping new field options to existing options.
+  </p>
+  <p>
+    [Something about how you can change the frontend form responses, and put together a mapping schema or whatever the right term is so that what’s submitted to the backend  conforms to the database requirements. This means you can make form questions more usable without having to worry about overhauling your technology to accept new submission thingies]
+  </p>
+
+  <h2>Make space to hear ideas</h2>
+  <p>
+    New Jersey has struggled with legacy technology which has stiffled innovation for years. The state found that breaking down silos between policy and technology experts created space for new ideas and opportunities.
+  </p>
+  <p>
+    When UI leadership in New Jersey came together with the IT team to brainstorm, they were able to unlock ideas for creative, near-term workarounds to make incremental plain language and mobile friendly changes to their online UI application. Now New Jersey is able to push forward some important adjustments to the experience today, while working on the longer term tech modernization goals in parallel. Here's what USDS, USDOL, and New Jersey did together to create the space for ideas to be heard and acted on. Try this out to see how your state or territory may be able to unlock the possibility of incremental improvement.
+  </p>
+  <h3>Get leaders and engineers in a room together</h3>
+  <p>
+    [Include point about how an empowered decision maker being present to confirm that mobile friendly, or plain language, or whatever priority is indeed very important.  And setting up an agenda like:]
+  </p>
+  <ul>
+    <li>What are leadership's goals? (These should not be solution goals like tech modernization, but claimant-experience goals like plain language application questions, or accessibility, or mobile friendliness, or )</li>
+    <li>What are the blockers? (Is it a prioritization problem, in which case the leadership folks present need to be clear that these things are important? Is it a technical problem? Is it something else?</li>
+    <li>What are some ideas for workarounds, or incremental changes that could be made now to get closer to the claimant experience goals?</li>
+  </ul>
+  <h3>How to run an effective meeting</h3>
+  <ul>
+    <li>Have a stated purpose, desired outcome, agenda, and format.</li>
+    <li>Make sure participants know what is expected of them, and what types of participation would be welcome. For example, if you want to hear innovative new ideas from junior staff members, make sure they know that they do not need approval from their chain of command to present an idea. </li>
+    <li>The format and paticipants should match the desired outcome. For example, if >lthe meeting needs to result in an important decision, the person with authority to make that decision must be present.</li>
+    <li>Stay true to the goals of the meeting; if the discussion goes off-track, offer to schedule follow-up discussions on those topics. </li>
+    <li>Next steps should be documented with owners and due dates clearly identified.</li>
+    <li>Be preprared to schedule follow-up sessions to investigate promising ideas and dive deeper into the risks and level of effort involved in top ideas. </li>
+    <li>Speak when you believe it will add value; avoid repeating what others have said.</li>
+  </ul>
 </section>
 {% endblock %}

@@ -96,6 +96,7 @@
         justify-content: center;
         align-items: center;
         border-radius: 50%;
+        flex-shrink: 0;
       }
       .arrow-description {
         margin-left: 75px;
@@ -320,27 +321,6 @@
           >
             <h1>{% block title %}{% endblock %}</h1>
             {% block content %}{% endblock %}
-            <section class="usa-section">
-              <h2>Provide feedback on this site:</h2>
-              <form method="get" action="#">
-                <label for="feedback">Has this information been helpful for you? Tell us why or why not.</label>
-                <textarea id="feedback" class="usa-textarea" maxlength="255" aria-describedby="hint"></textarea>
-                <span id="hint" class="text-base display-block margin-bottom-2">250 characters allowed</span>
-                <button type="submit" class="usa-button">Submit Feedback</button>
-              </form>
-            </section>
-            <section class="usa-section">
-              <h2>How to engage with USDOL:</h2>
-              <form method="get" action="#">
-                <label for="meet-with-us">
-                  Want to know how USDOL can help you implement these CX tactics? Meet with us so we can work
-                  together. Send us a message and we'll respond with more information.
-                </label>
-                <textarea id="meet-with-us" class="usa-textarea" maxlength="255" aria-describedby="hint"></textarea>
-                <span id="hint" class="text-base display-block margin-bottom-2">250 characters allowed</span>
-                <button type="submit" class="usa-button">Send Message</button>
-              </form>
-            </section>
           </main>
         </div>
       </div>
