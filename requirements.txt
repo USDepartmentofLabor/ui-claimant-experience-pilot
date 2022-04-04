@@ -3,7 +3,7 @@ boto3==1.21.32
 celery==5.2.5
 colorlog==6.6.0
 dacite==1.6.0
-Django==3.2.12
+Django==4.0.3
 django-csp==3.7
 django-environ==0.8.1
 git+https://github.com/pkarman/django-include-strip-tag@70ba69f#egg=django-include-strip-tag

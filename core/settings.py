@@ -72,9 +72,9 @@ REQUEST_ID_CONFIG = {
 ALLOWED_HOSTS = [
     "localhost",
     ".dol.gov",
-    ".unemployment.gov",
-    ".ui.gov",
 ]
+
+CSRF_TRUSTED_ORIGINS = ["https://*.dol.gov", "https://*.dol.gov:4430"]
 
 logging.basicConfig(
     level=logging.DEBUG if DEBUG else logging.INFO,
@@ -160,6 +160,7 @@ MIDDLEWARE = [
     "swa.middleware.auth.SWAAuth",
     "reference.middleware.visible.ReferenceVisibility",
     "core.middleware.maintenance_mode.MaintenanceMode",
+    "core.middleware.xss_header.XSSProtectionHeader",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -309,10 +310,6 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Note: In Django 4, SecurityMiddleware no longer sets the X-XSS-Protection header
-# https://docs.djangoproject.com/en/4.0/releases/4.0/#securitymiddleware-no-longer-sets-the-x-xss-protection-header
-SECURE_BROWSER_XSS_FILTER = True
 
 # Content-Security-Policy configuration
 CSP_DEFAULT_SRC = None
