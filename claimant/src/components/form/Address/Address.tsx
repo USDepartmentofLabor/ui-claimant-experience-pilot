@@ -1,11 +1,12 @@
-import { useTranslation } from "react-i18next";
+import { ReactNode } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
 import { FormGroup } from "@trussworks/react-uswds";
 import { StateAbbrev, StatesDropdown } from "../StatesDropdown/StatesDropdown";
 
 interface IAddressLabels {
   address1: string;
-  address2: string;
+  address2: ReactNode;
   city: string;
   state: string;
   zipcode: string;
@@ -21,7 +22,11 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
   const { t } = useTranslation("common");
   const defaultLabels: IAddressLabels = {
     address1: t("address.address1.label"),
-    address2: t("address.address2.label"),
+    address2: (
+      <Trans t={t} i18nKey="address.address2.label">
+        Address line 2 <i>(optional)</i>
+      </Trans>
+    ),
     city: t("address.city.label"),
     state: t("address.state.label"),
     zipcode: t("address.zipcode.label"),

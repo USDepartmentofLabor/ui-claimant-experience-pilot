@@ -21,7 +21,7 @@ const common = {
   end_date: "End date",
   address: {
     address1: { label: "Address line 1" },
-    address2: { label: "Address line 2 (optional)" },
+    address2: { label: "Address line 2 <i>(optional)</i>" },
     city: { label: "City" },
     state: { label: "State" },
     zipcode: { label: "ZIP Code" },
@@ -33,7 +33,7 @@ const common = {
       required: "Phone number is required",
     },
     type: {
-      label: "Type",
+      label: "Type of phone number <i>(optional)</i>",
     },
     sms: {
       label: "Send me text (SMS) notifications",

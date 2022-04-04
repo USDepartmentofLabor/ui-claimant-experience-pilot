@@ -211,7 +211,7 @@ const claimForm = {
     address: {
       heading: "Employer address",
       address1: { label: "Employer address line 1" },
-      address2: { label: "Employer address line 2 (optional)" },
+      address2: { label: "Employer address line 2 <i>(optional)</i>" },
       city: { label: "City" },
       state: { label: "State" },
       zipcode: { label: "ZIP Code" },
@@ -258,7 +258,7 @@ const claimForm = {
     work_site_address: {
       heading: "What physical address did you work at?",
       address1: { label: "Employer address line 1" },
-      address2: { label: "Employer address line 2 (optional)" },
+      address2: { label: "Employer address line 2 <i>(optional)</i>" },
       city: { label: "City" },
       state: { label: "State" },
       zipcode: { label: "ZIP Code" },
@@ -444,7 +444,7 @@ const claimForm = {
       required: "You must indicate whether you can work full time",
     },
     is_prevented_from_accepting_full_time_work: {
-      label: "Is anything preventing you from accepting work?",
+      label: "Is anything stopping you from working?",
       required:
         "You must indicate whether anything prevents you from accepting work",
     },
@@ -499,7 +499,7 @@ const claimForm = {
     legal_name: "What is your legal name?",
     alternate_name: "Additional name",
     first_name: { label: "First name", required: "First name is required" },
-    middle_name: { label: "Middle initial (optional)" },
+    middle_name: { label: "Middle initial <i>(optional)</i>" },
     last_name: { label: "Last name", required: "Last name is required" },
     claimant_has_alternate_names: {
       label:

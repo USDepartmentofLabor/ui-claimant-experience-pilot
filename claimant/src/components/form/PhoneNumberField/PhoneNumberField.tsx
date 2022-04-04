@@ -1,5 +1,5 @@
 import TextField from "../fields/TextField/TextField";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import DropdownField from "../fields/DropdownField/DropdownField";
 import CheckboxField from "../fields/CheckboxField/CheckboxField";
 
@@ -27,7 +27,11 @@ export const PhoneNumberField = ({
       <DropdownField
         id={`${id}.type`}
         name={`${name}.type`}
-        label={t("phone.type.label")}
+        label={
+          <Trans t={t} i18nKey="phone.type.label">
+            Type of phone number <i>(optional)</i>
+          </Trans>
+        }
         startEmpty
         options={[
           { value: "mobile", label: t("phone.mobile") },

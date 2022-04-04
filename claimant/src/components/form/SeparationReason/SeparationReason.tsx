@@ -99,7 +99,7 @@ const SeparationReasonLabel = (props: {
   });
   return (
     <>
-      <span>{t(`${props.reason}.label`)}</span>
+      <span className="text-bold">{t(`${props.reason}.label`)}</span>
       <div className="usa-checkbox__label-description">
         {t(`${props.reason}.description`)}
       </div>
