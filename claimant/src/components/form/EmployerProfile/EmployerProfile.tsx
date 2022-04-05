@@ -9,6 +9,7 @@ import Address from "../Address/Address";
 import { SeparationReason } from "../SeparationReason/SeparationReason";
 import { EMPLOYER_SKELETON } from "../../../utils/claim_form";
 import { formatUserInputDate } from "../../../utils/format";
+import { useClearFields } from "../../../hooks/useClearFields";
 
 interface IEmployerProfileProps {
   segment: string;
@@ -34,6 +35,26 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       );
     }
   }, [segmentExists]);
+
+  useClearFields(
+    values.employers &&
+      values.employers[segmentIdx] &&
+      values.employers[segmentIdx].self_employed,
+    [
+      {
+        fieldName: `employers[${segment}].separation_reason`,
+        value: undefined,
+      },
+      {
+        fieldName: `employers[${segment}].separation_option`,
+        value: undefined,
+      },
+      {
+        fieldName: `employers[${segment}].separation_comment`,
+        value: undefined,
+      },
+    ]
+  );
 
   // Let the effect hook populate values if necessary
   if (!values.employers || !segmentExists) {
@@ -120,7 +141,10 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].self_employed`}
         name={`employers[${segment}].self_employed`}
       />
-      <SeparationReason segment={segment} />
+      <SeparationReason
+        segment={segment}
+        disabled={employer.self_employed === true}
+      />
       <DatePicker
         label={t("first_work_date.label")}
         id={`employers[${segment}].first_work_date`}

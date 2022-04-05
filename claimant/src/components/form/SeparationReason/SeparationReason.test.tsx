@@ -24,7 +24,7 @@ describe("SeparationReason component", () => {
   it("renders properly", () => {
     const { getByTestId, getAllByRole } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <SeparationReason segment="0" />
+        <SeparationReason segment="0" disabled={false} />
       </Formik>
     );
 
@@ -47,7 +47,7 @@ describe("SeparationReason component", () => {
   it("displays conditional secondary set of radios", async () => {
     const { getByTestId, getAllByRole } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <SeparationReason segment="0" />
+        <SeparationReason segment="0" disabled={false} />
       </Formik>
     );
 
