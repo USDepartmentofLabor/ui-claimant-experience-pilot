@@ -9,3 +9,4 @@ Dockerfile
 .venv
 docs
 *.md
+!reference/static/

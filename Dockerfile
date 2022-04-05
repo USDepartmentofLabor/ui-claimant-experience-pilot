@@ -145,10 +145,6 @@ FROM djangobase as djangobase-wcms
 
 ARG ENV_PATH=/app/core/.env-example
 
-# Bust static build cache on each build
-ARG APPLICATION_VERSION=""
-RUN echo ${APPLICATION_VERSION}
-
 RUN make build-static build-translations && \
   rm -f core/.env* && \
   make build-cleanup
