@@ -51,9 +51,7 @@
         padding: 0.1rem;
         font-size: 1rem;
       }
-      .usa-card {
-        padding: 1.5rem 0;
-      }
+
       .usa-header--basic .usa-navbar {
         width: auto;
         flex-shrink: 0;
@@ -65,10 +63,7 @@
       .usa-prose h1 {
         font-family: Source Sans Pro Web,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
       }
-      .usa-header--basic .usa-nav-container {
-        align-items: center;
-      }
-      .usa-prose h2 {
+      .usa-section > h2 {
         color: #005ea2;
       }
       .ui-example {
@@ -104,7 +99,18 @@
         width: 450px;
       }
       .usa-nav-container {
-        margin-right: 0;
+        margin-left: 0;
+        padding-left: 0;
+      }
+      .dol-banner {
+        background-color: #112e51;
+        color: #FFF;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 0.75rem;
+      }
+      .dol-banner img {
+        height: 1.25rem;
       }
     </style>
   </head>
@@ -115,10 +121,10 @@
     <section class="usa-banner" aria-label="Official government website">
       <div class="usa-accordion">
         <header class="usa-banner__header grid-container-widescreen">
-          <div class="usa-banner__inner margin-right-0">
+          <div class="usa-banner__inner margin-left-0 padding-left-0">
             <div class="grid-col-auto">
               <img
-                class="usa-banner__header-flag"
+                class="usa-banner__header-flag margin-left-05"
                 src="{% static '/img/us_flag_small.png' %}"
                 alt="U.S. flag"
               />
@@ -201,78 +207,24 @@
         </div>
       </div>
     </section>
+    <section class="usa-banner dol-banner padding-y-05">
+      <div class="grid-container-widescreen display-flex flex-align-center">
+        <img src="{% static 'reference/dol.svg' %}" alt="Department of Labor">
+        <span class="margin-left-05">U.S. Department of Labor</span>
+      </div>
+    </section>
     <div class="usa-overlay"></div>
     <header class="usa-header usa-header--basic grid-container-widescreen">
       <div class="usa-nav-container">
         <div class="usa-navbar">
           <div class="usa-logo" id="basic-logo">
             <em class="usa-logo__text">
-              <a href="javascript:void(0)" title="&lt;Project title&gt;">
-                U.S. Department of Labor
+              <a href="/reference/" title="Unemployment Insurance Modernization Pilots">
+                Unemployment Insurance Modernization Pilots
               </a>
             </em>
-            <span>Employment and Training Administration</span>
           </div>
-          <button class="usa-menu-btn">Menu</button>
         </div>
-        <nav aria-label="Primary navigation" class="usa-nav">
-          <button class="usa-nav__close">
-            <img
-              src="{% static '/img/usa-icons/close.svg' %}"
-              role="img"
-              alt="Close"
-            />
-          </button>
-          <ul class="usa-nav__primary usa-accordion">
-            <li class="usa-nav__primary-item">
-              <button
-                class="usa-accordion__button usa-nav__link usa-current"
-                aria-expanded="false"
-                aria-controls="basic-nav-section-one"
-              >
-                <span>&lt;Current section&gt;</span>
-              </button>
-
-              <ul id="basic-nav-section-one" class="usa-nav__submenu">
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-              </ul>
-            </li>
-            <li class="usa-nav__primary-item">
-              <button
-                class="usa-accordion__button usa-nav__link"
-                aria-expanded="false"
-                aria-controls="basic-nav-section-two"
-              >
-                <span>&lt;Section&gt;</span>
-              </button>
-
-              <ul id="basic-nav-section-two" class="usa-nav__submenu">
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-                <li class="usa-nav__submenu-item">
-                  <a href="#"> &lt;Navigation link&gt; </a>
-                </li>
-              </ul>
-            </li>
-            <li class="usa-nav__primary-item">
-              <a href="javascript:void(0)" class="usa-nav__link">
-                <span>&lt;Simple link&gt;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
       </div>
     </header>
 
@@ -283,7 +235,7 @@
             <nav aria-label="Secondary navigation">
               <ul class="usa-sidenav">
                 <li class="usa-sidenav__item">
-                  <a href="/reference/" class="{%if active == 'introduction' %}usa-current{% endif %}">Claimant experience best practices</a>
+                  <a href="/reference/" class="{%if active == 'introduction' %}usa-current{% endif %}">Improved claimant experience examples</a>
                   <ul class="usa-sidenav__sublist">
                     <li class="usa-sidenav__item">
                       <a href="/reference/plain-language/" class="{%if active == 'plain_language' %}usa-current{% endif %}">Use plain language</a>
@@ -307,6 +259,27 @@
                       </ul>
                       {% endif %}
                     </li>
+
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/iterating/" class="{%if active == 'iterating' %}usa-current{% endif %}">Improve despite tech challenges</a>
+                      {%if active == "iterating" %}
+                      <ul class="usa-sidenav__sublist">
+                        <li class="usa-sidenav__item">
+                          <a href="/reference/iterating/#mobile-friendly">Go mobile-friendly</a>
+                        </li>
+                        <li class="usa-sidenav__item">
+                          <a href="/reference/iterating/#experiment-from-scratch">Experiment from scratch</a>
+                        </li>
+                        <li class="usa-sidenav__item">
+                          <a href="/reference/iterating/#change-frontend">Change frontend without backend</a>
+                        </li>
+                        <li class="usa-sidenav__item">
+                          <a href="/reference/iterating/#make-space">Make space to hear ideas</a>
+                        </li>
+                      </ul>
+                      {% endif %}
+                    </li>
+
                     <li class="usa-sidenav__item">
                       <a href="/reference/open-source/" class="{%if active == 'open_source' %}usa-current{% endif %}">View sample application code</a>
                       {%if active == "open_source" %}
@@ -326,26 +299,6 @@
                         <li class="usa-sidenav__item">
                           <a href="/reference/open-source/#complex-data">Express and store complex data</a>
                         </li>
-                      </ul>
-                      {% endif %}
-                    </li>
-                    <li class="usa-sidenav__item">
-                      <a href="/reference/iterating/" class="{%if active == 'iterating' %}usa-current{% endif %}">Improve despite tech challenges</a>
-                      {%if active == "iterating" %}
-                      <ul class="usa-sidenav__sublist">
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#mobile-friendly">Go mobile-friendly</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#experiment-from-scratch">Experiment from scratch</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#change-frontend">Change frontend without backend</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#make-space">Make space to hear ideas</a>
-                        </li>
-
                       </ul>
                       {% endif %}
                     </li>
