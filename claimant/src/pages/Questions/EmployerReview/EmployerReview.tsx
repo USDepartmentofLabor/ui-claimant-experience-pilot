@@ -1,6 +1,9 @@
 import { EmployerProfileReview } from "../../../components/form/EmployerProfile/EmployerProfileReview";
 import { pageSchema } from "../EmployerInformation/EmployerInformation";
 import { IPageDefinition, IPreviousSegment } from "../../PageDefinitions";
+import { useSubmitClaim } from "../../../queries/claim";
+import { useWhoAmI } from "../../../queries/whoami";
+import { useQueryClient } from "react-query";
 import { NavLink } from "react-router-dom";
 import { Button, FormGroup } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
@@ -79,20 +82,39 @@ const previousPageUrl = ({ values }: IPreviousSegment) => {
 };
 
 export const EmployerReview = () => {
-  const { values, setValues } = useFormikContext<ClaimantInput>();
+  const { values, resetForm } = useFormikContext<ClaimantInput>();
   const { t } = useTranslation("common");
   const { t: formT } = useTranslation("claimForm");
+  const submitClaim = useSubmitClaim();
+  const queryClient = useQueryClient();
+  const { data: whoami, isFetched: whoamiIsFetched } = useWhoAmI();
 
-  const removeEmployer = (...indices: number[]) => {
+  const removeEmployer = async (...indices: number[]) => {
+    if (!whoami) {
+      return;
+    }
     const employers = values.employers?.filter((_, i) => !indices.includes(i));
     const LOCAL_more_employers = values.LOCAL_more_employers?.filter(
       (_, i) => !indices.includes(i)
     );
-    setValues((form) => ({
-      ...form,
+    // must toggle the LOCAL_more_employers for the "last" to always be "false"
+    if (LOCAL_more_employers && LOCAL_more_employers.length) {
+      LOCAL_more_employers[LOCAL_more_employers.length - 1] = false;
+    }
+    const newValues = {
+      ...values,
       employers,
       LOCAL_more_employers,
-    }));
+    };
+    const claim: Claim = {
+      ...newValues,
+      swa_code: whoami.swa.code,
+      claimant_id: whoami.claimant_id,
+    };
+    await submitClaim.mutateAsync(claim);
+    // bust the cache to force re-fetch
+    queryClient.invalidateQueries("getPartialClaim");
+    resetForm({ values: newValues });
   };
 
   const nextEmployerSegment = values.employers?.length || 0;
@@ -109,6 +131,10 @@ export const EmployerReview = () => {
   });
   if (employersToRemove.length) {
     removeEmployer(...employersToRemove);
+  }
+
+  if (!whoamiIsFetched) {
+    return <></>;
   }
 
   return (
