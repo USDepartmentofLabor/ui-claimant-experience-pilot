@@ -78,4 +78,17 @@ describe("SeparationReason component", () => {
     reasonRadios = getAllByRole("radio");
     expect(reasonRadios.length).toEqual(11);
   });
+
+  it("disables fields", () => {
+    const { getByTestId, getByRole } = render(
+      <Formik initialValues={initialValues} onSubmit={noop}>
+        <SeparationReason segment="0" disabled />
+      </Formik>
+    );
+
+    expect(
+      getByTestId("employers[0].separation_reason.laid_off")
+    ).toBeDisabled();
+    expect(getByRole("textbox")).toBeDisabled();
+  });
 });
