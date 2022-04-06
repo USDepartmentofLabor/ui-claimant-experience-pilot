@@ -87,6 +87,30 @@ context("Initial Claim form", { scrollBehavior: "center" }, () => {
     // cy.verifyCallCount("@GET-whoami", 2);
   });
 
+  it("deletes and starts over", () => {
+    const email = faker.internet.exampleEmail();
+    cy.login(email);
+    cy.navigate_to_form();
+    cy.complete_claimant_names({ first_name: "Dave", last_name: "Smith" });
+    cy.complete_claimant_addresses({
+      residence_address: {
+        address1: "1 Street",
+        address2: "Apartment 12345",
+        city: "City",
+        state: "CA",
+        zipcode: "00000",
+      },
+    });
+    cy.click_next();
+    cy.logout();
+
+    cy.login(email);
+    cy.visit("/claimant/");
+    cy.contains("Delete application").scrollIntoView().click();
+    cy.navigate_to_form();
+    cy.get("h1").contains("Personal").should("be.visible");
+  });
+
   describe("Error focusing", () => {
     it("focuses the first error when submitting the form after page load", () => {
       const email = faker.internet.exampleEmail();

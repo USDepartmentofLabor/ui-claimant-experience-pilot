@@ -378,29 +378,6 @@ class ApiViewsTestCase(
         self.assertTrue(claim.is_resolved())
         self.assertEqual(claim.resolution_description(), "cancelled by Claimant")
 
-    def test_cancel_claim_ld_flag_off(self):
-        idp = create_idp()
-        swa, _ = create_swa()
-        claimant = create_claimant(idp)
-        client = self.csrf_client(claimant, swa, trigger_cookie=True)
-        claim = Claim(swa=swa, claimant=claimant)
-        claim.save()
-        claim.events.create(category=Claim.EventCategories.COMPLETED)
-        cw = ClaimWriter(claim, "test", path=claim.completed_payload_path())
-        self.assertTrue(cw.write())
-        with patch("api.views.ld_client.variation") as patched_ld_client:
-            patched_ld_client.return_value = False
-            headers = self.csrf_headers(client)
-            response = client.delete(
-                f"/api/cancel-claim/{claim.uuid}/",
-                content_type=JSON,
-                **headers,
-            )
-            self.assertEqual(
-                response.json(), {"status": "error", "error": "No such route"}
-            )
-            self.assertEqual(response.status_code, 404)
-
     def test_cancel_partial_claim(self):
         idp = create_idp()
         swa, _ = create_swa()
@@ -416,10 +393,8 @@ class ApiViewsTestCase(
             content_type=JSON,
             **headers,
         )
-        self.assertEqual(
-            response.json(), {"status": "error", "error": "No eligible claim found"}
-        )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertEqual(response.status_code, 200)
 
     def test_cancel_claim_write_error(self):
         idp = create_idp()
@@ -446,7 +421,9 @@ class ApiViewsTestCase(
                 )
                 self.assertEqual(response.status_code, 500)
                 # the -2 means our logging exception is the 2nd to last in the list
-                self.assertIn("Exception: Failed to delete artifacts", cm.output[-2])
+                self.assertIn(
+                    "ClaimStorageError: Failed to delete artifacts", cm.output[-2]
+                )
 
     def test_rotation_encrypted_partial_claim(self):
         idp = create_idp()
