@@ -119,31 +119,70 @@
         "address",
         "first_work_date",
         "phones",
-        "separation_reason",
         "self_employed"
       ],
       "allOf": [
         {
           "if": {
             "properties": {
-              "separation_reason": {
-                "type": "string",
-                "enum": [
-                  "laid_off",
-                  "fired_discharged_terminated",
-                  "still_employed",
-                  "quit"
-                ]
+              "self_employed": {
+                "type": "boolean",
+                "const": false
               }
             }
           },
           "then": {
             "properties": {
-              "separation_option": { "type": "string", "maxLength": 64 }
+              "separation_reason": { "type": "string", "maxLength": 64 }
             },
-            "required": ["separation_option"]
+            "required": ["separation_reason"],
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "separation_reason": {
+                      "type": "string",
+                      "enum": [
+                        "laid_off",
+                        "fired_discharged_terminated",
+                        "still_employed",
+                        "quit"
+                      ]
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "separation_option": { "type": "string", "maxLength": 64 }
+                  },
+                  "required": ["separation_option"]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "separation_reason": {
+                      "not": {
+                        "type": "string",
+                        "enum": ["laid_off"]
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "separation_comment": {
+                      "type": "string",
+                      "maxLength": 1024
+                    }
+                  },
+                  "required": ["separation_comment"]
+                }
+              }
+            ]
           }
         },
+
         {
           "if": {
             "properties": {
@@ -165,24 +204,6 @@
               "last_work_date": { "type": "string", "format": "date" }
             },
             "required": ["last_work_date"]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "separation_reason": {
-                "not": {
-                  "type": "string",
-                  "enum": ["laid_off"]
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "separation_comment": { "type": "string", "maxLength": 1024 }
-            },
-            "required": ["separation_comment"]
           }
         }
       ]
