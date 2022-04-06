@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { addressToString } from "../../../utils/format";
 import { PersonalInformationPage } from "../PersonalInformation/PersonalInformation";
 import { ReviewElement, ReviewSection } from "./ReviewSection";
@@ -51,7 +51,11 @@ const NameReview = ({ name }: { name: PersonName }) => {
         text={name.first_name}
       />
       <ReviewElement
-        title={formT("name.middle_name.label")}
+        title={
+          <Trans t={formT} i18nKey="name.middle_name.label">
+            Middle initial <i>(optional)</i>
+          </Trans>
+        }
         text={name.middle_name || t("none")}
       />
       <ReviewElement
