@@ -38,7 +38,7 @@ const createEmployer1 = () => {
       zipcode: "12345",
     },
     phones: [{ number: "555-555-5555" }],
-    self_employed: true,
+    self_employed: false,
     separation: {
       reason: "still_employed",
       option: "hours_reduced_by_employer",
