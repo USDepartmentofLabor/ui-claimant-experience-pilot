@@ -8,7 +8,7 @@ from core.test_utils import (
     generate_keypair,
 )
 from api.test_utils import create_swa
-from swa.middleware.jwt_authorizer import JwtAuthorizer
+from swa.middleware.jwt_authorizer import JwtAuthorizer, JwtError
 
 logger = logging.getLogger(__name__)
 
@@ -52,23 +52,15 @@ class JwtAuthorizerTestCase(TestCase):
 
     def test_missing_header(self):
         request = RequestFactory().get("/swa/")
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "DEBUG:swa.middleware.jwt_authorizer:Missing Authorization header",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Missing Authorization header", str(context.exception))
 
     def test_invalid_header(self):
         request = RequestFactory().get("/swa/", HTTP_AUTHORIZATION="foo")
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Invalid Authorization header",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Invalid Authorization header", str(context.exception))
 
     def test_different_header_type(self):
         request = RequestFactory().get("/swa/", HTTP_AUTHORIZATION="Bearer foobar")
@@ -98,29 +90,21 @@ class JwtAuthorizerTestCase(TestCase):
 
         # iat too early
         claims = unpack_token(token, swa)
-        claims["iat"] = claims["iat"] - 10
+        claims["iat"] = claims["iat"] - 60
         invalid_token = pack_token(claims, private_key_jwk)
         request = request_with_token(invalid_token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Claimed time outside of tolerance",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Claimed time outside of tolerance", str(context.exception))
 
         # iat too late
         claims = unpack_token(token, swa)
-        claims["iat"] = claims["iat"] + 10
+        claims["iat"] = claims["iat"] + 60
         invalid_token = pack_token(claims, private_key_jwk)
         request = request_with_token(invalid_token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Claimed time outside of tolerance",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Claimed time outside of tolerance", str(context.exception))
 
         # wrong alg
         sym_key = jwk.JWK(generate="oct", size=256)
@@ -129,13 +113,9 @@ class JwtAuthorizerTestCase(TestCase):
             claims, sym_key, alg="HS256", kid=swa.public_key_fingerprint
         )
         request = request_with_token(invalid_token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:jwt.exceptions.InvalidAlgorithmError",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("InvalidAlgorithmError", str(context.exception))
 
     def test_invalid_swa(self):
         swa, private_key_jwk = create_swa()
@@ -146,25 +126,15 @@ class JwtAuthorizerTestCase(TestCase):
         claims["iss"] = "someone else"
         invalid_token = pack_token(claims, private_key_jwk)
         request = request_with_token(invalid_token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Invalid iss value: someone else",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Invalid iss value: someone else", str(context.exception))
 
         # iss inactive (create_swa is inactive by default)
         request = request_with_token(token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Invalid iss value: {}".format(
-                    swa.code
-                ),
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("Invalid iss value: {}".format(swa.code), str(context.exception))
 
     def test_invalid_key_fingerprint(self):
         swa, private_key_jwk = create_swa(True)
@@ -173,15 +143,12 @@ class JwtAuthorizerTestCase(TestCase):
         swa.save()
 
         request = request_with_token(token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:Key fingerprints do not match for {}".format(
-                    swa.code
-                ),
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn(
+            "Key fingerprints do not match for {}".format(swa.code),
+            str(context.exception),
+        )
 
     def test_invalid_signature(self):
         _, diff_public_key_jwk = generate_keypair()
@@ -192,23 +159,16 @@ class JwtAuthorizerTestCase(TestCase):
         swa.save()
 
         request = request_with_token(token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:jwt.exceptions.InvalidSignatureError",
-                cm.output,
-            )
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)
+        self.assertIn("jwt.exceptions.InvalidSignatureError", str(context.exception))
 
     def test_invalid_nonce(self):
         swa, private_key_jwk = create_swa(True)
         token = generate_auth_token(private_key_jwk, swa.code)
         request = request_with_token(token)
-        with self.assertLogs(level="DEBUG") as cm:
-            authorizer = JwtAuthorizer(request)
-            self.assertTrue(authorizer.authorized)
-            authorizer = JwtAuthorizer(request)  # again, replay
-            self.assertFalse(authorizer.authorized)
-            self.assertIn(
-                "ERROR:swa.middleware.jwt_authorizer:nonce already used", cm.output
-            )
+        authorizer = JwtAuthorizer(request)
+        self.assertTrue(authorizer.authorized)
+        with self.assertRaises(JwtError) as context:
+            JwtAuthorizer(request)  # again, replay
+        self.assertIn("nonce already used", str(context.exception))
