@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 from django.http import JsonResponse
-from .jwt_authorizer import JwtAuthorizer
+from .jwt_authorizer import JwtAuthorizer, JwtError
+import appoptics_apm
 
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,14 @@ class SWAAuth(object):
         return response
 
     def authorize_request(self, request):
-        authorizer = JwtAuthorizer(request)
-        if not authorizer.authorized:
+        try:
+            authorizer = JwtAuthorizer(request)
+            if not authorizer.authorized:
+                request.verified_swa_request = False
+                return request
+        except JwtError as err:
+            logger.exception(err)
+            appoptics_apm.log_exception()
             request.verified_swa_request = False
             return request
 

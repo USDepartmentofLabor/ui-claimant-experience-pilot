@@ -1,20 +1,10 @@
-import { useState, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 
-import { Routes, Route, NavLink, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { ReactQueryDevtools } from "react-query/devtools";
 
-import {
-  GovBanner,
-  Header,
-  Title,
-  NavMenuButton,
-  PrimaryNav,
-  GridContainer,
-  Link as ExtLink,
-} from "@trussworks/react-uswds";
-
-import { Routes as ROUTES } from "./routes";
+import { GovBanner, Header, GridContainer } from "@trussworks/react-uswds";
 
 const WhoAmIPage = lazy(() => import("./pages/Whoami/Whoami"));
 // when we have routing, use this.
@@ -33,15 +23,13 @@ import "./styles.scss";
 import "@trussworks/react-uswds/lib/index.css";
 import { pages } from "./pages/PageDefinitions";
 import PageLoader from "./common/PageLoader";
-import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
 import { SessionManager } from "./components/SessionManager/SessionManager";
+import { ClaimFormNav } from "./components/ClaimFormNav/ClaimFormNav";
 import HomePage from "./pages/Home/Home";
-import { useGetCompletedClaim } from "./queries/claim";
 import { SystemAdminMessage } from "./components/SystemAdminMessage/SystemAdminMessage";
-
-const BYPASS_COMPLETED_CHECK =
-  process.env.NODE_ENV === "development" &&
-  process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
+import { useFeatureFlags } from "./pages/FlagsWrapper/FlagsWrapper";
+import { Routes as ROUTES } from "./routes";
+import { useGetCompletedClaim } from "./queries/claim";
 
 const NotFound = () => {
   const { t } = useTranslation("common");
@@ -57,7 +45,13 @@ const NotFound = () => {
 };
 
 function App() {
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const ldFlags = useFeatureFlags();
+  const { t } = useTranslation("common");
+  const BYPASS_COMPLETED_CHECK =
+    process.env.NODE_ENV === "development" &&
+    process.env.REACT_APP_BYPASS_COMPLETED_CLAIM_CHECK === "true";
+  const { status } = useGetCompletedClaim();
+  const isSubmitted = !BYPASS_COMPLETED_CHECK && status === "success";
   const {
     HOME_PAGE,
     CLAIM_FORM_PAGE,
@@ -67,68 +61,6 @@ function App() {
     CLAIM_FORM_HOME,
     SUCCESS_PAGE,
   } = ROUTES;
-  const { t } = useTranslation("common");
-  const baseUrl = process.env.REACT_APP_BASE_URL || "";
-  const logoutUrl = `${baseUrl}/logout/`;
-  const ldFlags = useFeatureFlags();
-  const { status } = useGetCompletedClaim();
-
-  // Determine if we should go to the success page
-  const isSubmitted = !BYPASS_COMPLETED_CHECK && status === "success";
-
-  const toggleMobileNav = () => {
-    setMobileNavOpen((prevOpen) => !prevOpen);
-  };
-
-  const navItems = [
-    ...(isSubmitted
-      ? []
-      : [
-          <NavLink
-            end
-            to={HOME_PAGE}
-            key={HOME_PAGE}
-            className={({ isActive }) => (isActive ? "usa-current" : "")}
-          >
-            Home
-          </NavLink>,
-          <NavLink
-            end
-            to={WHOAMI_PAGE}
-            key={WHOAMI_PAGE}
-            className={({ isActive }) => (isActive ? "usa-current" : "")}
-          >
-            Who am I
-          </NavLink>,
-        ]),
-    <ExtLink key="logoutlink" href={logoutUrl}>
-      {t("logout")}
-    </ExtLink>,
-  ];
-
-  if (ldFlags.testFlagClient) {
-    navItems.push(
-      <span className="display-none" aria-hidden="true">
-        testFlagClient
-      </span>
-    );
-    console.log({ ldFlags });
-  }
-
-  if (ldFlags.showClaimsDashboard) {
-    const dashboardLink = (
-      <NavLink
-        end
-        to={CLAIMS_PAGE}
-        key={CLAIMS_PAGE}
-        className={({ isActive }) => (isActive ? "usa-current" : "")}
-      >
-        Claims
-      </NavLink>
-    );
-    navItems.splice(1, 0, dashboardLink);
-  }
-
   return (
     <>
       <SessionManager />
@@ -142,25 +74,7 @@ function App() {
             {ldFlags.systemAdminMessage}
           </SystemAdminMessage>
         )}
-        <div className="usa-nav-container">
-          <div className="usa-navbar">
-            <Title>
-              <Link to={HOME_PAGE}>Unemployment Insurance</Link>
-            </Title>
-            <NavMenuButton
-              label="Menu"
-              onClick={toggleMobileNav}
-              className="usa-menu-btn"
-            />
-          </div>
-
-          <PrimaryNav
-            aria-label="Primary navigation"
-            items={navItems}
-            onToggleMobileNav={toggleMobileNav}
-            mobileExpanded={mobileNavOpen}
-          />
-        </div>
+        <ClaimFormNav isSubmitted={isSubmitted} />
       </Header>
 
       <section className="usa-section">

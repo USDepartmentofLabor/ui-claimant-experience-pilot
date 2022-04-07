@@ -1,5 +1,5 @@
 ARG BASE_PYTHON_IMAGE_REGISTRY=docker.io/library
-ARG BASE_PYTHON_IMAGE_VERSION=3.9.10-slim-bullseye
+ARG BASE_PYTHON_IMAGE_VERSION=3.9.11-slim-bullseye
 
 FROM node:14.18.0 as reactapps
 WORKDIR /app
@@ -56,7 +56,19 @@ EXPOSE 8000
 COPY requirements*.txt ./
 
 RUN apt-get update -y && apt-get install -y \
-  --no-install-recommends gcc libmariadb-dev wait-for-it git make gettext redis-tools iputils-ping mariadb-client \
+  --no-install-recommends \
+  libexpat1 \
+  libc6=2.31-13+deb11u3 \
+  libc-bin=2.31-13+deb11u3 \
+  gcc \
+  libmariadb-dev \
+  wait-for-it \
+  git \
+  make \
+  gettext \
+  redis-tools \
+  iputils-ping \
+  mariadb-client \
   && rm -rf /var/lib/apt/lists/* \
   && pip install --no-cache-dir -r requirements.txt
 

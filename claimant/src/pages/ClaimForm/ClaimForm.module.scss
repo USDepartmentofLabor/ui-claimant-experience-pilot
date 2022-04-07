@@ -13,3 +13,8 @@
 .pagination {
   margin: units(2) 0;
 }
+
+main form > :first-child,
+main form > :first-child legend {
+  @include u-margin-top(0);
+}

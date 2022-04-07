@@ -8,7 +8,11 @@ import {
   useState,
 } from "react";
 import { useField } from "formik";
-import { currencyRegex } from "../../../../utils/format";
+import {
+  convertCentsToDollars,
+  convertDollarsToCents,
+  CURRENCY_REGEX,
+} from "../../../../utils/currencyFormat";
 
 type TextFieldProps = Omit<ComponentProps<typeof TextField>, "type">;
 
@@ -29,16 +33,10 @@ const CurrencyField = ({
   const [fieldProps, metaProps, fieldHelperProps] = useField<
     string | undefined
   >(name);
-  const dollarStringToCentsString = (dollars: string) =>
-    (Number(dollars) * 100).toFixed();
-  const centsStringToDollarsString = (cents: string) =>
-    (Number(cents) / 100).toFixed(2);
 
   const isMounted = useRef(false);
   const [dollarValue, setDollarValue] = useState<string>(() =>
-    metaProps.initialValue
-      ? centsStringToDollarsString(metaProps.initialValue)
-      : ""
+    metaProps.initialValue ? convertCentsToDollars(metaProps.initialValue) : ""
   );
 
   useEffect(() => {
@@ -48,8 +46,8 @@ const CurrencyField = ({
         if (!dollarValue) {
           return "";
         }
-        if (dollarValue.match(currencyRegex)) {
-          return dollarStringToCentsString(dollarValue);
+        if (dollarValue.match(CURRENCY_REGEX)) {
+          return convertDollarsToCents(dollarValue);
         }
         // don't set to fixed value so that validation can apply
         return String(Number(dollarValue) * 100);

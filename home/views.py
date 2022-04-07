@@ -23,10 +23,6 @@ from launchdarkly.client import ld_client
 logger = logging.getLogger("home")
 
 
-class UnknownError(Exception):
-    pass
-
-
 @register.filter
 def get_dictionary_value(dictionary, key):
     return dictionary.get(key)
@@ -38,10 +34,6 @@ def handle_404(request, exception=None):
 
 def handle_500(request):
     return render(request, "500.html", status=500)
-
-
-def raise_error(request):
-    raise UnknownError("something bad")
 
 
 def active_swas_ordered_by_name():
@@ -56,7 +48,7 @@ def active_swas_with_featuresets():
 
 
 def index(request):
-    return redirect("/about/")
+    return render(request, "index.html", status=200)
 
 
 # the swa-specific pages should be cache-able
@@ -122,17 +114,20 @@ def idp(request, swa_code=None):
             SWA.active.get(code=requested_swa)
         except SWA.DoesNotExist:
             return handle_404(request, None)
+    elif not settings.SHOW_IDP_PAGE_FOR_ALL_SWAS:
+        return handle_404(request, None)
 
     return render(
         request,
         "idp.html",
         {
             "swa": requested_swa,
-            "show_login_page": settings.SHOW_LOGIN_PAGE,
+            "show_login_page": settings.ENABLE_TEST_LOGIN,
             "swa_featuresets": active_swas_with_featuresets(),
             "swas": active_swas_ordered_by_name(),
             "redirect_to": request.GET.get("redirect_to", ""),
             "show_navigation": False,
+            "require_prequal_start_page": settings.REQUIRE_PREQUAL_START_PAGE,
         },
     )
 
@@ -162,22 +157,14 @@ def logout(request):
         logger.debug("RP-initiated logout to {}".format(logout_url))
         return redirect(logout_url)
 
+    if "authenticated" not in request.session:
+        request.session.flush()
+        return redirect("/")
+
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     swa_url = whoami.swa.claimant_url
     request.session.flush()
     return redirect(swa_url if whoami.swa.featureset == "Identity Only" else "/")
-
-
-@never_cache
-def ial2required(request):
-    return render(
-        request,
-        "ial2required.html",
-        {
-            "swas": active_swas_ordered_by_name(),
-            "idp_path": request.GET.get("idp", "logindotgov"),
-        },
-    )
 
 
 @never_cache
@@ -211,7 +198,7 @@ def test(request):  # pragma: no cover
     return JsonResponse(response)
 
 
-# NOTE this login page is for testing only, see the SHOW_LOGIN_PAGE setting in views.py
+# NOTE this login page is for testing only, see the ENABLE_TEST_LOGIN setting in views.py
 @never_cache
 def login(request):
     if request.method == "GET":
@@ -312,6 +299,9 @@ def get_states():
 
 
 def start(request):
+    if not settings.REQUIRE_PREQUAL_START_PAGE:
+        return handle_404(request, None)
+
     states = get_states()
     states_without_swa = ["AS", "FM", "GU", "MH", "MP", "PW"]
     for state in states_without_swa:
@@ -335,15 +325,22 @@ def identity(request):
         return handle_404(request, None)
 
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
-    IAL = whoami.IAL
     claim = ClaimFinder(whoami).find()
     if not claim:
         logger.error("Missing expected claim for identity-only flow")
         return handle_404(request, None)
 
-    template_name = f"identity/IAL{IAL}.html"
-    if claim.is_swa_xid_expired():
+    if claim.is_completed():
+        template_name = "identity/IAL2.html"
+    elif claim.is_swa_xid_expired():
+        logger.debug(
+            "claim has expired swa_xid: {} events: {}".format(
+                claim.__dict__, claim.public_events()
+            )
+        )
         template_name = "identity/expired.html"
+    else:
+        template_name = "identity/IAL1.html"
 
     try:
         view_args = {
@@ -371,5 +368,15 @@ def identity(request):
         return handle_404(request, None)
 
 
-def about(request):
-    return render(request, "about.html")
+def maintenance_mode(request):
+    default_msg = "Sorry, this system is currently unavailable. Please try again later."
+    msg = ld_client.variation(
+        "maintenance-mode-message", {"key": "anonymous-user"}, default_msg
+    )
+    # since LD might return an empty string, fallback to the default in both variation
+    # and setting context args.
+    return render(
+        request,
+        "maintenance-mode.html",
+        {"maintenance_mode_message": msg or default_msg},
+    )

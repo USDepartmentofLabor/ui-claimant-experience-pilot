@@ -27,7 +27,7 @@ export const ClaimFormPageHeading = ({
       <h1
         tabIndex={-1}
         ref={headingRef}
-        className={styles.pageHeading}
+        className={`${styles.pageHeading}`}
         aria-label={`${pageHeading} ${t("step_progress", {
           step,
           totalSteps,

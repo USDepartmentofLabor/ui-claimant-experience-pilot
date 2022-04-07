@@ -72,62 +72,62 @@ REQUEST_ID_CONFIG = {
 ALLOWED_HOSTS = [
     "localhost",
     ".dol.gov",
-    ".unemployment.gov",
-    ".ui.gov",
 ]
+
+CSRF_TRUSTED_ORIGINS = ["https://*.dol.gov", "https://*.dol.gov:4430"]
 
 logging.basicConfig(
     level=logging.DEBUG if DEBUG else logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("core")
-if os.environ.get("COLOR_LOGGING", "false").lower() == "true":  # pragma: no cover
-    LOGGING_CONFIG = None  # This empties out Django's logging config
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "filters": {
-            "request_id": {"()": "request_id_django_log.filters.RequestIDFilter"}
-        },
-        "formatters": {
-            "colored": {
-                "()": "colorlog.ColoredFormatter",  # colored output
-                # --> %(log_color)s is very important, that's what colors the line
-                "format": "%(log_color)s[%(levelname)s] %(reset)s %(green)s[%(request_id)s] %(reset)s%(blue)s%(name)s - %(asctime)s :: %(reset)s %(message)s",
-                "log_colors": {
-                    "DEBUG": "blue",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "bold_red",
-                },
-            },
-            # TODO determine config for CloudWatch
-            "aws": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
-                "datefmt": "%Y-%m-%d %H:%M:%S",
+LOGGING_CONFIG = None  # This empties out Django's logging config
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"request_id": {"()": "request_id_django_log.filters.RequestIDFilter"}},
+    "formatters": {
+        "colored": {
+            "()": "colorlog.ColoredFormatter",  # colored output
+            # --> %(log_color)s is very important, that's what colors the line
+            "format": "%(log_color)s[%(levelname)s] %(reset)s %(green)s[%(request_id)s] %(reset)s%(blue)s%(name)s - %(asctime)s :: %(reset)s %(message)s",
+            "log_colors": {
+                "DEBUG": "blue",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
             },
         },
-        "handlers": {
-            "console": {
-                "level": "DEBUG",
-                "class": "colorlog.StreamHandler",
-                "formatter": "colored",
-                "filters": ["request_id"],
-            },
+        "verbose": {
+            "format": "[%(levelname)s] [%(request_id)s] %(name)s - %(asctime)s :: %(message)s",
         },
-        "loggers": {
-            "django.utils.autoreload": {"level": "INFO"},
-            "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+    },
+    "handlers": {
+        "console": {
+            "level": ("DEBUG" if DEBUG else "INFO"),
+            "class": "colorlog.StreamHandler",
+            "formatter": (
+                "colored"
+                if os.environ.get("COLOR_LOGGING", "false").lower() == "true"
+                else "verbose"
+            ),
+            "filters": ["request_id"],
         },
-    }
-    logging.config.dictConfig(LOGGING)  # Finally replace our config in python logging
+    },
+    "loggers": {
+        "django.utils.autoreload": {"level": "INFO"},
+        "": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+    },
+}
+logging.config.dictConfig(LOGGING)  # Finally replace our config in python logging
 
 # Application definition
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
+    "include_strip_tag",
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "api",
@@ -159,6 +159,8 @@ MIDDLEWARE = [
     "request_id_django_log.middleware.RequestIdDjangoLog",
     "swa.middleware.auth.SWAAuth",
     "reference.middleware.visible.ReferenceVisibility",
+    "core.middleware.maintenance_mode.MaintenanceMode",
+    "core.middleware.xss_header.XSSProtectionHeader",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -309,10 +311,6 @@ TEMPLATES = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Note: In Django 4, SecurityMiddleware no longer sets the X-XSS-Protection header
-# https://docs.djangoproject.com/en/4.0/releases/4.0/#securitymiddleware-no-longer-sets-the-x-xss-protection-header
-SECURE_BROWSER_XSS_FILTER = True
-
 # Content-Security-Policy configuration
 CSP_DEFAULT_SRC = None
 CSP_FRAME_ANCESTORS = ["'none'"]
@@ -366,19 +364,16 @@ else:  # pragma: no cover
         logger.warn("LOGIN_DOT_GOV_PRIVATE_KEY set to False as .pem could not be found")
         LOGIN_DOT_GOV_PRIVATE_KEY = False
 
-# The /login/ page bypasses all other IdP so only use in allowed environments
-LOGIN_PAGE_ALLOWED_WCMS_ENVIRONMENTS = {
-    "https://dev1-unemployment.dol.gov",
-    "https://test1-unemployment.dol.gov",
-    "https://stage1-unemployment.dol.gov",
-}
-if (
-    os.environ.get("ENV_NAME") == "wcms"
-    and BASE_URL not in LOGIN_PAGE_ALLOWED_WCMS_ENVIRONMENTS
-):  # pragma: no cover
-    SHOW_LOGIN_PAGE = False
+# The /login/ page bypasses all other IdP so never allow in production
+if BASE_URL == "https://unemployment.dol.gov":  # pragma: no cover
+    ENABLE_TEST_LOGIN = False
 else:
-    SHOW_LOGIN_PAGE = os.environ.get("SHOW_LOGIN_PAGE", "false").lower() == "true"
+    ENABLE_TEST_LOGIN = os.environ.get("ENABLE_TEST_LOGIN", "false").lower() == "true"
+
+# the bare /idp/ route returns 404 unless this is true
+SHOW_IDP_PAGE_FOR_ALL_SWAS = (
+    os.environ.get("SHOW_IDP_PAGE_FOR_ALL_SWAS", "false").lower() == "true"
+)
 
 # Celery is our task runner
 # unfortunately the ssl config syntax is different than for CACHES
@@ -409,14 +404,14 @@ if claim_secret_key.startswith("["):
     for idx, key in enumerate(claim_secret_keys):
         validate_secret_key(key, f"CLAIM_SECRET_KEY[{idx}]")
     CLAIM_SECRET_KEY = claim_secret_keys
-else:
+else:  # pragma: no cover
     validate_secret_key(claim_secret_key, "CLAIM_SECRET_KEY")
     CLAIM_SECRET_KEY = [claim_secret_key]
 
 # all sites except production should have this turned on, as policy.
 # we make it an env var so that we can test locally w/o it
 DISPLAY_TEST_SITE_BANNER = (
-    os.environ.get("DISPLAY_TEST_SITE_BANNER", "true").lower() == "true"
+    os.environ.get("DISPLAY_TEST_SITE_BANNER", "false").lower() == "true"
 )
 
 LD_SDK_KEY = env.str("LD_SDK_KEY")
@@ -430,3 +425,7 @@ EXPIRE_SWA_XID_CLAIMS_AFTER = env.json("EXPIRE_SWA_XID_CLAIMS_AFTER", {"AR": 47}
 SWA_XID_TIMEZONES = env.json("SWA_XID_TIMEZONES", {"AR": "US/Central"})
 # override with JSON-encoded object of swa.code -> regex string
 SWA_XID_PATTERNS = env.json("SWA_XID_PATTERNS", {"AR": "^\\d{8}-\\d{6}-\\d{7}-\\d{9}$"})
+
+REQUIRE_PREQUAL_START_PAGE = (
+    os.environ.get("REQUIRE_PREQUAL_START_PAGE", "false").lower() == "true"
+)

@@ -14,9 +14,14 @@ logger = logging.getLogger(__name__)
 # this file adapted from
 # https://github.com/crgwbr/asymmetric-jwt-auth/blob/master/src/asymmetric_jwt_auth/middleware.py
 
+
+class JwtError(Exception):
+    pass
+
+
 # number of seconds leeway we give for issued-at timestamps, to allow for clock drift.
 # This means a token must be used with +/- this many seconds of the server time.
-TIMESTAMP_TOLERANCE = 5
+TIMESTAMP_TOLERANCE = 30
 
 
 class JwtAuthorizer(object):
@@ -44,8 +49,7 @@ class JwtAuthorizer(object):
             current_time + TIMESTAMP_TOLERANCE,
         )
         if claimed_time < min_time or claimed_time > max_time:
-            logger.error("Claimed time outside of tolerance")
-            return
+            raise JwtError("Claimed time outside of tolerance")
 
         return unverified_claims
 
@@ -58,11 +62,9 @@ class JwtAuthorizer(object):
                 algorithms=["RS256", "ES256"],
             )
         except jwt.exceptions.InvalidAlgorithmError:
-            logger.error("jwt.exceptions.InvalidAlgorithmError")
-            return
+            raise JwtError("jwt.exceptions.InvalidAlgorithmError")
         except jwt.exceptions.InvalidSignatureError:
-            logger.error("jwt.exceptions.InvalidSignatureError")
-            return
+            raise JwtError("jwt.exceptions.InvalidSignatureError")
         # TODO other specific exceptions?
 
         return True
@@ -70,15 +72,13 @@ class JwtAuthorizer(object):
     def __authorize(self, request):
         # Check for presence of auth header
         if "HTTP_AUTHORIZATION" not in request.META:
-            logger.debug("Missing Authorization header")
-            return
+            raise JwtError("Missing Authorization header")
 
         # Ensure this auth header was meant for us (it has the JWT auth method).
         try:
             method, unverified_jwt = request.META["HTTP_AUTHORIZATION"].split(" ", 1)
         except ValueError:
-            logger.error("Invalid Authorization header")
-            return
+            raise JwtError("Invalid Authorization header")
 
         if method.upper() != "JWT":
             logger.debug("Skipping {} method".format(method))
@@ -94,14 +94,12 @@ class JwtAuthorizer(object):
         try:
             swa = SWA.active.get(code=swa_code)
         except SWA.DoesNotExist:
-            logger.error("Invalid iss value: {}".format(swa_code))
-            return
+            raise JwtError("Invalid iss value: {}".format(swa_code))
 
         # do the key fingerprints match?
         unverified_header = jwt.get_unverified_header(unverified_jwt)
         if swa.public_key_fingerprint != unverified_header["kid"]:
-            logger.error("Key fingerprints do not match for {}".format(swa_code))
-            return
+            raise JwtError("Key fingerprints do not match for {}".format(swa_code))
 
         logger.debug("JWT for {} looks valid, verifying".format(swa_code))
 
@@ -117,8 +115,7 @@ class JwtAuthorizer(object):
         cache_key = "{}-nonce-{}".format(swa_code, issued_at_time)
         used_nonces = cache.get(cache_key, set([]))
         if nonce in used_nonces:
-            logger.error("nonce already used")
-            return
+            raise JwtError("nonce already used")
 
         used_nonces.add(nonce)
         # expiration is 2 x the leeway, for clock drift.

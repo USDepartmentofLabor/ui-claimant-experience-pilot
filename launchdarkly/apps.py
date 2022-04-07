@@ -22,5 +22,5 @@ class LaunchdarklyConfig(AppConfig):
                 send_events=False,
             )
             ldclient.set_config(config)
-        else:
+        else:  # pragma: no cover
             ldclient.set_config(Config(sdk_key=settings.LD_SDK_KEY))

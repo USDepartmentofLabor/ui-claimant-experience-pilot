@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import reviewStyles from "./Review.module.scss";
 import en from "../../../i18n/en";
@@ -52,7 +52,7 @@ export const ReviewSection = ({
 };
 
 interface IReviewElementProps {
-  title: string;
+  title: ReactNode;
   text: string;
 }
 

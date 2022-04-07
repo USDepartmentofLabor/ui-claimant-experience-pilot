@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { useQueryClient } from "react-query";
 import { Formik, Form, FormikHelpers, FormikProps } from "formik";
 import { useWhoAmI } from "../../queries/whoami";
@@ -21,10 +22,9 @@ import {
 import { pages } from "../PageDefinitions";
 import { FormErrorSummary } from "../../components/form/FormErrorSummary/FormErrorSummary";
 import { ClaimFormPageHeading } from "../../components/ClaimFormHeading/ClaimFormPageHeading";
+import { ClaimFormSideNav } from "../../components/ClaimFormSideNav/ClaimFormSideNav";
 import { Routes } from "../../routes";
 import ScrollToTop from "../../components/ScrollToTop/ScrollToTop";
-import { useRef } from "react";
-import { useEffect } from "react";
 
 const BYPASS_PARTIAL_RESTORE =
   process.env.NODE_ENV === "development" &&
@@ -38,6 +38,10 @@ export const ClaimForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation("home"); // todo claim_form once i18n re-orged
   const { t: formT } = useTranslation("claimForm");
+  const { t: commonT } = useTranslation("common", {
+    keyPrefix: "page_headings",
+  });
+
   const navigate = useNavigate();
 
   const {
@@ -72,10 +76,8 @@ export const ClaimForm = () => {
 
   const navigateToNextPage = (values: FormValues) => {
     let nextPage;
-    if (repeatable) {
-      if (repeatable(segment, values) && nextSegment) {
-        nextPage = `/claim/${currentPagePath}/${nextSegment(segment)}/`;
-      }
+    if (repeatable && repeatable(segment, values) && nextSegment) {
+      nextPage = `/claim/${currentPagePath}/${nextSegment(segment)}/`;
     }
     if (!nextPage && pages[currentPageIndex + 1]) {
       nextPage = `/claim/${pages[currentPageIndex + 1].path}`;
@@ -285,6 +287,12 @@ export const ClaimForm = () => {
               <CurrentPage {...currentPageProps} />
               <div className={claimFormStyles.pagination}>
                 <FormGroup>
+                  {pages[currentPageIndex + 1] && (
+                    <div className="text-center text-italic margin-bottom-2">
+                      {t("pagination.nextStep")}{" "}
+                      {commonT(`${pages[currentPageIndex + 1].heading}`)}
+                    </div>
+                  )}
                   <div className="text-center">
                     {previousPageLink(claimForm)}
                     {nextPageLink(claimForm)}
@@ -324,9 +332,9 @@ const ClaimFormPage = () => {
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
 
   return (
-    <div className="display-flex flex-column margin-top-5">
+    <div className="grid-row grid-gap">
       <StepIndicator
-        className="overflow-hidden"
+        className="overflow-hidden width-mobile-lg margin-x-auto"
         counters="none"
         headingLevel="h2"
         divProps={{
@@ -343,7 +351,11 @@ const ClaimFormPage = () => {
           />
         ))}
       </StepIndicator>
-      <main className="tablet:width-mobile-lg margin-x-auto" id="main-content">
+      <ClaimFormSideNav className="desktop:grid-col-3 margin-top-4" />
+      <main
+        className="maxw-tablet margin-x-auto desktop:margin-0 desktop:grid-col-6"
+        id="main-content"
+      >
         <RequestErrorBoundary>
           <ScrollToTop
             headingRef={pageHeadingRef}

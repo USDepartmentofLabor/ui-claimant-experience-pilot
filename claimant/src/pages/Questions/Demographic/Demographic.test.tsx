@@ -66,6 +66,7 @@ describe("Demographic component", () => {
       );
       const radio1 = screen.getByLabelText("sex.options.female");
       const radio2 = screen.getByLabelText("sex.options.male");
+      const radio3 = screen.getByLabelText("sex.options.x");
       expect(radio1).not.toBeChecked();
       await act(async () => {
         userEvent.click(radio1);
@@ -76,6 +77,13 @@ describe("Demographic component", () => {
       });
       expect(radio2).toBeChecked();
       expect(radio1).not.toBeChecked();
+      expect(radio3).not.toBeChecked();
+      await act(async () => {
+        userEvent.click(radio3);
+      });
+      expect(radio3).toBeChecked();
+      expect(radio1).not.toBeChecked();
+      expect(radio2).not.toBeChecked();
     });
   });
 

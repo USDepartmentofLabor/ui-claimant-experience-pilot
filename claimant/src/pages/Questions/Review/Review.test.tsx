@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { MemoryRouter } from "react-router";
 import { noop } from "../../../testUtils/noop";
 import { Review } from "./Review";
+import { convertCentsToDollars } from "../../../utils/currencyFormat";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -10,6 +11,7 @@ jest.mock("react-i18next", () => ({
       t: (str: string) => str,
     };
   },
+  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
 }));
 
 const data: Claim = {
@@ -163,7 +165,7 @@ const data: Claim = {
       pay_type: "severance",
       note: "note",
       date_received: "2020-01-01",
-      total: "$123.45",
+      total: "12345",
     },
   ],
   occupation: {
@@ -511,7 +513,12 @@ describe("Review Page", () => {
               (local_pay_type) => `pay_type.options.${local_pay_type}.label`
             ).join(", "),
           ],
-          ["total.label", 0, data.other_pay?.[0].total?.toString()],
+          [
+            "total.label",
+            0,
+            data.other_pay?.[0].total &&
+              `$${convertCentsToDollars(data.other_pay?.[0].total)}`,
+          ],
           ["date_received.label", 0, data.other_pay?.[0].date_received],
           ["note.label", 0, data.other_pay?.[0].note],
         ],

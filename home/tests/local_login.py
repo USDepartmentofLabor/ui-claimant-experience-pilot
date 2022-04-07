@@ -1,150 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
-from django.test.utils import override_settings
 from api.models import Claimant, SWA
-from api.test_utils import create_swa, create_swa_xid
-from unittest.mock import patch
+from api.test_utils import create_swa, RESIDENCE_ADDRESS
 import logging
-from core.tests import BucketableTestCase
+from core.test_utils import BucketableTestCase
 
-logger = logging.getLogger("home.tests")
+logger = logging.getLogger(__name__)
 
-
-class HomeTestCase(TestCase):
-    def test_index_page(self):
-        response = self.client.get("/")
-        self.assertRedirects(
-            response,
-            "/about/",
-            status_code=302,
-            fetch_redirect_response=False,
-        )
-
-    def test_idp_page(self):
-        response = self.client.get("/idp/?swa=XX")
-        self.assertEqual(response.status_code, 404)
-
-    @override_settings(SHOW_LOGIN_PAGE=True)
-    def test_idp_page_show_login_page(self):
-        response = self.client.get("/idp/?redirect_to=/some/place")
-        self.assertContains(response, "Log in", status_code=200)
-        self.assertContains(response, "redirect_to=/some/place", status_code=200)
-
-        # active swa must exist if requested
-        swa, _ = create_swa(is_active=True)
-        response = self.client.get("/idp/?swa=XX&redirect_to=/some/place")
-        self.assertEqual(response.status_code, 404)
-        response = self.client.get(f"/idp/?swa={swa.code}&redirect_to=/some/place")
-        self.assertContains(response, "You will now be transferred", status_code=200)
-        self.assertContains(response, "redirect_to=/some/place", status_code=200)
-        response = self.client.get(f"/idp/{swa.code}/?redirect_to=/some/place")
-        self.assertContains(response, "You will now be transferred", status_code=200)
-        self.assertContains(response, "redirect_to=/some/place", status_code=200)
-        response = self.client.get(f"/idp/{swa.code}/?swa=XX&redirect_to=/some/place")
-        self.assertContains(response, "You will now be transferred", status_code=200)
-        self.assertContains(response, "redirect_to=/some/place", status_code=200)
-
-    def test_logout_page(self):
-        swa, _ = create_swa(
-            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
-        )
-        self.client.post(
-            "/login/",
-            {
-                "email": "some@example.com",
-                "IAL": "1",
-                "swa_code": swa.code,
-                "swa_xid": create_swa_xid(swa),
-            },
-        )
-        self.assertTrue(self.client.session["whoami"])
-        response = self.client.get("/logout/")
-        self.assertRedirects(
-            response,
-            swa.claimant_url,
-            status_code=302,
-            fetch_redirect_response=False,
-        )
-
-    def test_start_page(self):
-        response = self.client.get("/start/")
-        self.assertContains(response, "Let's get started", status_code=200)
-
-    def test_swa_redirect_page(self):
-        # with active SWA we get a link to the SWA
-        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
-        response = self.client.get(f"/swa-redirect/{swa.code}/")
-        self.assertContains(response, swa.name, status_code=200)
-
-        # not found or inactive SWA, we get link to federal site
-        response = self.client.get("/swa-redirect/XX/")
-        self.assertContains(response, "your state's", status_code=200)
-
-    @patch("home.views.ld_client")
-    def test_launchdarkly_flag_received(self, patched_ld_client):
-        patched_ld_client.variation.return_value = True
-        response = self.client.get("/test/")
-        self.assertEqual(response.status_code, 200)
-
-        patched_ld_client.variation.return_value = False
-        response = self.client.get("/test/")
-        self.assertEqual(response.status_code, 404)
-
-    def test_swa_start_page(self):
-        # with active SWA we get a link to the SWA
-        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
-        response = self.client.get(f"/start/{swa.code}/")
-        self.assertContains(response, swa.name, status_code=200)
-
-        # not found or inactive SWA, we get 404
-        response = self.client.get("/start/XX/")
-        self.assertContains(response, "Page not found", status_code=404)
-
-    def test_swa_contact_page(self):
-        # active but no whoami
-        nj_swa = SWA.active.get(code="NJ")
-        response = self.client.get(f"/contact/{nj_swa.code}/")
-        self.assertEquals(response.status_code, 404)
-
-        # active SWA, but no template
-        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
-        response = self.client.get(f"/contact/{swa.code}/")
-        self.assertEqual(response.status_code, 404)
-
-        # inactive SWA
-        swa, _ = create_swa(
-            is_active=False, code="NO", claimant_url="https://example.swa.gov/"
-        )
-        response = self.client.get(f"/contact/{swa.code}/")
-        self.assertEqual(response.status_code, 404)
-
-        # no such SWA
-        response = self.client.get("/contact/foobar/")
-        self.assertEqual(response.status_code, 404)
-
-        # whoami logged in
-        swa = SWA.active.get(code="AR")
-        swa_xid = create_swa_xid(swa)
-        self.client.post(
-            "/login/",
-            {
-                "email": "some@example.com",
-                "IAL": "1",
-                "swa_code": "AR",
-                "swa_xid": swa_xid,
-            }
-            | ADDRESS,
-        )
-        response = self.client.get("/contact/AR/")
-        self.assertContains(response, "Contact us", status_code=200)
-
-
-ADDRESS = {
-    "address.address1": "123 Any St",
-    "address.city": "Some",
-    "address.state": "KS",
-    "address.zipcode": "00000",
-}
+ADDRESS = {}
+for k, v in RESIDENCE_ADDRESS.items():
+    ADDRESS[f"address.{k}"] = v
 
 
 class LocalLoginTestCase(BucketableTestCase):
@@ -188,7 +52,7 @@ class LocalLoginTestCase(BucketableTestCase):
                 "birthdate": None,
                 "address": {
                     "address1": "123 Any St",
-                    "city": "Some",
+                    "city": "Somewhere",
                     "state": "KS",
                     "zipcode": "00000",
                 },
@@ -247,6 +111,127 @@ class LocalLoginTestCase(BucketableTestCase):
         self.assertEqual(self.client.session["whoami"]["claim_id"], str(claim.uuid))
         self.assertTrue(claim.is_initiated_with_swa_xid())
         self.assertTrue(claim.completed_artifact_exists())
+
+    def test_local_login_swa_xid_exists_in_session(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        session = self.client.session
+        session["swa_xid"] = "abc-123"
+        session.save()
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "ssn": "900001234",
+                "swa_code": swa.code,
+                "phone": "555-555-5555",
+                "birthdate": "1970-01-01",
+            }
+            | ADDRESS,
+        )
+        self.assertRedirects(
+            response,
+            "/identity/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        self.assertTrue(self.client.session["whoami"]["claim_id"])
+
+    def test_local_login_missing_swa_xid(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "ssn": "900001234",
+                "swa_code": swa.code,
+                "phone": "555-555-5555",
+                "birthdate": "1970-01-01",
+            }
+            | ADDRESS,
+        )
+        self.assertContains(response, "Web address incomplete", status_code=400)
+
+    def test_local_login_malformed_swa_xid(self):
+        swa = SWA.active.get(code="AR")
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "first_name": "Some",
+                "last_name": "Body",
+                "IAL": "2",
+                "ssn": "900001234",
+                "swa_code": swa.code,
+                "swa_xid": "bad",
+                "phone": "555-555-5555",
+                "birthdate": "1970-01-01",
+            }
+            | ADDRESS,
+        )
+        self.assertContains(response, "Web address invalid", status_code=400)
+
+    def test_local_login_duplicate_swa_xid(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some@example.com",
+                "IAL": "1",
+                "swa_code": swa.code,
+                "swa_xid": "abc-123",
+            },
+        )
+        self.assertRedirects(
+            response,
+            "/identity/",
+            status_code=302,
+            fetch_redirect_response=False,
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "some-one-else@example.com",
+                "IAL": "1",
+                "swa_code": swa.code,
+                "swa_xid": "abc-123",
+            },
+        )
+        self.assertContains(response, "Log in unsuccessful", status_code=500)
+
+    def test_local_login_missing_params(self):
+        swa, _ = create_swa(
+            is_active=True, featureset=SWA.FeatureSetOptions.IDENTITY_ONLY
+        )
+        response = self.client.post(
+            "/login/",
+            {
+                "IAL": "1",
+                "swa_code": swa.code,
+                "swa_xid": "abc-123",
+            },
+        )
+        self.assertContains(response, "Log in unsuccessful", status_code=400)
+        response = self.client.post(
+            "/login/",
+            {
+                "email": "someone@example.com",
+                "IAL": "1",
+                "swa_xid": "def-456",
+            },
+        )
+        self.assertContains(response, "Log in unsuccessful", status_code=400)
 
     def test_local_login_swa_xid_existing_claim(self):
         swa, _ = create_swa(

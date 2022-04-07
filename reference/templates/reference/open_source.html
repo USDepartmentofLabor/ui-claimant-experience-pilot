@@ -1,0 +1,160 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block title %} View sample application code {% endblock %}
+
+{%block content %}
+<section class="usa-section">
+  <p>
+    We have opened up the source code for the Claimant Experience pilot application that the U.S. Department of Labor created in partnership with the Arkansas Devision of Workforce Services and the New Jersey Department of Labor & Workforce Development. Throughout this reference site, we note elements you can use improve the claimant experience. By providing the source code, you can you can also explore the entire application to see what else might be useful. The open source code can be found on GitHub here [link tbd].
+  </p>
+  <p>
+    The application code includes the following functionality:
+  </p>
+  <ul>
+    <li>User flow and integration of Identity proofing with <a class="usa-link" href="https://login.gov">login.gov</a> at Identity Assurance Level (IAL) 2</li>
+    <li>Initial Unemployment Insurance (UI) claim intake</li>
+  </ul>
+  <p>
+    There are a couple ways we recommend interacting with the code. One way is for engineers to pull the code down to their local computers, follow the setup instructions (colocated with the code), and explore the running application. Another way to engage is to explore the code as it uses many best practices from which your engineers can pick and choose to implement. These best practices can both improve the experience UI claimants and result in the ability to make changes to your code faster.
+  </p>
+  <p>
+    Some of the best practices included in the open-sourced code include:
+  </p>
+  <ul>
+    <li>Providing an accessible, mobile-first, modern implementation using <a class="usa-link" href="https://designsystem.digital.gov/">U.S. Web Design System</a></li>
+    <li>Implementing automated, real-time code quality checks</li>
+    <li>Feature flagging to enable faster, easier, and more reliable code releases</li>
+    <li>Using internationalization libraries for translations</li>
+    <li>Expressing and storing complex data relationships</li>
+  </ul>
+  <p>
+    To assist in understanding and implementing these best practices, we have described how we implemented them in a UI-specific system below.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="mobile-first"></a>
+  <h2>Using an accessible, mobile-first, modern design system</h2>
+  <p>
+    The Claimant Experience pilot application uses the <a class="usa-link" href="https://designsystem.digital.gov/">U.S. Web Design System (USWDS)</a> for all of its user interfaces. USWDS is a design system (set of user interface components) that make it easy to build accessible and usable federal websites. USWDS components are responsive by default, so they work on mobile, tablet, and desktop views out of the box without any additional coding.
+  </p>
+  <p>
+    The following image shows a mobile vs. desktop side-by-side comparison of one page in the claimant experience application:
+  </p>
+  <div class="grid-row margin-bottom-5">
+    <div class="tablet:grid-col-3">
+      <h3>Mobile</h3>
+      <img class="border-3 border-base-lightest" src="{% static 'reference/mobile.png' %}" alt="Mobile application display" />
+    </div>
+    <div class="tablet:grid-col-1"></div>
+    <div class="tablet:grid-col-8">
+      <h3>Desktop</h3>
+      <img class="border-3 border-base-lightest" src="{% static 'reference/desktop.png' %}" alt="Desktop application display" />
+    </div>
+  </div>
+  <p>
+    While using a design system like USWDS doesn't guarantee accessibility, it makes achieving accessibility easier. For example, some of the more complex components have explanations of the accessibility research that has gone into the design decisions surrounding those components. Additionally, many components in the design system are accompanied by guidance on accessible implementation.
+  </p>
+  <p>
+    One final benefit of using a design system like USWDS is the maintenance of that system is taken on by another organization, freeing up your engineers and designers to focus on UI system implementation.
+  </p>
+  <p>
+    <a class="usa-link" href="javascript:void(0)">Access the code repository (Link TBD)</a> and explore your own implementation of the application.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="automated-checks"></a>
+  <h2>Implement automated, real-time code quality checks</h2>
+  <p>
+    One challenge in maintaining a complex system like the Claimant Experience pilot is allowing for changes to be made quickly, without putting the quality and stability of the website at risk. One way to meet this challenge is to implement automated, real-time (or near real-time) quality feedback mechanisms. The Claimant Experience pilot application has the following automated processes in place to safeguard quality. Note that all tools mentioned are open source/free to use.
+  </p>
+  <ul>
+    <li>Unit tests of our front-end code with <a href="https://jestjs.io/">Jest</a>.</li>
+    <li>Unit tests of our backend code with the <a href="https://docs.python.org/3/library/unittest.html#module-unittest">Python unittest module</a>.</li>
+    <li>End-to-end tests of our entire application using <a href="https://www.cypress.io/">Cypress</a>.</li>
+    <li>Automated accessibility testing within our end-to-end tests using <a href="https://pa11y.org/">pa11y</a>.</li>
+    <li>Performance testing within our end-to-end tests using <a href="https://github.com/GoogleChrome/lighthouse-ci">Lighthouse CI</a>.</li>
+    <li>Requiring at least 90% of our code be covered by tests.</li>
+  </ul>
+  <p>A continuous integration server runs all of our quality checks whenever we want to merge code into our main development branch. If any of these quality checks fails, our code can't be pushed to production. With these checks in place, we can move quickly and with confidence.</p>
+  <p>
+    <a class="usa-link" href="javascript:void(0)">Explore the pilot app source code (Link TBD)</a> to see what it looks like to implement these automated quality tests.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="feature-flagging"></a>
+  <h2>Use feature flagging to unblock deployments and run experiments</h2>
+  <p>
+    One blocker for rapid code deployments is not being able to release new features or fixes because of other separate changes that are still in-process. This can be mitigated by using feature flagging: a technique used to toggle functionality on or off in an application. The Claimant Experience pilot application uses a feature flag software-as-a-service product to gate content that isn't ready to be exposed to users in production. This allows us to keep shipping code to production even if features are partially completed.
+  </p>
+  <p>
+    The following code snippet shows an example of a feature flag used in the Claimant Experience pilot application Python code. This flag currently prevents the use of a future 1099G upload feature that hasn't been released yet.
+  </p>
+  <p>
+    <pre><code>def v1_act_on_claimant_1099G(request, claimant_id):
+    # Get flag value from our flag service
+    ld_flag_set = ld_client.variation(
+        "allow-1099g-upload", {"key": "anonymous-user"}, False
+    )
+    # Return a 404 "Not Found" error if the flag is off
+    if not ld_flag_set:
+        logger.debug("allow-1099g-upload off")
+        return JsonResponse({"status": "error", "error": "route not found"}, status=404)
+
+    # Handle the request if the flag is on
+    return v1_POST_1099G(request, claimant_id)</code></pre>
+  </p>
+  <p>Feature flags also allow you to run experiments: flags can be used to show different versions of content to different users, and then you can measure the performance of different iterations of content.</p>
+</section>
+
+<section class="usa-section">
+  <a id="translation"></a>
+  <h2>Using internationalization libraries for translations</h2>
+  <p>
+    The Claimant Experience pilot application uses internationalization libraries (e.g., <a class="usa-link" href="https://react.i18next.com/">react-i18next</a>) that can be used to display text in mulitple languages. These libraries use user-provided translation strings rather than automatic text translation. States and territories are required to provide forms in languages other than English, and automated translation services may not provide accurate translations, which can further confuse claimants.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="complex-data"></a>
+  <h2>Express and store complex data relationships</h2>
+  <p>Claims data is complex. There are many potential shapes that claim data might have depending on how a claimant answers questions. Because of this, the Claimant Experience pilot team elected to store claims data as semi-structured JSON files. The JSON data is validated using <a href="https://json-schema.org/">JSON Schema</a>, which offers a way to codify complex data relationships.</p>
+  <p>The following example shows how union membership can be expressed with JSON schema. By default, only the <code>is_union_member</code> field needs to be completed. However, if <code>is_union_member</code> is <code>true</code>, then <code>union_name</code>, <code>union_local_number</code>, and <code>required_to_seek_work_through_hiring_hall</code> all become required fields.</p>
+  <p>
+    <pre>
+<code>{
+  "union_membership": {
+    "$id": "/definitions/union_membership",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": { "is_union_member": { "type": "boolean" } },
+    "required": ["is_union_member"],
+    "if": {
+      "properties": {
+        "is_union_member": { "type": "boolean", "const": true }
+      }
+    },
+    "then": {
+      "properties": {
+        "union_name": { "type": "string", "maxLength": 32 },
+        "union_local_number": { "type": "string", "maxLength": 16 },
+        "required_to_seek_work_through_hiring_hall": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "union_name",
+        "union_local_number",
+        "required_to_seek_work_through_hiring_hall"
+      ]
+    }
+  }
+}</code></pre>
+  </p>
+  <p>Using JSON Schema, the Claimant Experience pilot development team was able to express the entire claim form in a single JSON file against which any claim object could be validated.</p>
+  <p>An additional benefit of storing claims as semi-structured data was that the application could save in-progress claims: the data did not need to conform to more rigid database specifications but simply had to be saved to an object store. This results in a better experience as claimants do not have to finish the form in one session.</p>
+</section>
+{% endblock %}

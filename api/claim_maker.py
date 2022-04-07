@@ -19,10 +19,12 @@ class ClaimMaker(object):
         self.claimant = claimant
 
     # returns a Claim and its partial artifact
-    def create(self, email, payload={}):
+    def create(self, email, payload=None):
         claim = Claim(swa=self.swa, claimant=self.claimant)
         claim.save()
         # minimal properties, always in sync with claim/swa/claimant/whoami
+        if payload is None:
+            payload = {}
         payload["id"] = str(claim.uuid)
         payload["email"] = email
         payload["swa_code"] = self.swa.code

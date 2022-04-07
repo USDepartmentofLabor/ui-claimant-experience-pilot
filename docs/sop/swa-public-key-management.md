@@ -25,12 +25,12 @@ with:
 If you are in a Windows terminal in the same directory as the public key `.pem` file, you can upload like:
 
 ```sh
-% kubectl cp ./NJ-public.pem eta-arpa/:thepodidentifier:/app/NJ-public.pem
+% kubectl cp ./NJ-public.pem eta-arpa/thepodidentifier:/app/NJ-public.pem
 ```
 
 ## Add a new key to a new SWA
 
-Once the key is uploaded to the container and you can connected, you can add the new key to a new SWA like this:
+Once the key is uploaded to the container and you are connected, you can add the new key to a new SWA like this:
 
 ```sh
 > make add-swa-key SWA=NJ PEM=NJ-public.pem

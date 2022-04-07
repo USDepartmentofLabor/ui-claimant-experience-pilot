@@ -107,8 +107,7 @@ class LocalIdentityProvider(object):
         self.request.session["whoami"] = self.whoami.as_dict()
         self.request.session["authenticated"] = True
         if (
-            self.whoami.IAL == "2"
-            and self.whoami.swa.featureset == "Identity Only"
+            self.whoami.swa.featureset == "Identity Only"
             and self.claimant.pending_identity_only_claim()
         ):
             logger.debug("🚀 create Identity claim")

@@ -45,8 +45,8 @@ const OtherPay = () => {
   useEffect(() => {
     const otherPay = values.other_pay || [];
     if (otherPay.length > 0) {
-      const pay_types = otherPay.map((detail) => detail.pay_type);
-      setFieldValue("LOCAL_pay_types", pay_types);
+      const payTypes = otherPay.map((detail) => detail.pay_type);
+      setFieldValue("LOCAL_pay_types", payTypes);
     } else {
       setFieldValue("LOCAL_pay_types", []);
     }
@@ -57,7 +57,9 @@ const OtherPay = () => {
       const localPayTypes = values.LOCAL_pay_types || [];
       const otherPay = v.other_pay || [];
       const fixed = otherPay.filter((p) => localPayTypes.includes(p.pay_type));
-      if (fixed.length === otherPay.length) return v;
+      if (fixed.length === otherPay.length) {
+        return v;
+      }
       return { ...v, other_pay: fixed };
     });
   }, [values.LOCAL_pay_types]);
@@ -103,7 +105,7 @@ const OtherPay = () => {
                   },
                   disabled:
                     values?.LOCAL_pay_types?.includes("no_other_pay") &&
-                    option.value != "no_other_pay",
+                    option.value !== "no_other_pay",
                 },
               }))}
             />

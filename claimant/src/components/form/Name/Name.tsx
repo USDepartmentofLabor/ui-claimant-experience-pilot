@@ -1,5 +1,5 @@
 import TextField from "../fields/TextField/TextField";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 interface INameProps {
   id: string;
@@ -20,7 +20,11 @@ export const Name = ({ id, name }: INameProps) => {
       <TextField
         id={`${id}.middle_name`}
         name={`${name}.middle_name`}
-        label={t("name.middle_name.label")}
+        label={
+          <Trans t={t} i18nKey="name.middle_name.label">
+            Middle name <i>(optional)</i>
+          </Trans>
+        }
         type="text"
       />
       <TextField

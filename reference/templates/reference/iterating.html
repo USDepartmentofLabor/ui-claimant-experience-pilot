@@ -1,0 +1,182 @@
+{% extends "./base.html" %}
+
+{% block title %} Improve despite tech challenges {% endblock %}
+
+{%block content %}
+<section class="usa-section">
+  <p>
+    All state workforce agencies (SWAs) are working in challenging environments that include legacy technology. States have limited resources and a workload that can be unpredictable. These factors can make large scale modernization difficult, expensive, and/or time-consuming. However, there are opportunities to make incremental and impactful changes.
+  </p>
+  <p>
+    The case study below demonstrates how the state of New Jersey has successfully made significant improvements despite their current technical challenges.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="mobile-friendly"></a>
+  <h2>Go mobile-friendly with existing technology</h2>
+  <p>
+    Mobile-friendly systems and websites are critical given that smart phones are the most accessible (and often only) for many applicants. Few states have mobile-friendly experiences today. Around 60% of states and territories do not have responsive sites for unemployment benefits. Additionally, multiple studies show that 60-80% of applicants have smartphones as their primary device.
+  </p>
+  <p>
+    Using CSS media queries, you can make huge improvements to the mobile-friendliness of your site, often without the need to upgrade your software stack or infrastructure. Have a conversation with your engineering experts and share this code to see what's possible in the short term.
+  </p>
+  <p class="text-bold">[Example NJ SSI desktop and mobile-friendly screenshots]</p>
+  <h3>Media query example</h3>
+  <p>
+    The following code snippet shows a couple sections of text aligned side-by-side on a page using the CSS flex display property. This works well for wide screens, but appears too narrow on mobile.
+  </p>
+  <p>
+  <pre><code>&lt;style&gt;
+  .container {
+    display: flex;
+    gap: 1rem;
+  }
+  .container div {
+    background-color: #eee;
+    padding: 1rem;
+    flex-grow: 1;
+  }
+&lt;/style&gt;
+&lt;div class="container"&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  </p>
+
+  <p>
+    To fix this, we can add a media query. The added code in the following snippet translates to "apply these styles if the viewport width is less than or equal to 480 pixels." In this case, we change the container from <code>display: flex</code> to <code>display: block</code> and add some margin around the container's children.
+  </p>
+
+  <p><pre><code>&lt;style&gt;
+  .container {
+    display: flex;
+    gap: 1rem;
+  }
+  .container div {
+    background-color: #eee;
+    padding: 1rem;
+    flex-grow: 1;
+  }
+  /* Added media query */
+  @media (max-width: 480px) {
+    .container {
+      display: block;
+    }
+    .container div {
+      margin: 1rem;
+    }
+  }
+&lt;/style&gt;
+&lt;div class="container"&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+  &lt;div&gt;
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua.
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  </p>
+
+  <p>
+    With this change in hand, we can adjust our screen size and see that, when we cross the 480px breakpoint, our layout changes to be more mobile-friendly. For the example below, the mobile version automatically vertically stacks content to be mobile-friendly.
+  </p>
+  <div class="grid-row">
+    <div class="grid-col-12 tablet:grid-col-7 tablet:padding-right-4">
+      <h3>Desktop</h3>
+      <div style="gap: 1rem" class="display-flex">
+        <div class="padding-2 bg-base-lighter">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </div>
+        <div class="padding-2 bg-base-lighter">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </div>
+      </div>
+    </div>
+    <div class="grid-col-12 tablet:grid-col-5 tablet:padding-left-4">
+      <h3>Mobile</h3>
+      <div class="padding-2 bg-base-lighter margin-bottom-2">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </div>
+      <div class="padding-2 bg-base-lighter">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="usa-section">
+  <a id="experiment-from-scratch"></a>
+  <h2>Experiment from scratch</h2>
+  <p>
+    When you are not constrained by legacy systems and process, you can make fast progress with new capabilities. You may uncover ideas that you otherwise wouldn't have.
+  </p>
+  <p>
+    In partnership with USDOL, USDS built a pilot application with New Jersey on a separate, new site entirely outside of their existing website and application. New Jersey is not releasing this application as their new system, but are using pieces of it to improve their existing system. If you build on the side, you may find valuable features to incorporate into your system(s) or you may learn new details that inform your technology roadmap.
+  </p>
+  <p>
+    Explore the sample app source code [insert link here] to see how you can experiment with building outside of your legacy system.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="change-frontend"></a>
+  <h2>Change the frontend without requiring changes on the backend</h2>
+  <p>
+    A challenge to making changes to application form questions is that it could require changes to the database (or backend). But, it may be possible to update the applicant-facing frontend of the application without changing the backend. This is done by mapping new field options to existing options.
+  </p>
+  <p>
+    By changing the frontend form responses and developing a mapping schema, you can still conform to the database requirements. This enables changes on form questions to be made without a significant tech overhaul.
+  </p>
+  <p>
+    Below is an example of this implemented by New Jersey to add the gender X marker as part of the standard gender question in the unemployment application.
+  </p>
+  <p class="text-bold">[Example image showing gender X marker implementation]</p>
+  <p>
+    Use this example to reconsider frontend form question changes that you have considered before, but not been able to implement.
+  </p>
+</section>
+
+<section class="usa-section">
+  <a id="make-space"></a>
+  <h2>Make space to hear ideas</h2>
+  <p>
+    New Jersey, like many states and territories, has struggled to update their UI application because of complicated legacy technology problems. During the pilot, they brought together policy, IT, and innovation teammates to meet and ideate. They came up with technical workarounds that enabled them to make short term improvements.
+  </p>
+  <p>
+    Below are some of the tactics New Jersey used to create space for these ideas and act on them. If you're inspired, and haven't already, try this in your organization to see if it results in any new learnings and opportunities.
+  </p>
+  <p>
+    NJ structured the meeting around an agenda like this:
+  </p>
+  <ul>
+    <li>
+      <span class="text-bold">What are the program office's goals?</span> Define specific claimant-experience goals such as plain language for application questions, accessibility, or mobile-responsiveness.
+    </li>
+    <li>
+      <span class="text-bold">What are the blockers?</span> Whether it's a prioritization, technology, or other problem, discuss the blockers in detail.
+    </li>
+    <li>
+      <span class="text-bold">What are some ideas for workarounds?</span> Discuss how to solve the problems or change incrementally to reach claimant experience goals?
+    </li>
+  </ul>
+  <p>
+    New Jersey made sure IT, Innovation, and Policy leadership were present at the meeting. Decision-makers from those areas were present to advocate for human centered design and to hear the various ideas. After leaders decided which ideas to pursue, they scheduled follow-up sessions to dive into implementation details so that tactical logistics did not interfere with the ideation meeting.
+  </p>
+  <p>
+    New Jersey used a round-table style to facilitate the meeting so leaders as well anyone from the technology side had the opportunity to speak. It specifically was important that the technical experts had the space to propose solutions based on what policy wanted to achieve.
+  </p>
+</section>
+{% endblock %}

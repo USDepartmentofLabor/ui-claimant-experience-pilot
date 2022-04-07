@@ -7,7 +7,9 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-if (process.env.NODE_ENV !== "test") Modal.setAppElement("#root");
+if (process.env.NODE_ENV !== "test") {
+  Modal.setAppElement("#root");
+}
 
 const NOTIFY_UNDER_MINUTES = 5;
 const TIMOUT_BUFFER_SECONDS = 5;
@@ -72,7 +74,7 @@ export const SessionManager = () => {
       checkExpiry();
     }, 1000);
     // Check after whoami fetch
-    if (isFetching === false) {
+    if (!isFetching) {
       checkExpiry();
     }
     return () => {
@@ -86,13 +88,15 @@ export const SessionManager = () => {
     }
   }, [secondsRemaining]);
 
-  if (secondsRemaining === undefined) return null;
+  if (secondsRemaining === undefined) {
+    return null;
+  }
 
   const timeFromSeconds = (time: number, sr = false) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     if (sr) {
-      return t("timeout.sr_countdown", { count: minutes, seconds: seconds });
+      return t("timeout.sr_countdown", { count: minutes, seconds });
     }
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };

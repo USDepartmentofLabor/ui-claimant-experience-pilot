@@ -135,6 +135,9 @@ dev-env-files: ## Reset local env files based on .env-example files
 	cp ./core/.env-example ./core/.env
 	cp ./claimant/.env-example ./claimant/.env
 
+dev-ld-config: ## Reset ld-config.json based on ld-config-test.json
+	cp ./core/ld-config-test.json ./core/ld-config.json
+
 container-build: ## Build the Django app container image (local development)
 	docker build --platform linux/amd64 -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=devlocal --target djangobase-devlocal .
 
@@ -142,7 +145,7 @@ acr-login: ## Log into the Azure Container Registry
 	docker login ddphub.azurecr.io
 
 container-build-wcms: ## Build the Django app container image (to test image configuration for deployed environment)
-	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.10-slim-bullseye .
+	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.11-slim-bullseye .
 
 container-run: ## Run the Django app in Docker
 	docker run --network arpaui_app-tier --rm -it -p 8004:8000 $(DOCKER_IMG)
@@ -226,7 +229,8 @@ update-translations: ## Update the .po files (run manually inside the container)
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
 	rm -f requirements*.txt
-	apt-get purge -y --auto-remove gcc
+	apt-get purge -y --auto-remove gcc git
+	apt-get remove -y linux-libc-dev
 	chown -R doluiapp:doluiapp /app
 	# Use /run/celery in these commands rather than /var/run/celery
 	# due to differences in how the docker engine and kaniko handle
@@ -314,6 +318,10 @@ soc-clean: ## Clean up the SOC code temp files
 
 hourly-tasks: ## runs named tasks to be called on an hourly schedule
 	python manage.py delete_expired_partial_claims
+	python manage.py complete_expired_identity_claims
+
+swa_xid: ## Generate a swa_xid based off the current timestamp
+	printf "%s-%s-%s-%s\n" `date +%Y%m%d` `date +%H%M%S` "1234567" "123456789";
 
 default: help
 

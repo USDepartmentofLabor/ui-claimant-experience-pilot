@@ -1,6 +1,7 @@
 {% load static %} {% load i18n %}
 <!-- prettier-ignore -->
 <a class="usa-skipnav" href="#main-content">{% translate "Skip to main content" %}</a>
+{% if show_test_banner %}
 <section role="banner" aria-label="Test website">
   <div
     class="padding-1 bg-secondary-darker text-white line-height-1 text-center"
@@ -9,6 +10,7 @@
     {% translate "TEST SITE - Do not use real personal information (demo purposes only) - TEST SITE" %}
   </div>
 </section>
+{% endif %}
 <section
   role="banner"
   class="usa-banner"

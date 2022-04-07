@@ -4,6 +4,11 @@ on:
     branches:
       - main
 
+# Cancel redundant builds on same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 name: Test and Lint
 jobs:
   test:
@@ -16,8 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Prep env
-        run: |
-          cp core/ld-config-test.json core/ld-config.json
+        run: make dev-ld-config
       - name: Start CI docker compose
         run: make ci-start
         env:

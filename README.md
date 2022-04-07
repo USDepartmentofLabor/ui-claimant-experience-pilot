@@ -1,5 +1,7 @@
 # ARPAUI
 
+![build](https://github.com/USDOLEnterprise/ARPAUI/actions/workflows/pull_request.yml/badge.svg)
+
 The Department of Labor has been asked to lead the executive initiative (ARPA program) to modernize and reform Unemployment Insurance (UI). As part of this program, we are intending to use the DOL GitHub repository as a central source code repository. Following USDS playbook guidelines will help development teams to develop and deploy the code internal to DOL, share the code with respective partners (states), and also eventually make code open-source when appropriate.
 
 ## ADRs
@@ -365,7 +367,7 @@ Example run inside the container:
 > make prepackage-claim SWA=XX CLAIMANT=abc123 IDP=login.gov JSON=schemas/claim-v1.0-example.json SCHEMA=claim-v1.0
 ```
 
-Valid `IDP` values include `login.gov` and (if `SHOW_LOGIN_PAGE` is active in your environment) `Local`.
+Valid `IDP` values include `login.gov` and (if `ENABLE_TEST_LOGIN` is active in your environment) `Local`.
 
 ## LaunchDarkly
 

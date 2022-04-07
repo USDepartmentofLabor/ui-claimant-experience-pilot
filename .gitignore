@@ -8,6 +8,7 @@ certs/
 .coverage
 coverage.xml
 static/
+!reference/static/
 *.mo
 .DS_Store
 core/ld-config.json

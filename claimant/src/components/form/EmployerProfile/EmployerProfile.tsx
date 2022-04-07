@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Fieldset } from "@trussworks/react-uswds";
 import { useFormikContext } from "formik";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import TextField from "../fields/TextField/TextField";
 import { YesNoQuestion } from "../YesNoQuestion/YesNoQuestion";
 import { DatePicker } from "../fields/DatePicker/DatePicker";
@@ -75,7 +75,11 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       <Address
         labels={{
           address1: t("address.address1.label"),
-          address2: t("address.address2.label"),
+          address2: (
+            <Trans t={t} i18nKey="address.address2.label">
+              Employer address line 2 <i>(optional)</i>
+            </Trans>
+          ),
           city: t("address.city.label"),
           state: t("address.state.label"),
           zipcode: t("address.zipcode.label"),
@@ -93,7 +97,11 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
           <Address
             labels={{
               address1: t("work_site_address.address1.label"),
-              address2: t("work_site_address.address2.label"),
+              address2: (
+                <Trans t={t} i18nKey="work_site_address.address2.label">
+                  Employer address line 2 <i>(optional)</i>
+                </Trans>
+              ),
               city: t("work_site_address.city.label"),
               state: t("work_site_address.state.label"),
               zipcode: t("work_site_address.zipcode.label"),

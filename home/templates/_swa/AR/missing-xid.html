@@ -1,5 +1,6 @@
 {% load i18n %}
+{% load include_strip %}
 <section>
   {% translate "If you’re trying to verify your identity for your Arkansas unemployment claim, please" %}
-  {% include "_swa/AR/call_instructions.html" %}
+  {% include_strip "_swa/AR/call_instructions.html" %}.
 </section>

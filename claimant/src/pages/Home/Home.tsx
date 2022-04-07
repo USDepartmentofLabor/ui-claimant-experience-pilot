@@ -9,7 +9,7 @@ import { useWhoAmI } from "../../queries/whoami";
 import { Routes } from "../../routes";
 import { formatExpiresAtDate } from "../../utils/format";
 import { useGetPartialClaim, useSubmitClaim } from "../../queries/claim";
-import { useClaims } from "../../queries/claims";
+import { useClaims, useCancelClaim } from "../../queries/claims";
 import {
   Accordion,
   Button,
@@ -185,6 +185,7 @@ const HomePage = () => {
       status: claimStatus,
       Content: () => (
         <ApplicationContent
+          claimId={partialClaim?.id}
           remainingTime={remainingTime}
           expiresAt={expiresAt}
           claimStatus={claimStatus}
@@ -370,6 +371,7 @@ const IdentityContent = ({
 };
 
 interface IApplicationContent {
+  claimId?: string;
   expiresAt: string;
   remainingTime: string[];
   claimStatus: keyof Record<Status, string>;
@@ -377,6 +379,7 @@ interface IApplicationContent {
 }
 
 const ApplicationContent = ({
+  claimId,
   claimStatus,
   expiresAt,
   remainingTime,
@@ -384,10 +387,21 @@ const ApplicationContent = ({
   children,
 }: PropsWithChildren<IApplicationContent>) => {
   const { t } = useTranslation("home");
+  const cancelClaim = useCancelClaim();
   const hoursRemaining = parseInt(remainingTime[0]);
   const showWarning =
     claimStatus === "in_progress" &&
     hoursRemaining < SHOW_EXPIRATION_WARNING_WITH_HOURS_REMAINING;
+
+  const deleteApplication = async () => {
+    if (claimId) {
+      const r = await cancelClaim.mutateAsync(claimId);
+      if (r.status === "ok") {
+        // reload the whole page since all query states are going to be invalidated.
+        window.location.reload();
+      }
+    }
+  };
 
   if (claimStatus !== "complete") {
     return (
@@ -417,7 +431,7 @@ const ApplicationContent = ({
           </Link>
           {/* TODO: Enable claim deletion */}
           {claimStatus === "in_progress" && (
-            <Button outline type="button">
+            <Button outline type="button" onClick={deleteApplication}>
               {t("application.not_ready_to_submit.delete_application")}
             </Button>
           )}

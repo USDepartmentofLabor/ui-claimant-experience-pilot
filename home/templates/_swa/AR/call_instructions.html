@@ -1,11 +1,11 @@
 {% load i18n %}
+{% load include_strip %}
+{% spaceless %}
 <span>
-    {% blocktranslate %}
-        call the <span class="text-bold">ADWS UI Hotline</span> at
-    {% endblocktranslate %}
-        <span class="text-bold">{% include "_swa/AR/phone.html" %}</span>
-        ({% include "_swa/AR/hours_of_operation.html" %})
-    {% blocktranslate %}
-        within <span class="text-bold">7 calendar days</span> of when you submitted your application.
-    {% endblocktranslate %}
+  {% blocktranslate %}
+    call the <span class="text-bold">ADWS UI Hotline</span> at
+  {% endblocktranslate %}
+  <span class="text-bold">{% include_strip "_swa/AR/phone.html" %}</span>
+  <span> ({% include_strip "_swa/AR/hours_of_operation.html" %})</span>
 </span>
+{% endspaceless %}

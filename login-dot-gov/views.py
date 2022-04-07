@@ -60,7 +60,7 @@ def logindotgov_client():
 # redirect to the relevant login profile page
 @never_cache
 def profile(request):
-    login_url = LoginDotGovOIDCClient.get_url()
+    login_url = LoginDotGovOIDCClient.get_url().rstrip("/")
     return redirect(f"{login_url}/account")
 
 
@@ -80,7 +80,9 @@ def ial2required(request):
     if request.session.get("authenticated"):
         whoami = WhoAmI.from_dict(request.session.get("whoami"))
         redirect_to = (
-            "/identity/" if whoami.swa.featureset == "Identity Only" else "/claimant/"
+            f"/contact/{whoami.swa.code}/"
+            if whoami.swa.featureset == "Identity Only"
+            else "/claimant/"
         )
         return redirect(f"{redirect_to}?idp=logindotgov&ial2error=true")
 
@@ -375,13 +377,8 @@ def initiate_claimant_session(request, userinfo):
             status=500,
         )
 
-    if (
-        claimant_IAL == 2
-        and request_IAL == 2
-        and swa.is_identity_only()
-        and claimant.pending_identity_only_claim()
-    ):
-        complete_identity_only_claim(whoami, claimant)
+    if swa.is_identity_only() and claimant.pending_identity_only_claim():
+        write_identity_only_claim(whoami, claimant)
 
     request.session["logindotgov"]["userinfo"] = userinfo
     request.session["whoami"] = whoami.as_dict()
@@ -419,7 +416,7 @@ def initiate_claim_with_swa_xid(request, whoami, claimant, swa):
         whoami.claim_id = str(claim.uuid)
 
 
-def complete_identity_only_claim(whoami, claimant):
+def write_identity_only_claim(whoami, claimant):
     claim = claimant.pending_identity_only_claim()
     claim_maker = IdentityClaimMaker(claim, whoami)
     try:

@@ -46,6 +46,7 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
   context("IDENTITY_ONLY featureset", () => {
     it("uses verify identity language", () => {
       cy.visit("/start/AR/?swa_xid=12345678-123456-1234567-123456789");
+      cy.check_a11y();
       cy.contains("Verify your identity online with Login.gov").should(
         "be.visible"
       );
@@ -55,7 +56,8 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
     });
     it("shows not found for missing swa_xid", () => {
       cy.visit(`/start/AR/`);
-      cy.contains("Application not found");
+      cy.contains("Web address incomplete");
+      cy.check_a11y();
     });
   });
 
@@ -68,13 +70,15 @@ context("SWA start page", { scrollBehavior: "center" }, () => {
       cy.url().should("contain", "/idp/AR/?");
       cy.url().should("contain", `swa_xid=${swa_xid}`);
       cy.getCookie("swa_xid").should("have.property", "value", swa_xid);
+      cy.check_a11y();
     });
 
     it("filters out dangerous characters", () => {
       const swa_xid =
         "12345678-123456-1234567-123456789-<alert>danger!</alert>";
       cy.visit(`/start/AR/?swa_xid=${swa_xid}`);
-      cy.contains("Application not found");
+      cy.contains("Web address incomplete");
+      cy.check_a11y();
     });
   });
 });

@@ -23,8 +23,8 @@ from .models import Claim
 from .whoami import WhoAmI, WhoAmISWA
 from core.email import InitialClaimConfirmationEmail
 from core.utils import register_local_login
+from core.exceptions import ClaimStorageError
 from dacite import from_dict
-from launchdarkly.client import ld_client
 
 
 logger = logging.getLogger("api")
@@ -117,23 +117,12 @@ def cancel_claim(request, claim_id):
 
     """
     Mark a Claim as resolved and delete its artifacts.
-    The Claim must be COMPLETED but not yet FETCHED.
-    NOTE that normally this is only possible via SWA API, but we make it available
-    for testing purposes only, e.g. for creating multiple claims under the same account.
+    The Claim must not yet be Fetched.
     """
     whoami = whoami_from_session(request)
-
-    ld_flag_set = ld_client.variation(
-        "allow-claim-resolution", {"key": whoami.email}, False
-    )
-
-    if not ld_flag_set:
-        logger.debug("allow-claim-resolution false")
-        return JsonResponse({"status": "error", "error": "No such route"}, status=404)
-
     whoami.claim_id = claim_id
     claim = ClaimFinder(whoami).find()
-    if not claim or not claim.is_completed() or claim.is_fetched():
+    if not claim or claim.is_fetched():
         logger.debug("🚀 not found {}".format(claim))
         return JsonResponse(
             {"status": "error", "error": "No eligible claim found"}, status=404
@@ -144,9 +133,15 @@ def cancel_claim(request, claim_id):
         )
         resp = claim.delete_artifacts()
         if resp == SUCCESS or resp == NOOP:
+            # invalidate all session caches
+            if request.session.get("partial_claim"):
+                del request.session["partial_claim"]
+            if request.session["whoami"].get("claim_id"):
+                del request.session["whoami"]["claim_id"]
+
             return JsonResponse({"status": "ok"}, status=200)
         else:
-            raise Exception("Failed to delete artifacts")
+            raise ClaimStorageError("Failed to delete artifacts")
     except Exception as err:
         logger.exception(err)
         return JsonResponse(
@@ -371,6 +366,8 @@ def POST_completed_claim(request):
         # now that Claim is completed, forget it in the session.
         if request.session["whoami"].get("claim_id"):
             del request.session["whoami"]["claim_id"]
+
+        claim_request.claim.delete_artifacts(partial_only=True)
 
         return JsonResponse(
             {"status": "accepted", "claim_id": claim_request.payload["id"]}, status=201

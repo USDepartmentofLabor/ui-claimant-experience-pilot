@@ -763,7 +763,7 @@
     "sex": {
       "description": "Required for SWA-level eligibility checks",
       "type": "string",
-      "enum": ["male", "female"]
+      "enum": ["male", "female", "x"]
     },
     "race": {
       "description": "",

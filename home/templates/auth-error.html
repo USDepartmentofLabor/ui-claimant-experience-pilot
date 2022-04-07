@@ -2,7 +2,7 @@
 {% block content %}
 {% load i18n %}
 <div>
-  <h1>{% translate "Log in failed" %}</h1>
+  <h1>{% translate "Log in unsuccessful" %}</h1>
   <section>
     {% translate "Looks like something went wrong while you were trying to verify your identity with Login.gov." %}
   </section>
@@ -24,9 +24,9 @@
   </section>
 
   {% if swa %}
-  <section>
+  <div>
     {% include swa_login_help %}
-  </section>
+  </div>
   {% endif %}
   <!-- dev help: {% translate error %} -->
 </div>

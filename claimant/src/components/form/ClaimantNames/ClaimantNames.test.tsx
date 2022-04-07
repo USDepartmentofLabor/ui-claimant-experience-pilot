@@ -13,6 +13,7 @@ jest.mock("react-i18next", () => ({
       t: (str: string) => str,
     };
   },
+  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
 }));
 
 describe("ClaimantNames component", () => {
