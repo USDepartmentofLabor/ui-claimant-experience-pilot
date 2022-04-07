@@ -101,7 +101,7 @@ context(
       cy.contains("ACME 0").should("be.visible");
       cy.contains("ACME 1").should("be.visible");
       cy.contains("ACME 2").should("be.visible");
-      cy.get("a").contains("Fix 12 errors").should("be.visible").click();
+      cy.get("a").contains("Fix 11 errors").should("be.visible").click();
       cy.url().should("contain", "/claimant/claim/employer/2");
     });
 
