@@ -1,6 +1,6 @@
 appoptics-apm==5.2.0
 boto3==1.21.36
-celery==5.2.5
+celery==5.2.6
 colorlog==6.6.0
 dacite==1.6.0
 Django==4.0.3
