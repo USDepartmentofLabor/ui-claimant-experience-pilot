@@ -58,8 +58,17 @@ COPY requirements*.txt ./
 RUN apt-get update -y && apt-get install -y \
   --no-install-recommends \
   libexpat1 \
-  libc6=2.31-13+deb11u3 \
+  base-files=11.1+deb11u3 \
+  gpgv=2.2.27-2+deb11u1 \
   libc-bin=2.31-13+deb11u3 \
+  libc6=2.31-13+deb11u3 \
+  libssl1.1=1.1.1n-0+deb11u1 \
+  libsystemd0=247.3-7 \
+  libudev1=247.3-7 \
+  openssl=1.1.1n-0+deb11u1 \
+  sysvinit-utils=2.96-7+deb11u1 \
+  tzdata=2021a-1+deb11u3 \
+  zlib1g=1:1.2.11.dfsg-2+deb11u1 \
   gcc \
   libmariadb-dev \
   wait-for-it \
