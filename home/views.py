@@ -29,7 +29,17 @@ def get_dictionary_value(dictionary, key):
 
 
 def handle_404(request, exception=None):
+    if exception:
+        if isinstance(exception, Exception):
+            logger.exception(exception)
+        else:
+            logger.error(exception)
+
     return render(request, "404.html", status=404)
+
+
+def handle_invalid_swa(request, swa_code):
+    return handle_404(request, "No such SWA: {}".format(swa_code))
 
 
 def handle_500(request):
@@ -72,7 +82,7 @@ def swa_index(request, swa_code):
             },
         )
     except SWA.DoesNotExist:
-        return handle_404(request, None)
+        return handle_invalid_swa(request, swa_code)
 
 
 # Contact us per-SWA
@@ -80,7 +90,7 @@ def swa_index(request, swa_code):
 @never_cache
 def swa_contact(request, swa_code):
     if "whoami" not in request.session:
-        return handle_404(request, None)
+        return handle_404(request, "Session is missing entry for whoami")
 
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     try:
@@ -97,11 +107,9 @@ def swa_contact(request, swa_code):
             },
         )
     except TemplateDoesNotExist as err:
-        logger.exception(err)
-        return handle_404(request, None)
+        return handle_404(request, err)
     except SWA.DoesNotExist:
-        logger.debug("No such SWA: {}".format(swa_code))
-        return handle_404(request, None)
+        return handle_invalid_swa(request, swa_code)
 
 
 # our IdP "login" page
@@ -113,9 +121,12 @@ def idp(request, swa_code=None):
         try:
             SWA.active.get(code=requested_swa)
         except SWA.DoesNotExist:
-            return handle_404(request, None)
+            return handle_invalid_swa(request, requested_swa)
     elif not settings.SHOW_IDP_PAGE_FOR_ALL_SWAS:
-        return handle_404(request, None)
+        return handle_404(
+            request,
+            "SHOW_IDP_PAGE_FOR_ALL_SWAS must be enabled to access the requested page without requesting a specific swa",
+        )
 
     return render(
         request,
@@ -144,8 +155,8 @@ def swa_redirect(request, swa_code):
             "swa_redirect": f"_swa/{swa.code}/redirect.html" if swa else None,
         }
         return render(request, "swa-redirect.html", view_args)
-    except TemplateDoesNotExist:
-        return handle_404(request, None)
+    except TemplateDoesNotExist as err:
+        return handle_404(request, err)
 
 
 @never_cache
@@ -173,7 +184,7 @@ def test(request):  # pragma: no cover
         "test-flag-server", {"key": "anonymous-user"}, False
     )
     if not ld_flag_set:
-        return handle_404(request)
+        return handle_404(request, "test endpoint is not enabled")
 
     # TODO a bug in ld_client lib prevents this from working correctly for core/ld-config.json
     # ldflags = ld_client.all_flags_state({"key": "anonymous-user"}).to_json_dict()
@@ -300,7 +311,10 @@ def get_states():
 
 def start(request):
     if not settings.REQUIRE_PREQUAL_START_PAGE:
-        return handle_404(request, None)
+        return handle_404(
+            request,
+            "REQUIRE_PREQUAL_START_PAGE must be enabled to access the requested page",
+        )
 
     states = get_states()
     states_without_swa = ["AS", "FM", "GU", "MH", "MP", "PW"]
@@ -322,13 +336,12 @@ def start(request):
 @never_cache
 def identity(request):
     if "whoami" not in request.session:
-        return handle_404(request, None)
+        return handle_404(request, "Required authentication data missing")
 
     whoami = WhoAmI.from_dict(request.session.get("whoami"))
     claim = ClaimFinder(whoami).find()
     if not claim:
-        logger.error("Missing expected claim for identity-only flow")
-        return handle_404(request, None)
+        return handle_404(request, "Missing expected claim for identity-only flow")
 
     if claim.is_completed():
         template_name = "identity/IAL2.html"
@@ -364,8 +377,7 @@ def identity(request):
         }
         return render(request, template_name, view_args)
     except TemplateDoesNotExist as err:
-        logger.exception(err)
-        return handle_404(request, None)
+        return handle_404(request, err)
 
 
 def maintenance_mode(request):

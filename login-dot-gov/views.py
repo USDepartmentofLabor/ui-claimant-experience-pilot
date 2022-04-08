@@ -15,10 +15,10 @@ from api.models import Claimant, IdentityProvider, SWA, Claim
 from api.models.claim import DuplicateSwaXid
 from django.conf import settings
 from api.whoami import WhoAmI, WhoAmIAddress, WhoAmISWA
-from home.views import handle_404
 from api.identity_claim_maker import IdentityClaimMaker, IdentityClaimValidationError
 from core.exceptions import ClaimStorageError
 from core.swa_xid import SwaXid
+from home.views import handle_invalid_swa, handle_404
 
 logger = logging.getLogger("logindotgov")
 
@@ -126,15 +126,15 @@ def index(request):
         request.session["swa"] = request.GET["swa"]
     if "swa_code" in request.GET:
         request.session["swa"] = request.GET["swa_code"]
-    if not request.session.get("swa"):
-        logger.debug("🚀 missing swa or swa_code")
-        return handle_404(request, None)
+
+    swa_code = request.session.get("swa")
+    if not swa_code:
+        return handle_404(request, "Missing swa or swa_code")
 
     try:
-        swa = SWA.active.get(code=request.session.get("swa"))
+        swa = SWA.active.get(code=swa_code)
     except SWA.DoesNotExist:
-        logger.debug("🚀 invalid SWA code")
-        return handle_404(request, None)
+        return handle_invalid_swa(request, swa_code)
 
     # remember what level we're aiming for in this request
     request.session["IAL"] = requested_ial
