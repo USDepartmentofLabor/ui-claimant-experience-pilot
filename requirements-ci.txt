@@ -1,4 +1,4 @@
-awscli==1.22.91
+awscli==1.22.93
 coverage==6.3.2
 django-extensions
 graphviz
