@@ -176,11 +176,15 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
       <TextAreaField
         name={`employers[${segmentIdx}].separation_comment`}
         id={`employers[${segmentIdx}].separation_comment`}
-        label={t(
-          selectedReason?.comment_required
-            ? "separation.comment.required_label"
-            : "separation.comment.optional_label"
-        )}
+        label={
+          selectedReason?.comment_required ? (
+            t("separation.comment.required_label")
+          ) : (
+            <Trans t={t} i18nKey="separation.comment.optional_label">
+              Please share more details below <i>(optional)</i>
+            </Trans>
+          )
+        }
       />
     </>
   );
