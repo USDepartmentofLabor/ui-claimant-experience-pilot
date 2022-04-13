@@ -258,7 +258,11 @@
           <div class="usa-logo {% if active == 'introduction' %}font-sans-lg tablet:font-sans-2xl margin-top-6{% endif %}" id="basic-logo">
             <em class="usa-logo__text">
               <a href="/reference/">
+                {% if active == "introduction" %}
                 Modernizing Unemployement Insurance
+                {% else %}
+                Modernizing unemployement insurance
+                {% endif %}
               </a>
             </em>
           </div>
@@ -279,11 +283,11 @@
             <p>
               We're working with State Workforce Agencies (SWAs) and the general public to try out solutions that drive more equitable and resilient Unemployment Insurance (UI) systems. This website shares examples of what we're trying out, so everyone can benefit from the work.
             </p>
-            <a class="usa-button usa-button--accent-cool" href="javascript:void(0)">
-              Learn about ARPA
+            <a class="usa-button usa-button--accent-cool" href="#examples">
+              See examples
             </a>
-            <a class="usa-button usa-button--outline usa-button--inverse" href="javascript:void(0)">
-              See examples from pilots
+            <a class="usa-button usa-button--outline usa-button--inverse" href="https://www.dol.gov/general/american-rescue-plan">
+              Learn about ARPA
             </a>
           </div>
         </div>
