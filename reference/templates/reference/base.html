@@ -70,33 +70,44 @@
         padding: 1rem;
       }
 
-      .arrow-content-wrapper {
-        position: relative;
-      }
-      .arrow-container {
-        position: absolute;
-        top: 0;
-        right: -525px;
-      }
       .arrow {
-        display: flex;
+        display: none;
       }
-      .arrow-label {
-        background-color: #FA9441;
-        color: #FFF;
-        font-weight: bold;
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
+
       .arrow-description {
-        margin-left: 75px;
-        margin-top: 0.5rem;
-        width: 450px;
+        display: none;
+      }
+
+      @media screen and (min-width: 640px) {
+        .arrow-content-wrapper {
+          position: relative;
+        }
+        .arrow-container {
+          position: absolute;
+          top: 0;
+          right: -525px;
+        }
+        .arrow {
+          display: flex;
+        }
+        .arrow-label {
+          background-color: #FA9441;
+          color: #FFF;
+          font-weight: bold;
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .arrow-description {
+          display: block;
+          margin-left: 75px;
+          margin-top: 0.5rem;
+          width: 450px;
+        }
       }
       .usa-nav-container {
         margin-left: 0;

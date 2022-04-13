@@ -20,7 +20,7 @@
     When possible, provide short, clear definitions on the same page as the question being asked.
   </p>
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 border-base-lightest">
       <form>
         <fieldset class="usa-fieldset">
           <legend class="usa-sr-only">Separation</legend>
@@ -96,8 +96,8 @@
         </fieldset>
       </form>
     </div>
-    <div class="grid-col-7 display-flex flex-column flex-justify-center">
-      <div class="padding-4">
+    <div class="grid-col-12 tablet:grid-col-7 display-flex flex-column flex-justify-center">
+      <div class="tablet:padding-4">
         <h3>What we learned from testing</h3>
         <p>When shown definitions, applicants generally read this screen more carefully, and chose the correct answer.  This would also result in submissions that are easier and faster for SWA staff to process.</p>
       </div>
@@ -112,7 +112,7 @@
     There are tools and resources available for free that can analyze web content for readability. Word processing applications and online tools can also assess the grade level of your website or form content. If the content is at too high of a reading level, make edits to simplify the language. Small changes can remove barriers to access and reduce errors in applications. Content should be around a 6th grade reading level (see <a class="usa-link" href="https://wdr.doleta.gov/directives/corr_doc.cfm?DOCN=4233">UIPL 02-16</a>).
   </p>
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 margin-right-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 tablet:margin-right-3 border-base-lightest">
       <h3 class="margin-top-0">Payment information</h3>
       <fieldset class="usa-fieldset">
         <legend class="usa-legend usa-legend">Would you like to have 10% federal income take withheld from your benefits payments?</legend>
@@ -133,7 +133,7 @@
 
         <div class="arrow-content-wrapper">
           <legend class="usa-legend usa-legend">How would you like to receive your benefits payments?</legend>
-          <div class="arrow-container">
+          <div class="arrow-container display-none tablet:display-block">
             <div class="arrow">
               <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
@@ -164,6 +164,9 @@
         <button class="usa-button usa-button--unstyled margin-y-2">Save and exit</button>
         <p class="text-center font-sans-xs margin-bottom-0">Your progress is automatically saved when you complete a page and click Next.</p>
       </div>
+    </div>
+    <div class="grid-col-12 tablet:display-none">
+      <p>Some states include various payment options (for example “debit card” and “direct deposit”. However, claimants are often confused that “debit card” refers to their own debit card vice a pre-paid card. Claimants were not confused with “direct deposit”. Research participants responded well to this updated version of the question as it provides additional information and context.</p>
     </div>
   </div>
 
@@ -223,7 +226,7 @@
     Previously, the attestation sentence before the signature caused confusion. Splitting this sentence into two sentences without changing the content can reduce the required reading level. Alternatively, bullets can be used for long sentences that have multiple elements.
   </p>
   <div class="grid-row margin-top-5">
-    <div class="grid-col-5">
+    <div class="grid-col-12 tablet:grid-col-5">
       <h3 class="margin-top-0">Before</h3>
       <div class="ui-example border-3 border-base-lightest">
         <fieldset class="usa-fieldset">
@@ -245,7 +248,7 @@
         </fieldset>
     </div>
     </div>
-    <div class="grid-col-2">
+    <div class="display-none tablet:display-block grid-col-2">
       <div class="arrow margin-top-10">
         <svg width="75" viewBox="0 0 80 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 9L15 17.6603V0.339746L0 9ZM80 7.5L40 7.5V10.5L80 10.5V7.5ZM40 7.5L13.5 7.5V10.5L40 10.5V7.5Z" fill="#FA9441"/>
@@ -256,7 +259,7 @@
         </svg>
       </div>
     </div>
-    <div class="grid-col-5">
+    <div class="margin-top-5 tablet:margin-top-0 grid-col-12 tablet:grid-col-5">
       <h3 class="margin-top-0">After</h3>
       <div class="ui-example border-3 border-base-lightest">
         <fieldset class="usa-fieldset">
@@ -279,8 +282,8 @@
       </div>
     </div>
 
-    <div class="grid-col-12 margin-top-3 display-flex flex-align-center">
-        <div class="arrow-label margin-right-1">B</div>
+    <div class="grid-col-12 tablet:margin-top-3 display-flex flex-align-center">
+        <div class="arrow-label margin-right-1 display-none">B</div>
         <p>This sentence was previously long and difficult to understand. Multiple edits using the practices above were used to reduce confusion.</p>
     </div>
   </div>
@@ -321,7 +324,7 @@
     “Helper text” supplements existing information or questions on the application by providing more context so they can provide the most accurate information.
   </p>
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 margin-right-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 tablet:margin-right-3 border-base-lightest">
       <h3 class="margin-top-0">Your demographic information</h3>
       <div class="usa-alert usa-alert--info usa-alert--slim">
         <div class="arrow-content-wrapper">
@@ -344,10 +347,13 @@
         </div>
       </div>
     </div>
+    <div class="grid-col-12 tablet:display-none">
+      <p>After reading this helper text, research participants better understood why demographic information was needed.</p>
+    </div>
   </div>
 
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 margin-right-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 tablet:margin-right-3 border-base-lightest">
       <h3 class="margin-top-0">Confirm address</h3>
       <form class="usa-form">
         <fieldset class="usa-fieldset">
@@ -403,10 +409,13 @@
         </p>
       </form>
     </div>
+    <div class="grid-col-12 tablet:display-none">
+      <p>Helper text can guide users to a recommended choice.</p>
+    </div>
   </div>
 
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 margin-right-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 tablet:margin-right-3 border-base-lightest">
       <form>
         <fieldset class="usa-fieldset">
           <legend class="usa-legend text-bold">Your most recent employer:</legend>
@@ -429,14 +438,18 @@
               </div>
             </div>
           </div>
-
         </fieldset>
       </form>
+    </div>
+    <div class="grid-col-12 tablet:display-none">
+      <p>
+        Helper text can provide a hint if the applicant is unsure of where or how to find information.
+      </p>
     </div>
   </div>
 
   <div class="grid-row margin-top-5">
-    <div class="ui-example grid-col-5 border-3 border-base-lightest">
+    <div class="ui-example grid-col-12 tablet:grid-col-5 border-3 border-base-lightest">
       <h3 class="margin-top-0">Education and training</h3>
       <fieldset class="usa-fieldset">
         <legend class="usa-legend usa-legend text-bold">Your education</legend>
@@ -499,7 +512,10 @@
           </div>
         </fieldset>
     </div>
-    <div class="position-relative grid-col-7 padding-left-3 display-flex flex-column flex-justify-center">
+    <div class="position-relative grid-col-12 tablet:grid-col-7 tablet:padding-left-3 display-flex flex-column flex-justify-center">
+      <div class="tablet:display-none">
+        <p>Add helper text to provide additional context, explanations, and examples to make the application process easier.</p>
+      </div>
       <div>
         <h3>What we learned from testing</h3>
         <p>In usability testing, people who noticed the helper text generally had a positive reaction to it.</p>
