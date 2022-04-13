@@ -35,6 +35,9 @@
     <script src="{% static 'js/uswds-init.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/uswds.min.css' %}" />
     <style>
+      html {
+        scroll-behavior: smooth;
+      }
       .usa-prose > p {
         max-width: 100%;
       }
@@ -50,6 +53,28 @@
         background-color: #eee;
         padding: 0.1rem;
         font-size: 1rem;
+      }
+
+      .usa-banner__inner {
+        max-width: 100%;
+      }
+
+      .usa-banner__content {
+        max-width: 100%;
+        margin: auto;
+      }
+
+      .usa-hero {
+        background-image: none;
+        background-color: #1A4480;
+      }
+
+      .usa-hero__callout {
+        background-color: transparent;
+        padding-left: 0;
+        padding-right: 0;
+        width: 55rem;
+        max-width: 100%;
       }
 
       .usa-header--basic .usa-navbar {
@@ -157,61 +182,63 @@
             </button>
           </div>
         </header>
-        <div class="usa-banner__content usa-accordion__content" id="gov-banner">
-          <div class="grid-row grid-gap-lg">
-            <div class="usa-banner__guidance tablet:grid-col-6">
-              <img
-                class="usa-banner__icon usa-media-block__img"
-                src="{% static '/img/icon-dot-gov.svg' %}"
-                role="img"
-                alt=""
-                aria-hidden="true"
-              />
-              <div class="usa-media-block__body">
-                <p>
-                  <strong> Official websites use .gov </strong>
-                  <br />
-                  A <strong>.gov</strong> website belongs to an official
-                  government organization in the United States.
-                </p>
+        <div class="grid-container-widescreen">
+          <div class="usa-banner__content usa-accordion__content" id="gov-banner">
+            <div class="grid-row grid-gap-lg">
+              <div class="usa-banner__guidance tablet:grid-col-6">
+                <img
+                  class="usa-banner__icon usa-media-block__img"
+                  src="{% static '/img/icon-dot-gov.svg' %}"
+                  role="img"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <div class="usa-media-block__body">
+                  <p>
+                    <strong> Official websites use .gov </strong>
+                    <br />
+                    A <strong>.gov</strong> website belongs to an official
+                    government organization in the United States.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div class="usa-banner__guidance tablet:grid-col-6">
-              <img
-                class="usa-banner__icon usa-media-block__img"
-                src="{% static '/img/icon-https.svg' %}"
-                role="img"
-                alt=""
-                aria-hidden="true"
-              />
-              <div class="usa-media-block__body">
-                <p>
-                  <strong> Secure .gov websites use HTTPS </strong>
-                  <br />
-                  A <strong>lock</strong> (
-                  <span class="icon-lock"
-                    ><svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="52"
-                      height="64"
-                      viewBox="0 0 52 64"
-                      class="usa-banner__lock-image"
-                      role="img"
-                      aria-labelledby="banner-lock-title banner-lock-description"
-                      focusable="false"
-                    >
-                      <title id="banner-lock-title">Lock</title>
-                      <desc id="banner-lock-description">A locked padlock</desc>
-                      <path
-                        fill="#000000"
-                        fill-rule="evenodd"
-                        d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
-                      /></svg
-                  ></span>
-                  ) or <strong>https://</strong> means you've safely connected
-                  to the .gov website. Share sensitive information only on
-                  official, secure websites.
-                </p>
+              <div class="usa-banner__guidance tablet:grid-col-6">
+                <img
+                  class="usa-banner__icon usa-media-block__img"
+                  src="{% static '/img/icon-https.svg' %}"
+                  role="img"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <div class="usa-media-block__body">
+                  <p>
+                    <strong> Secure .gov websites use HTTPS </strong>
+                    <br />
+                    A <strong>lock</strong> (
+                    <span class="icon-lock"
+                      ><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="52"
+                        height="64"
+                        viewBox="0 0 52 64"
+                        class="usa-banner__lock-image"
+                        role="img"
+                        aria-labelledby="banner-lock-title banner-lock-description"
+                        focusable="false"
+                      >
+                        <title id="banner-lock-title">Lock</title>
+                        <desc id="banner-lock-description">A locked padlock</desc>
+                        <path
+                          fill="#000000"
+                          fill-rule="evenodd"
+                          d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
+                        /></svg
+                    ></span>
+                    ) or <strong>https://</strong> means you've safely connected
+                    to the .gov website. Share sensitive information only on
+                    official, secure websites.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -228,10 +255,10 @@
     <header class="usa-header usa-header--basic grid-container-widescreen">
       <div class="usa-nav-container">
         <div class="usa-navbar">
-          <div class="usa-logo" id="basic-logo">
+          <div class="usa-logo {% if active == 'introduction' %}font-sans-lg tablet:font-sans-2xl margin-top-6{% endif %}" id="basic-logo">
             <em class="usa-logo__text">
-              <a href="/reference/" title="Unemployment Insurance Modernization Pilots">
-                Unemployment Insurance Modernization Pilots
+              <a href="/reference/">
+                Modernizing Unemployement Insurance
               </a>
             </em>
           </div>
@@ -240,8 +267,32 @@
     </header>
 
     <div>
+      {% if active == "introduction" %}
+      <section class="usa-hero margin-top-5" aria-label="Introduction">
+        <div class="grid-container-widescreen">
+          <div class="usa-hero__callout">
+            <h1 class="usa-hero__heading">
+              <span class="usa-hero__heading--alt">
+                Empowering SWAs to better serve people
+              </span>
+            </h1>
+            <p>
+              We're working with State Workforce Agencies (SWAs) and the general public to try out solutions that drive more equitable and resilient Unemployment Insurance (UI) systems. This website shares examples of what we're trying out, so everyone can benefit from the work.
+            </p>
+            <a class="usa-button usa-button--accent-cool" href="javascript:void(0)">
+              Learn about ARPA
+            </a>
+            <a class="usa-button usa-button--outline usa-button--inverse" href="javascript:void(0)">
+              See examples from pilots
+            </a>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
       <div class="grid-container-widescreen margin-top-5">
         <div class="grid-row grid-gap">
+          {% if active != "introduction" %}
           <div class="usa-layout-docs__sidenav desktop:grid-col-3">
             <nav aria-label="Secondary navigation">
               <ul class="usa-sidenav">
@@ -318,16 +369,67 @@
               </ul>
             </nav>
           </div>
+          {% endif %}
           <main
-            class="usa-layout-docs__main desktop:grid-col-9 usa-prose usa-layout-docs"
+            class="usa-layout-docs__main desktop:grid-col-{% if active == 'introduction' %}12{% else %}9{% endif %} usa-prose usa-layout-docs"
             id="main-content"
           >
+            {% if active != "introduction" %}
             <h1>{% block title %}{% endblock %}</h1>
+            {% endif %}
             {% block content %}{% endblock %}
           </main>
         </div>
       </div>
     </div>
-    <section>{% include '_footer.html' %}</section>
+    <section>
+      <footer class="usa-footer usa-footer--big">
+        <div class="grid-container-widescreen  usa-footer__return-to-top">
+          <a href="#">Return to top</a>
+        </div>
+
+        <div class="usa-footer__primary-section">
+          <div class="grid-container-widescreen">
+            <div class="grid-row">
+              <div class="tablet:grid-col-4">
+                {% include "_footer-dol-seal-address.html" %}
+              </div>
+              <div class="tablet:grid-col-8 margin-top-2">
+                <div class="usa-accordion" aria-multiselectable="true">
+                  {% include "_footer-nav-federal.html" %}
+                  {% include "_footer-nav-labor-dept.html" %}
+                  {% include "_footer-nav-about.html" %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="usa-footer__secondary-section">
+          <div class="grid-container">
+            <div class="grid-row">
+              <div class="desktop:grid-col-6 tablet:grid-col-6">
+                <div class="grid-row">
+                  <div class="dol-connect font-sans-2xs tablet-lg:grid-col-4 desktop:grid-col-3">Connect with DOL</div>
+                  <div class="grid-row grid-gap-1">
+                  {% include "_footer-social-media.html" %}
+                  </div>
+                </div>
+              </div>
+              <div class="desktop:grid-col-6 tablet:grid-col-6">
+                <div class="dol-util-links">
+                  <div class="font-sans-3xs">
+                    <ul class="usa-list usa-list--unstyled">
+                      <li><a href="//www.dol.gov/general/findit" class="usa-link">Site Map</a></li>
+                      <li><a href="//www.dol.gov/general/aboutdol/website-policies" class="usa-link">Important Website Notices</a></li>
+                      <li><a href="//www.dol.gov/general/privacynotice" class="usa-link">Privacy & Security Statement</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </section>
   </body>
 </html>
