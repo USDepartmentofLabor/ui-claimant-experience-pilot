@@ -70,11 +70,11 @@ class SwaTestCase(BucketableTestCase):
         self.assertTrue(claim.is_resolved())
 
         # error saving
-        with patch("api.models.Claim.objects") as mocked_objects:
+        with patch("api.models.Claim.find_by_uuid_or_swa_xid") as mocked_claim_cls:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
             mocked_claim.swa = swa
             mocked_claim.events.create.side_effect = Exception("db error!")
-            mocked_objects.get.return_value = mocked_claim
+            mocked_claim_cls.return_value = mocked_claim
             header_token = generate_auth_token(private_key_jwk, swa.code)
             with self.assertLogs(level="DEBUG") as cm:
                 response = self.client.patch(
@@ -125,11 +125,11 @@ class SwaTestCase(BucketableTestCase):
         self.assertEqual(response.status_code, 404)
 
         # error saving
-        with patch("api.models.Claim.objects") as mocked_objects:
+        with patch("api.models.Claim.find_by_uuid_or_swa_xid") as mocked_claim_cls:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
             mocked_claim.swa = swa
             mocked_claim.delete_artifacts.side_effect = Exception("db error!")
-            mocked_objects.get.return_value = mocked_claim
+            mocked_claim_cls.return_value = mocked_claim
             header_token = generate_auth_token(private_key_jwk, swa.code)
             with self.assertLogs(level="DEBUG") as cm:
                 response = self.client.delete(
@@ -162,7 +162,7 @@ class SwaTestCase(BucketableTestCase):
         self.assertEqual(response.json(), {"status": "ok"})
         self.assertEqual(response.status_code, 200)
 
-        # invalid uuid
+        # invalid uuid (indiscernable from a swa_xid value)
         header_token = generate_auth_token(private_key_jwk, swa.code)
         response = self.client.patch(
             "/swa/v1/claims/not-a-uuid/",
@@ -171,9 +171,9 @@ class SwaTestCase(BucketableTestCase):
             data={"status": "new status"},
         )
         self.assertEqual(
-            response.json(), {"status": "error", "error": "invalid claim id format"}
+            response.json(), {"status": "error", "error": "invalid claim id"}
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
         # no such claim
         header_token = generate_auth_token(private_key_jwk, swa.code)
@@ -230,11 +230,11 @@ class SwaTestCase(BucketableTestCase):
         self.assertEqual(response.status_code, 401)
 
         # error saving
-        with patch("api.models.Claim.objects") as mocked_objects:
+        with patch("api.models.Claim.find_by_uuid_or_swa_xid") as mocked_claim_cls:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
             mocked_claim.swa = swa
             mocked_claim.change_status.side_effect = Exception("db error!")
-            mocked_objects.get.return_value = mocked_claim
+            mocked_claim_cls.return_value = mocked_claim
             header_token = generate_auth_token(private_key_jwk, swa.code)
             with self.assertLogs(level="DEBUG") as cm:
                 response = self.client.patch(
@@ -354,6 +354,7 @@ class SwaTestCase(BucketableTestCase):
         swa, private_key_jwk = create_swa(True)
         claimant = create_claimant(idp)
         claim = Claim(claimant=claimant, swa=swa, status="excellent")
+        claim.swa_xid = "the-unique-swa-xid"
         claim.save()
 
         claim.events.create(category=Claim.EventCategories.STORED)
@@ -369,13 +370,23 @@ class SwaTestCase(BucketableTestCase):
 
         expected_response = {
             "id": str(claim.uuid),
-            "swa_xid": None,
+            "swa_xid": "the-unique-swa-xid",
             "created_at": str(claim.created_at),
             "updated_at": str(claim.updated_at),
             "claimant_id": "my-idp-id",
             "events": expected_events,
             "status": claim.status,
         }
+        self.assertEqual(response.json(), expected_response)
+
+        # GET by swa_xid also works
+        header_token = generate_auth_token(private_key_jwk, swa.code)
+        response = self.client.get(
+            f"/swa/v1/claims/{claim.swa_xid}/",
+            content_type="application/json",
+            HTTP_AUTHORIZATION=format_jwt(header_token),
+        )
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_response)
 
     @patch("swa.views.ld_client")
@@ -535,11 +546,11 @@ class SwaTestCase(BucketableTestCase):
         self.assertEqual(response.status_code, 400)
 
         # error saving
-        with patch("api.models.Claim.objects") as mocked_objects:
+        with patch("api.models.Claim.find_by_uuid_or_swa_xid") as mocked_claim_cls:
             mocked_claim = MagicMock(spec=Claim, name="mocked_claim")
             mocked_claim.swa = swa
             mocked_claim.events.create.side_effect = Exception("db error!")
-            mocked_objects.get.return_value = mocked_claim
+            mocked_claim_cls.return_value = mocked_claim
             header_token = generate_auth_token(private_key_jwk, swa.code)
             with self.assertLogs(level="DEBUG") as cm:
                 response = self.client.patch(
