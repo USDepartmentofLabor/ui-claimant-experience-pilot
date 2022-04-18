@@ -94,6 +94,9 @@
       .ui-example {
         padding: 1rem;
       }
+      main section > ul > li {
+        margin-top: 1rem;
+      }
 
       .arrow {
         display: none;
@@ -286,9 +289,6 @@
             <a class="usa-button usa-button--accent-cool" href="#examples">
               See examples
             </a>
-            <a class="usa-button usa-button--outline usa-button--inverse" href="https://www.dol.gov/general/american-rescue-plan">
-              Learn about ARPA
-            </a>
           </div>
         </div>
       </section>
@@ -301,74 +301,68 @@
             <nav aria-label="Secondary navigation">
               <ul class="usa-sidenav">
                 <li class="usa-sidenav__item">
-                  <a href="/reference/" class="{%if active == 'introduction' %}usa-current{% endif %}">Improved claimant experience examples</a>
+                  <a href="/reference/plain-language/" class="{%if active == 'plain_language' %}usa-current{% endif %}">Use plain language</a>
+                  {%if active == "plain_language" %}
                   <ul class="usa-sidenav__sublist">
                     <li class="usa-sidenav__item">
-                      <a href="/reference/plain-language/" class="{%if active == 'plain_language' %}usa-current{% endif %}">Use plain language</a>
-                      {%if active == "plain_language" %}
-                      <ul class="usa-sidenav__sublist">
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/plain-language/#define-terms">Define complex terms</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/plain-language/#simpler-terms">Use simpler terms</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/plain-language/#break-long-sentences">Break up long sentences</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/plain-language/#use-active-voice">Use active voice</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/plain-language/#helper-text">Use helper text</a>
-                        </li>
-                      </ul>
-                      {% endif %}
+                      <a href="/reference/plain-language/#define-terms">Define complex terms</a>
                     </li>
-
                     <li class="usa-sidenav__item">
-                      <a href="/reference/iterating/" class="{%if active == 'iterating' %}usa-current{% endif %}">Improve despite tech challenges</a>
-                      {%if active == "iterating" %}
-                      <ul class="usa-sidenav__sublist">
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#mobile-friendly">Go mobile-friendly</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#experiment-from-scratch">Experiment from scratch</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#change-frontend">Change frontend without backend</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/iterating/#make-space">Make space to hear ideas</a>
-                        </li>
-                      </ul>
-                      {% endif %}
+                      <a href="/reference/plain-language/#simpler-terms">Use simpler terms</a>
                     </li>
-
                     <li class="usa-sidenav__item">
-                      <a href="/reference/open-source/" class="{%if active == 'open_source' %}usa-current{% endif %}">View sample application code</a>
-                      {%if active == "open_source" %}
-                      <ul class="usa-sidenav__sublist">
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/open-source/#mobile-first">Use a mobile-first design</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/open-source/#automated-checks">Implement automated code checks</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/open-source/#feature-flagging">Use feature flagging</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/open-source/#translation">Use libraries for translation</a>
-                        </li>
-                        <li class="usa-sidenav__item">
-                          <a href="/reference/open-source/#complex-data">Express and store complex data</a>
-                        </li>
-                      </ul>
-                      {% endif %}
+                      <a href="/reference/plain-language/#break-long-sentences">Break up long sentences</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/plain-language/#use-active-voice">Use active voice</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/plain-language/#helper-text">Use helper text</a>
                     </li>
                   </ul>
+                  {% endif %}
+                </li>
+
+                <li class="usa-sidenav__item">
+                  <a href="/reference/iterating/" class="{%if active == 'iterating' %}usa-current{% endif %}">Improve despite technical challenges</a>
+                  {%if active == "iterating" %}
+                  <ul class="usa-sidenav__sublist">
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/iterating/#mobile-friendly">Go mobile-friendly</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/iterating/#experiment-from-scratch">Experiment from scratch</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/iterating/#change-frontend">Change frontend without backend</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/iterating/#make-space">Make space to hear ideas</a>
+                    </li>
+                  </ul>
+                  {% endif %}
+                </li>
+                <li class="usa-sidenav__item">
+                  <a href="/reference/open-source/" class="{%if active == 'open_source' %}usa-current{% endif %}">View sample application code</a>
+                  {%if active == "open_source" %}
+                  <ul class="usa-sidenav__sublist">
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/#mobile-first">Use a mobile-first design</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/#automated-checks">Implement automated code checks</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/#feature-flagging">Use feature flagging</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/#translation">Use libraries for translation</a>
+                    </li>
+                    <li class="usa-sidenav__item">
+                      <a href="/reference/open-source/#complex-data">Express and store complex data</a>
+                    </li>
+                  </ul>
+                  {% endif %}
                 </li>
               </ul>
             </nav>
