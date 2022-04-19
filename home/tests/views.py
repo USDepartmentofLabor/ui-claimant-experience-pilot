@@ -182,3 +182,31 @@ class HomeViewsTestCase(TestCase):
         # no such SWA
         response = self.client.get("/contact/foobar/")
         self.assertEqual(response.status_code, 404)
+
+    # test that cacheable pages do not set a session cookie
+    def test_index_page_does_not_set_session_cookie(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.cookies.get("sessionid"))
+
+    def test_idp_page_does_not_set_session_cookie(self):
+        response = self.client.get("/idp/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.cookies.get("sessionid"))
+
+    def test_idp_swa_page_does_not_set_session_cookie(self):
+        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
+        response = self.client.get(f"/idp/{swa.code}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.cookies.get("sessionid"))
+
+    def test_start_page_does_not_set_session_cookie(self):
+        response = self.client.get("/start/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.cookies.get("sessionid"))
+
+    def test_start_swa_page_does_not_set_session_cookie(self):
+        swa, _ = create_swa(is_active=True, claimant_url="https://example.swa.gov/")
+        response = self.client.get(f"/start/{swa.code}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.cookies.get("sessionid"))
