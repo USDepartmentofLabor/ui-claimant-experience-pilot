@@ -1,0 +1,29 @@
+on:
+  schedule:
+    - cron: "0 16 * * *"
+
+name: Image Scan
+jobs:
+  scan:
+    name: Build and scan image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: make container-build
+        env:
+          DOCKER_BUILDKIT: 1
+      - name: Run Anchore vulnerability scan
+        uses: anchore/scan-action@v3
+        with:
+          image: "dolui:claimants"
+          severity-cutoff: low
+          acs-report-enable: false
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.2.4
+        with:
+          image-ref: "dolui:claimants"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
