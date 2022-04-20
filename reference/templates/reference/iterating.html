@@ -17,16 +17,12 @@
   <p>Using cascading style sheets (CSS) media queries, you can make huge improvements to the mobile-friendliness of your site, often without the need to upgrade your software stack or infrastructure. Have a conversation with your engineering experts and share this code to see what’s possible in the short term.</p>
   <p>Below is an example of New Jersey making improvements of the mobile experience without upgrading infrastructure.</p>
 
-  <div class="grid-row grid-gap">
-    <div class="grid-col-12 tablet:grid-col-6">
-      <h3>Desktop</h3>
-      <img class="border-3 border-base-lightest" src="{% static 'reference/nj-desktop.png' %}" alt="New Jersey UI application desktop view" />
-    </div>
-    <div class="grid-col-12 tablet:grid-col-3">
+  <div class="grid-row grid-gap-lg">
+    <div class="grid-col-12 tablet:grid-col-5">
       <h3>Mobile - before</h3>
       <img class="border-3 border-base-lightest" src="{% static 'reference/nj-mobile-before.png' %}" alt="Previous, unresponsive New Jersey UI application mobile view" />
     </div>
-    <div class="grid-col-12 tablet:grid-col-3">
+    <div class="grid-col-12 tablet:grid-col-5 tablet:grid-offset-1">
       <h3>Mobile - after</h3>
       <img class="border-3 border-base-lightest" src="{% static 'reference/nj-mobile-after.png' %}" alt="new, responsive New Jersey UI application mobile view" />
     </div>
