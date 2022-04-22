@@ -166,7 +166,6 @@ const searchSOCEntries = (searchString: string) => {
   });
 
   // TODO if we wanted AND boolean logic, filter matches by tokens.length == match.tokens.length
-  // TODO since we now sort by rank, consider only returning 10 matches to make it simpler to scroll.
 
   const matchingCodes = Object.keys(matches);
   matchingCodes.sort((a, b) => {
@@ -295,6 +294,12 @@ export const OccupationPicker = () => {
             inputRef={searchInputRef}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
+            onKeyDown={(ev) => {
+              const enterKeyCaught = ev.keyCode === 13 || ev.code === "Enter";
+              if (enterKeyCaught) {
+                ev.preventDefault(); // don't trigger form validation
+              }
+            }}
             value={occupationJobTitleFieldProps.value || ""}
           />
           <InputSuffix>
