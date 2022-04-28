@@ -144,6 +144,12 @@ class HomeViewsTestCase(TestCase):
         response = self.client.get("/start/XX/")
         self.assertContains(response, "Page not found", status_code=404)
 
+    def test_swa_start_case_insensitive(self):
+        swa = SWA.active.get(code="AR")
+        swa_xid = create_swa_xid(swa)
+        response = self.client.get(f"/start/{swa.code.lower()}/?swa_xid={swa_xid}")
+        self.assertContains(response, swa.name, status_code=200)
+
     def test_swa_contact_page(self):
         # active but no whoami
         nj_swa = SWA.active.get(code="NJ")
