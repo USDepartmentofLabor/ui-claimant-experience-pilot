@@ -237,17 +237,25 @@ def result(request):
         auth_code, auth_state = client.validate_code_and_state(request.GET)
     except LoginDotGovOIDCError as error:
         logger.exception(error)
-        swa = SWA.active.get(code=request.session.get("swa"))
-        return render(
-            request,
-            "auth-error.html",
-            {
-                "error": str(error),
-                "swa": swa,
-                "swa_login_help": f"_swa/{swa.code}/login_help.html",
-            },
-            status=403,
-        )
+        if "swa" in request.session:
+            swa = SWA.active.get(code=request.session.get("swa"))
+            return render(
+                request,
+                "auth-error.html",
+                {
+                    "error": str(error),
+                    "swa": swa,
+                    "swa_login_help": f"_swa/{swa.code}/login_help.html",
+                },
+                status=403,
+            )
+        else:
+            return render(
+                request,
+                "auth-error.html",
+                {"error": str(error), "swa_login_help": None},
+                status=403,
+            )
 
     # if we don't have valid session available (see stash_session_state() rationale)
     # do our best to restore a valid session. If we can't, re-start the OIDC cycle.

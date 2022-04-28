@@ -283,15 +283,23 @@ class LoginDotGovTestCase(TestCase):
             )
         self.assertRedirects(response, "/claimant/", status_code=302)
 
+    # avoid self.client to not taint session
     def test_oidc_errors(self):
         # missing swa is 404 error
-        response = self.client.get("/logindotgov/")
+        response = Client().get("/logindotgov/")
         self.assertEquals(response.status_code, 404)
 
         # invalid swa is 404 not found
-        response = self.client.get("/logindotgov/?swa=XX")
+        response = Client().get("/logindotgov/?swa=XX")
         self.assertEquals(response.status_code, 404)
 
+        # missing state or code
+        response = Client().get("/logindotgov/result?code=foo123")
+        self.assertContains(response, "Missing state param", status_code=403)
+        response = Client().get("/logindotgov/result?state=foo123")
+        self.assertContains(response, "Missing code param", status_code=403)
+
+    def test_errors_with_swa_in_session(self):
         swa, _ = create_swa(is_active=True)
         response = self.client.get(f"/logindotgov/?swa={swa.code}")
         self.assertEquals(response.status_code, 302)
@@ -317,17 +325,29 @@ class LoginDotGovTestCase(TestCase):
         )
         self.assertContains(response, "missing access_token", status_code=403)
 
-        # the nonce we sent initially changes
+    def test_changing_nonce(self):
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
+        self.assertEquals(response.status_code, 302)
+
+        authorize_parsed = mimic_oidc_server_authorized(response.url)
+
         session = self.client.session
         session["logindotgov"]["nonce"] = "changed"
         session.save()
+
         response = self.client.get(f"/logindotgov/result?{authorize_parsed.query}")
         self.assertContains(response, "Error exchanging token", status_code=403)
 
-        # ial missing from session
+    def test_ial_missing_from_session(self):
+        swa, _ = create_swa(is_active=True)
+        response = self.client.get(f"/logindotgov/?swa={swa.code}")
+        self.assertEquals(response.status_code, 302)
+
         session = self.client.session
         del session["IAL"]
         session.save()
+
         response = self.client.get("/logindotgov/result?code=fake&state=fake")
         self.assertRedirects(
             response, "/logindotgov/", status_code=302, fetch_redirect_response=False
