@@ -32,13 +32,14 @@ type DateInputOmitProps =
   | "onBlur"
   | "readOnly"
   | "disabled";
+
 type DateInputProps = Omit<
   ComponentProps<typeof DateInput>,
   DateInputOmitProps
 >;
 
 type DateFieldProps = {
-  id: string;
+  id?: string;
   name: string;
   hint?: string;
   readOnly?: boolean;
@@ -98,6 +99,8 @@ export const DateInputField = ({
 
   const showError = useShowErrors(name);
   useFocusFirstError(metaProps.error, monthInputRef);
+
+  const resolvedId = id || name;
 
   const updateFormik = () => {
     if (day || month || year) {
@@ -174,18 +177,18 @@ export const DateInputField = ({
         legendSrOnly={legendSrOnly}
       >
         {hint && (
-          <span className="usa-hint" id={`${id}.hint`}>
+          <span className="usa-hint" id={`${resolvedId}.hint`}>
             {hint}
           </span>
         )}
         <div
-          id={id}
+          id={resolvedId}
           className="usa-memorable-date"
           ref={dateDivRef}
           data-testid={`${name}.parent-div`}
         >
           <DateInput
-            id={`${id}.month`}
+            id={`${resolvedId}.month`}
             name={`${name}.month`}
             value={month}
             label={t("date.month.label")}
@@ -201,7 +204,7 @@ export const DateInputField = ({
             onChange={handleMonthChange}
           />
           <DateInput
-            id={`${id}.day`}
+            id={`${resolvedId}.day`}
             name={`${name}.day`}
             value={day}
             label={t("date.day.label")}
@@ -217,7 +220,7 @@ export const DateInputField = ({
             onChange={handleDayChange}
           />
           <DateInput
-            id={`${id}.year`}
+            id={`${resolvedId}.year`}
             name={`${name}.year`}
             value={year}
             label={t("date.year.label")}

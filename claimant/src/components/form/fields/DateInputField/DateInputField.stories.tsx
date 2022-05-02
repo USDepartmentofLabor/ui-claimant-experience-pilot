@@ -28,14 +28,12 @@ const DefaultTemplate: ComponentStory<typeof DateInputField> = (args) => {
 
 export const Default = DefaultTemplate.bind({});
 Default.args = {
-  id: "example_date",
   name: "example_date",
   legend: "Date Input",
 };
 
 export const Readonly = DefaultTemplate.bind({});
 Readonly.args = {
-  id: "example_date",
   name: "example_date",
   legend: "Date Input",
   readOnly: true,
@@ -73,7 +71,6 @@ const WithFormikValueTemplate: ComponentStory<typeof DateInputField> = (
 
 export const ShowFormikValue = WithFormikValueTemplate.bind({});
 ShowFormikValue.args = {
-  id: "example_date",
   name: "example_date",
   legend: "Type a date below",
   hint: "The ISO8601 value formik handles will be displayed below in real time",

@@ -35,7 +35,6 @@ const OtherPayDetail = (props: {
           legend={t("other_pay_detail.date_received.label", {
             payType: lowerLabel,
           })}
-          id={`${name}.date_received`}
           name={`${name}.date_received`}
         />
         <TextAreaField

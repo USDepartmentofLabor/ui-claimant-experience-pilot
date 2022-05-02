@@ -74,11 +74,7 @@ export const Identity = () => {
           }
         />
       </div>
-      <DateInputField
-        legend={t("birthdate.label")}
-        id="birthdate"
-        name="birthdate"
-      />
+      <DateInputField legend={t("birthdate.label")} name="birthdate" />
       <TextField
         label={t("state_credential.drivers_license_or_state_id_number.label")}
         name="state_credential.drivers_license_or_state_id_number"
