@@ -12,8 +12,7 @@ import { useShowErrors } from "../../../../hooks/useShowErrors";
 import classnames from "classnames";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type TextInputProps = Partial<React.ComponentProps<typeof TextInput>> &
-  Omit<React.ComponentProps<typeof TextInput>, "id">;
+type TextInputProps = Optional<React.ComponentProps<typeof TextInput>, "id">;
 
 interface ITextFieldProps extends TextInputProps {
   label: ReactNode;
