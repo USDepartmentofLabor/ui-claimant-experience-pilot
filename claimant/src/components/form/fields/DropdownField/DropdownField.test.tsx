@@ -19,7 +19,6 @@ describe("dropdownField component", () => {
         <DropdownField
           name="dropdownField"
           label="dropdownField"
-          id="dropdownField"
           options={[
             { label: "label1", value: "value1" },
             { label: "label2", value: "value2" },
@@ -50,7 +49,6 @@ describe("dropdownField component", () => {
           <DropdownField
             name="dropdownField"
             label="dropdownField"
-            id="dropdownField"
             options={[
               { label: "label1", value: "value1" },
               { label: "label2", value: "value2" },
@@ -69,7 +67,6 @@ describe("dropdownField component", () => {
           <DropdownField
             name="dropdownField"
             label="dropdownField"
-            id="dropdownField"
             options={[
               { label: "label1", value: "value1" },
               { label: "label2", value: "value2" },

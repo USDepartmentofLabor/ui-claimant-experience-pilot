@@ -64,7 +64,6 @@ export const DisabilityStatus = () => {
             name="disability.disabled_immediately_before"
           />
           <DropdownField
-            id="disability.type_of_disability"
             name="disability.type_of_disability"
             label={t("disability.type_of_disability.label")}
             options={typeOptions}

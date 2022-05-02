@@ -69,7 +69,6 @@ export const EducationVocationalRehab = () => {
           </Fieldset>
         )}
         <DropdownField
-          id="education_level"
           name="education_level"
           label={t("education_level.label")}
           startEmpty

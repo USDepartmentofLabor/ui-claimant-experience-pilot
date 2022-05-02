@@ -107,7 +107,6 @@ export const Identity = () => {
         <>
           <DropdownField
             label={t("work_authorization.authorization_type.label")}
-            id="work_authorization.authorization_type"
             name="work_authorization.authorization_type"
             startEmpty
             options={Object.keys(

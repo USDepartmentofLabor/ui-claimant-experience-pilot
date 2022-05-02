@@ -18,7 +18,7 @@ type DropdownOption = {
 const EMPTY_OPTION_VALUE = "";
 
 interface IDropdownFieldProps {
-  id: string;
+  id?: string;
   name: string;
   label: React.ReactNode;
   labelClassName?: string;
@@ -71,7 +71,7 @@ const DropdownField = ({
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Dropdown
-        id={id}
+        id={id || name}
         data-testid={id}
         {...fieldProps}
         {...inputProps}
