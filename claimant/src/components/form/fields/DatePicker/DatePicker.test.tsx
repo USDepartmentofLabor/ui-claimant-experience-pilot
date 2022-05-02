@@ -8,7 +8,7 @@ describe("DatePicker", () => {
   it("renders", () => {
     const { getByTestId } = render(
       <Formik initialValues={{ dateName: undefined }} onSubmit={noop}>
-        <DatePicker id="dateName" name="dateName" label="title" />
+        <DatePicker name="dateName" label="title" />
       </Formik>
     );
     const visibleDateField = getByTestId("date-picker-external-input");

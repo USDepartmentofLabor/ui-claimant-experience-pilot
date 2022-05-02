@@ -126,7 +126,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       <SeparationReason segment={segment} />
       <DatePicker
         label={t("first_work_date.label")}
-        id={`employers[${segment}].first_work_date`}
         name={`employers[${segment}].first_work_date`}
         defaultValue={employer.first_work_date}
         onChange={(val: string | undefined) => {
@@ -141,7 +140,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         employer.separation_reason !== "still_employed" && (
           <DatePicker
             label={t("last_work_date.label")}
-            id={`employers[${segment}].last_work_date`}
             name={`employers[${segment}].last_work_date`}
             defaultValue={employer.last_work_date}
             onChange={(val: string | undefined) => {

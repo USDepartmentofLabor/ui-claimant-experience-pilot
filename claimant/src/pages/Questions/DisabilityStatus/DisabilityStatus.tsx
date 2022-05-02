@@ -70,7 +70,6 @@ export const DisabilityStatus = () => {
             startEmpty
           />
           <DatePicker
-            id="disability.date_disability_began"
             name="disability.date_disability_began"
             label={t("disability.date_disability_began.label")}
             defaultValue={values.disability.date_disability_began}
@@ -87,7 +86,6 @@ export const DisabilityStatus = () => {
             }}
           />
           <DatePicker
-            id="disability.recovery_date"
             name="disability.recovery_date"
             label={t("disability.recovery_date.label")}
             defaultValue={values.disability.recovery_date}
