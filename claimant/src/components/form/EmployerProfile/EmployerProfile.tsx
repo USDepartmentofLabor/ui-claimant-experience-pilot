@@ -48,7 +48,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         name={`employers[${segment}].name`}
         label={t("name.label")}
         type="text"
-        id={`employers[${segment}].name`}
         hint={t("name.hint")}
       />
       <Address

@@ -12,7 +12,8 @@ import { useShowErrors } from "../../../../hooks/useShowErrors";
 import classnames from "classnames";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type TextInputProps = React.ComponentProps<typeof TextInput>;
+type TextInputProps = Partial<React.ComponentProps<typeof TextInput>> &
+  Omit<React.ComponentProps<typeof TextInput>, "id">;
 
 interface ITextFieldProps extends TextInputProps {
   label: ReactNode;
@@ -72,6 +73,7 @@ export const TextField = ({
       validationStatus={showErrorOutline ? "error" : undefined}
       onFocus={() => setFocused(true)}
       onBlur={handleBlur}
+      id={textInputProps.id ? textInputProps.id : textInputProps.name}
       {...textInputProps}
       inputRef={textFieldRef}
     />
