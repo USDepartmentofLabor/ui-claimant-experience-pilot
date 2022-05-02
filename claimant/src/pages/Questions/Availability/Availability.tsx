@@ -34,7 +34,6 @@ export const Availability = () => {
       >
         {values.availability?.can_begin_work_immediately === false && (
           <TextAreaField
-            id="availability.cannot_begin_work_immediately_reason"
             name="availability.cannot_begin_work_immediately_reason"
             label={t("cannot_begin_work_immediately_reason.label")}
           />
@@ -47,7 +46,6 @@ export const Availability = () => {
       >
         {values.availability?.can_work_full_time === false && (
           <TextAreaField
-            id="availability.cannot_work_full_time_reason"
             name="availability.cannot_work_full_time_reason"
             label={t("cannot_work_full_time_reason.label")}
           />
@@ -60,7 +58,6 @@ export const Availability = () => {
       >
         {values.availability?.is_prevented_from_accepting_full_time_work && (
           <TextAreaField
-            id="availability.is_prevented_from_accepting_full_time_work_reason"
             name="availability.is_prevented_from_accepting_full_time_work_reason"
             label={t("is_prevented_from_accepting_full_time_work_reason.label")}
           />

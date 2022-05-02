@@ -100,7 +100,6 @@ export const Identity = () => {
           label={t(
             "work_authorization.not_authorized_to_work_explanation.label"
           )}
-          id="work_authorization.not_authorized_to_work_explanation"
           name="work_authorization.not_authorized_to_work_explanation"
         />
       )}

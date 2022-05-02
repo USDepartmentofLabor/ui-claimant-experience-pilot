@@ -331,7 +331,6 @@ export const OccupationPicker = () => {
         />
       </div>
       <TextAreaField
-        id={jobDescriptionName}
         name={jobDescriptionName}
         label={t("short_description.label")}
       />

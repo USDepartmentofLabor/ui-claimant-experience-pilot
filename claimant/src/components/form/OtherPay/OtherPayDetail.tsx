@@ -39,7 +39,6 @@ const OtherPayDetail = (props: {
           name={`${name}.date_received`}
         />
         <TextAreaField
-          id={`${name}.note`}
           name={`${name}.note`}
           label={t("other_pay_detail.note.label", {
             payType: lowerLabel,
