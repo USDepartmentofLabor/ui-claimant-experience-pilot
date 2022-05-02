@@ -51,7 +51,6 @@ export const EducationVocationalRehab = () => {
             }
           >
             <RadioField
-              id="type_of_college_or_job_training"
               name="type_of_college_or_job_training"
               options={Object.keys(
                 claimForm.education_vocational_rehab.education.training_type

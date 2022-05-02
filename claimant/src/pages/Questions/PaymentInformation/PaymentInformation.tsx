@@ -77,7 +77,6 @@ export const PaymentInformation = () => {
       </YesNoQuestion>
       <Fieldset legend={t("payment_method.label")}>
         <RadioField
-          id="payment.payment_method"
           name="payment.payment_method"
           options={paymentMethodOptions.map((option) => {
             return {
@@ -91,7 +90,6 @@ export const PaymentInformation = () => {
         <>
           <Fieldset legend={t("account_type.label")}>
             <RadioField
-              id="payment.account_type"
               name="payment.account_type"
               options={accountTypeOptions.map((option) => {
                 return {

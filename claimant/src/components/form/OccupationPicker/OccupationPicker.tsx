@@ -80,7 +80,6 @@ const OccupationList = (props: OccupationListProps) => {
       <div>{t("choose_the_occupation")}</div>
       <RadioField
         tile
-        id="occupation.bls_code"
         name="occupation.bls_code"
         options={occupationOptions
           .slice(page * OCCUPATIONS_PER_PAGE, (page + 1) * OCCUPATIONS_PER_PAGE)

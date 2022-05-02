@@ -24,7 +24,7 @@ describe("RadioField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ radioField: undefined }} onSubmit={noop}>
-        <RadioField id="radioField" name="radioField" options={radioOptions} />
+        <RadioField name="radioField" options={radioOptions} />
       </Formik>
     );
 
@@ -52,11 +52,7 @@ describe("RadioField component", () => {
     it("uses the initial value that is passed", () => {
       const { getByLabelText } = render(
         <Formik initialValues={{ radioField: "second" }} onSubmit={noop}>
-          <RadioField
-            id="radioField"
-            name="radioField"
-            options={radioOptions}
-          />
+          <RadioField name="radioField" options={radioOptions} />
         </Formik>
       );
 
@@ -74,12 +70,7 @@ describe("RadioField component", () => {
     it("disables the RadioField when it is disabled", () => {
       const { queryAllByRole } = render(
         <Formik initialValues={{ radioField: "second" }} onSubmit={noop}>
-          <RadioField
-            id="radioField"
-            name="radioField"
-            options={radioOptions}
-            disabled
-          />
+          <RadioField name="radioField" options={radioOptions} disabled />
         </Formik>
       );
 
@@ -102,11 +93,7 @@ describe("RadioField component", () => {
     it("allows the user to make a single selection", async () => {
       const { getByLabelText } = render(
         <Formik initialValues={{ radioField: undefined }} onSubmit={noop}>
-          <RadioField
-            id="radioField"
-            name="radioField"
-            options={radioOptions}
-          />
+          <RadioField name="radioField" options={radioOptions} />
         </Formik>
       );
 

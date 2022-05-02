@@ -78,7 +78,6 @@ export const Demographic = () => {
       <Alert type="info">{t("demographic_information.info_alert")}</Alert>
       <Fieldset legend={t("sex.label")} className={formStyles.field}>
         <RadioField
-          id="sex"
           name="sex"
           options={sexOptions.map((option) => {
             return {
@@ -90,7 +89,6 @@ export const Demographic = () => {
       </Fieldset>
       <Fieldset legend={t("ethnicity.label")} className={formStyles.field}>
         <RadioField
-          id="ethnicity"
           name="ethnicity"
           options={ethnicityOptions.map((option) => {
             return {
