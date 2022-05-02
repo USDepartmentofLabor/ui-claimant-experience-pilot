@@ -1,12 +1,6 @@
 import { useField } from "formik";
 import { Radio, FormGroup, ErrorMessage } from "@trussworks/react-uswds";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  ComponentProps,
-  ReactNode,
-  useRef,
-} from "react";
+import { ChangeEvent, ComponentProps, ReactNode, useRef } from "react";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
@@ -15,24 +9,23 @@ interface IRadioOption {
   value: string;
 }
 
-type RadioInputProps = Omit<ComponentProps<typeof Radio>, "label" | "value">;
+type RadioInputProps = Optional<
+  Omit<ComponentProps<typeof Radio>, "label" | "value">,
+  "id"
+>;
 
 interface IRadioFieldProps extends RadioInputProps {
-  id: string;
-  name: string;
   options: IRadioOption[];
-  onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 export const RadioField = ({
   id,
-  name,
   options,
   onChange,
   ...inputProps
 }: IRadioFieldProps & JSX.IntrinsicElements["input"]) => {
-  const [fieldProps, metaProps] = useField(name);
-  const showError = useShowErrors(name);
+  const [fieldProps, metaProps] = useField(inputProps.name);
+  const showError = useShowErrors(inputProps.name);
   const radioRef = useRef<HTMLInputElement>(null);
 
   useFocusFirstError(metaProps.error, radioRef);
@@ -49,9 +42,9 @@ export const RadioField = ({
       {options.map((option, index) => (
         <Radio
           {...fieldProps}
-          key={`${id}.${index}.${option.value}`}
-          id={`${id}.${option.value}`}
-          data-testid={`${id}.${option.value}`}
+          key={`${id ? id : inputProps.name}.${index}.${option.value}`}
+          id={`${id ? id : inputProps.name}.${option.value}`}
+          data-testid={`${id ? id : inputProps.name}.${option.value}`}
           label={option.label}
           value={option.value}
           checked={metaProps.value === option.value}
