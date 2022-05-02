@@ -58,7 +58,6 @@ export const Identity = () => {
       <div className="position-relative">
         <TextField
           label={t("ssn.label")}
-          id="ssn"
           name="ssn"
           type={showSsn ? "text" : "password"}
           hint={t("ssn.hint")}
@@ -82,7 +81,6 @@ export const Identity = () => {
       />
       <TextField
         label={t("state_credential.drivers_license_or_state_id_number.label")}
-        id="state_credential.drivers_license_or_state_id_number"
         name="state_credential.drivers_license_or_state_id_number"
         type="text"
       />
@@ -129,7 +127,6 @@ export const Identity = () => {
           {showAlienRegistrationNumber && (
             <TextField
               label={t("work_authorization.alien_registration_number.label")}
-              id="work_authorization.alien_registration_number"
               name="work_authorization.alien_registration_number"
               type="text"
             />

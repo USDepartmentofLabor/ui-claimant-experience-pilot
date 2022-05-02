@@ -11,13 +11,11 @@ export const EmailAddress = () => {
         name="email_address"
         label={t("label.email_address")}
         type="text"
-        id="email_address"
       />
       <TextField
         name="confirm_email_address"
         label={t("label.confirm_email_address")}
         type="text"
-        id="confirm_email_address"
       />
     </FormGroup>
   );

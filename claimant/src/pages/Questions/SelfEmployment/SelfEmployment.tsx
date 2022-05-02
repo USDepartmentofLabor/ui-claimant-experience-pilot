@@ -50,7 +50,6 @@ export const SelfEmployment = () => {
           <TextField
             label={t("self_employment.business_name.label")}
             type="text"
-            id="self_employment.name_of_business"
             name="self_employment.name_of_business"
           />
         )}
@@ -65,7 +64,6 @@ export const SelfEmployment = () => {
           <TextField
             label={t("self_employment.corporation_name.label")}
             type="text"
-            id="self_employment.name_of_corporation"
             name="self_employment.name_of_corporation"
           />
         )}

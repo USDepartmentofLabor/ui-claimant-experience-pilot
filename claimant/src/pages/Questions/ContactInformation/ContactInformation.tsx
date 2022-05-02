@@ -81,7 +81,6 @@ export const ContactInformation = () => {
 
       <TextField
         name="email"
-        id="email"
         type="text"
         label={t("email")}
         disabled
@@ -95,8 +94,7 @@ export const ContactInformation = () => {
       {values.interpreter_required && (
         <TextField
           label={t("preferred_language.label")}
-          id={"preferred_language"}
-          name={"preferred_language"}
+          name="preferred_language"
           type="text"
         />
       )}

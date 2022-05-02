@@ -92,7 +92,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         name={`employers[${segment}].phones[0].number`}
         label={t("phones.number.label")}
         type="tel"
-        id={`employers[${segment}].phones[0].number`}
       />
       <YesNoQuestion
         question={t("same_phone.label")}
@@ -105,21 +104,18 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
           name={`employers[${segment}].phones[1].number`}
           label={t("alt_employer_phone")}
           type="tel"
-          id={`employers[${segment}].phones[1].number`}
         />
       )}
       <TextField
         name={`employers[${segment}].fein`}
         label={t("fein.label")}
         type="text"
-        id={`employers[${segment}].fein`}
         hint={t("fein.hint")}
       />
       <TextField
         name={`employers[${segment}].state_employer_payroll_number`}
         label={t("state_employer_payroll_number.label")}
         type="text"
-        id={`employers[${segment}].state_employee_payroll_number`}
         hint={t("state_employer_payroll_number.hint")}
       />
       <YesNoQuestion

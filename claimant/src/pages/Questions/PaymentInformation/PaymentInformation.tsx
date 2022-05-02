@@ -103,25 +103,21 @@ export const PaymentInformation = () => {
           </Fieldset>
           <TextField
             label={t("routing_number.label")}
-            id="payment.routing_number"
             name="payment.routing_number"
             type="text"
           />
           <TextField
             label={t("re_enter_routing_number.label")}
-            id="payment.re_enter_routing_number"
             name="payment.LOCAL_re_enter_routing_number"
             type="text"
           />
           <TextField
             label={t("account_number.label")}
-            id="payment.account_number"
             name="payment.account_number"
             type="text"
           />
           <TextField
             label={t("re_enter_account_number.label")}
-            id="payment.re_enter_account_number"
             name="payment.LOCAL_re_enter_account_number"
             type="text"
           />

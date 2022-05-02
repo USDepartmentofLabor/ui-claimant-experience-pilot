@@ -31,13 +31,11 @@ export const UnionProfile = () => {
           <TextField
             label={t("union_name.label")}
             type="text"
-            id="union.union_name"
             name="union.union_name"
           />
           <TextField
             label={t("union_local_number.label")}
             type="text"
-            id="union.union_local_number"
             name="union.union_local_number"
           />
           <YesNoQuestion
