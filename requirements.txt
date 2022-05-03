@@ -14,7 +14,7 @@ git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
 jsonschema[format]==4.4.0
 jwcrypto==1.0
 git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu-fernet-serializers
-launchdarkly-server-sdk==7.4.0
+launchdarkly-server-sdk==7.4.1
 git+https://github.com/trussworks/logindotgov-oidc-py.git@7cc5218#egg=logindotgov-oidc
 mysqlclient==2.1.0
 pyjwt==2.3.0
