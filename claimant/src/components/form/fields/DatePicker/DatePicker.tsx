@@ -17,7 +17,7 @@ interface IDatePickerProps extends DatePickerProps {
 }
 
 export const DatePicker = ({
-  id,
+  id: idProp,
   name,
   label,
   onChange,
@@ -26,25 +26,25 @@ export const DatePicker = ({
   const [fieldProps, metaProps] = useField(name);
   const showError = useShowErrors(name);
 
-  const resolvedId = id || name;
+  const id = idProp || name;
 
-  useFocusFirstErrorById(metaProps.error, resolvedId);
+  useFocusFirstErrorById(metaProps.error, id);
 
   return (
     <FormGroup error={showError}>
-      <Label id={`${resolvedId}-label`} htmlFor={resolvedId}>
+      <Label id={`${id}-label`} htmlFor={id}>
         {label}
       </Label>
-      <div className="usa-hint" id={`${resolvedId}-hint`}>
+      <div className="usa-hint" id={`${id}-hint`}>
         mm/dd/yyyy
       </div>
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <USWDSDatePicker
-        key={resolvedId}
+        key={id}
         {...fieldProps}
-        id={resolvedId}
+        id={id}
         name={name}
-        aria-describedby={`${resolvedId}-label ${resolvedId}-hint`}
+        aria-describedby={`${id}-label ${id}-hint`}
         onChange={onChange}
         {...inputProps}
       />
