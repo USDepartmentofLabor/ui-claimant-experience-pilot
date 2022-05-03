@@ -71,7 +71,6 @@ const OtherPay = () => {
         <>
           <Fieldset legend={t("pay_type.label")}>
             <CheckboxGroupField
-              id="LOCAL_pay_types"
               name="LOCAL_pay_types"
               options={payTypeOptions.map((option) => ({
                 label: t(`pay_type.options.${option.translationKey}.label`),

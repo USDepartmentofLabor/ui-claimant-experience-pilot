@@ -25,7 +25,6 @@ describe("CheckboxGroupField component", () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ checkboxGroupField: [] }} onSubmit={noop}>
         <CheckboxGroupField
-          id="checkboxGroupField"
           name="checkboxGroupField"
           options={checkboxOptions}
         />
@@ -60,7 +59,6 @@ describe("CheckboxGroupField component", () => {
           onSubmit={noop}
         >
           <CheckboxGroupField
-            id="checkboxGroupField"
             name="checkboxGroupField"
             options={checkboxOptions}
           />
@@ -84,7 +82,6 @@ describe("CheckboxGroupField component", () => {
       const { getByLabelText } = render(
         <Formik initialValues={{ checkboxGroupField: [] }} onSubmit={noop}>
           <CheckboxGroupField
-            id="checkboxGroupField"
             name="checkboxGroupField"
             options={checkboxOptions.map((option) => ({
               label: option.label,
@@ -112,7 +109,6 @@ describe("CheckboxGroupField component", () => {
       const { getByLabelText } = render(
         <Formik initialValues={{ checkboxGroupField: [] }} onSubmit={noop}>
           <CheckboxGroupField
-            id="checkboxGroupField"
             name="checkboxGroupField"
             options={checkboxOptions}
           />

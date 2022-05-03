@@ -100,7 +100,6 @@ export const Demographic = () => {
       </Fieldset>
       <Fieldset legend={t("race.label")} className={formStyles.field}>
         <CheckboxGroupField
-          id="race"
           name="race"
           options={raceOptions.map((raceOption) => ({
             label: t(`race.options.${raceOption.translationKey}`),
