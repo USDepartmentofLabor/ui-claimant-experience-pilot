@@ -82,7 +82,6 @@ export const Identity = () => {
       />
       <StatesDropdown
         label={t("state_credential.issuer.label")}
-        id="state_credential.issuer"
         name="state_credential.issuer"
         startEmpty
       />

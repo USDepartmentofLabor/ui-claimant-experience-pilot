@@ -55,7 +55,6 @@ export const Address = ({ labels, basename, stateSlice }: IAddressProps) => {
       <StatesDropdown
         name={`${basename}.state`}
         label={labels ? labels.state : defaultLabels.state}
-        id={`${basename}.state`}
         data-testid={`${basename}.state`}
         startEmpty
         stateSlice={stateSlice}
