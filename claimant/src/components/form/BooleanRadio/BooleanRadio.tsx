@@ -15,7 +15,7 @@ interface IBooleanRadioProps {
 }
 
 export const BooleanRadio = ({
-  id,
+  id: idProp,
   name,
   yesLabel,
   noLabel,
@@ -41,15 +41,15 @@ export const BooleanRadio = ({
     }
   };
 
-  const resolvedId = id || name;
+  const id = idProp || name;
 
   return (
     <FormGroup error={showError}>
       <Radio
         {...fieldProps}
-        key={`${resolvedId}.0.yes`}
-        id={`${resolvedId}.yes`}
-        data-testid={`${resolvedId}.yes`}
+        key={`${id}.0.yes`}
+        id={`${id}.yes`}
+        data-testid={`${id}.yes`}
         label={yesLabel || t("yes")}
         value={"yes"}
         checked={metaProps.value === true}
@@ -60,9 +60,9 @@ export const BooleanRadio = ({
       />
       <Radio
         {...fieldProps}
-        key={`${resolvedId}.0.no`}
-        id={`${resolvedId}.no`}
-        data-testid={`${resolvedId}.no`}
+        key={`${id}.0.no`}
+        id={`${id}.no`}
+        data-testid={`${id}.no`}
         label={noLabel || t("no")}
         value={"no"}
         checked={metaProps.value === false}
