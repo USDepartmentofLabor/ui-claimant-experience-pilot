@@ -17,7 +17,10 @@ type DropdownOption = {
 
 const EMPTY_OPTION_VALUE = "";
 
-type DropdownProps = Omit<React.ComponentProps<typeof Dropdown>, "id">;
+type DropdownProps = Omit<
+  React.ComponentProps<typeof Dropdown>,
+  "id" | "children"
+>;
 
 interface IDropdownFieldProps extends DropdownProps {
   label: React.ReactNode;
