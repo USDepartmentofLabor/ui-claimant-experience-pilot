@@ -9,7 +9,7 @@ import {
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type TextareaProps = Optional<React.ComponentProps<typeof Textarea>, "id">;
+type TextareaProps = Omit<React.ComponentProps<typeof Textarea>, "id">;
 
 interface ITextAreaFieldProps extends TextareaProps {
   label: ReactNode;
@@ -39,7 +39,7 @@ export const TextAreaField = ({
         error={showError}
         className={labelClassName}
         hint={labelHint}
-        htmlFor={textareaProps.id || textareaProps.name}
+        htmlFor={textareaProps.name}
       >
         {label}
       </Label>
@@ -51,7 +51,7 @@ export const TextAreaField = ({
       <Textarea
         {...fieldProps}
         value={fieldProps.value || ""}
-        id={textareaProps.id || textareaProps.name}
+        id={textareaProps.name}
         {...textareaProps}
         inputRef={textareaRef}
         error={showError}

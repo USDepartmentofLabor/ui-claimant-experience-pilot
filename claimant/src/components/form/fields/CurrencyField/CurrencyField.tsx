@@ -14,10 +14,7 @@ import {
   CURRENCY_REGEX,
 } from "../../../../utils/currencyFormat";
 
-type TextFieldProps = Optional<
-  Omit<ComponentProps<typeof TextField>, "type">,
-  "id"
->;
+type TextFieldProps = Omit<ComponentProps<typeof TextField>, "type">;
 
 interface CurrencyFieldProps extends TextFieldProps {
   name: string;
@@ -26,7 +23,6 @@ interface CurrencyFieldProps extends TextFieldProps {
 }
 
 const CurrencyField = ({
-  id,
   name,
   label,
   inputPrefix = "$",
@@ -70,7 +66,6 @@ const CurrencyField = ({
   return (
     <TextField
       {...fieldProps}
-      id={id || name}
       label={label}
       name={name}
       type="text"

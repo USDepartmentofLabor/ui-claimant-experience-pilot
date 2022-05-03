@@ -39,7 +39,6 @@ type DateInputProps = Omit<
 >;
 
 type DateFieldProps = {
-  id?: string;
   name: string;
   hint?: string;
   readOnly?: boolean;
@@ -58,7 +57,6 @@ const VALID_KEYS_REGEXP = /[0-9/]+/;
 const INPUT_VALUE_REGEXP = /^\d{0,4}-\d{0,2}-\d{0,2}$/;
 
 export const DateInputField = ({
-  id: idProp,
   name,
   hint,
   readOnly,
@@ -99,8 +97,6 @@ export const DateInputField = ({
 
   const showError = useShowErrors(name);
   useFocusFirstError(metaProps.error, monthInputRef);
-
-  const id = idProp || name;
 
   const updateFormik = () => {
     if (day || month || year) {
@@ -177,18 +173,18 @@ export const DateInputField = ({
         legendSrOnly={legendSrOnly}
       >
         {hint && (
-          <span className="usa-hint" id={`${id}.hint`}>
+          <span className="usa-hint" id={`${name}.hint`}>
             {hint}
           </span>
         )}
         <div
-          id={id}
+          id={name}
           className="usa-memorable-date"
           ref={dateDivRef}
           data-testid={`${name}.parent-div`}
         >
           <DateInput
-            id={`${id}.month`}
+            id={`${name}.month`}
             name={`${name}.month`}
             value={month}
             label={t("date.month.label")}
@@ -204,7 +200,7 @@ export const DateInputField = ({
             onChange={handleMonthChange}
           />
           <DateInput
-            id={`${id}.day`}
+            id={`${name}.day`}
             name={`${name}.day`}
             value={day}
             label={t("date.day.label")}
@@ -220,7 +216,7 @@ export const DateInputField = ({
             onChange={handleDayChange}
           />
           <DateInput
-            id={`${id}.year`}
+            id={`${name}.year`}
             name={`${name}.year`}
             value={year}
             label={t("date.year.label")}

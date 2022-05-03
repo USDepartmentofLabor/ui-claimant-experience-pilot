@@ -12,7 +12,7 @@ import { useShowErrors } from "../../../../hooks/useShowErrors";
 import classnames from "classnames";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type TextInputProps = Optional<React.ComponentProps<typeof TextInput>, "id">;
+type TextInputProps = Omit<React.ComponentProps<typeof TextInput>, "id">;
 
 interface ITextFieldProps extends TextInputProps {
   label: ReactNode;
@@ -67,12 +67,12 @@ export const TextField = ({
   const textInput = (
     <TextInput
       {...fieldProps}
-      data-testid={textInputProps.id}
+      data-testid={textInputProps.name}
       value={fieldProps.value || ""}
       validationStatus={showErrorOutline ? "error" : undefined}
       onFocus={() => setFocused(true)}
       onBlur={handleBlur}
-      id={textInputProps.id || textInputProps.name}
+      id={textInputProps.name}
       {...textInputProps}
       inputRef={textFieldRef}
     />
@@ -84,7 +84,7 @@ export const TextField = ({
         className={labelClassName}
         hint={labelHint}
         error={showError}
-        htmlFor={textInputProps.id || textInputProps.name}
+        htmlFor={textInputProps.name}
       >
         {label}
       </Label>

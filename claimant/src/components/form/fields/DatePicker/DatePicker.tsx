@@ -9,7 +9,7 @@ import {
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstErrorById } from "../../../../hooks/useFocusFirstError";
 
-type DatePickerProps = Optional<ComponentProps<typeof USWDSDatePicker>, "id">;
+type DatePickerProps = Omit<ComponentProps<typeof USWDSDatePicker>, "id">;
 
 interface IDatePickerProps extends DatePickerProps {
   name: string;
@@ -17,7 +17,6 @@ interface IDatePickerProps extends DatePickerProps {
 }
 
 export const DatePicker = ({
-  id: idProp,
   name,
   label,
   onChange,
@@ -26,25 +25,23 @@ export const DatePicker = ({
   const [fieldProps, metaProps] = useField(name);
   const showError = useShowErrors(name);
 
-  const id = idProp || name;
-
-  useFocusFirstErrorById(metaProps.error, id);
+  useFocusFirstErrorById(metaProps.error, name);
 
   return (
     <FormGroup error={showError}>
-      <Label id={`${id}-label`} htmlFor={id}>
+      <Label id={`${name}-label`} htmlFor={name}>
         {label}
       </Label>
-      <div className="usa-hint" id={`${id}-hint`}>
+      <div className="usa-hint" id={`${name}-hint`}>
         mm/dd/yyyy
       </div>
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <USWDSDatePicker
-        key={id}
+        key={name}
         {...fieldProps}
-        id={id}
+        id={name}
         name={name}
-        aria-describedby={`${id}-label ${id}-hint`}
+        aria-describedby={`${name}-label ${name}-hint`}
         onChange={onChange}
         {...inputProps}
       />

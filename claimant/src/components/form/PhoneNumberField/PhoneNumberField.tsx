@@ -10,24 +10,19 @@ type PhoneNumberFieldProps = {
 };
 
 export const PhoneNumberField = ({
-  id: idProp,
   name,
   showSMS = true,
 }: PhoneNumberFieldProps) => {
   const { t } = useTranslation("common");
 
-  const id = idProp || name;
-
   return (
     <>
       <TextField
-        id={`${id}.number`}
         name={`${name}.number`}
         label={t("phone.number.label")}
         type="tel"
       />
       <DropdownField
-        id={`${id}.type`}
         name={`${name}.type`}
         label={
           <Trans t={t} i18nKey="phone.type.label">
@@ -42,11 +37,7 @@ export const PhoneNumberField = ({
         ]}
       />
       {showSMS && (
-        <CheckboxField
-          id={`${id}.sms`}
-          name={`${name}.sms`}
-          label={t("phone.sms.label")}
-        />
+        <CheckboxField name={`${name}.sms`} label={t("phone.sms.label")} />
       )}
     </>
   );

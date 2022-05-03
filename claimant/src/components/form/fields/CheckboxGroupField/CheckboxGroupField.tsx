@@ -6,7 +6,7 @@ import CheckboxField from "../CheckboxField/CheckboxField";
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../../hooks/useFocusFirstError";
 
-type OptionOmitProps = "id" | "name" | "value" | "label";
+type OptionOmitProps = "name" | "value" | "label";
 
 type CheckboxOption = {
   value: string;
@@ -15,13 +15,11 @@ type CheckboxOption = {
 };
 
 interface ICheckBoxGroupFieldProps {
-  id?: string;
   name: string;
   options: CheckboxOption[];
 }
 
 export const CheckboxGroupField = ({
-  id,
   name,
   options,
 }: ICheckBoxGroupFieldProps) => {
@@ -36,8 +34,8 @@ export const CheckboxGroupField = ({
       {options.map((option, index) => (
         <CheckboxField
           {...fieldProps}
-          key={`${id || name}.${index}.${option.value}`}
-          id={`${id || name}.${option.value}`}
+          key={`${name}.${index}.${option.value}`}
+          id={`${name}.${option.value}`}
           name={name}
           label={option.label}
           value={option.value}

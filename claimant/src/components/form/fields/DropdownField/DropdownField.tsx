@@ -17,9 +17,9 @@ type DropdownOption = {
 
 const EMPTY_OPTION_VALUE = "";
 
-interface IDropdownFieldProps {
-  id?: string;
-  name: string;
+type DropdownProps = Omit<React.ComponentProps<typeof Dropdown>, "id">;
+
+interface IDropdownFieldProps extends DropdownProps {
   label: React.ReactNode;
   labelClassName?: string;
   labelHint?: string;
@@ -39,14 +39,13 @@ interface IDropdownFieldProps {
 
 const DropdownField = ({
   name,
-  id: idProp,
   label,
   labelClassName,
   labelHint,
   options,
   startEmpty,
   ...inputProps
-}: IDropdownFieldProps & JSX.IntrinsicElements["select"]) => {
+}: IDropdownFieldProps) => {
   const { t } = useTranslation("common");
   const [fieldProps, metaProps] = useField({ name });
   const showError = useShowErrors(name);
@@ -58,23 +57,21 @@ const DropdownField = ({
     options.unshift({ value: EMPTY_OPTION_VALUE, label: t("select_one") });
   }
 
-  const id = idProp || name;
-
   return (
     <FormGroup error={showError}>
       <Label
         className={labelClassName}
         hint={labelHint}
         error={showError}
-        htmlFor={id}
+        htmlFor={name}
       >
         {label}
       </Label>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Dropdown
-        id={id}
-        data-testid={id}
+        id={name}
+        data-testid={name}
         {...fieldProps}
         {...inputProps}
         inputRef={selectRef}
