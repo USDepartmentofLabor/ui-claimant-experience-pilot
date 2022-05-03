@@ -55,7 +55,6 @@ export const ContactInformation = () => {
           <>
             <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
             <CheckboxField
-              id="LOCAL_more_phones"
               name="LOCAL_more_phones"
               data-testid="LOCAL_more_phones"
               label={t("more_phones")}
