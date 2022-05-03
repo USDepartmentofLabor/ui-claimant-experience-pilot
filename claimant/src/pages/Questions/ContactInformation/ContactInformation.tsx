@@ -53,7 +53,7 @@ export const ContactInformation = () => {
         name="phones"
         render={(arrayHelpers) => (
           <>
-            <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
+            <PhoneNumberField name="phones[0]" showSMS={false} />
             <CheckboxField
               name="LOCAL_more_phones"
               data-testid="LOCAL_more_phones"
@@ -68,11 +68,7 @@ export const ContactInformation = () => {
               }}
             />
             {values.LOCAL_more_phones && (
-              <PhoneNumberField
-                id="phones[1]"
-                name="phones[1]"
-                showSMS={false}
-              />
+              <PhoneNumberField name="phones[1]" showSMS={false} />
             )}
           </>
         )}

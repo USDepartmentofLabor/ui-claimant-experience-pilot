@@ -25,7 +25,7 @@ describe("Phone number component", () => {
 
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={() => undefined}>
-        <PhoneNumberField name={basename} id={basename} />
+        <PhoneNumberField name={basename} />
       </Formik>
     );
 

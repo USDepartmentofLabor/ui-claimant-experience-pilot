@@ -43,6 +43,5 @@ const Template: ComponentStory<typeof PhoneNumberField> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-  id: "sample_phone",
   name: "sample_phone",
 };
