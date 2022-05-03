@@ -24,7 +24,6 @@ const OtherPayDetail = (props: {
       <p className="font-body-xs">{description}</p>
       <FormGroup>
         <CurrencyField
-          id={`${name}.total`}
           name={`${name}.total`}
           label={t("other_pay_detail.total.label", {
             payType: lowerLabel,
