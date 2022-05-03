@@ -19,7 +19,7 @@ interface IRadioFieldProps extends RadioInputProps {
 }
 
 export const RadioField = ({
-  id,
+  id: idProp,
   options,
   onChange,
   ...inputProps
@@ -37,14 +37,16 @@ export const RadioField = ({
     }
   };
 
+  const id = idProp || inputProps.name;
+
   return (
     <FormGroup error={showError}>
       {options.map((option, index) => (
         <Radio
           {...fieldProps}
-          key={`${id ? id : inputProps.name}.${index}.${option.value}`}
-          id={`${id ? id : inputProps.name}.${option.value}`}
-          data-testid={`${id ? id : inputProps.name}.${option.value}`}
+          key={`${id}.${index}.${option.value}`}
+          id={`${id}.${option.value}`}
+          data-testid={`${id}.${option.value}`}
           label={option.label}
           value={option.value}
           checked={metaProps.value === option.value}
