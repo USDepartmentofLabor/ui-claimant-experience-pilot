@@ -6,8 +6,17 @@
 {%block content %}
 <section class="usa-section">
   <p>
-    We have opened up the source code for the Claimant Experience pilot application that the U.S. Department of Labor created in partnership with the Arkansas Devision of Workforce Services and the New Jersey Department of Labor & Workforce Development. Throughout this reference site, we note elements you can use improve the claimant experience. By providing the source code, you can you can also explore the entire application to see what else might be useful. The open source code can be found on GitHub here [link tbd].
+    As a part of the <a href="https://wdr.doleta.gov/directives/attach/TEN/TEN_16-21_acc.pdf" class="usa-link">Claimant Experience pilot</a>, we collaboratively built an entire sample UI application from the ground up that has all of the modern best practices baked in. New Jersey and Arkansas adapted content and code from this sample, and worked it into their own UI forms. For others who might also want to explore the sample in its entirety, we have made the application code completely open source <a href="javascript:void(0)" class="usa-link">[link tbd]</a>.
   </p>
+
+  <div class="margin-y-4 usa-alert usa-alert--info usa-alert--slim">
+    <div class="usa-alert__body">
+      <p class="text-italic usa-alert__text">
+        Open source is “software for which the human-readable source code is available for use, study, re-use, modification, enhancement, and re-distribution by the users of such software” (Public Law 115-232). The Department of Defense has a great <a href="https://dodcio.defense.gov/Open-Source-Software-FAQ/#q-doesnt-hiding-source-code-automatically-make-software-more-secure" class="usa-link">FAQ page</a> on open source software, including why using open source software is no less secure than software with hidden source code.
+      </p>
+    </div>
+  </div>
+
   <p>
     The application code includes the following functionality:
   </p>
@@ -114,7 +123,8 @@
   <a id="translation"></a>
   <h2>Using internationalization libraries for translations</h2>
   <p>
-    The Claimant Experience pilot application uses internationalization libraries (e.g., <a class="usa-link" href="https://react.i18next.com/">react-i18next</a>) that can be used to display text in mulitple languages. These libraries use user-provided translation strings rather than automatic text translation. States and territories are required to provide forms in languages other than English, and automated translation services may not provide accurate translations, which can further confuse claimants.
+    The Claimant Experience pilot application uses internationalization libraries (e.g., <a class="usa-link" href="https://react.i18next.com/">react-i18next</a>) that can be used to display text in multiple languages. These libraries use user-provided translation strings rather than automatic text translation. States and territories are required to provide forms in languages other than English (<a class="usa-link" href="https://wdr.doleta.gov/directives/corr_doc.cfm?DOCN=4233">see UIPL 02-16</a>), and automated translation services may not provide accurate translations, which can further confuse claimants.
+
   </p>
 </section>
 

@@ -27,6 +27,7 @@ from core.claim_storage import (
     ClaimStore,
     ClaimWriter,
 )
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -201,6 +202,16 @@ class Claim(TimeStampedModel):
                     category=Claim.EventCategories.INITIATED_WITH_SWA_XID
                 )
         return claim
+
+    @classmethod
+    def find_by_uuid_or_swa_xid(cls, uuid_or_swa_xid):
+        try:
+            uuid.UUID(uuid_or_swa_xid)
+            return cls.objects.filter(
+                Q(uuid=uuid_or_swa_xid) | Q(swa_xid=uuid_or_swa_xid)
+            ).first()
+        except ValueError:
+            return cls.objects.filter(swa_xid=uuid_or_swa_xid).first()
 
     def create_stored_event(self, bucket_name):
         return self.events.create(

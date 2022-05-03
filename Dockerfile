@@ -60,8 +60,10 @@ RUN apt-get update -y && apt-get install -y \
   libexpat1 \
   base-files=11.1+deb11u3 \
   gpgv=2.2.27-2+deb11u1 \
+  gzip=1.10-4+deb11u1 \
   libc-bin=2.31-13+deb11u3 \
   libc6=2.31-13+deb11u3 \
+  liblzma5=5.2.5-2.1~deb11u1 \
   libssl1.1=1.1.1n-0+deb11u1 \
   libsystemd0=247.3-7 \
   libudev1=247.3-7 \

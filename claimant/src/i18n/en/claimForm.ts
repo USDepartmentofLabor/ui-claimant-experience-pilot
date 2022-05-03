@@ -118,7 +118,7 @@ const claimForm = {
       },
       comment: {
         required_label: "Please share more details below",
-        optional_label: "Please share more details below (optional)",
+        optional_label: "Please share more details below <i>(optional)</i>",
         errors: {
           required: "More detail about the separation reason is required",
         },

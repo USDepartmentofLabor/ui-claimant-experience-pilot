@@ -152,6 +152,23 @@ To get the details about a specific claim, use its id (UUID):
 % curl -X GET https://unemployment.dol.gov/swa/v1/claims/1f5eb062-fa36-479c-8c22-7e9fafcf0cfd
 {
   "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
+  "swa_xid": "your-unique-swa-xid-value",
+  "created_at": "2021-11-05T16:54:15-0500",
+  "updated_at": "2021-11-05T16:54:15-0500",
+  "claimant_id": "1d0a0ccc77d551f806d0e99740c1d9607c5f1da1",
+  "events": [ ], // history of the Claim
+  "status": "established",
+}
+```
+
+If you have previously associated a claim via a `swa_xid` value, you can alternately use the `swa_xid` value
+in the URL path:
+
+```sh
+% curl -X GET https://unemployment.dol.gov/swa/v1/claims/your-unique-swa-xid-value
+{
+  "id": "1f5eb062-fa36-479c-8c22-7e9fafcf0cfd",
+  "swa_xid": "your-unique-swa-xid-value",
   "created_at": "2021-11-05T16:54:15-0500",
   "updated_at": "2021-11-05T16:54:15-0500",
   "claimant_id": "1d0a0ccc77d551f806d0e99740c1d9607c5f1da1",

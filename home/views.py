@@ -75,10 +75,10 @@ def swa_index(request, swa_code):
             template_file,
             {
                 "swa": swa,
-                "swa_contact": f"_swa/{swa_code}/contact_details.html",
+                "swa_contact": f"_swa/{swa.code}/contact_details.html",
                 "show_navigation": False,
-                "swa_missing_xid": f"_swa/{swa_code}/missing-xid.html",
-                "more_help": f"_swa/{swa_code}/more_help.html",
+                "swa_missing_xid": f"_swa/{swa.code}/missing-xid.html",
+                "more_help": f"_swa/{swa.code}/more_help.html",
             },
         )
     except SWA.DoesNotExist:
@@ -100,7 +100,7 @@ def swa_contact(request, swa_code):
             f"_swa/{swa.code}/contact.html",
             {
                 "home_path": "/identity/" if swa.is_identity_only() else "/claimant/",
-                "contact_us_path": f"/contact/{swa_code}/",
+                "contact_us_path": f"/contact/{swa.code}/",
                 "whoami": whoami,
                 "swa": swa,
                 "show_navigation": True,

@@ -223,6 +223,8 @@ build-static: ## Build the static assets (intended for during container-build (i
 	mkdir static
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
+	cp home/templates/dol-logo512.png static/logo512.png
+	cp home/templates/dol-logo192.png static/logo192.png
 	cp claimant/build/manifest.json static/manifest.json
 	cd static && ln -s ../schemas schemas
 

@@ -1,27 +1,33 @@
 {% extends "./base.html" %}
+{% load static %}
 
-{% block title %} Improve despite tech challenges {% endblock %}
+{% block title %} Improve despite technical challenges {% endblock %}
 
 {%block content %}
 <section class="usa-section">
-  <p>
-    All state workforce agencies (SWAs) are working in challenging environments that include legacy technology. States have limited resources and a workload that can be unpredictable. These factors can make large scale modernization difficult, expensive, and/or time-consuming. However, there are opportunities to make incremental and impactful changes.
-  </p>
-  <p>
-    The case study below demonstrates how the state of New Jersey has successfully made significant improvements despite their current technical challenges.
-  </p>
+  <p>Many state workforce agencies are working in challenging environments that include legacy technology. States have limited resources and workloads that can be unpredictable. These factors can make large scale modernization difficult, expensive, and/or time-consuming. However, there are opportunities to make incremental and impactful changes.</p>
+  <p>The case study below demonstrates how the state of New Jersey has successfully made significant improvements despite their current technical challenges.</p>
 </section>
 
 <section class="usa-section">
   <a id="mobile-friendly"></a>
   <h2>Go mobile-friendly with existing technology</h2>
-  <p>
-    Mobile-friendly systems and websites are critical given that smart phones are the most accessible (and often only) for many applicants. Few states have mobile-friendly experiences today. Around 60% of states and territories do not have responsive sites for unemployment benefits. Additionally, multiple studies show that 60-80% of applicants have smartphones as their primary device.
-  </p>
-  <p>
-    Using CSS media queries, you can make huge improvements to the mobile-friendliness of your site, often without the need to upgrade your software stack or infrastructure. Have a conversation with your engineering experts and share this code to see what's possible in the short term.
-  </p>
-  <p class="text-bold">[Example NJ SSI desktop and mobile-friendly screenshots]</p>
+
+  <p>Mobile-friendly systems and websites are critical given that smart phones are the most accessible (and often only) for many applicants. Few states have mobile-friendly experiences today. According to a Pew Research study titled, “<a href="https://www.pewresearch.org/fact-tank/2015/04/30/racial-and-ethnic-differences-in-how-people-use-mobile-technology/" class="usa-link">Racial and ethnic differences in how people use mobile technology</a>”, 25% of minority populations have smartphones as their only internet device.</p>
+  <p>Using cascading style sheets (CSS) media queries, you can make huge improvements to the mobile-friendliness of your site, often without the need to upgrade your software stack or infrastructure. Have a conversation with your engineering experts and share this code to see what’s possible in the short term.</p>
+  <p>Below is an example of New Jersey making improvements of the mobile experience without upgrading infrastructure.</p>
+
+  <div class="grid-row grid-gap-lg">
+    <div class="grid-col-12 tablet:grid-col-5">
+      <h3>Mobile - before</h3>
+      <img class="border-3 border-base-lightest" src="{% static 'reference/nj-mobile-before.png' %}" alt="Previous, unresponsive New Jersey UI application mobile view" />
+    </div>
+    <div class="grid-col-12 tablet:grid-col-5 tablet:grid-offset-1">
+      <h3>Mobile - after</h3>
+      <img class="border-3 border-base-lightest" src="{% static 'reference/nj-mobile-after.png' %}" alt="new, responsive New Jersey UI application mobile view" />
+    </div>
+  </div>
+
   <h3>Media query example</h3>
   <p>
     The following code snippet shows a couple sections of text aligned side-by-side on a page using the CSS flex display property. This works well for wide screens, but appears too narrow on mobile.
@@ -124,7 +130,7 @@
     When you are not constrained by legacy systems and process, you can make fast progress with new capabilities. You may uncover ideas that you otherwise wouldn't have.
   </p>
   <p>
-    In partnership with USDOL, USDS built a pilot application with New Jersey on a separate, new site entirely outside of their existing website and application. New Jersey is not releasing this application as their new system, but are using pieces of it to improve their existing system. If you build on the side, you may find valuable features to incorporate into your system(s) or you may learn new details that inform your technology roadmap.
+    USDOL and New Jersey collaborated to build a separate, new site entirely outside of their existing UI website and application. New Jersey is not releasing this application as their new system, but are using pieces of it to improve their existing system. If you build on the side, you may find valuable features to incorporate into your system(s) or you may learn new details that inform your technology roadmap.
   </p>
   <p>
     Explore the sample app source code [insert link here] to see how you can experiment with building outside of your legacy system.
@@ -152,31 +158,19 @@
 <section class="usa-section">
   <a id="make-space"></a>
   <h2>Make space to hear ideas</h2>
-  <p>
-    New Jersey, like many states and territories, has struggled to update their UI application because of complicated legacy technology problems. During the pilot, they brought together policy, IT, and innovation teammates to meet and ideate. They came up with technical workarounds that enabled them to make short term improvements.
-  </p>
-  <p>
-    Below are some of the tactics New Jersey used to create space for these ideas and act on them. If you're inspired, and haven't already, try this in your organization to see if it results in any new learnings and opportunities.
-  </p>
-  <p>
-    NJ structured the meeting around an agenda like this:
-  </p>
+  <p>New Jersey, like many states and territories, has struggled to update their UI application because of complicated legacy technology problems. During the pilot, they brought together policy, IT, and innovation teammates to meet and brainstorm. They came up with technical workarounds that enabled them to make short term improvements.</p>
+  <p>Below are some of the tactics they used to create space to hear and prioritize ideas. If you haven't already, you can try some of these tactics in your organization to see if they result in any new learnings or opportunities.</p>
   <ul>
     <li>
-      <span class="text-bold">What are the program office's goals?</span> Define specific claimant-experience goals such as plain language for application questions, accessibility, or mobile-responsiveness.
+      They structured a meeting around an agenda like this:
+      <ul>
+        <li><span class="text-bold">What are the program office's goals?</span> Define specific claimant-experience goals such as plain language for application questions, accessibility, or mobile-responsiveness.</li>
+        <li><span class="text-bold">What are the blockers?</span> Discuss: are there too many other things prioritized, that are preventing action on the aforementioned goals? Is there a technology blocker? Are there other problems that make it difficult to make improvements?</li>
+        <li><span class="text-bold">What are some ideas for workarounds?</span> Discuss how to solve the problems or change incrementally to reach claimant experience goals.</li>
+      </ul>
     </li>
-    <li>
-      <span class="text-bold">What are the blockers?</span> Whether it's a prioritization, technology, or other problem, discuss the blockers in detail.
-    </li>
-    <li>
-      <span class="text-bold">What are some ideas for workarounds?</span> Discuss how to solve the problems or change incrementally to reach claimant experience goals?
-    </li>
+    <li>They made sure policy, IT, and innovation decision-makers were present at the meeting, so they could advocate for the importance of the claimant experience goals. Leaders selected ideas to pursue, and the teams scheduled follow-up sessions to dive into implementation details so that tactical logistics did not interfere with the brainstorming meeting.</li>
+    <li>They used a round-table style to facilitate the meeting so anyone from the technology side had the opportunity to speak, not just leaders. It specifically was important that the technical teammates had the space to propose ideas based on the program office's goals.</li>
   </ul>
-  <p>
-    New Jersey made sure IT, Innovation, and Policy leadership were present at the meeting. Decision-makers from those areas were present to advocate for human centered design and to hear the various ideas. After leaders decided which ideas to pursue, they scheduled follow-up sessions to dive into implementation details so that tactical logistics did not interfere with the ideation meeting.
-  </p>
-  <p>
-    New Jersey used a round-table style to facilitate the meeting so leaders as well anyone from the technology side had the opportunity to speak. It specifically was important that the technical experts had the space to propose solutions based on what policy wanted to achieve.
-  </p>
 </section>
 {% endblock %}
