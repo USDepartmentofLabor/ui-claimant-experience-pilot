@@ -51,7 +51,7 @@ export const TextAreaField = ({
       <Textarea
         {...fieldProps}
         value={fieldProps.value || ""}
-        id={textareaProps.id ? textareaProps.id : textareaProps.name}
+        id={textareaProps.id || textareaProps.name}
         {...textareaProps}
         inputRef={textareaRef}
         error={showError}
