@@ -22,7 +22,7 @@ describe("BooleanRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <BooleanRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <BooleanRadio name="my_yes_no_button" />
       </Formik>
     );
 
@@ -43,7 +43,7 @@ describe("BooleanRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <BooleanRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <BooleanRadio name="my_yes_no_button" />
       </Formik>
     );
 
@@ -76,7 +76,7 @@ describe("BooleanRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <BooleanRadio id="my_yes_no_button" name="my_yes_no_button" />
+        <BooleanRadio name="my_yes_no_button" />
       </Formik>
     );
 
@@ -97,11 +97,7 @@ describe("BooleanRadio Component", () => {
         }}
         onSubmit={noop}
       >
-        <BooleanRadio
-          id="my_yes_no_button"
-          name="my_yes_no_button"
-          onChange={onChange}
-        />
+        <BooleanRadio name="my_yes_no_button" onChange={onChange} />
       </Formik>
     );
 
