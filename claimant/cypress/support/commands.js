@@ -630,9 +630,13 @@ Cypress.Commands.add("complete_payment_information", (paymentInformation) => {
     .parent()
     .click();
   cy.get('input[id="payment\\.routing_number"]').type(routing_number);
-  cy.get('input[id="payment\\.re_enter_routing_number"]').type(routing_number);
+  cy.get('input[id="payment\\.LOCAL_re_enter_routing_number"]').type(
+    routing_number
+  );
   cy.get('input[id="payment\\.account_number"]').type(account_number);
-  cy.get('input[id="payment\\.re_enter_account_number"]').type(account_number);
+  cy.get('input[id="payment\\.LOCAL_re_enter_account_number"]').type(
+    account_number
+  );
 });
 
 Cypress.Commands.add(
