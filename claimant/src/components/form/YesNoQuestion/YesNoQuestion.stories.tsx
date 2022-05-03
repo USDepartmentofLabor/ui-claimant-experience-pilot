@@ -18,7 +18,6 @@ const Template: ComponentStory<typeof YesNoQuestion> = (args) => {
       <Form>
         <YesNoQuestion
           question="Do you like to answer Yes/No questions?"
-          id={args.name}
           name={args.name}
           onChange={args.onChange}
         />
