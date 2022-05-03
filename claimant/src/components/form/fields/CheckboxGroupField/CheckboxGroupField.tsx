@@ -35,6 +35,7 @@ export const CheckboxGroupField = ({
         <CheckboxField
           {...fieldProps}
           key={`${name}.${index}.${option.value}`}
+          id={`${name}.${option.value}`}
           name={name}
           label={option.label}
           value={option.value}
