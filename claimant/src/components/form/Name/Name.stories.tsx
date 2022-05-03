@@ -48,12 +48,10 @@ const Template: ComponentStory<typeof Name> = (args) => {
 
 export const ClaimantName = Template.bind({});
 ClaimantName.args = {
-  id: "claimant-name",
   name: "claimant-name",
 };
 
 export const AdditionalName = Template.bind({});
 AdditionalName.args = {
-  id: "additional-name-{n}",
   name: "additional-name-{n}",
 };

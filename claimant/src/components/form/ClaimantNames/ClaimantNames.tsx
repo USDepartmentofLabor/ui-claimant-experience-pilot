@@ -20,7 +20,7 @@ export const ClaimantNames = () => {
   return (
     <>
       <Fieldset legend={t("legal_name")}>
-        <Name id="claimant_name" name="claimant_name" />
+        <Name name="claimant_name" />
       </Fieldset>
       <LiveMessenger>
         {({ announcePolite }) => (
@@ -46,7 +46,7 @@ export const ClaimantNames = () => {
                 values.alternate_names.push({ ...PERSON_NAME_SKELETON });
               return values.alternate_names?.map((alternateName, index) => {
                 const name = `alternate_names.${index}`;
-                return <Name key={name} id={name} name={name} />;
+                return <Name key={name} name={name} />;
               });
             }}
           />

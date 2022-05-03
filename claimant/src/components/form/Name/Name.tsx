@@ -2,12 +2,14 @@ import TextField from "../fields/TextField/TextField";
 import { Trans, useTranslation } from "react-i18next";
 
 interface INameProps {
-  id: string;
+  id?: string;
   name: string;
 }
 
-export const Name = ({ id, name }: INameProps) => {
+export const Name = ({ id: idProp, name }: INameProps) => {
   const { t } = useTranslation("claimForm");
+
+  const id = idProp || name;
 
   return (
     <>
