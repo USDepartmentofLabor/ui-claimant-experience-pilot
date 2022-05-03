@@ -72,7 +72,7 @@ export const TextField = ({
       validationStatus={showErrorOutline ? "error" : undefined}
       onFocus={() => setFocused(true)}
       onBlur={handleBlur}
-      id={textInputProps.id ? textInputProps.id : textInputProps.name}
+      id={textInputProps.id || textInputProps.name}
       {...textInputProps}
       inputRef={textFieldRef}
     />
