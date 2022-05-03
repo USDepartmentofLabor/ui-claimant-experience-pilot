@@ -66,7 +66,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       />
       <YesNoQuestion
         question={t("same_address.label")}
-        id={`employers[${segment}].LOCAL_same_address`}
         name={`employers[${segment}].LOCAL_same_address`}
         noLabel={t("no_different_address")}
       />
@@ -95,7 +94,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       />
       <YesNoQuestion
         question={t("same_phone.label")}
-        id={`employers[${segment}].LOCAL_same_phone`}
         name={`employers[${segment}].LOCAL_same_phone`}
         noLabel={t("no_different_phone")}
       />
@@ -120,7 +118,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       />
       <YesNoQuestion
         question={t("self_employed.label")}
-        id={`employers[${segment}].self_employed`}
         name={`employers[${segment}].self_employed`}
       />
       <SeparationReason segment={segment} />

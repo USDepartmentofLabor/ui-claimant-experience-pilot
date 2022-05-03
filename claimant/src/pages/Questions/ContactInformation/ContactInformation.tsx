@@ -83,7 +83,6 @@ export const ContactInformation = () => {
       />
       <YesNoQuestion
         question={t("interpreter_required.label")}
-        id="interpreter_required"
         name="interpreter_required"
       />
       {values.interpreter_required && (

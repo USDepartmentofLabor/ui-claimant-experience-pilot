@@ -26,7 +26,6 @@ export const ClaimantNames = () => {
         {({ announcePolite }) => (
           <YesNoQuestion
             question={t("claimant_has_alternate_names.label")}
-            id="LOCAL_claimant_has_alternate_names"
             name="LOCAL_claimant_has_alternate_names"
             onChange={(e) => {
               e.currentTarget.value === "yes"

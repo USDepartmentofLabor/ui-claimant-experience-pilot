@@ -30,7 +30,6 @@ export const EducationVocationalRehab = () => {
           question={t(
             "education_vocational_rehab.education.attending_training.label"
           )}
-          id="attending_college_or_job_training"
           name="attending_college_or_job_training"
         >
           <HelpText>
@@ -91,7 +90,6 @@ export const EducationVocationalRehab = () => {
           question={t(
             "education_vocational_rehab.vocational_rehab.is_registered.label"
           )}
-          id="registered_with_vocational_rehab"
           name="registered_with_vocational_rehab"
         >
           <HelpText withLeftBorder={true}>

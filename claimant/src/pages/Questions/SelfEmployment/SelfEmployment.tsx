@@ -38,12 +38,10 @@ export const SelfEmployment = () => {
       <>
         <YesNoQuestion
           question={t("self_employment.self_employed.label")}
-          id="self_employment.is_self_employed"
           name="self_employment.is_self_employed"
         />
         <YesNoQuestion
           question={t("self_employment.business_ownership.label")}
-          id="self_employment.ownership_in_business"
           name="self_employment.ownership_in_business"
         />
         {data.ownership_in_business && (
@@ -57,7 +55,6 @@ export const SelfEmployment = () => {
       <Fieldset legend={t("self_employment.business_interests.label")}>
         <YesNoQuestion
           question={t("self_employment.corporate_officer.label")}
-          id="self_employment.is_corporate_officer"
           name="self_employment.is_corporate_officer"
         />
         {data.is_corporate_officer && (
@@ -69,7 +66,6 @@ export const SelfEmployment = () => {
         )}
         <YesNoQuestion
           question={t("self_employment.related_to_owner.label")}
-          id="self_employment.related_to_owner"
           name="self_employment.related_to_owner"
         >
           <HelpText withLeftBorder={true}>
@@ -79,7 +75,6 @@ export const SelfEmployment = () => {
         {data.related_to_owner && (
           <YesNoQuestion
             question={t("self_employment.corporation_or_partnership.label")}
-            id="self_employment.corporation_or_partnership"
             name="self_employment.corporation_or_partnership"
           />
         )}

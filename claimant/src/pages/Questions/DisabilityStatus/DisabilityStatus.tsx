@@ -49,7 +49,6 @@ export const DisabilityStatus = () => {
     <Fieldset legend={t("disability.heading")}>
       <YesNoQuestion
         question={t("disability.has_collected_disability.label")}
-        id="disability.has_collected_disability"
         name="disability.has_collected_disability"
       >
         <HelpText withLeftBorder={true}>
@@ -60,7 +59,6 @@ export const DisabilityStatus = () => {
         <>
           <YesNoQuestion
             question={t("disability.disabled_immediately_before.label")}
-            id="disability.disabled_immediately_before"
             name="disability.disabled_immediately_before"
           />
           <DropdownField
@@ -102,7 +100,6 @@ export const DisabilityStatus = () => {
           {values.disability.recovery_date && (
             <YesNoQuestion
               question={t("disability.contact_employer_after_recovering.label")}
-              id="disability.contacted_last_employer_after_recovery"
               name="disability.contacted_last_employer_after_recovery"
             />
           )}

@@ -29,7 +29,6 @@ export const Availability = () => {
     <>
       <YesNoQuestion
         question={t("can_begin_work_immediately.label")}
-        id="availability.can_begin_work_immediately"
         name="availability.can_begin_work_immediately"
       >
         {values.availability?.can_begin_work_immediately === false && (
@@ -41,7 +40,6 @@ export const Availability = () => {
       </YesNoQuestion>
       <YesNoQuestion
         question={t("can_work_full_time.label")}
-        id="availability.can_work_full_time"
         name="availability.can_work_full_time"
       >
         {values.availability?.can_work_full_time === false && (
@@ -53,7 +51,6 @@ export const Availability = () => {
       </YesNoQuestion>
       <YesNoQuestion
         question={t("is_prevented_from_accepting_full_time_work.label")}
-        id="availability.is_prevented_from_accepting_full_time_work"
         name="availability.is_prevented_from_accepting_full_time_work"
       >
         {values.availability?.is_prevented_from_accepting_full_time_work && (

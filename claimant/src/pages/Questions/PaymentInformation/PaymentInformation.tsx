@@ -68,7 +68,6 @@ export const PaymentInformation = () => {
     <>
       <YesNoQuestion
         question={t("federal_income_tax_withheld.label")}
-        id="federal_income_tax_withheld"
         name="federal_income_tax_withheld"
       >
         <HelpText withLeftBorder={true}>

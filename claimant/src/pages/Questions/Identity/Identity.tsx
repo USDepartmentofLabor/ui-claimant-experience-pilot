@@ -87,7 +87,6 @@ export const Identity = () => {
       />
       <YesNoQuestion
         question={t("work_authorization.authorized_to_work.label")}
-        id="work_authorization.authorized_to_work"
         name="work_authorization.authorized_to_work"
       />
       {showNotAllowedToWorkInUSExplanation && (

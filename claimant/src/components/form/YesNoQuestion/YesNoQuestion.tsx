@@ -4,7 +4,7 @@ import { useShowErrors } from "../../../hooks/useShowErrors";
 import { ChangeEventHandler, PropsWithChildren } from "react";
 
 interface IYesNoQuestionProps {
-  id: string;
+  id?: string;
   name: string;
   question: string;
   yesLabel?: string;
