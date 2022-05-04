@@ -19,6 +19,7 @@ from core.test_utils import (
     generate_keypair,
     generate_symmetric_encryption_key,
 )
+from core.exceptions import ClaimThumbprintMismatchError
 import logging
 
 
@@ -123,7 +124,7 @@ class CoreClaimEncryptionTestCase(TestCase):
         self.assertEqual(decrypted_packaged_claim, claim)
 
         # wrong key should raise error
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ClaimThumbprintMismatchError):
             SymmetricClaimDecryptor(
                 packaged_claim.as_json(), symmetric_encryption_key(list_of_keys[0])
             )

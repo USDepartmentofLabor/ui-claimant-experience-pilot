@@ -6,6 +6,10 @@ class ClaimStorageError(Exception):
     pass
 
 
+class ClaimThumbprintMismatchError(Exception):
+    pass
+
+
 class SwaXidError(Exception):
     def __init__(self, swa, message):
         self.swa = swa

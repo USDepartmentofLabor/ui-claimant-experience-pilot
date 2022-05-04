@@ -164,6 +164,222 @@ class ClaimantKeyRotatorTestCase(BucketTestCase):
         self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
         self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
 
+    def test_rotate_one_claim_old_key_null_hash_no_file(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant_with_null_hash = self.create_claim_with_key(old_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 1)  # 1 claim
+
+        claimant_with_null_hash.refresh_from_db()
+        self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_old_key_null_hash_with_file_old_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant_with_null_hash = self.create_claim_with_key(old_key)
+        self.create_claimant_file(claimant_with_null_hash, old_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 2)  # 1 claim + 1 file
+
+        claimant_with_null_hash.refresh_from_db()
+        self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_old_key_hash_no_file(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant_with_key_hash = self.create_claim_with_key(old_key)
+        claimant_with_key_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_with_key_hash.save()
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 1)  # 1 claim
+
+        claimant_with_key_hash.refresh_from_db()
+        self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_old_key_hash_with_file_old_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        claimant_with_key_hash = self.create_claim_with_key(old_key)
+        claimant_with_key_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_with_key_hash.save()
+
+        self.create_claimant_file(claimant_with_key_hash, old_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 2)  # 1 claim + 1 file
+
+        claimant_with_key_hash.refresh_from_db()
+        self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_null_hash_no_file(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_null_hash = self.create_claim_with_key(new_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 0)  # 0 claim
+
+        claimant_with_null_hash.refresh_from_db()
+        self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_null_hash_with_file_old_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_null_hash = self.create_claim_with_key(new_key)
+        # encrypted with old key - expected to be rotated
+        self.create_claimant_file(claimant_with_null_hash, old_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 1)  # 0 claim + 1 file
+
+        claimant_with_null_hash.refresh_from_db()
+        self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_null_hash_with_file_new_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_null_hash = self.create_claim_with_key(new_key)
+        self.create_claimant_file(claimant_with_null_hash, new_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 0)  # 0 claim + 0 file
+
+        claimant_with_null_hash.refresh_from_db()
+        self.assertEqual(claimant_with_null_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_old_hash_no_file(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_key_hash = self.create_claim_with_key(new_key)
+        claimant_with_key_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_with_key_hash.save()
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 0)  # 0 claim
+
+        claimant_with_key_hash.refresh_from_db()
+        self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_old_hash_with_file_old_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_key_hash = self.create_claim_with_key(new_key)
+        claimant_with_key_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_with_key_hash.save()
+
+        # encrypted with old key - expected to be rotated
+        self.create_claimant_file(claimant_with_key_hash, old_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 1)  # 0 claim + 1 file
+
+        claimant_with_key_hash.refresh_from_db()
+        self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_one_claim_new_key_old_hash_with_file_new_key(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # encrypted with new key - not expected to be rotated
+        claimant_with_key_hash = self.create_claim_with_key(new_key)
+        claimant_with_key_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_with_key_hash.save()
+
+        self.create_claimant_file(claimant_with_key_hash, new_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 0)  # 0 claim + 0 file
+
+        claimant_with_key_hash.refresh_from_db()
+        self.assertEqual(claimant_with_key_hash.encryption_key_hash, ckr.new_key_hash)
+
+    def test_rotate_many_things(self):
+        old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+        new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
+
+        # +1 claim
+        claimant_old_key_null_hash = self.create_claim_with_key(old_key)
+        # +2 files
+        self.create_claimant_file(claimant_old_key_null_hash, old_key)
+        self.create_claimant_file(claimant_old_key_null_hash, old_key)
+
+        # +1 claim
+        claimant_old_key_with_hash = self.create_claim_with_key(old_key)
+        claimant_old_key_with_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_old_key_with_hash.save()
+        # +1 file
+        self.create_claimant_file(claimant_old_key_with_hash, old_key)
+
+        # +0 claims
+        claimant_new_key_null_hash = self.create_claim_with_key(new_key)
+        # +0 files
+        self.create_claimant_file(claimant_new_key_null_hash, new_key)
+        self.create_claimant_file(claimant_new_key_null_hash, new_key)
+        self.create_claimant_file(claimant_new_key_null_hash, new_key)
+
+        # +0 claims
+        claimant_new_key_with_hash = self.create_claim_with_key(new_key)
+        claimant_new_key_with_hash.encryption_key_hash = encryption_key_hash(old_key)
+        claimant_new_key_with_hash.save()
+        # +2 files - expect these to be rotated because encrypted with old key;
+        # but not an expected use case
+        self.create_claimant_file(claimant_new_key_with_hash, old_key)
+        self.create_claimant_file(claimant_new_key_with_hash, old_key)
+        # +0 files - not expected to be rotated because encrypted with new key
+        self.create_claimant_file(claimant_new_key_with_hash, new_key)
+
+        # +0 claim - not expected to be rotated because encrypted with new
+        # key; not expected that a claimant would have the new_key hash
+        # prior to key rotation
+        claimant_new_key_with_new_key_hash = self.create_claim_with_key(new_key)
+        claimant_new_key_with_new_key_hash.encryption_key_hash = encryption_key_hash(
+            new_key
+        )
+        claimant_new_key_with_new_key_hash.save()
+        # +0 files - not expected to be rotated because claimant has new_key
+        # hash; not an expected use case
+        self.create_claimant_file(claimant_new_key_with_new_key_hash, old_key)
+        self.create_claimant_file(claimant_new_key_with_new_key_hash, new_key)
+        self.create_claimant_file(claimant_new_key_with_new_key_hash, new_key)
+
+        ckr = ClaimantKeyRotator(old_key, new_key)
+        self.assertEqual(ckr.rotate(), 7)  # 2 claims, 5 files
+
+        claimant_old_key_null_hash.refresh_from_db()
+        claimant_old_key_with_hash.refresh_from_db()
+        claimant_new_key_null_hash.refresh_from_db()
+        claimant_new_key_with_hash.refresh_from_db()
+        self.assertEqual(
+            claimant_old_key_null_hash.encryption_key_hash, ckr.new_key_hash
+        )
+        self.assertEqual(
+            claimant_old_key_with_hash.encryption_key_hash, ckr.new_key_hash
+        )
+        self.assertEqual(
+            claimant_new_key_null_hash.encryption_key_hash, ckr.new_key_hash
+        )
+        self.assertEqual(
+            claimant_new_key_with_hash.encryption_key_hash, ckr.new_key_hash
+        )
+
     def test_rotate_s3_error_file(self):
         old_key = symmetric_encryption_key(generate_symmetric_encryption_key())
         new_key = symmetric_encryption_key(generate_symmetric_encryption_key())
