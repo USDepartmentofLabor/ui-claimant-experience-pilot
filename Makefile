@@ -232,7 +232,7 @@ build-translations: ## Compiles .po (translation) files into binary files
 	python manage.py compilemessages
 
 update-translations: ## Update the .po files (run manually inside the container)
-	python manage.py makemessages -a --ignore=claimant/*
+	python manage.py makemessages --no-wrap --locale=en --locale=es --ignore=claimant/*
 
 build-cleanup: ## Common final tasks for the various Dockerfile targets (intended for during container-build (inside the container))
 	rm -f requirements*.txt

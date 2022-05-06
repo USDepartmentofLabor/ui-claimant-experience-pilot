@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-09 15:38+0000\n"
+"POT-Creation-Date: 2022-05-06 16:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME &lt;EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE &lt;LL@li.org>\n"
@@ -18,65 +18,407 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/404.html:5
-msgid "Sorry, we could not find that page."
+#: home/templates/404.html:3
+msgid "Page not found"
 msgstr ""
 
-#: templates/500.html:4
+#: home/templates/404.html:4
+msgid "We’re sorry — we can’t find the page you’re looking for. Try going back to the previous page."
+msgstr ""
+
+#: home/templates/500.html:3
+msgid "Something's wrong"
+msgstr ""
+
+#: home/templates/500.html:4
 msgid "Sorry, we had a problem."
 msgstr ""
 
-#: templates/_header.html:10
+#: home/templates/_footer-dol-seal-address.html:5
+#: home/templates/_footer.html:15 home/templates/_header-nav.html:21
+msgid "Home"
+msgstr ""
+
+#: home/templates/_footer-dol-seal-address.html:9
+#: home/templates/_header.html:12
 msgid "United States Department of Labor"
 msgstr ""
 
-#: templates/_header.html:13
+#: home/templates/_footer-dol-seal-address.html:14
+#: home/templates/_header.html:16 home/templates/base.html:19
 msgid "U.S. Department of Labor"
 msgstr ""
 
-#: templates/_header.html:17
-msgid "Menu"
-msgstr "Menú"
-
-#: templates/_header.html:24
-msgid "Close"
+#: home/templates/_footer-nav-about.html:4
+msgid "About the Site"
 msgstr ""
 
-#: templates/_header.html:33
-msgid "Current section"
-msgstr "&lt;Sección actual &gt;"
+#: home/templates/_footer-nav-about.html:9
+msgid "Freedom of Information Act"
+msgstr ""
 
-#: templates/_header.html:38
-msgid "&lt;Navigation link&lt;"
-msgstr "&lt;Navigación&gt;"
+#: home/templates/_footer-nav-about.html:13
+msgid "Disclaimers"
+msgstr ""
 
-#: templates/_header.html:41 templates/_header.html:44
-#: templates/_header.html:59 templates/_header.html:62
-#: templates/_header.html:65
-msgid "&lt;Navigation link&gt;"
-msgstr "&lt;Navigación &gt;"
+#: home/templates/_footer-nav-about.html:17
+msgid "Accessibility Statement"
+msgstr ""
 
-#: templates/_header.html:54
-msgid "&lt;Section&gt;"
-msgstr "&lt;Sección&gt;"
+#: home/templates/_footer-nav-federal.html:4
+msgid "Federal Government"
+msgstr ""
 
-#: templates/_header.html:71
+#: home/templates/_footer-nav-federal.html:9
+msgid "White House"
+msgstr ""
+
+#: home/templates/_footer-nav-federal.html:13
+msgid "Coronavirus Resources"
+msgstr ""
+
+#: home/templates/_footer-nav-federal.html:17
+msgid "Severe Storm and Flood Recovery Assistance"
+msgstr ""
+
+#: home/templates/_footer-nav-federal.html:21
+msgid "Disaster Recovery Assistance"
+msgstr ""
+
+#: home/templates/_footer-nav-federal.html:35
+msgid "No Fear Act Data"
+msgstr ""
+
+#: home/templates/_footer-nav-federal.html:39
+msgid "U.S. Office of Special Counsel"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:4
+msgid "Labor Department"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:9
+msgid "About DOL"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:13
+msgid "Guidance Search"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:17
+msgid "Español"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:21
+msgid "Office of Inspector General"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:27
+msgid "Subscribe to the DOL Newsletter"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:31
+msgid "Read the DOL Newsletter"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:35
+msgid "Emergency Accountability Status Link"
+msgstr ""
+
+#: home/templates/_footer-nav-labor-dept.html:39
+msgid "A to Z Index"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:6
+msgid "Department of Labor Facebook"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:8
+msgid "Facebook"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:16
+msgid "Department of Labor Twitter"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:18
+msgid "Twitter"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:26
+msgid "Department of Labor YouTube"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:28
+msgid "YouTube"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:36
+msgid "Department of Labor Instagram"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:38
+msgid "Instagram"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:46
+msgid "Department of Labor LinkedIn"
+msgstr ""
+
+#: home/templates/_footer-social-media.html:59
+msgid "LinkedIn"
+msgstr ""
+
+#: home/templates/_footer.html:5
+msgid "Return to top"
+msgstr ""
+
+#: home/templates/_footer.html:21 home/templates/_header-nav.html:28
+#: home/templates/_swa/AR/contact.html:5 home/templates/_swa/NJ/contact.html:5
+#: home/templates/swa-contact.html:6
+msgid "Contact us"
+msgstr ""
+
+#: home/templates/_footer.html:27 home/templates/_header-nav.html:33
+msgid "Logout"
+msgstr ""
+
+#: home/templates/_footer.html:31 home/templates/_header-nav.html:40
 msgid "Sign in"
 msgstr ""
 
-#: templates/base.html:19
+#: home/templates/_footer.html:60
+msgid "Connect with DOL"
+msgstr ""
+
+#: home/templates/_footer.html:70
+msgid "Site Map"
+msgstr ""
+
+#: home/templates/_footer.html:71
+msgid "Important Website Notices"
+msgstr ""
+
+#: home/templates/_footer.html:72
+msgid "Privacy & Security Statement"
+msgstr ""
+
+#: home/templates/_header-nav.html:10
+msgid "Menu"
+msgstr "Menú"
+
+#: home/templates/_header-nav.html:14
+msgid "Close"
+msgstr ""
+
+#: home/templates/_missing-swa-xid-content.html:3 home/templates/index.html:5
+msgid "Web address incomplete"
+msgstr ""
+
+#: home/templates/_missing-swa-xid-content.html:5
+#: home/templates/malformed-swa-xid.html:7
+msgid "We’re sorry — we’re having trouble connecting your ID verification account with your unemployment application."
+msgstr ""
+
+#: home/templates/_missing-swa-xid-content.html:8
+msgid "This might be because the URL found on your unemployment application’s confirmation page was typed incorrectly. Please try copying the URL again."
+msgstr ""
+
+#: home/templates/_missing-swa-xid-content.html:14
+#: home/templates/_swa/AR/login_help.html:10
+#: home/templates/_swa/AR/redirect.html:16 home/templates/identity/IAL1.html:61
+#: home/templates/identity/IAL2.html:34 home/templates/identity/expired.html:22
+#: home/templates/malformed-swa-xid.html:19
+msgid "More information"
+msgstr ""
+
+#: home/templates/_swa/AR/call_instructions.html:5
+msgid ""
+"\n"
+"    call the <span class=\"text-bold\">ADWS UI Hotline</span> at\n"
+"  "
+msgstr ""
+
+#: home/templates/_swa/AR/contact_details.html:3
+msgid "ADWS UI Hotline"
+msgstr ""
+
+#: home/templates/_swa/AR/contact_details.html:7
+msgid "ADWS UI Hotline hours of operation"
+msgstr ""
+
+#: home/templates/_swa/AR/contact_details.html:11
+msgid "Email"
+msgstr ""
+
+#: home/templates/_swa/AR/expired_help.html:2
+msgid ""
+"\n"
+"    Please call the <strong>ADWS UI Hotline </strong> at\n"
+msgstr ""
+
+#: home/templates/_swa/AR/expired_help.html:7
+msgid "if you have any questions"
+msgstr ""
+
+#: home/templates/_swa/AR/login_help.html:4
+#: home/templates/_swa/NJ/contact.html:7
+#: home/templates/swa-index-identity-only.html:122
+msgid "Here's how to reach us if you have questions about unemployment benefits or need help with verifying your identity:"
+msgstr ""
+
+#: home/templates/_swa/AR/missing-xid.html:4
+msgid "If you’re trying to verify your identity for your Arkansas unemployment claim, please"
+msgstr ""
+
+#: home/templates/_swa/AR/more_help.html:7
+msgid "Find my local Arkansas Division of Workforce Services office"
+msgstr ""
+
+#: home/templates/_swa/AR/more_help.html:11
+msgid "Arkansas Division of Workforce Services Unemployment Insurance"
+msgstr ""
+
+#: home/templates/_swa/AR/more_help.html:15
 #, fuzzy
 #| msgid "Unemployment Insurance Claim Application"
-msgid "Unemployment Insurance Claim Application | U.S. Department of Labor"
+msgid "Your Unemployment Insurance Handbook"
 msgstr "Solicitud de reclamo del seguro de desempleo"
 
-#: templates/emails/claim_confirmation_email.txt:2
+#: home/templates/_swa/AR/more_help.html:15
+msgid "Arkansas Division of Workforce Services [PDF]"
+msgstr ""
+
+#: home/templates/_swa/AR/next_steps.html:4
+msgid ""
+"\n"
+"    If you have not yet called the <strong>ADWS UI Hotline</strong>, please call\n"
+"    "
+msgstr ""
+
+#: home/templates/_swa/AR/next_steps.html:8
+msgid "to have your claim processed."
+msgstr ""
+
+#: home/templates/_swa/AR/next_steps.html:11
+msgid "Register for work online using Arkansas JobLink (AJL) at"
+msgstr ""
+
+#: home/templates/_swa/AR/next_steps.html:17
+msgid "Visit your local ADWS office for assistance."
+msgstr ""
+
+#: home/templates/_swa/AR/next_steps.html:27
+msgid "Go to ADWS FAQ"
+msgstr ""
+
+#: home/templates/_swa/AR/other_ways_to_verify_identity.html:3
+#: home/templates/_swa/AR/redirect.html:4
+msgid "ADWS needs more information from you before your claim can be processed."
+msgstr ""
+
+#: home/templates/_swa/AR/other_ways_to_verify_identity.html:5
+#: home/templates/_swa/AR/redirect.html:7
+msgid "You will need to verify your identity in person at a local office."
+msgstr ""
+
+#: home/templates/_swa/AR/other_ways_to_verify_identity.html:8
+#: home/templates/_swa/AR/redirect.html:10
+msgid "Please"
+msgstr ""
+
+#: home/templates/_swa/AR/redirect.html:2
+msgid "Verify your identity in person at a local office"
+msgstr ""
+
+#: home/templates/_swa/AR/redirect.html:11
+msgid ""
+"\n"
+" within <span class=\"text-bold\">7 calendar days</span> of when you submitted your application.\n"
+" "
+msgstr ""
+
+#: home/templates/_swa/NJ/general_information.html:3
+msgid "Submit a request for information through our online form."
+msgstr ""
+
+#: home/templates/_swa/NJ/general_information.html:6
+msgid ""
+"\n"
+"This form will direct an auto-generated email to help answer your question.\n"
+"This email address is not monitored.\n"
+"Requests for password resets will be addressed by NJDOL staff.\n"
+"If the information you receive does not address your question, please contact our call center.\n"
+msgstr ""
+
+#: home/templates/_swa/NJ/redirect.html:2
+msgid "Apply through the New Jersey system"
+msgstr ""
+
+#: home/templates/_swa/NJ/redirect.html:4
+msgid "Based on the information you provided, you’ll need to complete your application using the existing New Jersey unemployment insurance system."
+msgstr ""
+
+#: home/templates/_swa/NJ/redirect.html:7
+msgid "Once you’ve created your account, you may need to re-share some of the information you just provided."
+msgstr ""
+
+#: home/templates/_swa/NJ/redirect.html:11 home/templates/start.html:185
+#: home/templates/swa-index-identity-only.html:109
+#: home/templates/swa-index.html:93 home/templates/swa-redirect.html:20
+msgid "Next"
+msgstr ""
+
+#: home/templates/_swa/NJ/weekly_benefits.html:3
+msgid "The local phone numbers below all go to the same place. Local phone numbers are offered as a courtesy for callers who are charged more for long-distance calls."
+msgstr ""
+
+#: home/templates/_swa/NJ/weekly_benefits.html:6
+msgid "If you are in a phone queue, you will not move ahead by trying one of the other phone numbers."
+msgstr ""
+
+#: home/templates/_swa/NJ/weekly_benefits.html:9
+msgid "If you hang up to call a different number, you will lose your place and move to the end of the line."
+msgstr ""
+
+#: home/templates/auth-error.html:5
+msgid "Log in unsuccessful"
+msgstr ""
+
+#: home/templates/auth-error.html:7
+msgid "Looks like something went wrong while you were trying to verify your identity with Login.gov."
+msgstr ""
+
+#: home/templates/auth-error.html:11
+msgid "Want to try again?"
+msgstr ""
+
+#: home/templates/auth-error.html:13 home/templates/auth-error.html:15
+msgid "Log in here"
+msgstr ""
+
+#: home/templates/auth-error.html:20
+msgid "If you’re having trouble accessing your account, you can get help if you"
+msgstr ""
+
+#: home/templates/auth-error.html:21
+msgid "forgot your password"
+msgstr ""
+
+#: home/templates/auth-error.html:22
+msgid "or you may also"
+msgstr ""
+
+#: home/templates/auth-error.html:23
+msgid "reset your account"
+msgstr ""
+
+#: home/templates/emails/claim_confirmation_email.txt:2
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
 #| "    Please do not reply to this email.\n"
-#| "    Thanks for submitting your claim for unemployment insurance "
-#| "benefits.\n"
+#| "    Thanks for submitting your claim for unemployment insurance benefits.\n"
 #| "    Your claim has been forwarded to %(name)s. All questions about your\n"
 #| "    claim should be directed to: "
 msgid ""
@@ -88,15 +430,14 @@ msgid ""
 msgstr ""
 "\n"
 "Gracias por enviar su reclamo del seguro de desempleo. \n"
-"Su reclamo ha sido reenviado a %(name)s.  Todas las preguntas sobre su "
-"reclamo debe ser redirigido a: "
+"Su reclamo ha sido reenviado a %(name)s.  Todas las preguntas sobre su reclamo debe ser redirigido a: "
 
-#: templates/emails/claim_confirmation_email.txt:8
+#: home/templates/emails/claim_confirmation_email.txt:8
 #, python-format
 msgid "%(name)s's workforce agency"
 msgstr "%(name)s's workforce agency"
 
-#: templates/emails/claim_confirmation_email.txt:9
+#: home/templates/emails/claim_confirmation_email.txt:9
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
@@ -113,323 +454,505 @@ msgstr ""
 "Su numero do reclamo: %(claim_id)s\n"
 "Gracias. \n"
 
-#: templates/ial2required.html:7
-msgid "Apply and verify later"
+#: home/templates/identity/IAL1.html:10 home/templates/identity/expired.html:7
+msgid "Welcome"
 msgstr ""
 
-#: templates/ial2required.html:13
+#: home/templates/identity/IAL1.html:15
+msgid "An error occured while trying to verify your information. Please try again."
+msgstr ""
+
+#: home/templates/identity/IAL1.html:21
 msgid ""
-"If you could not reach IAL2, you can proceed with the form and try again "
-"later."
+"\n"
+"    You will need to verify your identity within <strong>7 calendar days</strong>\n"
+"    of submitting your application in order to process your claim.\n"
+"    "
 msgstr ""
 
-#: templates/ial2required.html:17
-msgid "Click here to apply"
+#: home/templates/identity/IAL1.html:32
+msgid "Verify your identity"
 msgstr ""
 
-#: templates/idp.html:12
-msgid "Create account or sign in"
+#: home/templates/identity/IAL1.html:34
+msgid "Status:"
 msgstr ""
 
-#: templates/idp.html:15
+#: home/templates/identity/IAL1.html:34
+#, fuzzy
+#| msgid "Get started"
+msgid "Not started"
+msgstr "Empezar"
+
+#: home/templates/identity/IAL1.html:37
+msgid "Verifying your identity with Login.gov speeds up processing time for your application and helps make sure your benefits payments are secure."
+msgstr ""
+
+#: home/templates/identity/IAL1.html:44
+msgid "Start ID verification"
+msgstr ""
+
+#: home/templates/identity/IAL1.html:50
+#: home/templates/swa-index-identity-only.html:15
+msgid "You will need to have these items to verify your identity online with Login.gov:"
+msgstr ""
+
+#: home/templates/identity/IAL1.html:56
+msgid "Other ways to verify your identity"
+msgstr ""
+
+#: home/templates/identity/IAL2.html:16
+msgid "Identity verification submitted"
+msgstr ""
+
+#: home/templates/identity/IAL2.html:18
+#, python-format
 msgid ""
-"You will now be transferred to Login.gov to sign in and verify your identity."
+"\n"
+"          Your identity verification\n"
+"          <span class=\"claim-id\">(%(claim_id)s)</span>\n"
+"          was shared with the %(swa_name)s on\n"
+"          <strong>%(claim_date)s</strong>.\n"
+"          "
 msgstr ""
 
-#: templates/idp.html:21
+#: home/templates/identity/IAL2.html:29
+msgid "Next steps"
+msgstr ""
+
+#: home/templates/identity/expired.html:10
+msgid "It looks like you didn't complete your online identity verification in time, based on when you submitted your application."
+msgstr ""
+
+#: home/templates/identity/expired.html:14
+msgid "If you verified your identity in person at your local office, you can disregard this message."
+msgstr ""
+
+#: home/templates/identity/requirements.html:5
+msgid "Email address"
+msgstr ""
+
+#: home/templates/identity/requirements.html:6
+msgid "Your state-issued ID"
+msgstr ""
+
+#: home/templates/identity/requirements.html:7
+msgid "A phone or computer with a camera to take and upload a photo of your ID"
+msgstr ""
+
+#: home/templates/identity/requirements.html:8
+msgid "Your Social Security number"
+msgstr ""
+
+#: home/templates/identity/requirements.html:9
+msgid "A phone number on a phone plan in your name. (If you don't have a phone plan in your name, we can mail you a verification code, which will take 3-5 days.)"
+msgstr ""
+
+#: home/templates/idp.html:21
+msgid "Log in"
+msgstr ""
+
+#: home/templates/idp.html:25
+msgid "You will now be transferred to Login.gov to sign in and verify your identity."
+msgstr ""
+
+#: home/templates/idp.html:33
 msgid "Continue"
 msgstr ""
 
-#: templates/idp.html:53 templates/swa-index.html:38
-msgid "Please make a selection"
+#: home/templates/idp.html:50
+msgid "Select your State Workforce Agency to continue"
 msgstr ""
 
-#: templates/idp.html:73
-msgid "Sign in with Login.gov"
+#: home/templates/idp.html:59
+msgid "Continue to"
 msgstr ""
 
-#: templates/idp.html:81 templates/login.html:4
+#: home/templates/idp.html:66
+msgid "Test Login for"
+msgstr ""
+
+#: home/templates/index.html:7
+msgid ""
+"\n"
+"  To access this information, you need a unique link found on your unemployment application’s confirmation page.\n"
+"  If you are trying to file for unemployment and don’t have the link, please contact\n"
+"  <a href=\"https://www.careeronestop.org/localhelp/unemploymentbenefits/unemployment-benefits.aspx\" class=\"usa-link\">your state unemployment agency</a>.\n"
+"  "
+msgstr ""
+
+#: home/templates/login.html:5
 msgid "Test Login"
 msgstr ""
 
-#: templates/index.html:5
-msgid "Unemployment Insurance Claim Application"
-msgstr "Solicitud de reclamo del seguro de desempleo"
+#: home/templates/login.html:90 home/templates/start.html:139
+msgid "Select your state"
+msgstr ""
 
-#: templates/index.html:6
-msgid "Apply for benefits"
-msgstr "Solicitar beneficios"
+#: home/templates/maintenance-mode.html:4
+#, python-format
+msgid ""
+"\n"
+"    %(msg)s\n"
+"    "
+msgstr ""
 
-#: templates/index.html:8
-msgid "Get started"
-msgstr "Empezar"
+#: home/templates/malformed-swa-xid.html:5
+msgid "Web address invalid"
+msgstr ""
 
-#: templates/start.html:13 templates/start.html:134
+#: home/templates/malformed-swa-xid.html:10
+#, python-format
+msgid ""
+"\n"
+"  This might be because the URL found on your unemployment application’s confirmation page was typed incorrectly. Please try copying the URL again.\n"
+"  Check the ID value you entered: %(xid)s\n"
+"  "
+msgstr ""
+
+#: home/templates/start.html:13
+msgid "Filed recently"
+msgstr ""
+
+#: home/templates/start.html:14 home/templates/start.html:136
 msgid "State residence"
 msgstr ""
 
-#: templates/start.html:14
+#: home/templates/start.html:15
 msgid "State"
 msgstr ""
 
-#: templates/start.html:15 templates/start.html:142
+#: home/templates/start.html:16 home/templates/start.html:144
 msgid "Recent employment"
 msgstr ""
 
-#: templates/start.html:16 templates/start.html:155
+#: home/templates/start.html:17 home/templates/start.html:157
 msgid "Disability"
 msgstr ""
 
-#: templates/start.html:17 templates/start.html:160
+#: home/templates/start.html:18 home/templates/start.html:162
 msgid "Military service"
 msgstr ""
 
-#: templates/start.html:18 templates/start.html:165
+#: home/templates/start.html:19 home/templates/start.html:167
 msgid "Federal employment"
 msgstr ""
 
-#: templates/start.html:19 templates/start.html:170
+#: home/templates/start.html:20 home/templates/start.html:172
 msgid "Maritime employment"
 msgstr ""
 
-#: templates/start.html:20 templates/start.html:150
+#: home/templates/start.html:21 home/templates/start.html:152
 msgid "Disaster"
 msgstr ""
 
-#: templates/start.html:21
+#: home/templates/start.html:22
 msgid "Worked in another state"
 msgstr ""
 
-#: templates/start.html:93
+#: home/templates/start.html:95
 msgid "is required"
 msgstr ""
 
-#: templates/start.html:129
+#: home/templates/start.html:126
 #, fuzzy
 #| msgid "Get started"
 msgid "Let's get started"
 msgstr "Empezar"
 
-#: templates/start.html:135
+#: home/templates/start.html:134
+msgid "Have you filed for unemployment benefits during the last 12 months?"
+msgstr ""
+
+#: home/templates/start.html:137
 msgid "Do you currently live in the United States?"
 msgstr ""
 
-#: templates/start.html:137 templates/uswds/_swa_options.html:3
-msgid "Select your state"
-msgstr ""
-
-#: templates/start.html:143
+#: home/templates/start.html:145
 msgid "Have you had a job during the last 18 months?"
 msgstr ""
 
-#: templates/start.html:145
-msgid ""
-"Have you worked in any state other than the state you currently live in the "
-"last 18 months (not including military service)?"
+#: home/templates/start.html:147
+msgid "Have you worked in any state other than the state you currently live in the last 18 months (not including military service)?"
 msgstr ""
 
-#: templates/start.html:151
-msgid ""
-"Have you been impacted by a recent natural disaster (like a hurricane or "
-"wildfire)?"
+#: home/templates/start.html:153
+msgid "Have you been impacted by a recent natural disaster (like a hurricane or wildfire)?"
 msgstr ""
 
-#: templates/start.html:156
+#: home/templates/start.html:158
 msgid "Are you currently disabled and unable to work?"
 msgstr ""
 
-#: templates/start.html:161
+#: home/templates/start.html:163
 msgid "Have you served in the United States military in the last 18 months?"
 msgstr ""
 
-#: templates/start.html:166
-msgid ""
-"Have you worked for the federal government in the last 18 months (not "
-"including military service)?"
+#: home/templates/start.html:168
+msgid "Have you worked for the federal government in the last 18 months (not including military service)?"
 msgstr ""
 
-#: templates/start.html:171
-msgid ""
-"Have you worked for a maritime employer in the last 18 months (for example, "
-"did you work on a ship or in a harbor)?"
+#: home/templates/start.html:173
+msgid "Have you worked for a maritime employer in the last 18 months (for example, did you work on a ship or in a harbor)?"
 msgstr ""
 
-#: templates/start.html:175
+#: home/templates/start.html:178
 msgid "Back"
 msgstr ""
 
-#: templates/start.html:176 templates/swa-index.html:85
-#: templates/swa-redirect.html:29 templates/swa-redirect.html:31
-msgid "Next"
+#: home/templates/swa-contact.html:8
+msgid "Here's how to reach us if you have questions about unemployment insurance or need help with an application or claim:"
 msgstr ""
 
-#: templates/swa-index.html:6
-msgid "Welcome to a new way to apply for unemployment benefits"
+#: home/templates/swa-contact.html:11
+msgid "Hours of operation"
 msgstr ""
 
-#: templates/swa-index.html:9
+#: home/templates/swa-contact.html:22
+#, fuzzy
+#| msgid "Apply for benefits"
+msgid "To file for weekly benefits"
+msgstr "Solicitar beneficios"
+
+#: home/templates/swa-contact.html:35
+msgid "To start a new claim"
+msgstr ""
+
+#: home/templates/swa-contact.html:48
+msgid "For general information"
+msgstr ""
+
+#: home/templates/swa-contact.html:61
+msgid "For help finding work"
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:8
+msgid "Verify your identity online with Login.gov"
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:11
+msgid "Using Login.gov may be faster and more convenient than visiting a local unemployment insurance office. It is a secure way for you to verify your identity online."
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:20
+msgid "Please verify your identity within 7 calendar days of submitting your application."
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:52
+#: home/templates/swa-index.html:39
+msgid "Please make a selection"
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:67
+#, python-format
 msgid ""
-"and the United States Department of Labor invite you to be among the first "
-"to try the new APPNAME HERE"
+"\n"
+"      If you verify your identity online, that information will be shared with the <strong>U.S. Department of Labor</strong> and the <strong>%(swa_name)s</strong>.\n"
+"      "
 msgstr ""
 
-#: templates/swa-index.html:12
-msgid ""
-"This process requires access to a computer or smartphone to complete. You "
-"will need to be able to:"
+#: home/templates/swa-index-identity-only.html:75
+msgid "Would you like to verify your identity online?"
 msgstr ""
 
-#: templates/swa-index.html:14
-msgid ""
-"Upload an image of your state-issued ID and a photo of yourself to verify "
-"your identity with Login.gov"
-msgstr ""
-
-#: templates/swa-index.html:15
-msgid "Verify your phone number, email address, and physical address"
-msgstr ""
-
-#: templates/swa-index.html:16
-msgid ""
-"Fill out an application online, including providing recent work history and "
-"employment details"
-msgstr ""
-
-#: templates/swa-index.html:51
-msgid ""
-"Do you wish to apply for unemployment benefits using APPNAME HERE system?"
-msgstr ""
-
-#: templates/swa-index.html:65 templates/uswds/_yes_no_radio.html:21
+#: home/templates/swa-index-identity-only.html:89
+#: home/templates/uswds/_yes_no_radio.html:21
 msgid "Yes"
 msgstr ""
 
-#: templates/swa-index.html:65
-msgid "I want to apply with APPNAME HERE"
+#: home/templates/swa-index-identity-only.html:89
+msgid "I want to verify my identity with Login.gov"
 msgstr ""
 
-#: templates/swa-index.html:79 templates/uswds/_yes_no_radio.html:40
+#: home/templates/swa-index-identity-only.html:103
+#: home/templates/swa-index.html:87 home/templates/uswds/_yes_no_radio.html:40
 msgid "No"
 msgstr ""
 
-#: templates/swa-index.html:79
+#: home/templates/swa-index-identity-only.html:103
+msgid "I want to verify my identity in-person at a local office"
+msgstr ""
+
+#: home/templates/swa-index-identity-only.html:115
+msgid ""
+"\n"
+"      The method you choose to verify your identity will not affect your ability to receive unemployment benefits.\n"
+"      State staff will process your application following all applicable laws and regulations.\n"
+"      "
+msgstr ""
+
+#: home/templates/swa-index.html:5
+#, fuzzy
+#| msgid "Apply for benefits"
+msgid "Apply for unemployment benefits"
+msgstr "Solicitar beneficios"
+
+#: home/templates/swa-index.html:8
+msgid "We invite you to try using"
+msgstr ""
+
+#: home/templates/swa-index.html:10
+msgid "a new, user-friendly way to apply for unemployment insurance"
+msgstr ""
+
+#: home/templates/swa-index.html:13
+msgid "To use it, you need to:"
+msgstr ""
+
+#: home/templates/swa-index.html:15
+msgid "Upload an image of your state-issued ID to verify your identity with Login.gov"
+msgstr ""
+
+#: home/templates/swa-index.html:16
+msgid "Verify your phone number, email address, and physical address"
+msgstr ""
+
+#: home/templates/swa-index.html:17
+msgid "Fill out an application online, including providing recent work history and employment details"
+msgstr ""
+
+#: home/templates/swa-index.html:54
+#, python-format
+msgid ""
+"\n"
+"            Do you wish to apply for unemployment benefits using %(appname)s system?\n"
+"            "
+msgstr ""
+
+#: home/templates/swa-index.html:71
+#, python-format
+msgid ""
+"\n"
+"                <strong>Yes</strong>, I want to apply with %(appname)s\n"
+"                "
+msgstr ""
+
+#: home/templates/swa-index.html:87
 #, python-format
 msgid "I want to use the regular %(swa_name)s application"
 msgstr ""
 
-#: templates/swa-index.html:91
-msgid ""
-"Using APPNAME HERE will not affect your ability to receive unemployment "
-"benefits and does not imply preferential treatment for your application."
-msgstr ""
-
-#: templates/swa-redirect.html:4
-msgid "Apply through"
-msgstr ""
-
-#: templates/swa-redirect.html:4
-msgid "your state unemployment system"
-msgstr ""
-
-#: templates/swa-redirect.html:6
+#: home/templates/swa-index.html:99
 #, python-format
 msgid ""
 "\n"
-"      It looks like you'll need to complete your application on %(name)s's "
-"existing unemployment insurance system\n"
-"      based on the information you provided.\n"
+"      Using %(appname)s will not affect your ability to receive unemployment benefits. State staff will process your application following all applicable laws and regulations.\n"
 "      "
 msgstr ""
 
-#: templates/swa-redirect.html:11
-msgid ""
-"It looks like you'll need to complete your application on your state's "
-"existing unemployment insurance system based on the information you provided."
+#: home/templates/swa-redirect.html:9
+msgid "Apply through your state unemployment system"
 msgstr ""
 
-#: templates/swa-redirect.html:16
-msgid ""
-"You may be asked to provide some of this information again once you have "
-"created your account."
+#: home/templates/swa-redirect.html:11
+msgid "Based on the information you provided, you'll need to complete your application using your state's existing unemployment insurance system."
 msgstr ""
 
-#: templates/swa-redirect.html:22
-#, python-format
-msgid "Click next to go to %(name)s's online application."
-msgstr ""
-
-#: templates/swa-redirect.html:24
+#: home/templates/swa-redirect.html:15
 msgid "Click next to find unemployment resources for your state."
 msgstr ""
 
-#: templates/uswds/_alert_error.html:18
+#: home/templates/uswds/_alert_error.html:31
+msgid "Missing swa_xid -- check your URL"
+msgstr ""
+
+#: home/templates/uswds/_alert_error.html:39
+msgid "Malformed swa_xid -- check your typing"
+msgstr ""
+
+#: home/templates/uswds/_alert_error.html:81
 msgid "Correct the error on this page to proceed"
 msgstr ""
 
-#: templates/uswds/_alert_error.html:19
+#: home/templates/uswds/_alert_error.html:82
 #, python-brace-format
 msgid "Correct the {count} errors on this page to proceed"
 msgstr ""
 
-#: templates/uswds/_alert_error.html:87
+#: home/templates/uswds/_alert_error.html:147
 msgid "This field is required"
 msgstr ""
 
-#: templates/uswds/_banner.html:3
+#: home/templates/uswds/_banner.html:3
 msgid "Skip to main content"
 msgstr "Saltar al contento principal"
 
-#: templates/uswds/_banner.html:9
-msgid ""
-"TEST SITE - Do not use real personal information (demo purposes only) - TEST "
-"SITE"
+#: home/templates/uswds/_banner.html:10
+msgid "TEST SITE - Do not use real personal information (demo purposes only) - TEST SITE"
 msgstr ""
 
-#: templates/uswds/_banner.html:25
+#: home/templates/uswds/_banner.html:27
 msgid "U.S. flag"
 msgstr "Bandera de los Estados Unidos"
 
-#: templates/uswds/_banner.html:32
+#: home/templates/uswds/_banner.html:34
 msgid "An official website of the United States government"
 msgstr "Un sitio web del gobierno de los Estados Unidos"
 
-#: templates/uswds/_banner.html:35 templates/uswds/_banner.html:44
+#: home/templates/uswds/_banner.html:37 home/templates/uswds/_banner.html:46
 msgid "Here’s how you know"
 msgstr "Cómo se sabe"
 
-#: templates/uswds/_banner.html:61
+#: home/templates/uswds/_banner.html:63
 msgid "Official websites use .gov"
 msgstr ""
 
-#: templates/uswds/_banner.html:63
-msgid ""
-"A <strong>.gov</strong> website belongs to an official government "
-"organization in the United States."
+#: home/templates/uswds/_banner.html:65
+msgid "A <strong>.gov</strong> website belongs to an official government organization in the United States."
 msgstr ""
 
-#: templates/uswds/_banner.html:79
+#: home/templates/uswds/_banner.html:81
 msgid "Secure .gov websites use HTTPS"
 msgstr ""
 
-#: templates/uswds/_banner.html:81
+#: home/templates/uswds/_banner.html:83
 msgid "A <strong>lock</strong>"
 msgstr ""
 
-#: templates/uswds/_banner.html:93
+#: home/templates/uswds/_banner.html:95
 msgid "Lock"
 msgstr ""
 
-#: templates/uswds/_banner.html:95
+#: home/templates/uswds/_banner.html:97
 msgid "A locked padlock"
 msgstr ""
 
-#: templates/uswds/_combo_box.html:18
+#: home/templates/uswds/_banner.html:105
+msgid ""
+"\n"
+"              or <strong>https://</strong> means you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\n"
+"              "
+msgstr ""
+
+#: home/templates/uswds/_combo_box.html:18
 msgid "--Select--"
 msgstr ""
 
-#: templates/uswds/_swa_options.html:11
+#: home/templates/uswds/_dropdown.html:16
+#: home/templates/uswds/_swa_options.html:11
 msgid "Select"
 msgstr ""
+
+#: home/templates/uswds/_swa_options.html:3
+msgid "Select your State Workforce Agency"
+msgstr ""
+
+#~ msgid "Current section"
+#~ msgstr "&lt;Sección actual &gt;"
+
+#~ msgid "&lt;Navigation link&lt;"
+#~ msgstr "&lt;Navigación&gt;"
+
+#~ msgid "&lt;Navigation link&gt;"
+#~ msgstr "&lt;Navigación &gt;"
+
+#~ msgid "&lt;Section&gt;"
+#~ msgstr "&lt;Sección&gt;"
+
+#, fuzzy
+#~| msgid "Unemployment Insurance Claim Application"
+#~ msgid "Unemployment Insurance Claim Application | U.S. Department of Labor"
+#~ msgstr "Solicitud de reclamo del seguro de desempleo"
 
 #~ msgid "&lt;Simple link&gt;"
 #~ msgstr "&lt;Enlace&gt;"
