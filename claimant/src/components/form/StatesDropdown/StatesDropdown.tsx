@@ -17,12 +17,14 @@ const allStates = Object.entries(states).map(([key, value]) => ({
 
 export const StatesDropdown = ({
   label,
+  id,
   name,
   startEmpty,
   stateSlice,
 }: StatesDropdownProps) => (
   <DropdownField
     label={label}
+    id={id}
     name={name}
     startEmpty={startEmpty}
     options={

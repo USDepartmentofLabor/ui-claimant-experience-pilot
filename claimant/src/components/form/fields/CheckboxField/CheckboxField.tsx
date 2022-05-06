@@ -15,6 +15,7 @@ import { Checkbox } from "@trussworks/react-uswds";
 export const CheckboxField = ({
   id,
   name,
+  id,
   onChange,
   ...inputProps
 }: Optional<React.ComponentProps<typeof Checkbox>, "id">) => {

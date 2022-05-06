@@ -7,6 +7,7 @@ import { useShowErrors } from "../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../hooks/useFocusFirstError";
 
 interface IBooleanRadioProps {
+  id?: string;
   name: string;
   yesLabel?: string;
   noLabel?: string;
@@ -14,6 +15,7 @@ interface IBooleanRadioProps {
 }
 
 export const BooleanRadio = ({
+  id: idProp,
   name,
   yesLabel,
   noLabel,
@@ -39,13 +41,15 @@ export const BooleanRadio = ({
     }
   };
 
+  const id = idProp || name;
+
   return (
     <FormGroup error={showError}>
       <Radio
         {...fieldProps}
-        key={`${name}.0.yes`}
-        id={`${name}.yes`}
-        data-testid={`${name}.yes`}
+        key={`${id}.0.yes`}
+        id={`${id}.yes`}
+        data-testid={`${id}.yes`}
         label={yesLabel || t("yes")}
         value={"yes"}
         checked={metaProps.value === true}
@@ -56,9 +60,9 @@ export const BooleanRadio = ({
       />
       <Radio
         {...fieldProps}
-        key={`${name}.0.no`}
-        id={`${name}.no`}
-        data-testid={`${name}.no`}
+        key={`${id}.0.no`}
+        id={`${id}.no`}
+        data-testid={`${id}.no`}
         label={noLabel || t("no")}
         value={"no"}
         checked={metaProps.value === false}
