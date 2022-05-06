@@ -13,7 +13,6 @@ import { Checkbox } from "@trussworks/react-uswds";
  */
 
 export const CheckboxField = ({
-  id,
   name,
   id,
   onChange,
