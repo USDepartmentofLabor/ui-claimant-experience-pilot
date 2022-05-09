@@ -37,7 +37,7 @@ const Template: ComponentStory<typeof SeparationReason> = () => {
       onSubmit={noop}
     >
       <Form>
-        <SeparationReason segment="0" disabled={false} />
+        <SeparationReason segment="0" />
       </Form>
     </Formik>
   );
