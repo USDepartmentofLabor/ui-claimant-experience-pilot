@@ -2,7 +2,7 @@
 from jwcrypto import jwk, jwe
 from jwcrypto.common import json_encode, json_decode, base64url_decode
 from django.conf import settings
-from .exceptions import ClaimStorageError
+from .exceptions import ClaimStorageError, ClaimThumbprintMismatchError
 
 
 ALG = "ECDH-ES+A256KW"
@@ -112,7 +112,7 @@ class SymmetricClaimDecryptor(object):
     def __init__(self, packaged_claim_str, jwkey):
         self.packaged_claim = json_decode(packaged_claim_str)
         if self.packaged_claim["public_kid"] != jwkey.thumbprint():
-            raise ValueError("Key thumbprints do not match")
+            raise ClaimThumbprintMismatchError("Key thumbprints do not match")
         self.key = jwkey
 
     def decrypt(self):
@@ -189,14 +189,17 @@ class SymmetricKeyRotator(object):
 
     # takes a PackagedClaim, returns a PackagedClaim
     def rotate(self, packaged_claim):
-        old_key_decryptor = SymmetricClaimDecryptor(
-            (
-                packaged_claim.as_json()
-                if isinstance(packaged_claim, PackagedClaim)
-                else packaged_claim
-            ),
-            self.old_key,
-        )
+        try:
+            old_key_decryptor = SymmetricClaimDecryptor(
+                (
+                    packaged_claim.as_json()
+                    if isinstance(packaged_claim, PackagedClaim)
+                    else packaged_claim
+                ),
+                self.old_key,
+            )
+        except ClaimThumbprintMismatchError:
+            return packaged_claim
         decrypted_claim = old_key_decryptor.decrypt()
         new_key_encryptor = SymmetricClaimEncryptor(decrypted_claim, self.new_key)
         return new_key_encryptor.packaged_claim()
@@ -208,6 +211,11 @@ class SymmetricKeyRotator(object):
         count = 0
         for claimant_file in claimant.claimantfile_set.all():
             old_encrypted_package = claimant_file.get_encrypted_package()
+            if (
+                json_decode(old_encrypted_package)["public_kid"]
+                != self.old_key.thumbprint()
+            ):
+                continue
             new_encrypted_package = self.rotate(old_encrypted_package)
             cw = ClaimWriter(
                 claim=claimant_file, payload=new_encrypted_package.as_json()
@@ -226,6 +234,11 @@ class SymmetricKeyRotator(object):
             if not cr.exists():
                 continue
             old_encrypted_package = cr.read()
+            if (
+                json_decode(old_encrypted_package)["public_kid"]
+                != self.old_key.thumbprint()
+            ):
+                continue
             new_encrypted_package = self.rotate(old_encrypted_package)
             cw = ClaimWriter(
                 claim,

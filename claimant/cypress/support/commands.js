@@ -58,6 +58,7 @@ Cypress.Commands.add("login", (email, IAL = "2") => {
 Cypress.Commands.add("logout", () => {
   if (IS_DEV_SERVER) {
     cy.clearCookies();
+    cy.visit("/");
   } else {
     cy.contains("Log out").click();
   }

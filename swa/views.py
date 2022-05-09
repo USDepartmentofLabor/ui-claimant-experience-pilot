@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 import core.context_processors
 from jwcrypto.common import json_decode
 from core.claim_storage import ClaimReader
+from core.swa_xid import SwaXid
 from api.models import Claim, Claimant
 from api.claim_serializer import ClaimSerializer
 from .claimant_1099G_uploader import Claimant1099GUploader
@@ -61,17 +62,22 @@ and request payload, route further to specific method.
 
 @require_http_methods(["GET", "DELETE", "PATCH"])
 @never_cache
-def v1_act_on_claim(request, claim_uuid):
+def v1_act_on_claim(request, claim_uuid_or_swa_xid):
     try:
-        uuid.UUID(claim_uuid)
+        uuid.UUID(claim_uuid_or_swa_xid)
     except ValueError as err:
-        logger.exception(err)
-        return JsonResponse(
-            {"status": "error", "error": "invalid claim id format"}, status=400
-        )
+        swa_xid = SwaXid(claim_uuid_or_swa_xid, request.user)
+        if not swa_xid.format_ok():
+            logger.exception(err)
+            logger.error("Invalid swa_xid")
+            return JsonResponse(
+                {"status": "error", "error": "invalid claim id format"}, status=400
+            )
 
     try:
-        claim = Claim.objects.get(uuid=claim_uuid)
+        claim = Claim.find_by_uuid_or_swa_xid(claim_uuid_or_swa_xid)
+        if not claim:
+            raise Claim.DoesNotExist("no match for {}".format(claim_uuid_or_swa_xid))
     except Claim.DoesNotExist:
         return JsonResponse(
             {"status": "error", "error": "invalid claim id"}, status=404

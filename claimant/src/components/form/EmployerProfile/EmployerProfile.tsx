@@ -64,7 +64,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
 
   return (
     <>
-      <h2 className="font-heading-md">{t("heading")}</h2>
       <TextField
         name={`employers[${segment}].name`}
         label={t("name.label")}

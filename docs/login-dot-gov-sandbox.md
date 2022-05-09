@@ -85,7 +85,7 @@ be configured with WCMS secrets as `LOGIN_DOT_GOV_PRIVATE_KEY_FILE`.
 
 To update an application certificate:
 
-1. In your local terminal, in the application directory, type `make x509-certs` and enter the URL of the UI application (e.g. `stage1-ui.dol.gov`) and the IdP name `identitysandbox.gov`
+1. In your local terminal, in the application directory, type `make x509-certs` and enter the environment-specific URL of the UI application and the IdP name `identitysandbox.gov`
 1. Login to the dashboard: https://dashboard.int.identitysandbox.gov/
 1. Click on the Apps menu
 1. Click on the application Friendly Name

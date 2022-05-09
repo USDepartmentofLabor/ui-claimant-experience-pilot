@@ -144,8 +144,10 @@ container-build: ## Build the Django app container image (local development)
 acr-login: ## Log into the Azure Container Registry
 	docker login ddphub.azurecr.io
 
+PYTHON_BASE_IMAGE_NAME=3.9.11-slim-bullseye
+
 container-build-wcms: ## Build the Django app container image (to test image configuration for deployed environment)
-	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=3.9.11-slim-bullseye .
+	docker build -f Dockerfile -t $(DOCKER_IMG) --build-arg ENV_NAME=wcms --build-arg BASE_PYTHON_IMAGE_REGISTRY=ddphub.azurecr.io/dol-official --build-arg BASE_PYTHON_IMAGE_VERSION=$(PYTHON_BASE_IMAGE_NAME) .
 
 container-run: ## Run the Django app in Docker
 	docker run --network arpaui_app-tier --rm -it -p 8004:8000 $(DOCKER_IMG)
@@ -167,6 +169,9 @@ container-build-clean: ## Build ignoring all Docker layers (--no-cache)
 
 container-setup-react-tests: ## Create local artifacts required for running Cypress tests
 	docker exec -it $(DOCKER_CONTAINER_ID) ./setup-cypress-tests.sh
+
+container-updates: ## Create list of upgradeable apt packages for the current container
+	docker run --rm -it python:$(PYTHON_BASE_IMAGE_NAME) bash -c "apt-get update && apt list --upgradeable"
 
 container: container-clean container-build ## Alias for container-clean container-build
 
@@ -218,6 +223,8 @@ build-static: ## Build the static assets (intended for during container-build (i
 	mkdir static
 	python manage.py collectstatic
 	cp home/templates/favicon.ico static/
+	cp home/templates/dol-logo512.png static/logo512.png
+	cp home/templates/dol-logo192.png static/logo192.png
 	cp claimant/build/manifest.json static/manifest.json
 	cd static && ln -s ../schemas schemas
 

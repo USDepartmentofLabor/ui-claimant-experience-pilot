@@ -147,7 +147,6 @@ if os.environ.get("ENV_NAME") != "wcms":
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "api.middleware.session.SessionTimeout",
     "django.middleware.locale.LocaleMiddleware",  # must come after session middleware and before common middleware
