@@ -41,18 +41,9 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       values.employers[segmentIdx] &&
       values.employers[segmentIdx].self_employed,
     [
-      {
-        fieldName: `employers[${segment}].separation_reason`,
-        value: undefined,
-      },
-      {
-        fieldName: `employers[${segment}].separation_option`,
-        value: undefined,
-      },
-      {
-        fieldName: `employers[${segment}].separation_comment`,
-        value: undefined,
-      },
+      `employers[${segment}].separation_reason`,
+      `employers[${segment}].separation_option`,
+      `employers[${segment}].separation_comment`,
     ]
   );
 
