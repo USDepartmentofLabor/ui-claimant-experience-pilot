@@ -24,7 +24,7 @@ describe("SeparationReason component", () => {
   it("renders properly", () => {
     const { getByTestId, getAllByRole } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <SeparationReason segment="0" disabled={false} />
+        <SeparationReason segment="0" />
       </Formik>
     );
 
@@ -47,7 +47,7 @@ describe("SeparationReason component", () => {
   it("displays conditional secondary set of radios", async () => {
     const { getByTestId, getAllByRole } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <SeparationReason segment="0" disabled={false} />
+        <SeparationReason segment="0" />
       </Formik>
     );
 
@@ -77,18 +77,5 @@ describe("SeparationReason component", () => {
     });
     reasonRadios = getAllByRole("radio");
     expect(reasonRadios.length).toEqual(11);
-  });
-
-  it("disables fields", () => {
-    const { getByTestId, getByRole } = render(
-      <Formik initialValues={initialValues} onSubmit={noop}>
-        <SeparationReason segment="0" disabled />
-      </Formik>
-    );
-
-    expect(
-      getByTestId("employers[0].separation_reason.laid_off")
-    ).toBeDisabled();
-    expect(getByRole("textbox")).toBeDisabled();
   });
 });

@@ -8,7 +8,6 @@ import { RadioField } from "../fields/RadioField/RadioField";
 
 interface ISeparationReasonProps {
   segment: string;
-  disabled: boolean;
 }
 
 type LaidOffOption =
@@ -108,10 +107,7 @@ const SeparationReasonLabel = (props: {
   );
 };
 
-export const SeparationReason = ({
-  segment,
-  disabled = false,
-}: ISeparationReasonProps) => {
+export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
   const { t } = useTranslation("claimForm", { keyPrefix: "employers" });
   const { values, setFieldValue } = useFormikContext<ClaimantInput>();
 
@@ -157,7 +153,6 @@ export const SeparationReason = ({
               undefined
             )
           }
-          disabled={disabled}
         />
       </Fieldset>
       {employer.separation_reason && selectedReason?.options && (
@@ -175,7 +170,6 @@ export const SeparationReason = ({
                 value: option,
               };
             })}
-            disabled={disabled}
           />
         </Fieldset>
       )}
@@ -191,7 +185,6 @@ export const SeparationReason = ({
             </Trans>
           )
         }
-        disabled={disabled}
       />
     </>
   );

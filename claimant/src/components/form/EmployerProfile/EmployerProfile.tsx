@@ -36,16 +36,11 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
     }
   }, [segmentExists]);
 
-  useClearFields(
-    values.employers &&
-      values.employers[segmentIdx] &&
-      values.employers[segmentIdx].self_employed,
-    [
-      `employers[${segment}].separation_reason`,
-      `employers[${segment}].separation_option`,
-      `employers[${segment}].separation_comment`,
-    ]
-  );
+  useClearFields(values.employers?.[segmentIdx]?.self_employed, [
+    `employers[${segment}].separation_reason`,
+    `employers[${segment}].separation_option`,
+    `employers[${segment}].separation_comment`,
+  ]);
 
   // Let the effect hook populate values if necessary
   if (!values.employers || !segmentExists) {
@@ -139,10 +134,9 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         id={`employers[${segment}].self_employed`}
         name={`employers[${segment}].self_employed`}
       />
-      <SeparationReason
-        segment={segment}
-        disabled={employer.self_employed === true}
-      />
+      {!values.employers?.[segmentIdx]?.self_employed && (
+        <SeparationReason segment={segment} />
+      )}
       <DatePicker
         label={t("first_work_date.label")}
         id={`employers[${segment}].first_work_date`}
