@@ -87,22 +87,26 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     work_site_address: yup
       .mixed()
       .when("LOCAL_same_address", { is: false, then: yupAddress(t) }),
-    separation_reason: yup
-      .string()
-      .oneOf(Object.keys(claimForm.employers.separation.reasons))
-      .max(64)
-      .required(t("employers.separation.reason.required")),
+    separation_reason: yup.string().when("self_employed", {
+      is: false,
+      then: yup
+        .string()
+        .oneOf(Object.keys(claimForm.employers.separation.reasons))
+        .max(64)
+        .required(t("employers.separation.reason.required")),
+    }),
     separation_option: yup
       .string()
       .max(64)
-      .when("separation_reason", {
-        is: (sep_reason: string) =>
+      .when(["self_employed", "separation_reason"], {
+        is: (selfEmployed: boolean | undefined, separationReason: string) =>
+          selfEmployed === false &&
           [
             "laid_off",
             "fired_discharged_terminated",
             "still_employed",
             "quit",
-          ].includes(sep_reason),
+          ].includes(separationReason),
         then: yup
           .string()
           .max(64)
@@ -123,8 +127,9 @@ const yupEmployer = (t: TFunction<"claimForm">) =>
     separation_comment: yup
       .string()
       .max(1024)
-      .when("separation_reason", {
-        is: "laid_off",
+      .when(["self_employed", "separation_reason"], {
+        is: (selfEmployed: boolean | undefined, separationReason: string) =>
+          selfEmployed === true || separationReason === "laid_off",
         otherwise: yup
           .string()
           .max(1024)
