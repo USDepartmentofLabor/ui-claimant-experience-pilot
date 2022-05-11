@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import never_cache
 from django.core.exceptions import BadRequest
 import logging
-import os
-from django.conf import settings
 import django.middleware.csrf
 import core.context_processors
 from django.views.decorators.csrf import csrf_exempt
@@ -79,17 +77,8 @@ def whoami(request):
 @require_http_methods(["GET"])
 @never_cache
 def index(request):
-    """Root endpoint for the /api/ space. Returns metadata about the API itself."""
-    return JsonResponse(
-        {
-            "version": "1.0",
-            "sha": os.environ.get("UI_API_SHA", "N/A"),
-            "build": os.environ.get("BUILD_TIME", "N/A"),
-            "url": settings.BASE_URL
-            if settings.BASE_URL
-            else f"{request.scheme}://{request.get_host()}",
-        }
-    )
+    """Root endpoint for the /api/ space."""
+    return HttpResponse(status=200)
 
 
 @require_http_methods(["GET"])

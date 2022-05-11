@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.core import mail
 from core.email import Email
 import logging
+from unittest.mock import patch, MagicMock
 
 
 logger = logging.getLogger(__name__)
@@ -37,16 +38,62 @@ class CoreTestCase(TestCase):
         resp = c.get("/500/")
         self.assertContains(resp, "Sorry, we had a problem", status_code=500)
 
-    def test_live(self):
+    @patch("core.views.celery_app.control")
+    def test_live_ok(self, patched_celery_app):
+        mocked_inspect = MagicMock()
+        mocked_active = MagicMock()
+        patched_celery_app.inspect.return_value = mocked_inspect
+        mocked_inspect.active.return_value = mocked_active
+        mocked_active.keys.return_value = ["worker1", "worker2", "worker3"]
         response = self.client.get("/live/")
-        live_resp = response.json()
-        self.assertTrue(live_resp["db"])
-        self.assertTrue(live_resp["redis"])
-        self.assertGreaterEqual(float(live_resp["db_response"]), 0)
-        self.assertLess(float(live_resp["db_response"]), 1)
-        self.assertGreaterEqual(float(live_resp["redis_response"]), 0)
-        self.assertLess(float(live_resp["redis_response"]), 1)
-        # celery not running in this test case, but we want to verify the key exists.
-        self.assertFalse(live_resp["celery"])
-        # status is 503 because celery is offline
-        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.status_code, 200)
+
+    @patch("core.views.celery_app.control")
+    def test_live_zero_celery_workers(self, patched_celery_app):
+        mocked_inspect = MagicMock()
+        mocked_active = MagicMock()
+        patched_celery_app.inspect.return_value = mocked_inspect
+        mocked_inspect.active.return_value = mocked_active
+        mocked_active.keys.return_value = []
+        with self.assertLogs("core", level="INFO") as cm:
+            response = self.client.get("/live/")
+            self.assertIn('"db": true', cm.output[0])
+            self.assertIn('"redis": true', cm.output[0])
+            self.assertIn('"celery": 0', cm.output[0])
+            self.assertEqual(response.status_code, 503)
+
+    @patch("core.views.celery_app.control")
+    @patch("core.views.connection")
+    def test_live_db_unreachable(self, patched_db_connection, patched_celery_app):
+        mocked_inspect = MagicMock()
+        mocked_active = MagicMock()
+        patched_celery_app.inspect.return_value = mocked_inspect
+        mocked_inspect.active.return_value = mocked_active
+        mocked_active.keys.return_value = ["worker1", "worker2", "worker3"]
+
+        patched_db_connection.is_usable.return_value = False
+        with self.assertLogs("core", level="INFO") as cm:
+            response = self.client.get("/live/")
+            self.assertIn('"db": false', cm.output[0])
+            self.assertIn('"redis": true', cm.output[0])
+            self.assertIn('"celery": 3', cm.output[0])
+            self.assertEqual(response.status_code, 503)
+
+    @patch("core.views.celery_app.control")
+    @patch("core.views.cache")
+    def test_live_redis_unreachable(self, patched_redis_cache, patched_celery_app):
+        mocked_inspect = MagicMock()
+        mocked_active = MagicMock()
+        patched_celery_app.inspect.return_value = mocked_inspect
+        mocked_inspect.active.return_value = mocked_active
+        mocked_active.keys.return_value = ["worker1", "worker2", "worker3"]
+
+        cache_client = MagicMock()
+        patched_redis_cache.client.get_client.return_value = cache_client
+        cache_client.ping.return_value = False
+        with self.assertLogs("core", level="INFO") as cm:
+            response = self.client.get("/live/")
+            self.assertIn('"db": true', cm.output[0])
+            self.assertIn('"redis": false', cm.output[0])
+            self.assertIn('"celery": 3', cm.output[0])
+            self.assertEqual(response.status_code, 503)

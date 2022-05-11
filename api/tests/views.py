@@ -132,8 +132,7 @@ class ApiViewsTestCase(
 
     def test_index(self):
         response = self.client.get("/api/")
-        about_api = response.json()
-        self.assertEqual(about_api["version"], "1.0")
+        self.assertEqual(response.status_code, 200)
         # only GET allowed
         response = self.client.post("/api/")
         self.assertEqual(response.status_code, 405)

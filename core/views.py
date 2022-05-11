@@ -2,8 +2,9 @@
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 import logging
+import json
 import time
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.db import connection
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
@@ -52,13 +53,13 @@ def live(request):
     celery_workers = celery_app.control.inspect().active()
     celery_worker_count = len(celery_workers.keys()) if celery_workers else 0
     status = 200 if redis_ok and db_ok and celery_worker_count > 0 else 503
-    return JsonResponse(
-        {
+    if status != 200:
+        backend_services_status = {
             "db": db_ok,
             "db_response": "{:.3f}".format(db_response_time),
             "redis": redis_ok,
             "redis_response": "{:.3f}".format(redis_response_time),
             "celery": celery_worker_count,
-        },
-        status=status,
-    )
+        }
+        logger.error(json.dumps(backend_services_status))
+    return HttpResponse(status=status)
