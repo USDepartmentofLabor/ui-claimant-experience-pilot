@@ -27,7 +27,6 @@ const DefaultTemplate: ComponentStory<typeof CurrencyField> = (args) => {
 
 export const Default = DefaultTemplate.bind({});
 Default.args = {
-  id: "example_currency",
   name: "example_currency",
   label: "Example Currency Field",
 };
@@ -62,7 +61,6 @@ const WithFormikValueTemplate: ComponentStory<typeof CurrencyField> = (
 
 export const ShowFormikValue = WithFormikValueTemplate.bind({});
 ShowFormikValue.args = {
-  id: "example_amount",
   name: "example_amount",
   label: "Type a dollar amount below",
   hint: "The cents value formik handles will be displayed below in real time",

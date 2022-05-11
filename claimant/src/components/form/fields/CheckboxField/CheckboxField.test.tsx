@@ -9,11 +9,7 @@ describe("CheckboxField component", () => {
   it("renders the elements that make up a field", () => {
     const { getByText, getByLabelText } = render(
       <Formik initialValues={{}} onSubmit={noop}>
-        <CheckboxField
-          name="checkboxField"
-          label="checkboxField"
-          id="checkboxField"
-        />
+        <CheckboxField name="checkboxField" label="checkboxField" />
       </Formik>
     );
 
@@ -36,11 +32,7 @@ describe("CheckboxField component", () => {
 
       const { getByLabelText } = render(
         <Formik initialValues={initialValues} onSubmit={noop}>
-          <CheckboxField
-            name="checkboxField"
-            label="checked"
-            id="checkboxField"
-          />
+          <CheckboxField name="checkboxField" label="checked" />
         </Formik>
       );
       expect(getByLabelText("checked")).toBeChecked();
@@ -51,12 +43,7 @@ describe("CheckboxField component", () => {
     it("disables the checkbox when it is disabled", () => {
       const { getByLabelText } = render(
         <Formik initialValues={{}} onSubmit={noop}>
-          <CheckboxField
-            name="checkboxField"
-            label="checkboxField"
-            id="checkboxField"
-            disabled
-          />
+          <CheckboxField name="checkboxField" label="checkboxField" disabled />
         </Formik>
       );
 

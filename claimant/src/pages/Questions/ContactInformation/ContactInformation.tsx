@@ -53,9 +53,8 @@ export const ContactInformation = () => {
         name="phones"
         render={(arrayHelpers) => (
           <>
-            <PhoneNumberField id="phones[0]" name="phones[0]" showSMS={false} />
+            <PhoneNumberField name="phones[0]" showSMS={false} />
             <CheckboxField
-              id="LOCAL_more_phones"
               name="LOCAL_more_phones"
               data-testid="LOCAL_more_phones"
               label={t("more_phones")}
@@ -69,11 +68,7 @@ export const ContactInformation = () => {
               }}
             />
             {values.LOCAL_more_phones && (
-              <PhoneNumberField
-                id="phones[1]"
-                name="phones[1]"
-                showSMS={false}
-              />
+              <PhoneNumberField name="phones[1]" showSMS={false} />
             )}
           </>
         )}
@@ -81,7 +76,6 @@ export const ContactInformation = () => {
 
       <TextField
         name="email"
-        id="email"
         type="text"
         label={t("email")}
         disabled
@@ -89,14 +83,12 @@ export const ContactInformation = () => {
       />
       <YesNoQuestion
         question={t("interpreter_required.label")}
-        id="interpreter_required"
         name="interpreter_required"
       />
       {values.interpreter_required && (
         <TextField
           label={t("preferred_language.label")}
-          id={"preferred_language"}
-          name={"preferred_language"}
+          name="preferred_language"
           type="text"
         />
       )}

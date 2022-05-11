@@ -32,13 +32,14 @@ type DateInputOmitProps =
   | "onBlur"
   | "readOnly"
   | "disabled";
+
 type DateInputProps = Omit<
   ComponentProps<typeof DateInput>,
   DateInputOmitProps
 >;
 
 type DateFieldProps = {
-  id: string;
+  id?: string;
   name: string;
   hint?: string;
   readOnly?: boolean;
@@ -57,7 +58,7 @@ const VALID_KEYS_REGEXP = /[0-9/]+/;
 const INPUT_VALUE_REGEXP = /^\d{0,4}-\d{0,2}-\d{0,2}$/;
 
 export const DateInputField = ({
-  id,
+  id: idProp,
   name,
   hint,
   readOnly,
@@ -98,6 +99,8 @@ export const DateInputField = ({
 
   const showError = useShowErrors(name);
   useFocusFirstError(metaProps.error, monthInputRef);
+
+  const id = idProp || name;
 
   const updateFormik = () => {
     if (day || month || year) {

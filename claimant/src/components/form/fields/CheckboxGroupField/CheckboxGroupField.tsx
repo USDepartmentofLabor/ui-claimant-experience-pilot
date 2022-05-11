@@ -15,7 +15,7 @@ type CheckboxOption = {
 };
 
 interface ICheckBoxGroupFieldProps {
-  id: string;
+  id?: string;
   name: string;
   options: CheckboxOption[];
 }
@@ -36,8 +36,8 @@ export const CheckboxGroupField = ({
       {options.map((option, index) => (
         <CheckboxField
           {...fieldProps}
-          key={`${id}.${index}.${option.value}`}
-          id={`${id}.${option.value}`}
+          key={`${id || name}.${index}.${option.value}`}
+          id={`${id || name}.${option.value}`}
           name={name}
           label={option.label}
           value={option.value}

@@ -332,3 +332,5 @@ type CompleteClaimType = {
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
+
+type Optional<T, K extends keyof T> = Partial<T> & Omit<T, K>;

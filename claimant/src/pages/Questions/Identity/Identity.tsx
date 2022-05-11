@@ -58,7 +58,6 @@ export const Identity = () => {
       <div className="position-relative">
         <TextField
           label={t("ssn.label")}
-          id="ssn"
           name="ssn"
           type={showSsn ? "text" : "password"}
           hint={t("ssn.hint")}
@@ -75,26 +74,19 @@ export const Identity = () => {
           }
         />
       </div>
-      <DateInputField
-        legend={t("birthdate.label")}
-        id="birthdate"
-        name="birthdate"
-      />
+      <DateInputField legend={t("birthdate.label")} name="birthdate" />
       <TextField
         label={t("state_credential.drivers_license_or_state_id_number.label")}
-        id="state_credential.drivers_license_or_state_id_number"
         name="state_credential.drivers_license_or_state_id_number"
         type="text"
       />
       <StatesDropdown
         label={t("state_credential.issuer.label")}
-        id="state_credential.issuer"
         name="state_credential.issuer"
         startEmpty
       />
       <YesNoQuestion
         question={t("work_authorization.authorized_to_work.label")}
-        id="work_authorization.authorized_to_work"
         name="work_authorization.authorized_to_work"
       />
       {showNotAllowedToWorkInUSExplanation && (
@@ -102,7 +94,6 @@ export const Identity = () => {
           label={t(
             "work_authorization.not_authorized_to_work_explanation.label"
           )}
-          id="work_authorization.not_authorized_to_work_explanation"
           name="work_authorization.not_authorized_to_work_explanation"
         />
       )}
@@ -110,7 +101,6 @@ export const Identity = () => {
         <>
           <DropdownField
             label={t("work_authorization.authorization_type.label")}
-            id="work_authorization.authorization_type"
             name="work_authorization.authorization_type"
             startEmpty
             options={Object.keys(
@@ -129,7 +119,6 @@ export const Identity = () => {
           {showAlienRegistrationNumber && (
             <TextField
               label={t("work_authorization.alien_registration_number.label")}
-              id="work_authorization.alien_registration_number"
               name="work_authorization.alien_registration_number"
               type="text"
             />

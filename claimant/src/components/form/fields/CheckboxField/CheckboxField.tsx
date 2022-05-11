@@ -14,9 +14,10 @@ import { Checkbox } from "@trussworks/react-uswds";
 
 export const CheckboxField = ({
   name,
+  id,
   onChange,
   ...inputProps
-}: React.ComponentProps<typeof Checkbox>) => {
+}: Optional<React.ComponentProps<typeof Checkbox>, "id">) => {
   const [fieldProps] = useField({ name, type: "checkbox" });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +32,7 @@ export const CheckboxField = ({
     <Checkbox
       {...fieldProps}
       name={name}
+      id={id || name}
       onChange={handleChange}
       {...inputProps}
     />

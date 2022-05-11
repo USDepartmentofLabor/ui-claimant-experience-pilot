@@ -28,7 +28,7 @@ describe("Name component", () => {
 
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <Name id={claimantName} name={claimantName} />
+        <Name name={claimantName} />
       </Formik>
     );
 
@@ -70,7 +70,7 @@ describe("Name component", () => {
 
     const { getByLabelText } = render(
       <Formik initialValues={initialValues} onSubmit={noop}>
-        <Name id={claimantName} name={claimantName} />
+        <Name name={claimantName} />
       </Formik>
     );
 
@@ -109,7 +109,7 @@ describe("Name component", () => {
       >
         {({ submitForm }) => (
           <>
-            <Name id={claimantName} name={claimantName} />
+            <Name name={claimantName} />
             <button onClick={submitForm}>Submit</button>
           </>
         )}

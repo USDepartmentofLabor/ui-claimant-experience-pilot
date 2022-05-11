@@ -54,7 +54,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         name={`employers[${segment}].name`}
         label={t("name.label")}
         type="text"
-        id={`employers[${segment}].name`}
         hint={t("name.hint")}
       />
       <Address
@@ -73,7 +72,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       />
       <YesNoQuestion
         question={t("same_address.label")}
-        id={`employers[${segment}].LOCAL_same_address`}
         name={`employers[${segment}].LOCAL_same_address`}
         noLabel={t("no_different_address")}
       />
@@ -99,11 +97,9 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         name={`employers[${segment}].phones[0].number`}
         label={t("phones.number.label")}
         type="tel"
-        id={`employers[${segment}].phones[0].number`}
       />
       <YesNoQuestion
         question={t("same_phone.label")}
-        id={`employers[${segment}].LOCAL_same_phone`}
         name={`employers[${segment}].LOCAL_same_phone`}
         noLabel={t("no_different_phone")}
       />
@@ -112,26 +108,22 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
           name={`employers[${segment}].phones[1].number`}
           label={t("alt_employer_phone")}
           type="tel"
-          id={`employers[${segment}].phones[1].number`}
         />
       )}
       <TextField
         name={`employers[${segment}].fein`}
         label={t("fein.label")}
         type="text"
-        id={`employers[${segment}].fein`}
         hint={t("fein.hint")}
       />
       <TextField
         name={`employers[${segment}].state_employer_payroll_number`}
         label={t("state_employer_payroll_number.label")}
         type="text"
-        id={`employers[${segment}].state_employee_payroll_number`}
         hint={t("state_employer_payroll_number.hint")}
       />
       <YesNoQuestion
         question={t("self_employed.label")}
-        id={`employers[${segment}].self_employed`}
         name={`employers[${segment}].self_employed`}
       />
       {!values.employers?.[segmentIdx]?.self_employed && (
@@ -139,7 +131,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
       )}
       <DatePicker
         label={t("first_work_date.label")}
-        id={`employers[${segment}].first_work_date`}
         name={`employers[${segment}].first_work_date`}
         defaultValue={employer.first_work_date}
         onChange={(val: string | undefined) => {
@@ -154,7 +145,6 @@ export const EmployerProfile = ({ segment }: IEmployerProfileProps) => {
         employer.separation_reason !== "still_employed" && (
           <DatePicker
             label={t("last_work_date.label")}
-            id={`employers[${segment}].last_work_date`}
             name={`employers[${segment}].last_work_date`}
             defaultValue={employer.last_work_date}
             onChange={(val: string | undefined) => {

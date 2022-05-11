@@ -23,7 +23,6 @@ export const UnionProfile = () => {
     <>
       <YesNoQuestion
         question={t("is_union_member.label")}
-        id="union.is_union_member"
         name="union.is_union_member"
       />
       {formData.is_union_member === true && (
@@ -31,18 +30,15 @@ export const UnionProfile = () => {
           <TextField
             label={t("union_name.label")}
             type="text"
-            id="union.union_name"
             name="union.union_name"
           />
           <TextField
             label={t("union_local_number.label")}
             type="text"
-            id="union.union_local_number"
             name="union.union_local_number"
           />
           <YesNoQuestion
             question={t("required_to_seek_work_through_hiring_hall.label")}
-            id="union.required_to_seek_work_through_hiring_hall"
             name="union.required_to_seek_work_through_hiring_hall"
           />
         </>

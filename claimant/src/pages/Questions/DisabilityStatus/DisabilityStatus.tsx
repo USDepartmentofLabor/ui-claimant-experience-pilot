@@ -49,7 +49,6 @@ export const DisabilityStatus = () => {
     <Fieldset legend={t("disability.heading")}>
       <YesNoQuestion
         question={t("disability.has_collected_disability.label")}
-        id="disability.has_collected_disability"
         name="disability.has_collected_disability"
       >
         <HelpText withLeftBorder={true}>
@@ -60,18 +59,15 @@ export const DisabilityStatus = () => {
         <>
           <YesNoQuestion
             question={t("disability.disabled_immediately_before.label")}
-            id="disability.disabled_immediately_before"
             name="disability.disabled_immediately_before"
           />
           <DropdownField
-            id="disability.type_of_disability"
             name="disability.type_of_disability"
             label={t("disability.type_of_disability.label")}
             options={typeOptions}
             startEmpty
           />
           <DatePicker
-            id="disability.date_disability_began"
             name="disability.date_disability_began"
             label={t("disability.date_disability_began.label")}
             defaultValue={values.disability.date_disability_began}
@@ -88,7 +84,6 @@ export const DisabilityStatus = () => {
             }}
           />
           <DatePicker
-            id="disability.recovery_date"
             name="disability.recovery_date"
             label={t("disability.recovery_date.label")}
             defaultValue={values.disability.recovery_date}
@@ -105,7 +100,6 @@ export const DisabilityStatus = () => {
           {values.disability.recovery_date && (
             <YesNoQuestion
               question={t("disability.contact_employer_after_recovering.label")}
-              id="disability.contacted_last_employer_after_recovery"
               name="disability.contacted_last_employer_after_recovery"
             />
           )}

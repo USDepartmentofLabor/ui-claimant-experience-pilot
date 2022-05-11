@@ -24,7 +24,6 @@ const OtherPayDetail = (props: {
       <p className="font-body-xs">{description}</p>
       <FormGroup>
         <CurrencyField
-          id={`${name}.total`}
           name={`${name}.total`}
           label={t("other_pay_detail.total.label", {
             payType: lowerLabel,
@@ -35,11 +34,9 @@ const OtherPayDetail = (props: {
           legend={t("other_pay_detail.date_received.label", {
             payType: lowerLabel,
           })}
-          id={`${name}.date_received`}
           name={`${name}.date_received`}
         />
         <TextAreaField
-          id={`${name}.note`}
           name={`${name}.note`}
           label={t("other_pay_detail.note.label", {
             payType: lowerLabel,

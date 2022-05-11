@@ -30,7 +30,6 @@ export const EducationVocationalRehab = () => {
           question={t(
             "education_vocational_rehab.education.attending_training.label"
           )}
-          id="attending_college_or_job_training"
           name="attending_college_or_job_training"
         >
           <HelpText>
@@ -51,7 +50,6 @@ export const EducationVocationalRehab = () => {
             }
           >
             <RadioField
-              id="type_of_college_or_job_training"
               name="type_of_college_or_job_training"
               options={Object.keys(
                 claimForm.education_vocational_rehab.education.training_type
@@ -70,7 +68,6 @@ export const EducationVocationalRehab = () => {
           </Fieldset>
         )}
         <DropdownField
-          id="education_level"
           name="education_level"
           label={t("education_level.label")}
           startEmpty
@@ -93,7 +90,6 @@ export const EducationVocationalRehab = () => {
           question={t(
             "education_vocational_rehab.vocational_rehab.is_registered.label"
           )}
-          id="registered_with_vocational_rehab"
           name="registered_with_vocational_rehab"
         >
           <HelpText withLeftBorder={true}>

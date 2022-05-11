@@ -18,7 +18,6 @@ const Template: ComponentStory<typeof YesNoQuestion> = (args) => {
       <Form>
         <YesNoQuestion
           question="Do you like to answer Yes/No questions?"
-          id={args.id}
           name={args.name}
           onChange={args.onChange}
         />
@@ -29,14 +28,12 @@ const Template: ComponentStory<typeof YesNoQuestion> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-  id: "yes_no_question",
   name: "yes_no_question",
   question: "yes or no?",
 };
 
 export const WithOnChangeHandler = Template.bind({});
 WithOnChangeHandler.args = {
-  id: "yes_no_question",
   name: "yes_no_question",
   question: "yes or no?",
   onChange: () => {
@@ -73,7 +70,6 @@ const WithFormikValueTemplate: ComponentStory<typeof YesNoQuestion> = (
 
 export const ShowFormikValue = WithFormikValueTemplate.bind({});
 ShowFormikValue.args = {
-  id: "yes_no_question",
   name: "yes_no_question",
   question: "Click the button to see validation",
 };

@@ -53,7 +53,6 @@ export const EmployerInformation = (props: PageProps) => {
       <EmployerProfile segment={segment} />
       <YesNoQuestion
         question={t("employers.more_employers.label")}
-        id={`LOCAL_more_employers[${segment}]`}
         name={`LOCAL_more_employers[${segment}]`}
       />
     </>

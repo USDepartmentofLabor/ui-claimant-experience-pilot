@@ -43,7 +43,6 @@ export const Review = () => {
       <FormGroup error={showError}>
         <CheckboxField
           {...fieldProps}
-          id={name}
           name={name}
           label={t("legal_affirmation.label")}
         />

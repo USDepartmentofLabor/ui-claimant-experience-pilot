@@ -16,12 +16,7 @@ describe("StatesDropdown Component", () => {
   it("renders properly", () => {
     render(
       <Formik initialValues={{}} onSubmit={noop}>
-        <StatesDropdown
-          id={"test-id"}
-          name={"test-name"}
-          label={"test-label"}
-          startEmpty
-        />
+        <StatesDropdown name={"test-name"} label={"test-label"} startEmpty />
       </Formik>
     );
 
@@ -35,7 +30,6 @@ describe("StatesDropdown Component", () => {
     render(
       <Formik initialValues={{}} onSubmit={noop}>
         <StatesDropdown
-          id={"test-id"}
           name={"test-name"}
           label={"test-label"}
           startEmpty

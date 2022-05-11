@@ -38,12 +38,7 @@ describe("TextField component", () => {
     mockUseField.mockReturnValue([mockField, mockMeta]);
 
     const { queryByText, queryByLabelText } = render(
-      <TextField
-        name="firstName"
-        label="First Name"
-        type="text"
-        id="firstName"
-      />
+      <TextField name="firstName" label="First Name" type="text" />
     );
 
     expect(queryByText("First Name")).toBeInstanceOf(HTMLLabelElement);
@@ -77,7 +72,6 @@ describe("TextField component", () => {
         className="myCustomInputClass"
         label="First Name"
         type="text"
-        id="firstName"
       />
     );
 
@@ -107,12 +101,7 @@ describe("TextField component", () => {
       mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
-        <TextField
-          name="firstName"
-          label="First Name"
-          type="text"
-          id="firstName"
-        />
+        <TextField name="firstName" label="First Name" type="text" />
       );
       expect(queryByText("First Name")).not.toHaveClass("usa-label--error");
       expect(queryByText("This field is required")).not.toBeInTheDocument();
@@ -141,12 +130,7 @@ describe("TextField component", () => {
       mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
-        <TextField
-          name="firstName"
-          label="First Name"
-          type="text"
-          id="firstName"
-        />
+        <TextField name="firstName" label="First Name" type="text" />
       );
 
       expect(queryByText("First Name")).toHaveClass("usa-label--error");
@@ -179,12 +163,7 @@ describe("TextField component", () => {
         mockUseField.mockReturnValue([mockField, mockMeta]);
 
         const { getByLabelText } = render(
-          <TextField
-            name="firstName"
-            label="First Name"
-            type="text"
-            id="firstName"
-          />
+          <TextField name="firstName" label="First Name" type="text" />
         );
 
         const textField = getByLabelText("First Name");
@@ -223,7 +202,6 @@ describe("TextField component", () => {
             name="firstName"
             label="First Name"
             type="text"
-            id="firstName"
             inputPrefix={"SomePrefix"}
           />
         );

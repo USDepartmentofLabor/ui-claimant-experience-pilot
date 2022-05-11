@@ -139,7 +139,6 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
       <Fieldset legend={t("separation.reason.label")}>
         <RadioField
           tile
-          id={`employers[${segmentIdx}].separation_reason`}
           name={`employers[${segmentIdx}].separation_reason`}
           options={Array.from(separationReasons.keys()).map((reason) => {
             return {
@@ -162,7 +161,6 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
           )}
         >
           <RadioField
-            id={`employers[${segmentIdx}].separation_option`}
             name={`employers[${segmentIdx}].separation_option`}
             options={(selectedReason?.options || []).map((option) => {
               return {
@@ -175,7 +173,6 @@ export const SeparationReason = ({ segment }: ISeparationReasonProps) => {
       )}
       <TextAreaField
         name={`employers[${segmentIdx}].separation_comment`}
-        id={`employers[${segmentIdx}].separation_comment`}
         label={
           selectedReason?.comment_required ? (
             t("separation.comment.required_label")

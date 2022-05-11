@@ -9,16 +9,15 @@ import {
 import { useShowErrors } from "../../../../hooks/useShowErrors";
 import { useFocusFirstErrorById } from "../../../../hooks/useFocusFirstError";
 
-type DatePickerProps = ComponentProps<typeof USWDSDatePicker>;
+type DatePickerProps = Optional<ComponentProps<typeof USWDSDatePicker>, "id">;
 
 interface IDatePickerProps extends DatePickerProps {
-  id: string;
   name: string;
   label: ReactNode;
 }
 
 export const DatePicker = ({
-  id,
+  id: idProp,
   name,
   label,
   onChange,
@@ -26,6 +25,8 @@ export const DatePicker = ({
 }: IDatePickerProps) => {
   const [fieldProps, metaProps] = useField(name);
   const showError = useShowErrors(name);
+
+  const id = idProp || name;
 
   useFocusFirstErrorById(metaProps.error, id);
 

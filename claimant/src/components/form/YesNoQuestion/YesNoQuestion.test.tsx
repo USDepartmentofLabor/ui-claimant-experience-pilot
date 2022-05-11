@@ -22,11 +22,7 @@ describe("YesNoQuestion Component", () => {
         }}
         onSubmit={noop}
       >
-        <YesNoQuestion
-          question="yes or no?"
-          id="my_yes_no_button"
-          name="my_yes_no_button"
-        />
+        <YesNoQuestion question="yes or no?" name="my_yes_no_button" />
       </Formik>
     );
 
@@ -47,11 +43,7 @@ describe("YesNoQuestion Component", () => {
         }}
         onSubmit={noop}
       >
-        <YesNoQuestion
-          question="yes or no?"
-          id="my_yes_no_button"
-          name="my_yes_no_button"
-        />
+        <YesNoQuestion question="yes or no?" name="my_yes_no_button" />
       </Formik>
     );
 
@@ -84,11 +76,7 @@ describe("YesNoQuestion Component", () => {
         }}
         onSubmit={noop}
       >
-        <YesNoQuestion
-          question="yes or no?"
-          id="my_yes_no_button"
-          name="my_yes_no_button"
-        />
+        <YesNoQuestion question="yes or no?" name="my_yes_no_button" />
       </Formik>
     );
 
@@ -111,7 +99,6 @@ describe("YesNoQuestion Component", () => {
       >
         <YesNoQuestion
           question="yes or no?"
-          id="my_yes_no_button"
           name="my_yes_no_button"
           onChange={onChange}
         />

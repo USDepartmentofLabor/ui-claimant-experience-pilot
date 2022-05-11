@@ -28,7 +28,7 @@ describe("DateInputField Component", () => {
       {({ submitForm }) => {
         return (
           <>
-            <DateInputField id={"dateInputField"} name={"dateInputField"} />
+            <DateInputField name="dateInputField" />
             <button type="submit" onClick={submitForm}>
               Submit
             </button>
@@ -41,7 +41,7 @@ describe("DateInputField Component", () => {
   it("renders the elements that make up the field", () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ dateInputField: "" }} onSubmit={noop}>
-        <DateInputField id={"dateInputField"} name={"dateInputField"} />
+        <DateInputField name="dateInputField" />
       </Formik>
     );
 
@@ -68,11 +68,7 @@ describe("DateInputField Component", () => {
   it("Renders a label", () => {
     const { getByRole } = render(
       <Formik initialValues={{ dateInputField: "" }} onSubmit={noop}>
-        <DateInputField
-          id={"dateInputField"}
-          name={"dateInputField"}
-          legend={"legend"}
-        />
+        <DateInputField name="dateInputField" legend={"legend"} />
       </Formik>
     );
 
@@ -91,11 +87,7 @@ describe("DateInputField Component", () => {
   it("renders a hint", () => {
     const { queryByText } = render(
       <Formik initialValues={{ dateInputField: "" }} onSubmit={noop}>
-        <DateInputField
-          id={"dateInputField"}
-          name={"dateInputField"}
-          hint="Here's a clue!"
-        />
+        <DateInputField name={"dateInputField"} hint="Here's a clue!" />
       </Formik>
     );
 
@@ -108,7 +100,7 @@ describe("DateInputField Component", () => {
   it("accepts and parses an initial value properly", () => {
     const { getByLabelText } = render(
       <Formik initialValues={{ dateInputField: "1885-01-13" }} onSubmit={noop}>
-        <DateInputField id={"dateInputField"} name={"dateInputField"} />
+        <DateInputField name={"dateInputField"} />
       </Formik>
     );
 
@@ -298,7 +290,7 @@ describe("DateInputField Component", () => {
         })}
         onSubmit={noop}
       >
-        <DateInputField id={"dateInputField"} name={"dateInputField"} />
+        <DateInputField name={"dateInputField"} />
       </Formik>
     );
 

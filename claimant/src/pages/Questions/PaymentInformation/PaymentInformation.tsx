@@ -68,7 +68,6 @@ export const PaymentInformation = () => {
     <>
       <YesNoQuestion
         question={t("federal_income_tax_withheld.label")}
-        id="federal_income_tax_withheld"
         name="federal_income_tax_withheld"
       >
         <HelpText withLeftBorder={true}>
@@ -77,7 +76,6 @@ export const PaymentInformation = () => {
       </YesNoQuestion>
       <Fieldset legend={t("payment_method.label")}>
         <RadioField
-          id="payment.payment_method"
           name="payment.payment_method"
           options={paymentMethodOptions.map((option) => {
             return {
@@ -91,7 +89,6 @@ export const PaymentInformation = () => {
         <>
           <Fieldset legend={t("account_type.label")}>
             <RadioField
-              id="payment.account_type"
               name="payment.account_type"
               options={accountTypeOptions.map((option) => {
                 return {
@@ -103,25 +100,21 @@ export const PaymentInformation = () => {
           </Fieldset>
           <TextField
             label={t("routing_number.label")}
-            id="payment.routing_number"
             name="payment.routing_number"
             type="text"
           />
           <TextField
             label={t("re_enter_routing_number.label")}
-            id="payment.re_enter_routing_number"
             name="payment.LOCAL_re_enter_routing_number"
             type="text"
           />
           <TextField
             label={t("account_number.label")}
-            id="payment.account_number"
             name="payment.account_number"
             type="text"
           />
           <TextField
             label={t("re_enter_account_number.label")}
-            id="payment.re_enter_account_number"
             name="payment.LOCAL_re_enter_account_number"
             type="text"
           />

@@ -7,7 +7,7 @@ import { useShowErrors } from "../../../hooks/useShowErrors";
 import { useFocusFirstError } from "../../../hooks/useFocusFirstError";
 
 interface IBooleanRadioProps {
-  id: string;
+  id?: string;
   name: string;
   yesLabel?: string;
   noLabel?: string;
@@ -15,7 +15,7 @@ interface IBooleanRadioProps {
 }
 
 export const BooleanRadio = ({
-  id,
+  id: idProp,
   name,
   yesLabel,
   noLabel,
@@ -40,6 +40,8 @@ export const BooleanRadio = ({
       onChange(e);
     }
   };
+
+  const id = idProp || name;
 
   return (
     <FormGroup error={showError}>

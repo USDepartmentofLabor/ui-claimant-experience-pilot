@@ -18,7 +18,7 @@ type DropdownOption = {
 const EMPTY_OPTION_VALUE = "";
 
 interface IDropdownFieldProps {
-  id: string;
+  id?: string;
   name: string;
   label: React.ReactNode;
   labelClassName?: string;
@@ -39,7 +39,7 @@ interface IDropdownFieldProps {
 
 const DropdownField = ({
   name,
-  id,
+  id: idProp,
   label,
   labelClassName,
   labelHint,
@@ -58,13 +58,15 @@ const DropdownField = ({
     options.unshift({ value: EMPTY_OPTION_VALUE, label: t("select_one") });
   }
 
+  const id = idProp || name;
+
   return (
     <FormGroup error={showError}>
       <Label
         className={labelClassName}
         hint={labelHint}
         error={showError}
-        htmlFor={id || name}
+        htmlFor={id}
       >
         {label}
       </Label>

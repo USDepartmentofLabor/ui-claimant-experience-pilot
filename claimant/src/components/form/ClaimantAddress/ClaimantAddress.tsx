@@ -42,7 +42,6 @@ export const ClaimantAddress = () => {
         <Address basename="residence_address" />
       </Fieldset>
       <CheckboxField
-        id="LOCAL_mailing_address_same"
         name="LOCAL_mailing_address_same"
         data-testid="LOCAL_mailing_address_same"
         label={t("label.mailing_address_same")}

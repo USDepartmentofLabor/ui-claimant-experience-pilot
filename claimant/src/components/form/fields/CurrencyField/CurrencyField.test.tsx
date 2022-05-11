@@ -9,11 +9,7 @@ describe("CurrencyField", () => {
   const FormikCurrencyField = () => {
     return (
       <Formik initialValues={{ myMoney: "" }} onSubmit={noop}>
-        <CurrencyField
-          id="myCurrencyField"
-          name="myMoney"
-          label="Show me the money"
-        />
+        <CurrencyField name="myMoney" label="Show me the money" />
       </Formik>
     );
   };
@@ -34,11 +30,7 @@ describe("CurrencyField", () => {
   it("Converts an initialValue of cents to dollars in the field input", () => {
     render(
       <Formik initialValues={{ myMoney: "22045" }} onSubmit={noop}>
-        <CurrencyField
-          id="myCurrencyField"
-          name="myMoney"
-          label="Show me the money"
-        />
+        <CurrencyField name="myMoney" label="Show me the money" />
       </Formik>
     );
     const field = screen.getByRole("textbox", { name: "Show me the money" });

@@ -37,7 +37,7 @@ describe("TextAreaField component", () => {
     mockUseField.mockReturnValue([mockField, mockMeta]);
 
     const { queryByText, queryByLabelText } = render(
-      <TextAreaField name="firstName" label="First Name" id="firstName" />
+      <TextAreaField name="firstName" label="First Name" />
     );
 
     expect(queryByText("First Name")).toBeInstanceOf(HTMLLabelElement);
@@ -70,7 +70,6 @@ describe("TextAreaField component", () => {
         name="firstName"
         className="myCustomInputClass"
         label="First Name"
-        id="firstName"
       />
     );
 
@@ -100,7 +99,7 @@ describe("TextAreaField component", () => {
       mockUseField.mockReturnValue([mockField, mockMeta]);
 
       const { queryByText } = render(
-        <TextAreaField name="firstName" label="First Name" id="firstName" />
+        <TextAreaField name="firstName" label="First Name" />
       );
       expect(queryByText("First Name")).not.toHaveClass("usa-label--error");
       expect(queryByText("This field is required")).not.toBeInTheDocument();
@@ -130,7 +129,7 @@ describe("TextAreaField component", () => {
       mockUseFormikContext.mockReturnValue({ submitCount: 1 });
 
       const { queryByText } = render(
-        <TextAreaField name="firstName" label="First Name" id="firstName" />
+        <TextAreaField name="firstName" label="First Name" />
       );
 
       expect(queryByText("First Name")).toHaveClass("usa-label--error");

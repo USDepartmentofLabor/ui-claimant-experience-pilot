@@ -4,17 +4,19 @@ import DropdownField from "../fields/DropdownField/DropdownField";
 import CheckboxField from "../fields/CheckboxField/CheckboxField";
 
 type PhoneNumberFieldProps = {
-  id: string;
+  id?: string;
   name: string;
   showSMS?: boolean;
 };
 
 export const PhoneNumberField = ({
-  id,
+  id: idProp,
   name,
   showSMS = true,
 }: PhoneNumberFieldProps) => {
   const { t } = useTranslation("common");
+
+  const id = idProp || name;
 
   return (
     <>

@@ -29,12 +29,10 @@ export const Availability = () => {
     <>
       <YesNoQuestion
         question={t("can_begin_work_immediately.label")}
-        id="availability.can_begin_work_immediately"
         name="availability.can_begin_work_immediately"
       >
         {values.availability?.can_begin_work_immediately === false && (
           <TextAreaField
-            id="availability.cannot_begin_work_immediately_reason"
             name="availability.cannot_begin_work_immediately_reason"
             label={t("cannot_begin_work_immediately_reason.label")}
           />
@@ -42,12 +40,10 @@ export const Availability = () => {
       </YesNoQuestion>
       <YesNoQuestion
         question={t("can_work_full_time.label")}
-        id="availability.can_work_full_time"
         name="availability.can_work_full_time"
       >
         {values.availability?.can_work_full_time === false && (
           <TextAreaField
-            id="availability.cannot_work_full_time_reason"
             name="availability.cannot_work_full_time_reason"
             label={t("cannot_work_full_time_reason.label")}
           />
@@ -55,12 +51,10 @@ export const Availability = () => {
       </YesNoQuestion>
       <YesNoQuestion
         question={t("is_prevented_from_accepting_full_time_work.label")}
-        id="availability.is_prevented_from_accepting_full_time_work"
         name="availability.is_prevented_from_accepting_full_time_work"
       >
         {values.availability?.is_prevented_from_accepting_full_time_work && (
           <TextAreaField
-            id="availability.is_prevented_from_accepting_full_time_work_reason"
             name="availability.is_prevented_from_accepting_full_time_work_reason"
             label={t("is_prevented_from_accepting_full_time_work_reason.label")}
           />

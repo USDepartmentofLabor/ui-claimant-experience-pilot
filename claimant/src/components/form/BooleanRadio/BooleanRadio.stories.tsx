@@ -17,11 +17,7 @@ const Template: ComponentStory<typeof BooleanRadio> = (args) => {
     <Formik initialValues={initialValues} onSubmit={noop}>
       <Form>
         <Fieldset legend="Do you like to answer Yes/No questions?">
-          <BooleanRadio
-            id={args.id}
-            name={args.name}
-            onChange={args.onChange}
-          />
+          <BooleanRadio name={args.name} onChange={args.onChange} />
         </Fieldset>
       </Form>
     </Formik>
@@ -30,13 +26,11 @@ const Template: ComponentStory<typeof BooleanRadio> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-  id: "yes_no_question",
   name: "yes_no_question",
 };
 
 export const WithOnChangeHandler = Template.bind({});
 WithOnChangeHandler.args = {
-  id: "yes_no_question",
   name: "yes_no_question",
   onChange: () => {
     console.log("Changed!");

@@ -14,10 +14,12 @@ import {
   CURRENCY_REGEX,
 } from "../../../../utils/currencyFormat";
 
-type TextFieldProps = Omit<ComponentProps<typeof TextField>, "type">;
+type TextFieldProps = Optional<
+  Omit<ComponentProps<typeof TextField>, "type">,
+  "id"
+>;
 
 interface CurrencyFieldProps extends TextFieldProps {
-  id: string;
   name: string;
   label: string;
   inputPrefix?: ReactNode;
@@ -68,7 +70,7 @@ const CurrencyField = ({
   return (
     <TextField
       {...fieldProps}
-      id={id}
+      id={id || name}
       label={label}
       name={name}
       type="text"
