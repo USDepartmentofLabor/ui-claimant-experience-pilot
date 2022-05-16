@@ -5,6 +5,16 @@
 
 The Department of Labor has been asked to lead the executive initiative (ARPA program) to modernize and reform Unemployment Insurance (UI). As part of this program, we are intending to use the DOL GitHub repository as a central source code repository. Following USDS playbook guidelines will help development teams to develop and deploy the code internal to DOL, share the code with respective partners (states), and also eventually make code open-source when appropriate.
 
+## Disclaimer
+
+The code in this repository represents the development efforts towards building an MVP application that integrates
+digital identity proofing with a more modern unemployment insurance claimant intake form. This public repository
+exists purely for the purposes of hosting a snapshot of code to serve as a reference for similar efforts, and is
+therefore not actively maintained. Entities wishing to use this code should do standard security due diligence and make
+sure to use up-to-date dependencies.
+
+See [License](./LICENSE.md) for formal use permissions.
+
 ## ADRs
 
 [Architectural Decision Records for this project](./docs/adr/).
