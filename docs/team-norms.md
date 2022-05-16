@@ -81,7 +81,7 @@ Team members have administrative powers on the repo. Changes should be clarified
 
 ## Code linting
 
-We use [flake8](https://github.com/USDOLEnterprise/ARPAUI/blob/main/.flake8), [black](https://github.com/USDOLEnterprise/ARPAUI/blob/main/.pre-commit-config.yaml#L3),
-[eslint](https://github.com/USDOLEnterprise/ARPAUI/blob/main/initclaim/.eslintrc.yml), and prettier. (TODO link)
+We use [flake8](https://github.com/USDepartmentofLabor/ui-claimant-experience-pilot/blob/main/.flake8), [black](https://github.com/USDepartmentofLabor/ui-claimant-experience-pilot/blob/main/.pre-commit-config.yaml#L3),
+[eslint](https://github.com/USDepartmentofLabor/ui-claimant-experience-pilot/blob/main/initclaim/.eslintrc.yml), and prettier. (TODO link)
 
-For more details on linting see the [pre-commit config](https://github.com/USDOLEnterprise/ARPAUI/blob/main/.pre-commit-config.yaml).
+For more details on linting see the [pre-commit config](https://github.com/USDepartmentofLabor/ui-claimant-experience-pilot/blob/main/.pre-commit-config.yaml).
