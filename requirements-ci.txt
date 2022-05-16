@@ -3,4 +3,4 @@ coverage==6.3.2
 django-extensions
 graphviz
 pytest==7.1.2
-time_machine==2.6.0
+time_machine==2.7.0
