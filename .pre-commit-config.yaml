@@ -20,6 +20,10 @@ repos:
       - id: fix-encoding-pragma
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+        exclude: >
+          (?x)^(
+            LICENSE.md|
+          )$
 
   - repo: https://gitlab.com/pycqa/flake8.git
     rev: 3.9.2
@@ -39,6 +43,7 @@ repos:
         exclude: >
           (?x)^(
             claimant/src/fixtures/soc_.*_2018.json|
+            LICENSE.md|
           )$
 
   - repo: https://github.com/pre-commit/mirrors-eslint
