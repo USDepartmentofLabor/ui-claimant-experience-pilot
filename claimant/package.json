@@ -17,7 +17,7 @@
     "formik": "^2.2.9",
     "i18next": "^21.6.11",
     "i18next-browser-languagedetector": "^6.1.4",
-    "launchdarkly-react-client-sdk": "^2.25.1",
+    "launchdarkly-react-client-sdk": "^2.26.0",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-aria-live": "^2.0.5",
