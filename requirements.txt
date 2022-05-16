@@ -11,7 +11,7 @@ git+https://github.com/foundertherapy/django-redis-secure@support-python-3.7#egg
 gunicorn==20.1.0
 hiredis==2.0.0
 git+https://github.com/pkarman/jsonref.git@590c416#egg=jsonref
-jsonschema[format]==4.4.0
+jsonschema[format]==4.5.1
 jwcrypto==1.0
 git+https://github.com/trussworks/kombu-fernet-serializers@lazy-fernet#egg=kombu-fernet-serializers
 launchdarkly-server-sdk==7.4.1
