@@ -14,5 +14,8 @@ static/
 core/ld-config.json
 celerybeat-schedule
 
+tmp/
+
 # IDE configurations
 .idea
+.vscode

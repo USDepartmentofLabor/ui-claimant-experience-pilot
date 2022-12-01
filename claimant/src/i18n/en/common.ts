@@ -62,6 +62,7 @@ const common = {
     education_vocational_rehab: "Education and training",
     recent_employer: "Add employer",
     employer_review: "Your recent work history",
+    dua_self_employment: "(DUA) Self-employment",
     self_employment: "Self-employment",
     other_pay: "Other pay",
     occupation: "Occupation information",

@@ -8,7 +8,8 @@ import { OccupationPage } from "./Questions/Occupation/Occupation";
 import { UnionPage } from "./Questions/Union/Union";
 import { ReviewPage } from "./Questions/Review/Review";
 import { FC } from "react";
-import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
+import { DUASelfEmploymentPage } from "./Questions/DUASelfEmployment/DUASelfEmployment";
+// import { SelfEmploymentPage } from "./Questions/SelfEmployment/SelfEmployment";
 import { EducationVocationalRehabPage } from "./Questions/EducationVocationalRehab/EducationVocationalRehab";
 import { DisabilityStatusPage } from "./Questions/DisabilityStatus/DisabilityStatus";
 import { ContactInformationPage } from "./Questions/ContactInformation/ContactInformation";
@@ -48,9 +49,10 @@ export const pages: ReadonlyArray<IPageDefinition> = [
   ContactInformationPage,
   DemographicPage,
   IdentityPage,
+  DUASelfEmploymentPage,
   EmployerInformationPage,
   EmployerReviewPage,
-  SelfEmploymentPage,
+  // SelfEmploymentPage,
   OtherPayInformationPage,
   OccupationPage,
   EducationVocationalRehabPage,

@@ -162,7 +162,7 @@ export const ClaimFormNav = ({ isSubmitted }: ClaimFormNavProps) => {
     <div className="usa-nav-container">
       <div className="usa-navbar">
         <Title>
-          <Link to={HOME_PAGE}>Unemployment Insurance</Link>
+          <Link to={HOME_PAGE}>Disaster Unemployment Assistance</Link>
         </Title>
         <NavMenuButton
           label="Menu"

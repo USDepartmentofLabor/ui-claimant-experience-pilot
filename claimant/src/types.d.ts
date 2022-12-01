@@ -9,6 +9,7 @@ type ClaimantInput = {
   PaymentInformationType &
   EmployersType &
   SelfEmploymentType &
+  DUASelfEmploymentType &
   OtherPayType &
   DisabilityStatusType &
   AvailabilityType &
@@ -266,6 +267,13 @@ type SelfEmploymentType = DeepPartial<{
     name_of_corporation: string | null;
     related_to_owner: boolean;
     corporation_or_partnership: boolean;
+  };
+}>;
+
+type DUASelfEmploymentType = DeepPartial<{
+  dua_self_employment: {
+    was_self_employed: boolean;
+    scheduled_to_start_in_future: boolean;
   };
 }>;
 
